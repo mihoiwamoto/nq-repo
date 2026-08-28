@@ -4,8 +4,8 @@ interface BasicAuthProps {
   children: ReactNode
 }
 
-const DEFAULT_USERNAME = 'admin'
-const DEFAULT_PASSWORD = 'password'
+const DEFAULT_USERNAME = 'nq-repo'
+const DEFAULT_PASSWORD = 'nq_8888@'
 
 export function BasicAuth({ children }: BasicAuthProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
