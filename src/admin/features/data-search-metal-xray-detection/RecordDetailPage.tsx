@@ -285,6 +285,13 @@ export function RecordDetailPage() {
                 </div>
               );
             })}
+
+            <div className="h-px bg-[#d0d0d0] w-full mt-4" />
+
+            {/* Metal Detector Comments */}
+            <div className="pt-4">
+              <Comments comments={record.metalComments || []} />
+            </div>
           </div>
 
           <div className="border-t border-[#d0d0d0]" />
@@ -323,6 +330,13 @@ export function RecordDetailPage() {
                 </div>
               );
             })}
+
+            <div className="h-px bg-[#d0d0d0] w-full mt-4" />
+
+            {/* X-ray Detector Comments */}
+            <div className="pt-4">
+              <Comments comments={record.xrayComments || []} />
+            </div>
           </div>
 
           <div className="border-t border-[#d0d0d0]" />
@@ -464,6 +478,13 @@ function OperationCheckDetailPage({
                 {index < METAL_OPERATION_CHECKS.length - 1 && <div className="border-t border-[#d0d0d0] w-full" />}
               </div>
             ))}
+
+            <div className="border-t border-[#d0d0d0] w-full mt-4" />
+
+            {/* Metal Detector Operation Comments */}
+            <div className="pt-4">
+              <Comments comments={record.metalOperationComments || []} />
+            </div>
           </div>
 
           <div className="border-t border-[#d0d0d0] px-4 mx-4" />
@@ -494,6 +515,13 @@ function OperationCheckDetailPage({
                 {index < XRAY_OPERATION_CHECKS.length - 1 && <div className="border-t border-[#d0d0d0] w-full" />}
               </div>
             ))}
+
+            <div className="border-t border-[#d0d0d0] w-full mt-4" />
+
+            {/* X-ray Detector Operation Comments */}
+            <div className="pt-4">
+              <Comments comments={record.xrayOperationComments || []} />
+            </div>
           </div>
 
           <div className="border-t border-[#d0d0d0] px-4 mx-4" />
