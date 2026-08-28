@@ -1,0 +1,27 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+<g id="Icon">
+<g id="container">
+
+<g id="Frame 13164">
+<g id="Frame 13163">
+<g id="Icon_2">
+<g id="Icon/staff">
+<g id="Rectangle 830">
+<mask id="path-2-inside-1_1453_67" fill="white">
+<rect x="1" y="5" width="22" height="15" rx="1"/>
+</mask>
+<rect x="1" y="5" width="22" height="15" rx="1" stroke="#333333" stroke-width="3" mask="url(#path-2-inside-1_1453_67)"/>
+</g>
+<path id="Vector" d="M7.5 13C8.60457 13 9.5 12.1046 9.5 11C9.5 9.89543 8.60457 9 7.5 9C6.39543 9 5.5 9.89543 5.5 11C5.5 12.1046 6.39543 13 7.5 13Z" stroke="#333333" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M4 16.53C4 15.6018 4.36875 14.7115 5.02513 14.0552C5.6815 13.3988 6.57174 13.03 7.5 13.03C8.42826 13.03 9.3185 13.3988 9.97487 14.0552C10.6313 14.7115 11 15.6018 11 16.53" stroke="#333333" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Line 43" d="M14 10L20 10" stroke="#333333" stroke-linecap="round"/>
+<path id="Line 44" d="M14 13L20 13" stroke="#333333" stroke-linecap="round"/>
+<path id="Line 45" d="M14 16L20 16" stroke="#333333" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>
