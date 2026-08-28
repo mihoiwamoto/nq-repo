@@ -16,8 +16,16 @@ export function AbnormalReactionDetailPage() {
   const basePath = `/admin/data-search/metal-xray-detection/factories/${factoryId}`;
 
   useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.scrollTop = 0;
+    }
+    requestAnimationFrame(() => {
+      const main = document.querySelector('main');
+      if (main) {
+        main.scrollTop = 0;
+      }
+    });
   }, [recordId]);
 
   const record = records.find((r) => r.id === recordId);
