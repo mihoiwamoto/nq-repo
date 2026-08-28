@@ -10,6 +10,34 @@ export const inspectionRecords: InspectionRecord[] = [
     implementer: "田中太郎",
     confirmer: "山田花子",
     approvalStatus: "pending",
+    metalComments: [
+      {
+        id: "mc1",
+        author: "田中太郎",
+        timestamp: "2026.08.19 10:39",
+        text: "金属探知機の動作確認を実施しました。全ての検査項目で正常に動作しています。",
+      },
+      {
+        id: "mc2",
+        author: "佐藤花子",
+        timestamp: "2026.08.23 15:45",
+        text: "キャリブレーション値の確認を完了しました。問題ありません。",
+      },
+    ],
+    xrayComments: [
+      {
+        id: "xc1",
+        author: "田中太郎",
+        timestamp: "2026.08.19 11:15",
+        text: "X線探知機の感度設定を確認しました。正常範囲内です。",
+      },
+      {
+        id: "xc2",
+        author: "山田花子",
+        timestamp: "2026.08.27 16:20",
+        text: "定期メンテナンススケジュールを確認しました。次回は9月中旬の予定です。",
+      },
+    ],
     sessions: [
       {
         segment: "始業",

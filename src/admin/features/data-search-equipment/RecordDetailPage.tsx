@@ -2,6 +2,8 @@ import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Comments } from "../../components/Comments";
+import { CommentsSection } from "../../components/CommentsSection";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 
@@ -35,8 +37,16 @@ export function RecordDetailPage() {
   const basePath = `/admin/data-search/equipment-inspection/factories/${factoryId}`;
 
   useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.scrollTop = 0;
+    }
+    requestAnimationFrame(() => {
+      const main = document.querySelector('main');
+      if (main) {
+        main.scrollTop = 0;
+      }
+    });
   }, [recordId]);
 
   const record = records.find((r) => r.id === recordId);
@@ -158,6 +168,13 @@ export function RecordDetailPage() {
                 </div>
               </div>
             </div>
+
+            <div className="border-t border-[#e0e0e0] my-4" />
+
+            {/* Metal Detector Comments */}
+            <div className="pt-4">
+              <CommentsSection comments={record.metalComments || []} />
+            </div>
           </div>
 
           {/* X-ray Detector Section */}
@@ -222,6 +239,13 @@ export function RecordDetailPage() {
                 </div>
               </div>
             </div>
+
+            <div className="border-t border-[#e0e0e0] my-4" />
+
+            {/* X-ray Detector Comments */}
+            <div className="pt-4">
+              <CommentsSection comments={record.xrayComments || []} />
+            </div>
           </div>
 
           {/* Remarks */}
@@ -230,6 +254,11 @@ export function RecordDetailPage() {
             <p className="text-[14px] text-[var(--semantic-text-primary)]">
               テキストテキストテキストテキストテキストテキストテキストテキストテキストテキスト
             </p>
+          </div>
+
+          {/* Comments Section */}
+          <div className="pt-6 border-t border-[#e0e0e0]">
+            <Comments comments={record.comments || []} />
           </div>
         </div>
       </div>

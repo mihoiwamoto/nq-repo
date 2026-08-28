@@ -2,6 +2,13 @@ export type ApprovalStatus = "pending" | "approved" | "rejected";
 
 export type ItemStatus = "ok" | "ng";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export type InspectionItemResult = {
   name: string;
   status: ItemStatus;
@@ -9,6 +16,7 @@ export type InspectionItemResult = {
   action?: string;
   timestamp: string;
   inspector: string;
+  comments?: Comment[];
 };
 
 export type InspectionPointResult = {
@@ -35,4 +43,7 @@ export type InspectionRecord = {
   approvalStatus: ApprovalStatus;
   sessions: InspectionSession[];
   comment?: string;
+  comments?: Comment[];
+  metalComments?: Comment[];
+  xrayComments?: Comment[];
 };
