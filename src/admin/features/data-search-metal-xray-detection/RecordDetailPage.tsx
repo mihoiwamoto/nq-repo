@@ -2,6 +2,7 @@ import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Comments } from "../../components/Comments";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import type { InspectionResult, MachineSearchRecord } from "./types";
@@ -64,8 +65,16 @@ export function RecordDetailPage() {
   const basePath = `/admin/data-search/metal-xray-detection/factories/${factoryId}`;
 
   useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.scrollTop = 0;
+    }
+    requestAnimationFrame(() => {
+      const main = document.querySelector('main');
+      if (main) {
+        main.scrollTop = 0;
+      }
+    });
   }, [recordId]);
 
   const record = records.find((r) => r.id === recordId);
@@ -191,6 +200,9 @@ export function RecordDetailPage() {
                 <p className="text-base text-[#333]">{inspectionRecord.remarks || "検査日時における異常検知について報告いたします。該当製品は速やかに隔離し、廃棄処理を完了いたしました。"}</p>
               </div>
             </div>
+
+            {/* Comments Section */}
+            <Comments comments={inspectionRecord.comments || []} />
           </div>
         </div>
       </div>
@@ -320,6 +332,12 @@ export function RecordDetailPage() {
             <p className="text-base text-[#333]">
               本日の検査は予定通り完了しました。全ての検査項目において良好な結果が得られています。機械の動作に異常は認められません。次回の定期検査は2026年9月27日の予定です。
             </p>
+          </div>
+
+          <div className="border-t border-[#d0d0d0] px-4 mx-4 pt-6">
+            <div className="flex flex-col gap-4 items-start w-full">
+              <Comments comments={record.comments || []} />
+            </div>
           </div>
         </div>
       </div>
@@ -486,6 +504,11 @@ function OperationCheckDetailPage({
             <p className="text-base text-[var(--semantic-text-primary)] leading-relaxed">
               本日の動作確認は予定通り完了しました。金属探知機・X線探知機共に全ての検査項目において正常に動作することが確認されました。機械の動作に異常は認められません。次回の定期検査は2026年9月27日の予定です。
             </p>
+          </div>
+
+          {/* Comments Section */}
+          <div className="border-t border-[#d0d0d0] px-4 pt-6">
+            <Comments comments={record.comments || []} />
           </div>
         </div>
       </div>
