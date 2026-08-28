@@ -1,0 +1,313 @@
+export type ProgressStatus = "not_inspected" | "inspecting" | "inspected" | "confirmed";
+
+export const PROGRESS_STATUS_LABELS: Record<ProgressStatus, string> = {
+  not_inspected: "未点検",
+  inspecting: "点検中",
+  inspected: "点検済み",
+  confirmed: "確認完了",
+};
+
+export const PROGRESS_STATUS_COLORS: Record<ProgressStatus, string> = {
+  not_inspected: "#808080",
+  inspecting: "#3B82F6",
+  inspected: "var(--semantic-status-caution)",
+  confirmed: "var(--semantic-brand-primary)",
+};
+
+export type ProgressEntry = {
+  id: string;
+  date: string;
+  ledgerSlug: string;
+  name: string;
+  status: ProgressStatus;
+  lineId?: string;
+  pointId?: string;
+  floorId?: string;
+  productId?: string;
+  postId?: string;
+  machineId?: string;
+};
+
+export const PROGRESS_ENTRIES: ProgressEntry[] = [
+  {
+    id: "g1",
+    date: "04/01",
+    ledgerSlug: "equipment-inspection",
+    name: "【毎日】豆乳ライン",
+    status: "inspected",
+    lineId: "l8",
+  },
+  {
+    id: "g2",
+    date: "04/01",
+    ledgerSlug: "equipment-inspection",
+    name: "【毎日】ゆばライン（つまみ関係）",
+    status: "not_inspected",
+    lineId: "l9",
+  },
+  {
+    id: "g3",
+    date: "04/01",
+    ledgerSlug: "equipment-inspection",
+    name: "【毎月】豆乳ライン",
+    status: "confirmed",
+  },
+  {
+    id: "g4",
+    date: "04/01",
+    ledgerSlug: "equipment-inspection",
+    name: "【毎週】ゆばライン（その他）",
+    status: "confirmed",
+  },
+  {
+    id: "g5",
+    date: "04/01",
+    ledgerSlug: "scale-inspection",
+    name: "添加物",
+    status: "not_inspected",
+    postId: "additive",
+  },
+  {
+    id: "g6",
+    date: "04/01",
+    ledgerSlug: "scale-inspection",
+    name: "プリン",
+    status: "inspected",
+    postId: "pudding",
+  },
+  {
+    id: "g7",
+    date: "04/01",
+    ledgerSlug: "scale-inspection",
+    name: "トッピング",
+    status: "confirmed",
+    postId: "topping",
+  },
+  {
+    id: "g8",
+    date: "04/01",
+    ledgerSlug: "scale-inspection",
+    name: "アイス",
+    status: "confirmed",
+    postId: "ice",
+  },
+  {
+    id: "g8b",
+    date: "04/01",
+    ledgerSlug: "scale-inspection",
+    name: "カタラーゼ",
+    status: "confirmed",
+    postId: "catalase",
+  },
+  { id: "g9", date: "04/01", ledgerSlug: "glass-plastic", name: "フロアA", status: "not_inspected", floorId: "f1" },
+  {
+    id: "g13",
+    date: "04/01",
+    ledgerSlug: "glass-plastic",
+    name: "フロアB",
+    status: "inspected",
+    floorId: "f2",
+  },
+  {
+    id: "g14",
+    date: "04/01",
+    ledgerSlug: "glass-plastic",
+    name: "フロアC",
+    status: "confirmed",
+    floorId: "f3",
+  },
+  {
+    id: "g10",
+    date: "04/01",
+    ledgerSlug: "water-inspection",
+    name: "点検エリア01",
+    status: "not_inspected",
+    pointId: "wp1",
+  },
+  {
+    id: "g11",
+    date: "04/01",
+    ledgerSlug: "water-inspection",
+    name: "点検エリア02",
+    status: "inspected",
+    pointId: "wp2",
+  },
+  {
+    id: "g12",
+    date: "04/01",
+    ledgerSlug: "water-inspection",
+    name: "点検エリア03",
+    status: "confirmed",
+    pointId: "wp3",
+  },
+  {
+    id: "g15",
+    date: "04/01",
+    ledgerSlug: "cleaning-record",
+    name: "【毎日】ゆばライン",
+    status: "inspected",
+    lineId: "c1",
+  },
+  {
+    id: "g16",
+    date: "04/01",
+    ledgerSlug: "cleaning-record",
+    name: "【毎週】ゆばライン",
+    status: "not_inspected",
+    lineId: "c4",
+  },
+  {
+    id: "g17",
+    date: "04/01",
+    ledgerSlug: "cleaning-record",
+    name: "【毎年】冷蔵倉庫ライン",
+    status: "confirmed",
+  },
+  {
+    id: "g18",
+    date: "04/01",
+    ledgerSlug: "chemical-management",
+    name: "次亜塩素酸ナトリウム",
+    status: "inspected",
+    productId: "cp1",
+  },
+  {
+    id: "g19",
+    date: "04/01",
+    ledgerSlug: "chemical-management",
+    name: "塩酸",
+    status: "not_inspected",
+    productId: "cp2",
+  },
+  {
+    id: "g20",
+    date: "04/01",
+    ledgerSlug: "chemical-management",
+    name: "ジオキシー",
+    status: "confirmed",
+    productId: "cp3",
+  },
+  {
+    id: "g21",
+    date: "04/01",
+    ledgerSlug: "additive-management",
+    name: "ソルビン酸",
+    status: "not_inspected",
+    productId: "a1",
+  },
+  {
+    id: "g22",
+    date: "04/01",
+    ledgerSlug: "additive-management",
+    name: "にがり（塩化マグネシウム）",
+    status: "inspected",
+    productId: "a2",
+  },
+  {
+    id: "g23",
+    date: "04/01",
+    ledgerSlug: "additive-management",
+    name: "グルコノデルタラクトン",
+    status: "confirmed",
+    productId: "a3",
+  },
+  {
+    id: "g24",
+    date: "04/01",
+    ledgerSlug: "sample-management",
+    name: "仕出しだし巻き玉子 冷凍",
+    status: "not_inspected",
+    productId: "s1",
+  },
+  {
+    id: "g25",
+    date: "04/01",
+    ledgerSlug: "sample-management",
+    name: "厚焼き玉子（本）　500g",
+    status: "inspected",
+    productId: "s2",
+  },
+  {
+    id: "g26",
+    date: "04/01",
+    ledgerSlug: "sample-management",
+    name: "製品名〇〇〇〇〇〇〇〇",
+    status: "confirmed",
+    productId: "s3",
+  },
+  {
+    id: "g27",
+    date: "04/01",
+    ledgerSlug: "sample-management",
+    name: "製品名〇〇〇〇〇〇〇〇",
+    status: "confirmed",
+    productId: "s4",
+  },
+  {
+    id: "g31",
+    date: "04/01",
+    ledgerSlug: "metal-xray-detection",
+    name: "金探1号機（500g以下の場合）",
+    status: "not_inspected",
+    machineId: "m1",
+  },
+  {
+    id: "g32",
+    date: "04/01",
+    ledgerSlug: "metal-xray-detection",
+    name: "XXXXXXX",
+    status: "inspecting",
+    machineId: "m2",
+  },
+  {
+    id: "g33",
+    date: "04/01",
+    ledgerSlug: "metal-xray-detection",
+    name: "XXXXXXX",
+    status: "inspected",
+    machineId: "m3",
+  },
+  {
+    id: "g34",
+    date: "04/01",
+    ledgerSlug: "metal-xray-detection",
+    name: "XXXXXXX",
+    status: "confirmed",
+    machineId: "m4",
+  },
+  {
+    id: "g28",
+    date: "04/01",
+    ledgerSlug: "sensory-inspection",
+    name: "マンゴープリン　ストレート　1kg",
+    status: "not_inspected",
+    productId: "p1",
+  },
+  {
+    id: "g29",
+    date: "04/01",
+    ledgerSlug: "sensory-inspection",
+    name: "厚焼き玉子（本）　500g",
+    status: "inspected",
+    productId: "p2",
+  },
+  {
+    id: "g30",
+    date: "04/01",
+    ledgerSlug: "sensory-inspection",
+    name: "厚焼き玉子（本）　500g",
+    status: "confirmed",
+    productId: "p3",
+  },
+];
+
+export const ACTORS = [
+  { id: "1042587", name: "佐藤健一" },
+  { id: "1035921", name: "高橋美咲" },
+  { id: "1028764", name: "渡辺真由" },
+  { id: "1051438", name: "小林誠司" },
+  { id: "1067215", name: "吉田浩二" },
+  { id: "1019863", name: "山本拓海" },
+  { id: "1073492", name: "田村康平" },
+  { id: "1084156", name: "松本奈々" },
+];
