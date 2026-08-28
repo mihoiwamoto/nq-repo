@@ -4,6 +4,13 @@ export type InspectionCategory = "開始" | "終了" | "ー";
 export type InspectionContent = "動作確認" | "テストピース" | "製品通過" | "異常反応";
 export type InspectionResult = "OK" | "NG";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export type InspectionRecord = {
   id: string;
   category: InspectionCategory;
@@ -15,6 +22,7 @@ export type InspectionRecord = {
   inspectorName: string;
   cause?: string;
   response?: string;
+  comments?: Comment[];
 };
 
 export type MachineSearchRecord = {
@@ -29,4 +37,9 @@ export type MachineSearchRecord = {
   approvalStatus: ApprovalStatus;
   records: InspectionRecord[];
   comment?: string;
+  comments?: Comment[];
+  metalComments?: Comment[];
+  xrayComments?: Comment[];
+  metalOperationComments?: Comment[];
+  xrayOperationComments?: Comment[];
 };

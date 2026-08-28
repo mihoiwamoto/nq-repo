@@ -11,6 +11,44 @@ export const machineSearchRecords: MachineSearchRecord[] = [
     result: "OK",
     confirmer: "山田太郎",
     approvalStatus: "pending",
+    metalComments: [
+      {
+        id: "mc1",
+        author: "田中太郎",
+        timestamp: "2026.08.19 10:39",
+        text: "金属探知機の動作確認を実施しました。全ての検査項目で正常に動作しています。",
+      },
+      {
+        id: "mc2",
+        author: "佐藤花子",
+        timestamp: "2026.08.23 15:45",
+        text: "キャリブレーション値の確認を完了しました。問題ありません。",
+      },
+    ],
+    xrayComments: [
+      {
+        id: "xc1",
+        author: "田中太郎",
+        timestamp: "2026.08.19 11:15",
+        text: "X線探知機の感度設定を確認しました。正常範囲内です。",
+      },
+    ],
+    metalOperationComments: [
+      {
+        id: "moc1",
+        author: "山田太郎",
+        timestamp: "2026.08.27 08:30",
+        text: "本日の動作確認は予定通り完了しました。",
+      },
+    ],
+    xrayOperationComments: [
+      {
+        id: "xoc1",
+        author: "鈴木花子",
+        timestamp: "2026.08.27 09:00",
+        text: "X線検査システムの動作は良好です。次回検査予定は9月27日です。",
+      },
+    ],
     records: [
       {
         id: "dm1-1",
