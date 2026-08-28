@@ -84,8 +84,8 @@ export function BasicAuth({ children }: BasicAuthProps) {
 
         <div className="mt-4 p-3 bg-gray-100 rounded text-sm text-gray-600">
           <p>デモ用認証情報:</p>
-          <p>ユーザー名: admin</p>
-          <p>パスワード: password</p>
+          <p>ユーザー名: nq-repo</p>
+          <p>パスワード: nq_8888@</p>
         </div>
       </div>
     </div>
