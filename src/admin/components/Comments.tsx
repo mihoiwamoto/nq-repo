@@ -11,9 +11,7 @@ interface CommentsProps {
 
 export function Comments({ comments }: CommentsProps) {
   return (
-    <div className="flex flex-col gap-4 items-start w-full">
-      <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-      <div className="bg-white rounded-lg w-full">
+    <div className="bg-white rounded-lg w-full">
         {comments.length === 0 ? (
           <p className="text-base text-[var(--semantic-text-secondary)] py-6 px-4">コメントはありません</p>
         ) : (
@@ -32,7 +30,6 @@ export function Comments({ comments }: CommentsProps) {
             </div>
           ))
         )}
-      </div>
     </div>
   );
 }

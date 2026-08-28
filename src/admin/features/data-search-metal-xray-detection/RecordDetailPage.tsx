@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Comments } from "../../components/Comments";
+import { CommentsSection } from "../../components/CommentsSection";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import type { InspectionResult, MachineSearchRecord } from "./types";
@@ -290,9 +291,7 @@ export function RecordDetailPage() {
 
             {/* Metal Detector Comments */}
             <div className="pt-4">
-              <div className="flex flex-col gap-4 items-start w-full">
-                <Comments comments={record.metalComments || []} />
-              </div>
+              <CommentsSection comments={record.metalComments || []} />
             </div>
           </div>
 
@@ -337,9 +336,7 @@ export function RecordDetailPage() {
 
             {/* X-ray Detector Comments */}
             <div className="pt-4">
-              <div className="flex flex-col gap-4 items-start w-full">
-                <Comments comments={record.xrayComments || []} />
-              </div>
+              <CommentsSection comments={record.xrayComments || []} />
             </div>
           </div>
 
@@ -487,9 +484,7 @@ function OperationCheckDetailPage({
 
             {/* Metal Detector Operation Comments */}
             <div className="pt-4">
-              <div className="flex flex-col gap-4 items-start w-full">
-                <Comments comments={record.metalOperationComments || []} />
-              </div>
+              <CommentsSection comments={record.metalOperationComments || []} />
             </div>
           </div>
 
@@ -526,9 +521,7 @@ function OperationCheckDetailPage({
 
             {/* X-ray Detector Operation Comments */}
             <div className="pt-4">
-              <div className="flex flex-col gap-4 items-start w-full">
-                <Comments comments={record.xrayOperationComments || []} />
-              </div>
+              <CommentsSection comments={record.xrayOperationComments || []} />
             </div>
           </div>
 
