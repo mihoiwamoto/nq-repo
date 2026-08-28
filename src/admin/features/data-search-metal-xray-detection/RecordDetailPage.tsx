@@ -290,7 +290,9 @@ export function RecordDetailPage() {
 
             {/* Metal Detector Comments */}
             <div className="pt-4">
-              <Comments comments={record.metalComments || []} />
+              <div className="flex flex-col gap-4 items-start w-full">
+                <Comments comments={record.metalComments || []} />
+              </div>
             </div>
           </div>
 
@@ -335,7 +337,9 @@ export function RecordDetailPage() {
 
             {/* X-ray Detector Comments */}
             <div className="pt-4">
-              <Comments comments={record.xrayComments || []} />
+              <div className="flex flex-col gap-4 items-start w-full">
+                <Comments comments={record.xrayComments || []} />
+              </div>
             </div>
           </div>
 
@@ -483,7 +487,9 @@ function OperationCheckDetailPage({
 
             {/* Metal Detector Operation Comments */}
             <div className="pt-4">
-              <Comments comments={record.metalOperationComments || []} />
+              <div className="flex flex-col gap-4 items-start w-full">
+                <Comments comments={record.metalOperationComments || []} />
+              </div>
             </div>
           </div>
 
@@ -520,7 +526,9 @@ function OperationCheckDetailPage({
 
             {/* X-ray Detector Operation Comments */}
             <div className="pt-4">
-              <Comments comments={record.xrayOperationComments || []} />
+              <div className="flex flex-col gap-4 items-start w-full">
+                <Comments comments={record.xrayOperationComments || []} />
+              </div>
             </div>
           </div>
 

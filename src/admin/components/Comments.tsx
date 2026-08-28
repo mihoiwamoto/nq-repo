@@ -13,12 +13,12 @@ export function Comments({ comments }: CommentsProps) {
   return (
     <div className="flex flex-col gap-4 items-start w-full">
       <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-      {comments.length === 0 ? (
-        <p className="text-base text-[var(--semantic-text-secondary)] pb-12">コメントはありません</p>
-      ) : (
-        <div className="bg-white rounded-lg w-full">
-          {comments.map((comment, index) => (
-            <div key={comment.id} className="w-full">
+      <div className="bg-white rounded-lg w-full">
+        {comments.length === 0 ? (
+          <p className="text-base text-[var(--semantic-text-secondary)] py-6 px-4">コメントはありません</p>
+        ) : (
+          comments.map((comment, index) => (
+            <div key={comment.id}>
               <div className="flex flex-col gap-2 py-4 px-4">
                 <div className="flex flex-col gap-1">
                   <p className="text-base font-bold text-[#00a651]">{comment.author}</p>
@@ -30,9 +30,9 @@ export function Comments({ comments }: CommentsProps) {
                 <div className="border-t border-[#d0d0d0] mx-4" />
               )}
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 }
