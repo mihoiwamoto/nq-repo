@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
@@ -61,6 +62,11 @@ export function RecordDetailPage() {
   const { records } = useRecords();
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/data-search/metal-xray-detection/factories/${factoryId}`;
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+  }, [recordId]);
 
   const record = records.find((r) => r.id === recordId);
 
