@@ -2,10 +2,33 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Pulldown } from "../../components/Pulldown";
 import { useMetalXrayManagement } from "./MetalXrayManagementContext";
-import { METAL_DETECTOR_UNITS, WEIGHT_CHECKER_UNITS, XRAY_DETECTOR_UNITS } from "./mockData";
 import { AddProductDialog } from "./AddProductDialog";
+import iconCalendar from "../../../assets/figma/icons/common/calendar.svg";
+
+function DateInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="relative flex items-center">
+      <input
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-white h-12 px-4 pr-12 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px] appearance-none cursor-pointer"
+      />
+      <img
+        src={iconCalendar}
+        alt=""
+        className="absolute right-4 w-6 h-6 pointer-events-none"
+      />
+    </label>
+  );
+}
 
 function RecordToggle({
   value,
@@ -42,26 +65,6 @@ function RecordToggle({
   );
 }
 
-function UnitSelect({
-  value,
-  onChange,
-  options,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-}) {
-  return (
-    <Pulldown
-      value={value}
-      onChange={onChange}
-      options={options.map((option) => ({ value: option, label: option }))}
-      placeholder="選択してください"
-      className="bg-white h-12 px-4 rounded-lg text-base w-[240px] text-[var(--semantic-text-primary)]"
-    />
-  );
-}
-
 export function NewRegistrationPage() {
   const { factoryId, machineId } = useParams<{ factoryId: string; machineId?: string }>();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
@@ -75,11 +78,8 @@ export function NewRegistrationPage() {
   const [displayTo, setDisplayTo] = useState(existing?.displayTo ?? "");
   const [name, setName] = useState(existing?.name ?? "");
   const [recordMetalDetector, setRecordMetalDetector] = useState(existing?.recordMetalDetector ?? false);
-  const [metalDetectorUnit, setMetalDetectorUnit] = useState(existing?.metalDetectorUnit ?? "");
   const [recordXrayDetector, setRecordXrayDetector] = useState(existing?.recordXrayDetector ?? false);
-  const [xrayDetectorUnit, setXrayDetectorUnit] = useState(existing?.xrayDetectorUnit ?? "");
   const [recordWeightChecker, setRecordWeightChecker] = useState(existing?.recordWeightChecker ?? false);
-  const [weightCheckerUnit, setWeightCheckerUnit] = useState(existing?.weightCheckerUnit ?? "");
   const [recordSealing, setRecordSealing] = useState(existing?.recordSealing ?? true);
   const [mainPassProducts, setMainPassProducts] = useState<string[]>(existing?.mainPassProducts ?? []);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
@@ -90,28 +90,13 @@ export function NewRegistrationPage() {
       setError("点検構成名は必須です");
       return;
     }
-    if (recordMetalDetector && !metalDetectorUnit) {
-      setError("金属探知機名は必須です");
-      return;
-    }
-    if (recordXrayDetector && !xrayDetectorUnit) {
-      setError("X線探知機名は必須です");
-      return;
-    }
-    if (recordWeightChecker && !weightCheckerUnit) {
-      setError("ウェイトチェッカー名は必須です");
-      return;
-    }
     const machine = {
       name: name.trim(),
       displayFrom: displayFrom || undefined,
       displayTo: displayTo || undefined,
       recordMetalDetector,
-      metalDetectorUnit: recordMetalDetector ? metalDetectorUnit : undefined,
       recordXrayDetector,
-      xrayDetectorUnit: recordXrayDetector ? xrayDetectorUnit : undefined,
       recordWeightChecker,
-      weightCheckerUnit: recordWeightChecker ? weightCheckerUnit : undefined,
       recordSealing,
       mainPassProducts: mainPassProducts.filter((p) => p.trim() !== ""),
     };
@@ -145,19 +130,9 @@ export function NewRegistrationPage() {
             日付指定が無い場合は、常にアプリ上に表示されます。
           </p>
           <div className="flex gap-2 items-center">
-            <input
-              type="date"
-              value={displayFrom}
-              onChange={(e) => setDisplayFrom(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateInput value={displayFrom} onChange={setDisplayFrom} />
             <span className="text-[var(--semantic-text-primary)]">〜</span>
-            <input
-              type="date"
-              value={displayTo}
-              onChange={(e) => setDisplayTo(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateInput value={displayTo} onChange={setDisplayTo} />
           </div>
         </div>
 
@@ -178,73 +153,28 @@ export function NewRegistrationPage() {
           />
         </div>
 
-        <div className="flex flex-col gap-4 items-start">
-          <div className="flex flex-col gap-1 items-start">
-            <div className="flex gap-2 items-center">
-              <p className="text-xl text-[var(--semantic-text-primary)]">金属探知機</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
-            </div>
-            <RecordToggle value={recordMetalDetector} onChange={setRecordMetalDetector} />
+        <div className="flex flex-col gap-1 items-start">
+          <div className="flex gap-2 items-center">
+            <p className="text-xl text-[var(--semantic-text-primary)]">金属探知機</p>
+            <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
           </div>
-          {recordMetalDetector && (
-            <div className="flex flex-col gap-1 items-start">
-              <div className="flex gap-2 items-center">
-                <p className="text-xl text-[var(--semantic-text-primary)]">金属探知機名</p>
-                <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
-              </div>
-              <UnitSelect
-                value={metalDetectorUnit}
-                onChange={setMetalDetectorUnit}
-                options={METAL_DETECTOR_UNITS}
-              />
-            </div>
-          )}
+          <RecordToggle value={recordMetalDetector} onChange={setRecordMetalDetector} />
         </div>
 
-        <div className="flex flex-col gap-4 items-start">
-          <div className="flex flex-col gap-1 items-start">
-            <div className="flex gap-2 items-center">
-              <p className="text-xl text-[var(--semantic-text-primary)]">X線探知機</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
-            </div>
-            <RecordToggle value={recordXrayDetector} onChange={setRecordXrayDetector} />
+        <div className="flex flex-col gap-1 items-start">
+          <div className="flex gap-2 items-center">
+            <p className="text-xl text-[var(--semantic-text-primary)]">X線探知機</p>
+            <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
           </div>
-          {recordXrayDetector && (
-            <div className="flex flex-col gap-1 items-start">
-              <div className="flex gap-2 items-center">
-                <p className="text-xl text-[var(--semantic-text-primary)]">X線探知機名</p>
-                <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
-              </div>
-              <UnitSelect
-                value={xrayDetectorUnit}
-                onChange={setXrayDetectorUnit}
-                options={XRAY_DETECTOR_UNITS}
-              />
-            </div>
-          )}
+          <RecordToggle value={recordXrayDetector} onChange={setRecordXrayDetector} />
         </div>
 
-        <div className="flex flex-col gap-4 items-start">
-          <div className="flex flex-col gap-1 items-start">
-            <div className="flex gap-2 items-center">
-              <p className="text-xl text-[var(--semantic-text-primary)]">ウェイトチェッカー</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
-            </div>
-            <RecordToggle value={recordWeightChecker} onChange={setRecordWeightChecker} />
+        <div className="flex flex-col gap-1 items-start">
+          <div className="flex gap-2 items-center">
+            <p className="text-xl text-[var(--semantic-text-primary)]">ウェイトチェッカー</p>
+            <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
           </div>
-          {recordWeightChecker && (
-            <div className="flex flex-col gap-1 items-start">
-              <div className="flex gap-2 items-center">
-                <p className="text-xl text-[var(--semantic-text-primary)]">ウェイトチェッカー名</p>
-                <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
-              </div>
-              <UnitSelect
-                value={weightCheckerUnit}
-                onChange={setWeightCheckerUnit}
-                options={WEIGHT_CHECKER_UNITS}
-              />
-            </div>
-          )}
+          <RecordToggle value={recordWeightChecker} onChange={setRecordWeightChecker} />
         </div>
 
         <div className="flex flex-col gap-1 items-start">

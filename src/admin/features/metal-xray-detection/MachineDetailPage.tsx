@@ -102,13 +102,6 @@ export function MachineDetailPage() {
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-between w-full gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">金属探知機No.</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">
-              {machine.metalDetectorUnit ?? "ー"}
-            </p>
-          </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">X線探知機</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
               {machine.recordXrayDetector ? "記録する" : "記録しない"}
@@ -116,23 +109,9 @@ export function MachineDetailPage() {
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-between w-full gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">X線探知機No.</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">
-              {machine.xrayDetectorUnit ?? "ー"}
-            </p>
-          </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">ウェイトチェッカー</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
               {machine.recordWeightChecker ? "記録する" : "記録しない"}
-            </p>
-          </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">ウェイトチェッカーNo.</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">
-              {machine.weightCheckerUnit ?? "ー"}
             </p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
