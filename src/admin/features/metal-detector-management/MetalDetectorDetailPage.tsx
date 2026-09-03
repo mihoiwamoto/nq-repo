@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useMetalDetector } from "./MetalDetectorContext";
+import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
 export function MetalDetectorDetailPage() {
@@ -12,19 +13,25 @@ export function MetalDetectorDetailPage() {
   const location = useLocation();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showUpdatedToast, setShowUpdatedToast] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const unit = units.find((u) => u.id === unitId);
 
   useEffect(() => {
-    const state = location.state as { justUpdated?: boolean } | null;
-    if (state?.justUpdated) {
-      setShowUpdatedToast(true);
-      const timer = setTimeout(() => setShowUpdatedToast(false), 3000);
-      navigate(location.pathname, { replace: true });
+    if (location.state?.justSaved) {
+      setToastMessage("更新されました。");
+      setShowToast(true);
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [location, navigate]);
+    if (location.state?.deleted) {
+      setToastMessage("削除されました。");
+      setShowToast(true);
+    }
+  }, [location.state?.justSaved, location.state?.deleted]);
 
   if (!unit) {
     return (
@@ -37,7 +44,8 @@ export function MetalDetectorDetailPage() {
   function handleDelete() {
     if (!unit) return;
     removeUnit(unit.id);
-    navigate(`${basePath}/metal-detectors/deleted`);
+    setDeleteDialogOpen(false);
+    navigate(`${basePath}/metal-detectors/deleted`, { state: { deleted: true } });
   }
 
   return (
@@ -52,7 +60,7 @@ export function MetalDetectorDetailPage() {
           { label: "詳細" },
         ]}
       />
-      <div className="flex flex-col gap-4 items-start p-6">
+      <div className="flex flex-col gap-6 items-start p-6">
         <div className="flex items-center justify-end w-full gap-2">
           <Link
             to={`${basePath}/metal-detectors/${unit.id}/edit`}
@@ -69,63 +77,64 @@ export function MetalDetectorDetailPage() {
           </button>
         </div>
 
-        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
-          <div className="flex items-center justify-between w-full gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">金属探知機名</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{unit.name}</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 items-start w-full">
-          <p className="text-xl text-[var(--semantic-text-primary)]">設定番号/テストピース設定</p>
-          <div className="flex flex-col items-start rounded-lg overflow-hidden w-full">
-            <div className="bg-[#f6f6f6] flex h-[50px] items-center w-full">
-              <div className="flex-1 flex items-center justify-center p-2 h-full">
-                <p className="text-sm text-[var(--semantic-brand-primary)]">製品名/規格</p>
-              </div>
-              <div className="w-[160px] flex items-center justify-center p-2 h-full">
-                <p className="text-sm text-[var(--semantic-brand-primary)]">設定番号</p>
-              </div>
-              <div className="w-[120px] flex items-center justify-center p-2 h-full">
-                <p className="text-sm text-[var(--semantic-brand-primary)]">Fe</p>
-              </div>
-              <div className="w-[120px] flex items-center justify-center p-2 h-full">
-                <p className="text-sm text-[var(--semantic-brand-primary)]">Sus</p>
-              </div>
+        <div className="bg-white flex flex-col gap-0 items-start rounded-lg w-full overflow-hidden px-4 py-6">
+          <div className="flex gap-4 items-center w-full mb-6">
+            <div className="w-[152px] shrink-0">
+              <p className="text-xl text-[var(--semantic-brand-primary)] font-semibold">金属探知機名</p>
             </div>
-            {unit.settings.length === 0 ? (
-              <div className="bg-white flex items-center justify-center w-full py-6">
-                <p className="text-base text-[var(--semantic-text-secondary)]">設定がありません</p>
-              </div>
-            ) : (
-              unit.settings.map((row, index) => (
-                <div
-                  key={row.id}
-                  className={`flex items-center w-full ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
-                >
-                  <div className="flex-1 p-2">
-                    <p className="text-base text-[var(--semantic-text-primary)] px-4 py-2">
-                      {row.productName}
-                    </p>
-                  </div>
-                  <div className="w-[160px] p-2">
-                    <p className="text-base text-[var(--semantic-text-primary)] px-4 py-2">
-                      {row.settingNumber || "ー"}
-                    </p>
-                  </div>
-                  <div className="w-[120px] p-2">
-                    <p className="text-base text-[var(--semantic-text-primary)] px-4 py-2">
-                      {row.fe || "ー"}
-                    </p>
-                  </div>
-                  <div className="w-[120px] p-2">
-                    <p className="text-base text-[var(--semantic-text-primary)] px-4 py-2">
-                      {row.sus || "ー"}
-                    </p>
-                  </div>
+            <div className="flex-1">
+              <p className="text-xl text-[var(--semantic-text-primary)]">{unit.name}</p>
+            </div>
+          </div>
+
+          <div className="h-px bg-[#d0d0d0] w-full mb-6" />
+
+          <div className="flex gap-4 items-start w-full">
+            <div className="w-[152px] shrink-0">
+              <p className="text-xl text-[var(--semantic-brand-primary)] font-semibold">設定番号/テストピース設定</p>
+            </div>
+
+            <div className="flex flex-col items-start rounded-lg overflow-hidden flex-1">
+              <div className="bg-[#f6f6f6] flex h-[50px] items-center w-full">
+                <div className="w-[440px] flex items-center justify-center p-2 h-full">
+                  <p className="text-sm text-[var(--semantic-brand-primary)] font-semibold">製品名/規格</p>
                 </div>
-              ))
-            )}
+                <div className="w-[100px] flex items-center justify-center p-2 h-full">
+                  <p className="text-sm text-[var(--semantic-brand-primary)] font-semibold">設定番号</p>
+                </div>
+                <div className="w-[100px] flex items-center justify-center p-2 h-full">
+                  <p className="text-sm text-[var(--semantic-brand-primary)] font-semibold">Fe</p>
+                </div>
+                <div className="w-[100px] flex items-center justify-center p-2 h-full">
+                  <p className="text-sm text-[var(--semantic-brand-primary)] font-semibold">Sus</p>
+                </div>
+              </div>
+              {unit.settings && unit.settings.length > 0 ? (
+                unit.settings.map((setting, index) => (
+                  <div
+                    key={setting.id}
+                    className={`flex items-center w-full h-[40px] ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                  >
+                    <div className="w-[440px] flex items-start justify-start p-2 h-full overflow-hidden">
+                      <p className="text-sm text-[var(--semantic-text-primary)]">{setting.productName}</p>
+                    </div>
+                    <div className="w-[100px] flex items-center justify-center p-2 h-full">
+                      <p className="text-sm text-[var(--semantic-text-primary)] text-center">{setting.settingNumber}</p>
+                    </div>
+                    <div className="w-[100px] flex items-center justify-center p-2 h-full">
+                      <p className="text-sm text-[var(--semantic-text-primary)] text-center">{setting.fe}</p>
+                    </div>
+                    <div className="w-[100px] flex items-center justify-center p-2 h-full">
+                      <p className="text-sm text-[var(--semantic-text-primary)] text-center">{setting.sus}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="bg-white flex items-center justify-center w-full py-4">
+                  <p className="text-sm text-[var(--semantic-text-secondary)]">設定がありません</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -162,15 +171,7 @@ export function MetalDetectorDetailPage() {
         </div>
       )}
 
-      {showUpdatedToast && (
-        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
-          <span>✓</span>
-          <span className="text-xl">更新されました。</span>
-          <button type="button" onClick={() => setShowUpdatedToast(false)} className="ml-2">
-            ×
-          </button>
-        </div>
-      )}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

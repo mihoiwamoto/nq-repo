@@ -2,17 +2,11 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
-import type { ApprovalStatus, WaterCheckResult } from "./types";
+import type { WaterCheckResult } from "./types";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
-import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
-
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
-  { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
-  { value: "rejected", label: "差し戻し" },
-];
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
@@ -54,14 +48,14 @@ export function RecordDetailPage() {
     pointId: string;
     recordId: string;
   }>();
-  const { records, setApprovalStatus, addComment } = useRecords();
+  const { records, addComment } = useRecords();
   const factoryName = getFactoryName(factoryId);
   const location = pointId ? decodeURIComponent(pointId) : "";
   const basePath = `/admin/data-search/water-inspection/factories/${factoryId}/points/${pointId}`;
 
   const record = records.find((r) => r.id === recordId);
   const [comment, setComment] = useState(record?.comment ?? "");
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   if (!record) {
     return (
@@ -71,8 +65,14 @@ export function RecordDetailPage() {
     );
   }
 
+  function handleAddComment() {
+    addComment(record.id, comment);
+    setShowToast(true);
+  }
+
   return (
     <div>
+      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
@@ -84,60 +84,12 @@ export function RecordDetailPage() {
         ]}
       />
       <div className="flex flex-col gap-4 p-6">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-4">
-            <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-              <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
-            </div>
-            <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-              <p className="text-xl text-[var(--semantic-text-primary)]">{location}</p>
-            </div>
+        <div className="flex items-center gap-4">
+          <div className="bg-white flex items-center px-4 py-2 rounded-lg">
+            <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setStatusMenuOpen((v) => !v)}
-              className="bg-[#808080] border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px] flex items-center justify-between gap-2"
-            >
-              {STATUS_OPTIONS.find((opt) => opt.value === record.approvalStatus)?.label}
-              <span
-                aria-hidden
-                className={`inline-block size-4 shrink-0 transition-transform ${statusMenuOpen ? "rotate-180" : ""}`}
-                style={{
-                  WebkitMaskImage: `url("${iconArrowDown}")`,
-                  maskImage: `url("${iconArrowDown}")`,
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  backgroundColor: "currentColor",
-                }}
-              />
-            </button>
-            {statusMenuOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setStatusMenuOpen(false)} />
-                <div className="absolute right-0 top-[calc(100%+8px)] z-50 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col p-2 w-[240px]">
-                  {STATUS_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => {
-                        setApprovalStatus(record.id, opt.value);
-                        setStatusMenuOpen(false);
-                      }}
-                      className={`h-[42px] px-2 rounded-lg text-base text-left w-full ${
-                        opt.value === record.approvalStatus
-                          ? "bg-[var(--semantic-brand-primary)] text-white"
-                          : "text-[var(--semantic-text-primary)]"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+          <div className="bg-white flex items-center px-4 py-2 rounded-lg">
+            <p className="text-xl text-[var(--semantic-text-primary)]">{location}</p>
           </div>
         </div>
 
@@ -250,7 +202,7 @@ export function RecordDetailPage() {
           </div>
           <button
             type="button"
-            onClick={() => addComment(record.id, comment)}
+            onClick={handleAddComment}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             コメントを残す

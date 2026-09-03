@@ -4,7 +4,7 @@ import iconPulldown from "../../assets/figma/icons/common/pulldown.svg";
 export type PulldownOption = { value: string; label: string };
 
 const DEFAULT_TRIGGER_CLASSNAME =
-  "bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]";
+  "bg-white border border-[#d0d0d0] h-12 px-8 rounded-lg text-base text-[var(--semantic-text-primary)] w-full";
 
 export function Pulldown({
   value,
@@ -60,18 +60,18 @@ export function Pulldown({
           aria-hidden
           className={`inline-block size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
           style={{
-            filter: !selectedLabel ? 'invert(0.5)' : 'invert(0)',
+            filter: 'invert(0.7) brightness(1.2)',
           }}
         />
       </button>
       {open && !disabled && (
-        <div className="absolute top-full left-0 mt-1 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 w-full min-w-max max-h-[290px] overflow-y-auto z-10">
+        <div className="absolute top-full left-0 mt-1 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 min-w-full w-max max-w-[calc(100vw-32px)] max-h-[290px] overflow-y-auto z-50" style={{ pointerEvents: "auto" }}>
           {options.map((option) => (
             <button
               key={option.value}
               type="button"
               onClick={() => select(option.value)}
-              className={`flex h-[42px] items-center px-4 rounded-lg w-full text-left text-base whitespace-nowrap ${
+              className={`flex h-[42px] items-center px-2 rounded-lg w-full text-left text-base whitespace-nowrap ${
                 value === option.value
                   ? "bg-[var(--semantic-brand-primary)] text-white"
                   : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"

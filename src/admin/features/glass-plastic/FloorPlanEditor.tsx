@@ -5,6 +5,7 @@ import {
   type MapItem,
   type MapItemCategory,
 } from "./types";
+import { Toast } from "../../components/Toast";
 
 function groupByRoom(items: MapItem[]) {
   const rooms: { room: string; items: MapItem[] }[] = [];
@@ -35,6 +36,8 @@ export function FloorPlanEditor({
   const [pendingPosition, setPendingPosition] = useState<{ x: number; y: number } | null>(null);
   const [room, setRoom] = useState("");
   const [name, setName] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   const mapRef = useRef<HTMLDivElement>(null);
 
   const existingRooms = Array.from(new Set(items.map((i) => i.room)));
@@ -62,6 +65,12 @@ export function FloorPlanEditor({
 
   function cancelAdd() {
     setPendingPosition(null);
+  }
+
+  function handleRemoveItem(itemId: string) {
+    setToastMessage("削除されました。");
+    setShowToast(true);
+    onRemoveItem(itemId);
   }
 
   return (
@@ -135,7 +144,7 @@ export function FloorPlanEditor({
                     <span className="text-sm text-[var(--semantic-text-primary)]">{item.name}</span>
                     <button
                       type="button"
-                      onClick={() => onRemoveItem(item.id)}
+                      onClick={() => handleRemoveItem(item.id)}
                       className="text-xs text-[var(--semantic-brand-danger)]"
                     >
                       削除
@@ -201,6 +210,7 @@ export function FloorPlanEditor({
           </div>
         </div>
       )}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

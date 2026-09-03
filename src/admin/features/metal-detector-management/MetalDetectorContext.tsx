@@ -5,8 +5,8 @@ import type { MetalDetectorUnit, TestPieceSetting } from "./types";
 
 type MetalDetectorContextValue = {
   units: MetalDetectorUnit[];
-  addUnit: (unit: { name: string; settings: TestPieceSetting[] }) => void;
-  updateUnit: (id: string, unit: { name: string; settings: TestPieceSetting[] }) => void;
+  addUnit: (unit: { displayFrom?: string; displayTo?: string; name: string; settings: TestPieceSetting[] }) => void;
+  updateUnit: (id: string, unit: { displayFrom?: string; displayTo?: string; name: string; settings: TestPieceSetting[] }) => void;
   removeUnit: (id: string) => void;
   moveUnit: (id: string, direction: "up" | "down") => void;
 };

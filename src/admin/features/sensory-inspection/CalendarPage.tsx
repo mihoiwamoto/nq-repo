@@ -19,8 +19,8 @@ export function CalendarPage() {
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
-  const [showUpdatedToast, setShowUpdatedToast] = useState(false);
   const [showDeletedToast, setShowDeletedToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -33,8 +33,8 @@ export function CalendarPage() {
         setYear(y);
         setMonth(m - 1);
       }
-      setShowUpdatedToast(true);
-      const timer = setTimeout(() => setShowUpdatedToast(false), 3000);
+      setShowUpdateToast(true);
+      const timer = setTimeout(() => setShowUpdateToast(false), 3000);
       navigate(location.pathname, { replace: true });
       return () => clearTimeout(timer);
     }
@@ -280,20 +280,20 @@ export function CalendarPage() {
         </div>
       )}
 
-      {showUpdatedToast && (
-        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
-          <span>✓</span>
-          <span className="text-xl">更新されました。</span>
-          <button type="button" onClick={() => setShowUpdatedToast(false)} className="ml-2">
-            ×
-          </button>
-        </div>
-      )}
       {showDeletedToast && (
         <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
           <span>✓</span>
           <span className="text-xl">削除されました。</span>
           <button type="button" onClick={() => setShowDeletedToast(false)} className="ml-2">
+            ×
+          </button>
+        </div>
+      )}
+      {showUpdateToast && (
+        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
+          <span>✓</span>
+          <span className="text-xl">更新されました。</span>
+          <button type="button" onClick={() => setShowUpdateToast(false)} className="ml-2">
             ×
           </button>
         </div>

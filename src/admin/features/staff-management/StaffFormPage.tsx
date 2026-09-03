@@ -81,7 +81,7 @@ export function StaffFormPage() {
     };
     if (isEditing && existing) {
       updateStaff(existing.id, input);
-      navigate(`/admin/staff/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`/admin/staff/${existing.id}`, { state: { justSaved: true } });
     } else {
       addStaff(input);
       navigate("/admin/staff/new/complete");

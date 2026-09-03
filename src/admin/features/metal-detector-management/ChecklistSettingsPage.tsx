@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
-import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
 
 const CHECKLIST_ITEMS = [
   "電源ON",
@@ -28,6 +28,7 @@ export function ChecklistSettingsPage() {
     { id: "item-1", name: "電源ON", description: "電源が正常に入り始動する" },
     { id: "item-2", name: "コンベア・プーリー・モーター", description: "ゆるみ、破損、汚れ、異音がなく正常に作動する" },
   ]);
+  const [showToast, setShowToast] = useState(false);
 
   let nextId = 1000;
 
@@ -40,6 +41,7 @@ export function ChecklistSettingsPage() {
 
   function removeItem(id: string) {
     setItems((prev) => prev.filter((item) => item.id !== id));
+    setShowToast(true);
   }
 
   function updateItem(id: string, field: keyof Omit<ChecklistItem, "id">, value: string) {
@@ -49,7 +51,7 @@ export function ChecklistSettingsPage() {
   }
 
   function handleConfirm() {
-    navigate(`${basePath}/metal-detectors`);
+    navigate(`${basePath}/metal-detectors`, { state: { justSaved: true } });
   }
 
   return (
@@ -64,6 +66,7 @@ export function ChecklistSettingsPage() {
           { label: "動作確認項目設定" },
         ]}
       />
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
       <div className="flex flex-col gap-6 p-6">
         <div className="bg-white rounded-lg p-6 flex flex-col gap-4 w-full max-w-[800px]">
           <h2 className="text-2xl font-bold text-[var(--semantic-text-primary)]">
@@ -73,32 +76,16 @@ export function ChecklistSettingsPage() {
           <div className="flex flex-col gap-3 items-start w-full">
             {items.map((item, index) => (
               <div key={item.id} className="flex gap-2 items-start w-full">
-                <div className="relative w-[240px]">
-                  <Pulldown
-                    value={item.name}
-                    onChange={(value) => updateItem(item.id, "name", value)}
-                    options={CHECKLIST_ITEMS.map((name) => ({
-                      value: name,
-                      label: name,
-                    }))}
-                    placeholder="動作確認"
-                    className="bg-white border border-[#d0d0d0] flex items-center h-10 px-4 py-2 rounded-lg w-full text-base text-[var(--semantic-text-primary)] pr-10"
-                  />
-                  <span
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-[var(--semantic-text-primary)]"
-                    style={{
-                      width: '16px',
-                      height: '16px',
-                      WebkitMaskImage: `url("${iconArrowDown}")`,
-                      maskImage: `url("${iconArrowDown}")`,
-                      WebkitMaskSize: 'contain',
-                      maskSize: 'contain',
-                      WebkitMaskRepeat: 'no-repeat',
-                      maskRepeat: 'no-repeat',
-                      backgroundColor: 'currentColor',
-                    }}
-                  />
-                </div>
+                <Pulldown
+                  value={item.name}
+                  onChange={(value) => updateItem(item.id, "name", value)}
+                  options={CHECKLIST_ITEMS.map((name) => ({
+                    value: name,
+                    label: name,
+                  }))}
+                  placeholder=""
+                  className="bg-white border border-[#d0d0d0] flex items-center h-10 px-4 py-2 rounded-lg w-[240px] text-base text-[var(--semantic-text-primary)]"
+                />
                 <input
                   type="text"
                   value={item.description}
@@ -109,7 +96,7 @@ export function ChecklistSettingsPage() {
                 <button
                   type="button"
                   onClick={() => removeItem(item.id)}
-                  className="bg-white border border-[#d0d0d0] size-10 rounded-lg flex items-center justify-center shrink-0"
+                  className="bg-white border border-[#ef4444] size-10 rounded-lg flex items-center justify-center shrink-0"
                 >
                   <img src={iconTrash} alt="削除" className="size-5" />
                 </button>

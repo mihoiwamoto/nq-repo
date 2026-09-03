@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useStorageManagement } from "./StorageManagementContext";
 
 export function StorageDetailPage() {
   const { locationId } = useParams<{ locationId: string }>();
   const { storageLocations } = useStorageManagement();
-  const routerLocation = useLocation();
-  const [showUpdatedToast, setShowUpdatedToast] = useState(
-    Boolean((routerLocation.state as { justUpdated?: boolean } | null)?.justUpdated)
-  );
-
+  const routeLocation = useLocation();
   const location = storageLocations.find((item) => item.id === locationId);
 
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
+
   useEffect(() => {
-    if (!showUpdatedToast) return;
-    const timer = setTimeout(() => setShowUpdatedToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showUpdatedToast]);
+    if ((routeLocation.state as any)?.justSaved) {
+      setShowUpdateToast(true);
+    }
+  }, [routeLocation.state]);
 
   return (
     <div>
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
@@ -51,12 +51,6 @@ export function StorageDetailPage() {
         </div>
       </div>
 
-      {showUpdatedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-4 py-3 w-[340px]">
-          <span className="text-[var(--semantic-brand-primary)] text-xl">✓</span>
-          <p className="text-sm text-[var(--semantic-text-primary)]">更新されました。</p>
-        </div>
-      )}
     </div>
   );
 }

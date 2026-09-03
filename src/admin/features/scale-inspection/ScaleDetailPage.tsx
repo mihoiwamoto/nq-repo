@@ -4,6 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { getFactoryName } from "../../../data/factories";
+import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
 function formatPeriod(displayFrom?: string, displayTo?: string) {
@@ -31,6 +32,7 @@ export function ScaleDetailPage() {
   const scale = scales.find((s) => s.id === scaleId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   if (!scale) {
     return (
@@ -44,6 +46,7 @@ export function ScaleDetailPage() {
 
   function handleDelete() {
     removeScale(scale!.id);
+    setShowToast(true);
     navigate(basePath);
   }
 
@@ -120,6 +123,8 @@ export function ScaleDetailPage() {
           </div>
         </div>
       )}
+
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );
 }

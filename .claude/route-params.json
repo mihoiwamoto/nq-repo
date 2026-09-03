@@ -1,0 +1,30 @@
+{
+  "global": {
+    ":additiveId": "a1",
+    ":chemicalId": "c1",
+    ":companyId": "c1",
+    ":dateKey": "2026-09-02",
+    ":factoryId": "f1",
+    ":faqId": "f1",
+    ":floorId": "f1",
+    ":id": "i1",
+    ":itemId": "i1",
+    ":lineId": "l1",
+    ":locationId": "l1",
+    ":machineId": "m1",
+    ":pointId": "p1",
+    ":postId": "p1",
+    ":productId": "p1",
+    ":recordId": "r1",
+    ":requestId": "r1",
+    ":sampleId": "s1",
+    ":scaleId": "s1",
+    ":scoreId": "s1",
+    ":slug": "s1",
+    ":specimenId": "s1",
+    ":staffId": "s1",
+    ":storedId": "s1",
+    ":unitId": "u1"
+  },
+  "byScreen": {}
+}

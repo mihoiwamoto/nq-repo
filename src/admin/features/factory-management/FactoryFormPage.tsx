@@ -54,7 +54,7 @@ export function FactoryFormPage() {
     const input = { name, address, companyId, loginId, closedDays, ledgerSlugs, password };
     if (isEditing && existing) {
       updateFactory(existing.id, input);
-      navigate(`/admin/factory/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`/admin/factory/${existing.id}`, { state: { justSaved: true } });
     } else {
       addFactory(input);
       navigate("/admin/factory/new/complete");
@@ -66,6 +66,11 @@ export function FactoryFormPage() {
 
   return (
     <div>
+      <style>{`
+        .bold-placeholder::placeholder {
+          font-weight: bold;
+        }
+      `}</style>
       <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
@@ -85,7 +90,8 @@ export function FactoryFormPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="例）㈱西原食品 本社工場"
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
+              autoComplete="off"
+              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080] bold-placeholder"
             />
           </div>
 
@@ -96,7 +102,8 @@ export function FactoryFormPage() {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="例）鹿児島県鹿児島市本名町1744番地1号"
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
+              autoComplete="off"
+              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080] bold-placeholder"
             />
           </div>
 
@@ -133,7 +140,10 @@ export function FactoryFormPage() {
               value={loginId}
               onChange={(e) => setLoginId(e.target.value)}
               placeholder="例）000000"
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
+              autoComplete="off"
+              className={`bg-white h-12 px-4 rounded-lg text-base w-full placeholder:text-[#808080] bold-placeholder ${
+                isEditing ? 'text-[var(--semantic-text-primary)]' : 'text-[#808080]'
+              }`}
             />
           </div>
 
@@ -154,7 +164,10 @@ export function FactoryFormPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="例）Ex@mple123"
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
+              autoComplete="new-password"
+              className={`bg-white h-12 px-4 rounded-lg text-base w-full placeholder:text-[#808080] bold-placeholder ${
+                isEditing ? 'text-[var(--semantic-text-primary)]' : 'text-[#808080]'
+              }`}
             />
           </div>
 
@@ -284,13 +297,6 @@ export function FactoryFormPage() {
                       checked ? "border-[var(--semantic-brand-primary)]" : "border-transparent"
                     }`}
                   >
-                    <span
-                      className={`size-5 rounded shrink-0 border ${
-                        checked
-                          ? "bg-[var(--semantic-brand-primary)] border-[var(--semantic-brand-primary)]"
-                          : "bg-white border-[#d0d0d0]"
-                      }`}
-                    />
                     <img src={category.adminIcon} alt="" className="size-6 shrink-0" />
                     <span className="text-base text-[var(--semantic-text-primary)] truncate">
                       {category.adminLabel}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
 import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
@@ -33,7 +34,7 @@ export function CalendarPage() {
         setMonth(m - 1);
       }
       setShowToast(true);
-      const timer = setTimeout(() => setShowToast(false), 3000);
+      const timer = setTimeout(() => setShowToast(false), 2000);
       navigate(location.pathname, { replace: true });
       return () => clearTimeout(timer);
     }
@@ -53,6 +54,7 @@ export function CalendarPage() {
 
   return (
     <div>
+      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="点検予定"
         showBack
@@ -206,15 +208,6 @@ export function CalendarPage() {
           </div>
         </div>
       </div>
-      {showToast && (
-        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
-          <span>✓</span>
-          <span className="text-xl">更新されました。</span>
-          <button type="button" onClick={() => setShowToast(false)} className="ml-2">
-            ×
-          </button>
-        </div>
-      )}
     </div>
   );
 }

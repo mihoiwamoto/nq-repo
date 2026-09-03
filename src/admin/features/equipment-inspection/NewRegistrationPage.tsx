@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { AddLineDialog } from "./AddLineDialog";
 
@@ -21,6 +22,8 @@ export function NewRegistrationPage() {
   const [lineIds, setLineIds] = useState<string[]>(existingEntry?.lineIds ?? []);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const selectedLines = lineIds
     .map((id) => lines.find((l) => l.id === id))
@@ -32,7 +35,7 @@ export function NewRegistrationPage() {
       return;
     }
     upsertEntry(date, lineIds);
-    navigate(`${basePath}/schedule`, { state: { justSaved: true, date } });
+    navigate(`${basePath}/schedule`, { state: { justSaved: isEditing, date } });
   }
 
   return (
@@ -90,7 +93,11 @@ export function NewRegistrationPage() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => setLineIds((prev) => prev.filter((id) => id !== line.id))}
+                      onClick={() => {
+                        setLineIds((prev) => prev.filter((id) => id !== line.id));
+                        setToastMessage("削除されました。");
+                        setShowToast(true);
+                      }}
                       className="text-sm text-[var(--semantic-text-secondary)]"
                     >
                       削除
@@ -132,6 +139,8 @@ export function NewRegistrationPage() {
           }}
         />
       )}
+
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

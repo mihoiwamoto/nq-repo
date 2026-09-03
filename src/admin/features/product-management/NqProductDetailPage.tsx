@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useProductManagement } from "./ProductManagementContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -10,24 +11,23 @@ export function NqProductDetailPage() {
   const { productId } = useParams<{ productId: string }>();
   const { nqProducts, removeNqProduct } = useProductManagement();
   const navigate = useNavigate();
-  const routerLocation = useLocation();
+  const location = useLocation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showUpdatedToast, setShowUpdatedToast] = useState(
-    Boolean((routerLocation.state as { justUpdated?: boolean } | null)?.justUpdated)
-  );
+  const [showToast, setShowToast] = useState(false);
 
   const product = nqProducts.find((item) => item.id === productId);
 
   useEffect(() => {
-    if (!showUpdatedToast) return;
-    const timer = setTimeout(() => setShowUpdatedToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showUpdatedToast]);
+    if ((location.state as any)?.deleted) {
+      setShowToast(true);
+    }
+  }, [location.state]);
 
   function handleDelete() {
     if (!product) return;
     removeNqProduct(product.id);
-    navigate("/admin/products/nq/deleted");
+    setDeleteDialogOpen(false);
+    navigate("/admin/products/nq/deleted", { state: { deleted: true } });
   }
 
   const rows: [string, string | undefined][] = [
@@ -104,12 +104,7 @@ export function NqProductDetailPage() {
         </div>
       )}
 
-      {showUpdatedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-4 py-3 w-[340px]">
-          <span className="text-[var(--semantic-brand-primary)] text-xl">✓</span>
-          <p className="text-sm text-[var(--semantic-text-primary)]">更新されました。</p>
-        </div>
-      )}
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );
 }

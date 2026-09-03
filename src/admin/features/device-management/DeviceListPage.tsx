@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Toast } from "../../components/Toast";
 import { FACTORIES, getFactoryName } from "../../../data/factories";
 import { INITIAL_DEVICES } from "./mockData";
 import { DEVICE_STATUS_LABELS, type DeviceStatus, type LoginDevice } from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
-import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
-import iconXMark from "../../../assets/figma/icons/common/x-mark.svg";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 
@@ -15,6 +14,7 @@ const PAGE_SIZE = 10;
 
 export function DeviceListPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [devices, setDevices] = useState<LoginDevice[]>(INITIAL_DEVICES);
   const [filterOpen, setFilterOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
@@ -23,8 +23,16 @@ export function DeviceListPage() {
   const [page, setPage] = useState(1);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("変更が完了しました");
   const [notifiedDeviceId, setNotifiedDeviceId] = useState<string | null>(null);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if ((location.state as any)?.deleted) {
+      setToastMessage("削除されました。");
+      setShowToast(true);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (!showToast) return;
@@ -60,6 +68,7 @@ export function DeviceListPage() {
 
   function updateStatus(id: string, status: DeviceStatus) {
     setDevices((prev) => prev.map((d) => (d.id === id ? { ...d, status } : d)));
+    setToastMessage("変更が完了しました");
     setShowToast(true);
   }
 
@@ -67,7 +76,7 @@ export function DeviceListPage() {
     if (!deleteTargetId) return;
     setDevices((prev) => prev.filter((d) => d.id !== deleteTargetId));
     setDeleteTargetId(null);
-    navigate("/admin/devices/deleted");
+    navigate("/admin/devices/deleted", { state: { deleted: true } });
   }
 
   function handleRefresh() {
@@ -355,19 +364,7 @@ export function DeviceListPage() {
         </div>
       )}
 
-      {showToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-4 py-3 w-[340px]">
-          <img src={iconCheckmark} alt="" className="size-5" />
-          <p className="text-sm text-[var(--semantic-text-primary)] flex-1">変更が完了しました</p>
-          <button
-            type="button"
-            onClick={() => setShowToast(false)}
-            className="text-[var(--semantic-text-secondary)]"
-          >
-            <img src={iconXMark} alt="閉じる" className="size-4" />
-          </button>
-        </div>
-      )}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

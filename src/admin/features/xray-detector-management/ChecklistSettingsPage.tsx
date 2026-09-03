@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
 
@@ -27,6 +28,7 @@ export function ChecklistSettingsPage() {
     { id: "item-1", name: "電源ON", description: "電源が正常に入り始動する" },
     { id: "item-2", name: "コンベア・センサー", description: "ゆるみ、破損、汚れ、異音がなく正常に作動する" },
   ]);
+  const [showToast, setShowToast] = useState(false);
 
   let nextId = 1000;
 
@@ -39,6 +41,7 @@ export function ChecklistSettingsPage() {
 
   function removeItem(id: string) {
     setItems((prev) => prev.filter((item) => item.id !== id));
+    setShowToast(true);
   }
 
   function updateItem(id: string, field: keyof Omit<ChecklistItem, "id">, value: string) {
@@ -48,11 +51,12 @@ export function ChecklistSettingsPage() {
   }
 
   function handleConfirm() {
-    navigate(`${basePath}/xray-detectors`);
+    navigate(`${basePath}/xray-detectors`, { state: { justSaved: true } });
   }
 
   return (
     <div>
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar title="動作確認項目設定" showBack />
       <Breadcrumb
         items={[

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Toast } from "../../components/Toast";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { getFactoryName } from "../../../data/factories";
 import { SCALE_REPAIR_STATUS_COLORS, SCALE_REPAIR_STATUS_LABELS, type ScaleRepairStatus } from "./types";
@@ -23,21 +24,23 @@ export function ScaleManagementDetailPage() {
   const { factoryId, scaleId } = useParams<{ factoryId: string; scaleId: string }>();
   const { scales, posts, removeScale, setScaleRepairStatus } = useScaleInspection();
   const navigate = useNavigate();
-  const routerLocation = useLocation();
+  const location = useLocation();
   const basePath = `/admin/ledger-management/scale-inspection/factories/${factoryId}`;
   const factoryName = getFactoryName(factoryId);
   const scale = scales.find((s) => s.id === scaleId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showSavedToast, setShowSavedToast] = useState(
-    Boolean((routerLocation.state as { justUpdated?: boolean } | null)?.justUpdated)
-  );
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   useEffect(() => {
-    if (!showSavedToast) return;
-    const timer = setTimeout(() => setShowSavedToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showSavedToast]);
+    if ((location.state as any)?.justSaved) {
+      setShowUpdateToast(true);
+    }
+    if ((location.state as any)?.deleted) {
+      setShowDeleteToast(true);
+    }
+  }, [location.state]);
 
   if (!scale) {
     return (
@@ -51,7 +54,8 @@ export function ScaleManagementDetailPage() {
 
   function handleDelete() {
     removeScale(scale!.id);
-    navigate(`${basePath}/scale-management/deleted`);
+    setDeleteDialogOpen(false);
+    navigate(`${basePath}/scale-management/deleted`, { state: { deleted: true } });
   }
 
   return (
@@ -170,12 +174,8 @@ export function ScaleManagementDetailPage() {
         </div>
       )}
 
-      {showSavedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-4 py-3 w-[340px]">
-          <span className="text-[var(--semantic-brand-primary)] text-xl">✓</span>
-          <p className="text-sm text-[var(--semantic-text-primary)]">更新されました。</p>
-        </div>
-      )}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );
 }

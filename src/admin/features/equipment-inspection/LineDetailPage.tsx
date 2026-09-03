@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -28,6 +29,7 @@ export function LineDetailPage() {
   const { factoryId, lineId } = useParams<{ factoryId: string; lineId: string }>();
   const { lines, updateLineDisplayPeriod, removeLine } = useSchedule();
   const navigate = useNavigate();
+  const location = useLocation();
   const basePath = `/admin/ledger-management/equipment-inspection/factories/${factoryId}`;
   const factoryName = getFactoryName(factoryId);
   const line = lines.find((l) => l.id === lineId);
@@ -36,6 +38,19 @@ export function LineDetailPage() {
   const [displayFrom, setDisplayFrom] = useState(line?.displayFrom ?? "");
   const [displayTo, setDisplayTo] = useState(line?.displayTo ?? "");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  useEffect(() => {
+    if (location.state?.justSaved) {
+      setToastMessage("更新されました。");
+      setShowToast(true);
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state?.justSaved]);
 
   if (!line) {
     return (
@@ -49,16 +64,26 @@ export function LineDetailPage() {
 
   function handleSave() {
     updateLineDisplayPeriod(line!.id, displayFrom || undefined, displayTo || undefined);
-    setEditing(false);
+    setToastMessage("更新されました。");
+    setShowToast(true);
+    setTimeout(() => {
+      setEditing(false);
+    }, 1500);
   }
 
   function handleDelete() {
     removeLine(line!.id);
-    navigate(basePath);
+    setToastMessage("削除されました。");
+    setShowToast(true);
+    setDeleteDialogOpen(false);
+    setTimeout(() => {
+      navigate(basePath);
+    }, 1500);
   }
 
   return (
     <div>
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
@@ -198,6 +223,7 @@ export function LineDetailPage() {
           </div>
         </div>
       )}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

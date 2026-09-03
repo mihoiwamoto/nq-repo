@@ -1,25 +1,35 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useSampleManagement } from "./SampleManagementContext";
+import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
 export function ProductDetailPage() {
   const { factoryId, productId } = useParams<{ factoryId: string; productId: string }>();
   const { products, removeProduct } = useSampleManagement();
   const navigate = useNavigate();
+  const location = useLocation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const product = products.find((item) => item.id === productId);
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/ledger-management/sample-management/factories/${factoryId}`;
 
+  useEffect(() => {
+    if ((location.state as any)?.deleted) {
+      setShowToast(true);
+    }
+  }, [location.state]);
+
   function handleDelete() {
     if (!product) return;
     removeProduct(product.id);
-    navigate(`${basePath}/products/deleted`);
+    setDeleteDialogOpen(false);
+    navigate(`${basePath}/products/deleted`, { state: { deleted: true } });
   }
 
   return (
@@ -87,6 +97,7 @@ export function ProductDetailPage() {
           </div>
         </div>
       )}
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );
 }

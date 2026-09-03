@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useWeightChecker } from "./WeightCheckerContext";
 
 export function NewRegistrationPage() {
@@ -15,6 +16,8 @@ export function NewRegistrationPage() {
 
   const [name, setName] = useState(existing?.name ?? "");
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   function handleSubmit() {
     if (!name.trim()) {
@@ -24,7 +27,7 @@ export function NewRegistrationPage() {
     const unit = { name: name.trim() };
     if (isEditing && unitId) {
       updateUnit(unitId, unit);
-      navigate(`${basePath}/weight-checkers/${unitId}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/weight-checkers/${unitId}`, { state: { justSaved: true } });
     } else {
       addUnit(unit);
       navigate(`${basePath}/weight-checkers/new/complete`);
@@ -79,6 +82,8 @@ export function NewRegistrationPage() {
           </button>
         </div>
       </div>
+
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

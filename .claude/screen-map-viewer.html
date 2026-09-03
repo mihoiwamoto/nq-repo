@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen Map — 画面編集マップ</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f8;
+    --panel: #ffffff;
+    --panel-2: #fbfbfc;
+    --ink: #17171a;
+    --ink-2: #6b6b76;
+    --ink-3: #9a9aa4;
+    --line: #e3e3e8;
+    --direct: #e5484d;
+    --direct-soft: rgba(229, 72, 77, 0.10);
+    --impact: #f0932b;
+    --impact-soft: rgba(240, 147, 43, 0.12);
+    --admin: #3b6ef5;
+    --app: #8b5cf6;
+    --add: #1a7f4b;
+    --add-bg: rgba(26, 127, 75, 0.10);
+    --del: #c2334a;
+    --del-bg: rgba(194, 51, 74, 0.10);
+    --wire: #d7d7de;
+    --wire-2: #c4c4cd;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131316;
+      --panel: #1c1c20;
+      --panel-2: #232328;
+      --ink: #f2f2f5;
+      --ink-2: #a0a0ac;
+      --ink-3: #6e6e7a;
+      --line: #33333b;
+      --direct-soft: rgba(229, 72, 77, 0.16);
+      --impact-soft: rgba(240, 147, 43, 0.16);
+      --add-bg: rgba(45, 190, 120, 0.14);
+      --del-bg: rgba(240, 90, 120, 0.14);
+      --wire: #3a3a44;
+      --wire-2: #4a4a56;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ---------- ヘッダー ---------- */
+  header {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 24px;
+  }
+  .title-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 17px; font-weight: 650; letter-spacing: .01em; }
+  .subtitle { color: var(--ink-2); font-size: 12.5px; }
+
+  .summary { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
+  .metric { display: flex; align-items: baseline; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+  .metric b { font-size: 17px; font-weight: 650; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .metric .dot { width: 8px; height: 8px; border-radius: 50%; align-self: center; }
+  .dot.direct { background: var(--direct); }
+  .dot.impact { background: var(--impact); }
+
+  .controls { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  input[type="search"] {
+    flex: 1; min-width: 200px; max-width: 380px;
+    padding: 7px 12px; font: inherit; font-size: 13px;
+    border: 1px solid var(--line); border-radius: 7px;
+    background: var(--panel-2); color: var(--ink);
+  }
+  input[type="search"]:focus { outline: 2px solid var(--admin); outline-offset: -1px; }
+
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+  .seg button {
+    padding: 7px 13px; font: inherit; font-size: 12.5px;
+    background: var(--panel-2); color: var(--ink-2);
+    border: none; border-right: 1px solid var(--line); cursor: pointer;
+  }
+  .seg button:last-child { border-right: none; }
+  .seg button[aria-pressed="true"] { background: var(--admin); color: #fff; }
+  .ghost {
+    padding: 7px 13px; font: inherit; font-size: 12.5px; cursor: pointer;
+    background: var(--panel-2); color: var(--ink-2);
+    border: 1px solid var(--line); border-radius: 7px;
+  }
+  .ghost:hover { color: var(--ink); }
+
+  /* ---------- グリッド ---------- */
+  main { padding: 20px 24px 60px; }
+  .category-title {
+    font-size: 20px; font-weight: 700; margin: 34px 0 4px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--line);
+  }
+  .category-title:first-child { margin-top: 0; }
+
+  .group-title {
+    font-size: 12px; font-weight: 620; letter-spacing: .04em;
+    color: var(--ink-3); margin: 22px 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .group-title:first-child { margin-top: 0; }
+  .group-title .n { color: var(--ink-2); font-weight: 500; }
+  .section-badges { display: inline-flex; gap: 6px; font-weight: 620; }
+  .section-badges .b-direct { color: var(--direct); }
+  .section-badges .b-impact { color: var(--impact); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: left;
+    font: inherit; color: inherit;
+    display: flex; flex-direction: column;
+    transition: box-shadow .15s, transform .15s, border-color .15s;
+    position: relative;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.09); }
+  .card:focus-visible { outline: 2px solid var(--admin); outline-offset: 2px; }
+
+  .card.direct { border-color: var(--direct); box-shadow: 0 0 0 2px var(--direct-soft); }
+  .card.impact { border-color: var(--impact); box-shadow: 0 0 0 2px var(--impact-soft); }
+
+  .tag {
+    position: absolute; top: 7px; right: 7px; z-index: 2;
+    padding: 2px 7px; border-radius: 20px;
+    font-size: 10.5px; font-weight: 620; color: #fff; letter-spacing: .02em;
+  }
+  .tag.direct { background: var(--direct); }
+  .tag.impact { background: var(--impact); }
+
+  .thumb {
+    aspect-ratio: 4 / 3;
+    background: var(--panel-2);
+    border-bottom: 1px solid var(--line);
+    padding: 9px;
+    display: flex; flex-direction: column; gap: 5px;
+    overflow: hidden;
+  }
+  .thumb .w { background: var(--wire); border-radius: 2px; flex: none; }
+  .w.title { height: 9px; width: 58%; background: var(--wire-2); }
+  .w.subtitle { height: 6px; width: 40%; background: var(--wire-2); }
+  .w.field { height: 11px; width: 100%; border: 1px solid var(--wire-2); background: transparent; }
+  .w.button { height: 10px; width: 34%; background: var(--wire-2); border-radius: 3px; }
+  .w.card-b { height: 22px; width: 100%; border: 1px solid var(--wire); background: transparent; border-radius: 3px; }
+  .w.image { height: 26px; width: 100%; background: var(--wire); }
+  .w.tabs { height: 7px; width: 70%; background: var(--wire-2); }
+  .w.table { display: flex; flex-direction: column; gap: 2px; background: none; width: 100%; }
+  .w.table i { display: block; height: 5px; background: var(--wire); border-radius: 1px; }
+  .w.table i:first-child { background: var(--wire-2); }
+  .w.list { display: flex; flex-direction: column; gap: 3px; background: none; width: 100%; }
+  .w.list i { display: block; height: 6px; background: var(--wire); border-radius: 1px; }
+  .w.list i:nth-child(2) { width: 82%; }
+  .w.list i:nth-child(3) { width: 66%; }
+  .w.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; width: 100%; background: none; }
+  .w.calendar i { display: block; aspect-ratio: 1; background: var(--wire); border-radius: 1px; }
+
+  .thumb.shot { padding: 0; display: block; position: relative; }
+  .thumb.shot img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+  .px-badge {
+    position: absolute; left: 6px; bottom: 6px;
+    background: rgba(229,72,77,.94); color: #fff;
+    font-size: 10px; font-weight: 650; padding: 2px 6px; border-radius: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .px-badge.none { background: rgba(90,90,100,.85); }
+  .px-badge.err { background: rgba(120,30,140,.94); }
+
+  .js-error {
+    margin-top: 8px; padding: 9px 11px; border-radius: 7px;
+    background: var(--del-bg); border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink);
+  }
+  .js-error code {
+    display: block; margin-top: 4px; font-size: 11.5px; color: var(--del);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all;
+  }
+
+  .shot-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .shot-tabs button {
+    flex: 1; padding: 6px 10px; font: inherit; font-size: 12px; cursor: pointer;
+    background: var(--panel-2); color: var(--ink-2);
+    border: 1px solid var(--line); border-radius: 7px;
+  }
+  .shot-tabs button[aria-pressed="true"] { background: var(--admin); color: #fff; border-color: var(--admin); }
+  .shot-stage { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel-2); }
+  .shot-stage img { width: 100%; display: block; }
+  .shot-empty { padding: 22px; text-align: center; color: var(--ink-3); font-size: 12.5px; }
+  .px-summary { font-size: 12.5px; color: var(--ink-2); margin-top: 8px; }
+  .px-summary b { color: var(--direct); font-variant-numeric: tabular-nums; }
+  .shift-note { display: inline-block; margin-top: 5px; color: var(--impact); }
+  .shift-note b { color: var(--impact); }
+
+  .card.direct .thumb { background: var(--direct-soft); }
+  .card.impact .thumb { background: var(--impact-soft); }
+
+  .body { padding: 9px 10px 10px; display: flex; flex-direction: column; gap: 3px; }
+  .name { font-size: 12.5px; font-weight: 600; line-height: 1.35; }
+  .meta { font-size: 11px; color: var(--ink-3); word-break: break-all; }
+  .chip {
+    display: inline-block; padding: 1px 6px; border-radius: 4px;
+    font-size: 10px; font-weight: 600; width: fit-content; margin-top: 2px;
+  }
+  .chip.admin { background: rgba(59,110,245,.14); color: var(--admin); }
+  .chip.app { background: rgba(139,92,246,.16); color: var(--app); }
+  .chip.common { background: rgba(120,120,130,.16); color: var(--ink-2); }
+
+  .changed-parts { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 3px; }
+  .part {
+    font-size: 10px; padding: 1px 5px; border-radius: 4px;
+    background: var(--direct-soft); color: var(--direct); font-weight: 550;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .diffstat { font-size: 10.5px; font-variant-numeric: tabular-nums; margin-top: 3px; }
+  .diffstat .a { color: var(--add); font-weight: 620; }
+  .diffstat .d { color: var(--del); font-weight: 620; }
+
+  .empty { padding: 60px 20px; text-align: center; color: var(--ink-3); }
+
+  /* ---------- 詳細パネル ---------- */
+  .scrim {
+    position: fixed; inset: 0; z-index: 40;
+    background: rgba(0,0,0,.34);
+    display: none;
+  }
+  .scrim.open { display: block; }
+  .panel {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 50;
+    width: min(620px, 100vw);
+    background: var(--panel);
+    border-left: 1px solid var(--line);
+    transform: translateX(100%);
+    transition: transform .22s ease;
+    display: flex; flex-direction: column;
+  }
+  .panel.open { transform: none; }
+  .panel-head { padding: 18px 22px 14px; border-bottom: 1px solid var(--line); }
+  .panel-head h2 { font-size: 16px; font-weight: 650; }
+  .panel-head .path { font-size: 11.5px; color: var(--ink-3); word-break: break-all; margin-top: 3px; }
+  .panel-head .route { font-size: 11.5px; color: var(--admin); word-break: break-all; margin-top: 3px; }
+  .close {
+    position: absolute; top: 14px; right: 16px;
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-2); font-size: 20px; line-height: 1; padding: 4px 8px; border-radius: 6px;
+  }
+  .close:hover { background: var(--panel-2); color: var(--ink); }
+  .panel-body { overflow-y: auto; padding: 16px 22px 40px; }
+
+  .section-h {
+    font-size: 11.5px; font-weight: 620; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--ink-3); margin: 18px 0 8px;
+  }
+  .section-h:first-child { margin-top: 0; }
+
+  .part-list { display: flex; flex-direction: column; gap: 6px; }
+  .part-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 7px 10px; border: 1px solid var(--line); border-radius: 7px;
+    background: var(--panel-2); font-size: 12.5px;
+  }
+  .part-row .kind { font-size: 10px; color: var(--ink-3); }
+  .part-row .n { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+  .via-list { display: flex; flex-direction: column; gap: 5px; }
+  .via {
+    font-size: 11.5px; padding: 6px 10px; border-radius: 7px;
+    background: var(--impact-soft); color: var(--ink); word-break: break-all;
+    border: 1px solid var(--line);
+  }
+
+  .hunk { border: 1px solid var(--line); border-radius: 7px; overflow: hidden; margin-bottom: 10px; }
+  .hunk-head {
+    padding: 5px 10px; background: var(--panel-2); border-bottom: 1px solid var(--line);
+    font-size: 11px; color: var(--ink-2); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    white-space: nowrap; overflow-x: auto;
+  }
+  .hunk pre {
+    margin: 0; overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11.5px; line-height: 1.55;
+  }
+  .hunk .ln { display: block; padding: 0 10px; white-space: pre; }
+  .hunk .ln.add { background: var(--add-bg); color: var(--add); }
+  .hunk .ln.del { background: var(--del-bg); color: var(--del); }
+  .hunk .ln.ctx { color: var(--ink-2); }
+
+  .note { font-size: 12px; color: var(--ink-3); }
+
+  @media (max-width: 640px) {
+    header, main { padding-left: 14px; padding-right: 14px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-row">
+    <h1>Screen Map</h1>
+    <span class="subtitle">赤＝直接編集された画面 / 橙＝共通部品の変更が波及した画面</span>
+  </div>
+
+  <div class="summary">
+    <span class="metric"><b id="mTotal">–</b> 画面</span>
+    <span class="metric"><span class="dot direct"></span><b id="mDirect">–</b> 直接編集</span>
+    <span class="metric"><span class="dot impact"></span><b id="mImpact">–</b> 波及</span>
+    <span class="metric"><b id="mFiles">–</b> ファイル変更</span>
+    <span class="metric" id="mUpdated"></span>
+  </div>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="画面名・機能名・パスで検索…" />
+    <div class="seg" id="filters">
+      <button data-f="changed" aria-pressed="true">変更あり</button>
+      <button data-f="all" aria-pressed="false">すべて</button>
+      <button data-f="admin" aria-pressed="false">Admin</button>
+      <button data-f="app" aria-pressed="false">App</button>
+    </div>
+    <button class="ghost" id="reload">再読み込み</button>
+  </div>
+</header>
+
+<main id="main"><div class="empty">読み込み中…</div></main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" aria-hidden="true">
+  <div class="panel-head">
+    <button class="close" id="close" aria-label="閉じる">×</button>
+    <h2 id="pName"></h2>
+    <div class="path" id="pPath"></div>
+    <div class="route" id="pRoute"></div>
+  </div>
+  <div class="panel-body" id="pBody"></div>
+</aside>
+
+<script src="screen-data.js" onerror="window.__NO_DATA_JS__=true"></script>
+<script>
+(() => {
+  "use strict";
+
+  let screens = [];
+  let edits = { screens: {}, files: {} };
+  let filter = "changed";
+  let query = "";
+  let lastSignature = null;
+  let shots = { screens: {} };
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  /* ---------------- データ読み込み ---------------- */
+  // serve-map.cjs 経由なら fetch、file:// で直接開いた場合は screen-data.js を使う
+  async function load() {
+    let map = null, ed = null;
+    try {
+      const [a, b, c] = await Promise.all([
+        fetch("screen-map.json", { cache: "no-store" }),
+        fetch("edited_screens.json", { cache: "no-store" }),
+        fetch("shots-index.json", { cache: "no-store" }).catch(() => null),
+      ]);
+      if (a.ok) map = await a.json();
+      if (b.ok) ed = await b.json();
+      if (c && c.ok) shots = await c.json();
+    } catch { /* file:// では fetch が使えない */ }
+
+    if (!map && window.__SCREEN_MAP__) map = window.__SCREEN_MAP__;
+    if (!ed && window.__SCREEN_EDITS__) ed = window.__SCREEN_EDITS__;
+
+    if (!map) {
+      $("main").innerHTML =
+        '<div class="empty">データを読み込めませんでした。<br>' +
+        '<code>node .claude/generate-screen-map.cjs</code> を実行してから、' +
+        '<code>node .claude/serve-map.cjs</code> で開いてください。</div>';
+      return;
+    }
+
+    screens = map.screens || [];
+    edits = ed || { screens: {}, files: {} };
+
+    // 中身が変わっていないのに描き直すとスクロール位置が飛ぶので、署名で判定する
+    const sig = [
+      map.generatedAt,
+      edits.lastUpdated,
+      Object.keys(edits.screens || {}).length,
+      Object.keys(edits.files || {}).length,
+      shots.capturedAt,
+    ].join("|");
+    if (sig === lastSignature) return;
+    lastSignature = sig;
+
+    render();
+  }
+
+  /* ---------------- サムネイル ---------------- */
+  const REPEAT = { table: 4, list: 3, calendar: 21 };
+  function thumb(structure) {
+    const blocks = (structure && structure.length ? structure : ["card"]).slice(0, 9);
+    return blocks.map((b) => {
+      const cls = b === "card" ? "card-b" : b;
+      const n = REPEAT[b];
+      const inner = n ? "<i></i>".repeat(n) : "";
+      return `<div class="w ${cls}">${inner}</div>`;
+    }).join("");
+  }
+
+  /** 実スクリーンショットがあればそれを、無ければワイヤーフレームを出す */
+  function thumbHtml(s) {
+    const shot = shots.screens?.[s.id];
+    if (!shot || !(shot.hasBefore || shot.hasAfter)) {
+      return `<div class="thumb">${thumb(s.structure)}</div>`;
+    }
+    if (shot.jsErrors?.length) {
+      return `<div class="thumb shot">
+        <img src=".shots/thumb/${s.id}.jpg" loading="lazy" alt="">
+        <span class="px-badge err">JSエラー</span>
+      </div>`;
+    }
+    const d = shot.diff;
+    const badge = d
+      ? (d.changed > 0
+          ? `<span class="px-badge">${d.shift ? `${Math.abs(d.shift.dy)}px ずれ` : `見た目 ${(d.ratio * 100).toFixed(1)}%`}</span>`
+          : `<span class="px-badge none">見た目 変化なし</span>`)
+      : "";
+    return `<div class="thumb shot">
+      <img src=".shots/thumb/${s.id}.jpg" loading="lazy" alt="">
+      ${badge}
+    </div>`;
+  }
+
+  /* ---------------- 描画 ---------------- */
+  function stateOf(s) { return edits.screens?.[s.id] || null; }
+
+  // "metal-detector-management" → "Metal Detector Management"
+  function featureLabel(feature) {
+    return feature.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+
+  // 変更ありを先頭に、直接編集 → 波及 → 未変更 の順
+  function rank(s) {
+    const st = stateOf(s);
+    return st ? (st.level === "direct" ? 0 : 1) : 2;
+  }
+
+  function render() {
+    const q = query.trim().toLowerCase();
+    const list = screens.filter((s) => {
+      const st = stateOf(s);
+      if (filter === "changed" && !st) return false;
+      if (filter === "admin" && s.category !== "Admin") return false;
+      if (filter === "app" && s.category !== "App") return false;
+      if (!q) return true;
+      return (
+        (s.frameTitle || "").toLowerCase().includes(q) ||
+        s.displayName.toLowerCase().includes(q) ||
+        s.feature.toLowerCase().includes(q) ||
+        s.filePath.toLowerCase().includes(q) ||
+        (s.routes || []).some((r) => r.toLowerCase().includes(q))
+      );
+    });
+
+    // 俯瞰しやすいように、機能（フォルダ）ごとにセクション分けする。
+    // すべて/変更あり タブは Admin/App にまたがるので、カテゴリの大見出しも挟む。
+    const showCategory = filter === "all" || filter === "changed";
+    const sectionKey = (s) => (showCategory ? `${s.category}::${s.feature}` : s.feature);
+
+    const sections = new Map();
+    for (const s of list) {
+      const key = sectionKey(s);
+      if (!sections.has(key)) sections.set(key, []);
+      sections.get(key).push(s);
+    }
+    for (const items of sections.values()) {
+      items.sort((a, b) =>
+        rank(a) - rank(b) ||
+        (a.frameTitle || a.displayName).localeCompare(b.frameTitle || b.displayName, "ja"),
+      );
+    }
+
+    const catOrder = { Admin: 0, App: 1, Common: 2 };
+    const sortedKeys = [...sections.keys()].sort((ka, kb) => {
+      const [ca, fa] = showCategory ? ka.split("::") : [null, ka];
+      const [cb, fb] = showCategory ? kb.split("::") : [null, kb];
+      if (showCategory && ca !== cb) return (catOrder[ca] ?? 9) - (catOrder[cb] ?? 9);
+      return fa.localeCompare(fb);
+    });
+
+    let html = "";
+    let lastCat = null;
+    for (const key of sortedKeys) {
+      const items = sections.get(key);
+      const [cat, feat] = showCategory ? key.split("::") : [items[0].category, key];
+
+      if (showCategory && cat !== lastCat) {
+        html += `<div class="category-title">${esc(cat)}</div>`;
+        lastCat = cat;
+      }
+
+      const direct = items.filter((s) => rank(s) === 0).length;
+      const impact = items.filter((s) => rank(s) === 1).length;
+      const badges =
+        direct || impact
+          ? `<span class="section-badges">${
+              direct ? `<span class="b-direct">● ${direct}</span>` : ""
+            }${impact ? `<span class="b-impact">● ${impact}</span>` : ""}</span>`
+          : "";
+
+      html += `<div class="group-title">${esc(featureLabel(feat))} <span class="n">— ${items.length}</span> ${badges}</div>`;
+      html += `<div class="grid">${items.map(card).join("")}</div>`;
+    }
+
+    const y = window.scrollY;
+    $("main").innerHTML = html || '<div class="empty">該当する画面がありません</div>';
+    window.scrollTo(0, y);
+
+    for (const el of document.querySelectorAll(".card")) {
+      el.addEventListener("click", () => openPanel(el.dataset.id));
+    }
+    updateSummary();
+  }
+
+  function card(s) {
+    const st = stateOf(s);
+    const lvl = st ? st.level : "";
+    const parts = (st?.changedSections || []).slice(0, 3)
+      .map((p) => `<span class="part">${esc(p.name)}</span>`).join("");
+    const stat = st && (st.added || st.removed)
+      ? `<div class="diffstat"><span class="a">+${st.added}</span> <span class="d">−${st.removed}</span></div>`
+      : st?.level === "impact"
+        ? `<div class="diffstat" style="color:var(--impact)">${st.via.length} 件の共通変更</div>`
+        : "";
+
+    const title = s.frameTitle || s.displayName;
+    const showSub = title !== s.displayName;
+    return `
+      <button class="card ${lvl}" data-id="${s.id}">
+        ${lvl === "direct" ? '<span class="tag direct">編集</span>' : ""}
+        ${lvl === "impact" ? '<span class="tag impact">波及</span>' : ""}
+        ${thumbHtml(s)}
+        <div class="body">
+          <div class="name">${esc(title)}</div>
+          <div class="meta">${showSub ? esc(s.displayName) : esc(s.feature)}</div>
+          <span class="chip ${s.category.toLowerCase()}">${s.category}</span>
+          ${parts ? `<div class="changed-parts">${parts}</div>` : ""}
+          ${stat}
+        </div>
+      </button>`;
+  }
+
+  function updateSummary() {
+    const vals = Object.values(edits.screens || {});
+    $("mTotal").textContent = screens.length;
+    $("mDirect").textContent = vals.filter((v) => v.level === "direct").length;
+    $("mImpact").textContent = vals.filter((v) => v.level === "impact").length;
+    $("mFiles").textContent = Object.keys(edits.files || {}).length;
+    $("mUpdated").textContent = edits.lastUpdated
+      ? "最終更新 " + new Date(edits.lastUpdated).toLocaleString("ja-JP",
+          { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })
+      : "まだ変更はありません";
+  }
+
+  /* ---------------- 詳細パネル ---------------- */
+  function openPanel(id) {
+    const s = screens.find((x) => x.id === id);
+    if (!s) return;
+    const st = stateOf(s);
+
+    $("pName").textContent = s.frameTitle || s.displayName;
+    $("pPath").textContent =
+      (s.frameTitle && s.frameTitle !== s.displayName ? `${s.displayName} · ` : "") + s.filePath;
+    $("pRoute").textContent = (s.routes || []).join("  ·  ");
+
+    let html = "";
+
+    if (!st) {
+      html += '<p class="note">この画面は今回のセッションでは変更されていません。</p>';
+    }
+
+    // 実スクリーンショット（変更前 / 変更後 / 差分）
+    const shot = shots.screens?.[s.id];
+    if (shot && (shot.hasBefore || shot.hasAfter)) {
+      const d = shot.diff;
+      html += '<div class="section-h">画面の見た目</div>';
+      if (shot.jsErrors?.length) {
+        html += `<div class="js-error">この画面は JavaScript エラーで描画できていません。
+          スクリーンショットは白紙のため、見た目の比較はできません。
+          ${shot.jsErrors.map((e) => `<code>${esc(e)}</code>`).join("")}</div>`;
+      }
+      html += `<div class="shot-tabs" data-shot="${s.id}">
+        <button data-v="before" ${shot.hasBefore ? "" : "disabled"} aria-pressed="${d ? "false" : "true"}">変更前</button>
+        <button data-v="after" ${shot.hasAfter ? "" : "disabled"} aria-pressed="false">変更後</button>
+        <button data-v="diff" ${d ? "" : "disabled"} aria-pressed="${d ? "true" : "false"}">差分</button>
+      </div>`;
+      const initial = d ? "diff" : (shot.hasBefore ? "before" : "after");
+      html += `<div class="shot-stage" id="shotStage">
+        <img src=".shots/${initial}/${s.id}.${initial === "thumb" ? "jpg" : "png"}" alt="">
+      </div>`;
+      if (d) {
+        html += `<div class="px-summary">
+          変化したピクセル <b>${d.changed.toLocaleString()}</b> / ${d.total.toLocaleString()}
+          （<b>${(d.ratio * 100).toFixed(2)}%</b>）・変化した箇所 ${d.boxes.length} 個
+          ${d.shift ? `<br><span class="shift-note">この変化の大半は、内容が${d.shift.dy > 0 ? "下" : "上"}に <b>${Math.abs(d.shift.dy)}px</b> ずれたことによるものです（${d.shift.matchedRows} / ${d.shift.totalRows} 行がずらすと一致）</span>` : ""}
+          ${d.sizeChanged ? "<br>※ ページの高さが変わっています" : ""}
+        </div>`;
+      } else if (shot.hasBefore && !shot.hasAfter) {
+        html += '<div class="px-summary">基準として撮影済み。編集後に <code>node .claude/capture-screens.cjs</code> で比較できます。</div>';
+      }
+    }
+
+    if (st?.changedSections?.length) {
+      html += '<div class="section-h">変わった部分</div><div class="part-list">';
+      for (const p of st.changedSections) {
+        html += `<div class="part-row">
+            <span>${esc(p.name)} <span class="kind">${esc(p.kind)}</span></span>
+            <span class="n">${p.lines} 行</span>
+          </div>`;
+      }
+      html += "</div>";
+    }
+
+    if (st?.via?.length) {
+      html += '<div class="section-h">変更された共通部品（経由）</div><div class="via-list">';
+      for (const v of st.via) {
+        const f = edits.files?.[v];
+        const stat = f ? ` (+${f.added} / −${f.removed})` : "";
+        html += `<div class="via">${esc(v)}${esc(stat)}</div>`;
+      }
+      html += "</div>";
+    }
+
+    const hunks = st?.hunks?.length ? st.hunks
+      : (st?.via || []).flatMap((v) => edits.files?.[v]?.hunks || []);
+
+    if (hunks.length) {
+      html += '<div class="section-h">差分</div>';
+      for (const h of hunks) {
+        html += `<div class="hunk">
+          <div class="hunk-head">@ ${h.startLine} 行目 ${esc(h.context || "")}</div>
+          <pre>${h.lines.map((l) => {
+            const cls = l.t === "+" ? "add" : l.t === "-" ? "del" : "ctx";
+            return `<span class="ln ${cls}">${esc(l.t + l.s)}</span>`;
+          }).join("")}</pre>
+        </div>`;
+      }
+    }
+
+    if (s.sections?.length) {
+      html += '<div class="section-h">この画面の構成</div><div class="part-list">';
+      for (const p of s.sections.slice(0, 24)) {
+        html += `<div class="part-row">
+            <span>${esc(p.name)} <span class="kind">${esc(p.kind || "")}</span></span>
+            <span class="n">${p.startLine}–${p.endLine}</span>
+          </div>`;
+      }
+      html += "</div>";
+    }
+
+    $("pBody").innerHTML = html;
+
+    const tabs = $("pBody").querySelector(".shot-tabs");
+    if (tabs) {
+      tabs.addEventListener("click", (ev) => {
+        const b = ev.target.closest("button[data-v]");
+        if (!b || b.disabled) return;
+        for (const x of tabs.querySelectorAll("button")) x.setAttribute("aria-pressed", "false");
+        b.setAttribute("aria-pressed", "true");
+        const img = $("pBody").querySelector("#shotStage img");
+        if (img) img.src = `.shots/${b.dataset.v}/${tabs.dataset.shot}.png`;
+      });
+    }
+    $("panel").classList.add("open");
+    $("panel").setAttribute("aria-hidden", "false");
+    $("scrim").classList.add("open");
+  }
+
+  function closePanel() {
+    $("panel").classList.remove("open");
+    $("panel").setAttribute("aria-hidden", "true");
+    $("scrim").classList.remove("open");
+  }
+
+  /* ---------------- イベント ---------------- */
+  $("q").addEventListener("input", (e) => { query = e.target.value; render(); });
+  $("filters").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-f]");
+    if (!b) return;
+    for (const x of $("filters").querySelectorAll("button")) x.setAttribute("aria-pressed", "false");
+    b.setAttribute("aria-pressed", "true");
+    filter = b.dataset.f;
+    render();
+  });
+  $("reload").addEventListener("click", () => { lastSignature = null; load(); });
+  $("close").addEventListener("click", closePanel);
+  $("scrim").addEventListener("click", closePanel);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closePanel(); });
+
+  load();
+  setInterval(load, 5000); // serve-map.cjs 経由のときだけ実際に更新される
+})();
+</script>
+</body>
+</html>

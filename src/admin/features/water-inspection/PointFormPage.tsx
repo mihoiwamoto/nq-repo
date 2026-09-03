@@ -90,10 +90,10 @@ export function PointFormPage() {
     };
     if (isEditing && existing) {
       updatePoint(existing.id, input);
-      navigate(`${basePath}/points/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/points/${existing.id}`, { state: { justSaved: true } });
     } else {
       const created = addPoint(input);
-      navigate(`${basePath}/points/${created.id}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/points/${created.id}`);
     }
   }
 

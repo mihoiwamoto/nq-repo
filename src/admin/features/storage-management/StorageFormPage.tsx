@@ -24,7 +24,7 @@ export function StorageFormPage() {
     }
     if (isEditing && existing) {
       updateStorageLocation(existing.id, { name, factoryId });
-      navigate(`/admin/storage/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`/admin/storage/${existing.id}`, { state: { justSaved: true } });
     } else {
       addStorageLocation({ name, factoryId });
       navigate("/admin/storage/new/complete");

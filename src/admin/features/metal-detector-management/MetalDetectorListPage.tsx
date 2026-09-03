@@ -1,37 +1,39 @@
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useMetalDetector } from "./MetalDetectorContext";
+import iconArrowUp from "@images/Icon/Button.svg";
+import iconArrowDown from "@images/Icon/Button-1.svg";
 
 function ArrowUpIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path
-        d="M8 3L13 11H3L8 3Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
+  return <img src={iconArrowUp} alt="上へ移動" className="w-6 h-6" />;
 }
 
 function ArrowDownIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path
-        d="M8 13L3 5H13L8 13Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
+  return <img src={iconArrowDown} alt="下へ移動" className="w-6 h-6" />;
 }
 
 export function MetalDetectorListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
   const { units, moveUnit } = useMetalDetector();
+  const location = useLocation();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    const state = location.state as { justSaved?: boolean } | null;
+    if (state?.justSaved) {
+      setShowToast(true);
+      const timer = setTimeout(() => setShowToast(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [location]);
 
   return (
     <div>
+      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="金属探知機管理"
         showBack
@@ -92,7 +94,7 @@ export function MetalDetectorListPage() {
                     type="button"
                     onClick={() => moveUnit(unit.id, "up")}
                     disabled={index === 0}
-                    className="size-8 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)] disabled:text-[#d0d0d0]"
+                    className="flex items-center justify-center disabled:opacity-50"
                   >
                     <ArrowUpIcon />
                   </button>
@@ -100,7 +102,7 @@ export function MetalDetectorListPage() {
                     type="button"
                     onClick={() => moveUnit(unit.id, "down")}
                     disabled={index === units.length - 1}
-                    className="size-8 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)] disabled:text-[#d0d0d0]"
+                    className="flex items-center justify-center disabled:opacity-50"
                   >
                     <ArrowDownIcon />
                   </button>

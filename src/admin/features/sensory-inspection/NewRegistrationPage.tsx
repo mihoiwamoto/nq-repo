@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useSensoryInspection } from "./SensoryInspectionContext";
 import { CORE_SYSTEM_PRODUCT_NAMES } from "./mockData";
 import { CRITERIA, type Criterion } from "./types";
@@ -51,6 +52,8 @@ export function NewRegistrationPage() {
   const [error, setError] = useState("");
   const [pulldownOpen, setPulldownOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const nqRepoNames = products.map((product) => product.name);
 
@@ -80,7 +83,7 @@ export function NewRegistrationPage() {
     }
     if (isEditing && productId) {
       updateProduct(productId, { name, criteria });
-      navigate(`${basePath}/products/${productId}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/products/${productId}`, { state: { justSaved: true } });
     } else {
       addProduct({ name, criteria });
       navigate(`${basePath}/products/new/complete`);
@@ -183,6 +186,8 @@ export function NewRegistrationPage() {
           </button>
         </div>
       </div>
+
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

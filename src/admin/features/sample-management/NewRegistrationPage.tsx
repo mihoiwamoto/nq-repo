@@ -59,14 +59,19 @@ export function NewRegistrationPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">検体製品名</p>
             <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
           </div>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onFocus={() => setPulldownOpen(true)}
-            placeholder="例）仕出しだし巻き玉子 冷凍"
-            className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
-          />
+          <div className="flex items-center bg-white h-12 px-4 rounded-lg w-full">
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onFocus={() => setPulldownOpen(true)}
+              placeholder="例）仕出しだし巻き玉子 冷凍"
+              className="bg-transparent h-full flex-1 text-base text-[var(--semantic-text-primary)] placeholder:text-[#808080] border-none focus:outline-none"
+            />
+            <svg className="w-6 h-6 ml-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.9422 18.4924C12.507 19.1887 11.493 19.1887 11.0578 18.4924L3.0625 5.7C2.59997 4.95994 3.13201 4 4.00472 4L19.9953 4C20.868 4 21.4 4.95995 20.9375 5.7L12.9422 18.4924Z" fill="#999999"/>
+            </svg>
+          </div>
 
           {pulldownOpen && (
             <div className="absolute top-full left-0 mt-1 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 w-full z-10">

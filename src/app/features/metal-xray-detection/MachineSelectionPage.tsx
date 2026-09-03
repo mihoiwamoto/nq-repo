@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { MachineProgressPanel } from "./MachineProgressPanel";
-import { MACHINE_STATUS_COLORS, MACHINE_STATUS_LABELS, MACHINES } from "./mockData";
+import { MACHINE_STATUS_COLORS, MACHINE_STATUS_LABELS, MACHINES, isMachineDisplayable } from "./mockData";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 
 export function MachineSelectionPage() {
@@ -11,7 +11,8 @@ export function MachineSelectionPage() {
   const inspectorName = (location.state as { inspectorName?: string } | null)?.inspectorName ?? "";
   const [progressDrawerOpen, setProgressDrawerOpen] = useState(false);
 
-  const inspectedCount = MACHINES.filter((m) => m.status === "inspected").length;
+  const displayableMachines = MACHINES.filter(isMachineDisplayable);
+  const inspectedCount = displayableMachines.filter((m) => m.status === "inspected").length;
 
   return (
     <>
@@ -39,7 +40,7 @@ export function MachineSelectionPage() {
             <span className="bg-white flex flex-col items-center justify-center gap-0 px-2 py-1">
               <span className="text-xs text-[var(--semantic-brand-primary)] font-semibold">点検済み</span>
               <span className="text-lg text-[var(--semantic-brand-primary)] leading-none font-bold">
-                {inspectedCount}/{MACHINES.length}
+                {inspectedCount}/{displayableMachines.length}
               </span>
             </span>
           </button>
@@ -47,7 +48,7 @@ export function MachineSelectionPage() {
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-6 items-center relative">
         <div className="flex flex-col gap-6 items-start w-full max-w-full max-w-[480px] mx-40">
-          {MACHINES.map((machine) => (
+          {displayableMachines.map((machine) => (
             <button
               key={machine.id}
               type="button"

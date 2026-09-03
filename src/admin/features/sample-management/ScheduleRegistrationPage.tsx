@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useSampleManagement } from "./SampleManagementContext";
 import { AddProductDialog } from "./AddProductDialog";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -26,6 +27,8 @@ export function ScheduleRegistrationPage() {
   const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const selectedProducts = productIds
     .map((id) => products.find((p) => p.id === id))
@@ -48,12 +51,16 @@ export function ScheduleRegistrationPage() {
     setProductIds([]);
     setDeleteAllDialogOpen(false);
     setMenuOpen(false);
+    setToastMessage("削除されました。");
+    setShowToast(true);
   }
 
   function confirmDeleteProduct() {
     if (!productToDelete) return;
     setProductIds((prev) => prev.filter((id) => id !== productToDelete));
     setProductToDelete(null);
+    setToastMessage("削除されました。");
+    setShowToast(true);
   }
 
   const productToDeleteName = products.find((p) => p.id === productToDelete)?.name;
@@ -245,6 +252,8 @@ export function ScheduleRegistrationPage() {
           </div>
         </div>
       )}
+
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

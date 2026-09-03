@@ -25,7 +25,7 @@ export function PostFormPage() {
     const input = { factoryId: factoryId!, name };
     if (isEditing && existing) {
       updatePost(existing.id, input);
-      navigate(`${basePath}/posts/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/posts/${existing.id}`, { state: { justSaved: true } });
     } else {
       addPost(input);
       navigate(`${basePath}/post-management/new/complete`);

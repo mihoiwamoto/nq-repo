@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useCompanyManagement } from "./CompanyManagementContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
@@ -20,19 +21,21 @@ export function CompanyDetailPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { companies, removeCompany } = useCompanyManagement();
   const navigate = useNavigate();
-  const routerLocation = useLocation();
+  const location = useLocation();
   const company = companies.find((c) => c.id === companyId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showUpdatedToast, setShowUpdatedToast] = useState(
-    Boolean((routerLocation.state as { justUpdated?: boolean } | null)?.justUpdated)
-  );
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   useEffect(() => {
-    if (!showUpdatedToast) return;
-    const timer = setTimeout(() => setShowUpdatedToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showUpdatedToast]);
+    if ((location.state as any)?.updated) {
+      setShowUpdateToast(true);
+    }
+    if ((location.state as any)?.deleted) {
+      setShowDeleteToast(true);
+    }
+  }, [location.state]);
 
   if (!company) {
     return (
@@ -44,11 +47,13 @@ export function CompanyDetailPage() {
 
   function handleDelete() {
     removeCompany(company!.id);
-    navigate("/admin/company/deleted");
+    setDeleteDialogOpen(false);
+    navigate("/admin/company/deleted", { state: { deleted: true } });
   }
 
   return (
     <div>
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
@@ -112,19 +117,7 @@ export function CompanyDetailPage() {
         </div>
       )}
 
-      {showUpdatedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-4 py-3 w-[340px]">
-          <img src={iconCheckmark} alt="" className="size-5" />
-          <p className="text-sm text-[var(--semantic-text-primary)] flex-1">企業が更新されました</p>
-          <button
-            type="button"
-            onClick={() => setShowUpdatedToast(false)}
-            className="text-[var(--semantic-text-secondary)]"
-          >
-            <img src={iconXMark} alt="閉じる" className="size-4" />
-          </button>
-        </div>
-      )}
+      {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );
 }

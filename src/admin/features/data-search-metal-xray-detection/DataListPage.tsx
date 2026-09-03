@@ -7,6 +7,7 @@ import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { DeleteRecordDialog } from "./DeleteRecordDialog";
+import { Toast } from "../../components/Toast";
 import type { InspectionResult, MachineSearchRecord } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
@@ -64,6 +65,7 @@ export function DataListPage() {
   const [month, setMonth] = useState(3);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [recordToDelete, setRecordToDelete] = useState<MachineSearchRecord | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   const machineOptions = useMemo(
     () => Array.from(new Set(records.map((r) => r.machineName))),
@@ -402,9 +404,12 @@ export function DataListPage() {
             onConfirm={() => {
               deleteRecord(recordToDelete.id);
               setRecordToDelete(null);
+              setShowToast(true);
             }}
           />
         )}
+
+        {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
       </div>
     </div>
   );

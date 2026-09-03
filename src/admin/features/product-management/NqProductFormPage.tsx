@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { Pulldown } from "../../components/Pulldown";
 import { FACTORIES } from "../../../data/factories";
 import { useProductManagement } from "./ProductManagementContext";
@@ -20,6 +21,8 @@ export function NqProductFormPage() {
   const [factoryId, setFactoryId] = useState(existing?.factoryId ?? "");
   const [expiry, setExpiry] = useState(existing?.expiry ?? "");
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   function handleSubmit() {
     if (!name || !factoryId || !expiry) {
@@ -28,7 +31,7 @@ export function NqProductFormPage() {
     }
     if (isEditing && existing) {
       updateNqProduct(existing.id, { name, quantity, quantityUnit, factoryId, expiry });
-      navigate(`/admin/products/nq/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`/admin/products/nq/${existing.id}`);
     } else {
       addNqProduct({ name, quantity, quantityUnit, factoryId, expiry });
       navigate("/admin/products/nq/new/complete", { state: { productName: name } });
@@ -136,6 +139,8 @@ export function NqProductFormPage() {
           </button>
         </div>
       </div>
+
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

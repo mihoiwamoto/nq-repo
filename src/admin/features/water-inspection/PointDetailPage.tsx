@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useWaterInspection } from "./WaterInspectionContext";
 import { getFactoryName } from "../../../data/factories";
 import { WATER_INSPECTION_FORM_FIELDS } from "./types";
+import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
 
@@ -28,21 +29,20 @@ export function PointDetailPage() {
   const { factoryId, pointId } = useParams<{ factoryId: string; pointId: string }>();
   const { points, removePoint } = useWaterInspection();
   const navigate = useNavigate();
-  const routerLocation = useLocation();
+  const location = useLocation();
   const basePath = `/admin/ledger-management/water-inspection/factories/${factoryId}`;
   const factoryName = getFactoryName(factoryId);
   const point = points.find((p) => p.id === pointId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showSavedToast, setShowSavedToast] = useState(
-    Boolean((routerLocation.state as { justUpdated?: boolean } | null)?.justUpdated)
-  );
+  const [showToast, setShowToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   useEffect(() => {
-    if (!showSavedToast) return;
-    const timer = setTimeout(() => setShowSavedToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showSavedToast]);
+    if ((location.state as any)?.justSaved) {
+      setShowUpdateToast(true);
+    }
+  }, [location.state]);
 
   if (!point) {
     return (
@@ -54,6 +54,7 @@ export function PointDetailPage() {
 
   function handleDelete() {
     removePoint(point!.id);
+    setShowToast(true);
     navigate(basePath);
   }
 
@@ -141,12 +142,8 @@ export function PointDetailPage() {
         </div>
       )}
 
-      {showSavedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-4 py-3 w-[340px]">
-          <img src={iconCheckmark} alt="" className="size-5" />
-          <p className="text-sm text-[var(--semantic-text-primary)]">保存が完了しました</p>
-        </div>
-      )}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );
 }

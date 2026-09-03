@@ -95,7 +95,7 @@ export function ScaleManagementFormPage() {
     };
     if (isEditing && existing) {
       updateScale(existing.id, input);
-      navigate(`${basePath}/scale-management/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/scale-management/${existing.id}`, { state: { justSaved: true } });
     } else {
       addScale(input);
       navigate(`${basePath}/scale-management/new/complete`);

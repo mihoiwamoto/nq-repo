@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Toast } from "../../components/Toast";
 import { useMetalDetector } from "./MetalDetectorContext";
 import { CANDIDATE_PRODUCTS } from "./mockData";
 import type { TestPieceSetting } from "./types";
@@ -22,6 +23,8 @@ export function NewRegistrationPage() {
   const [name, setName] = useState(existing?.name ?? "");
   const [settings, setSettings] = useState<TestPieceSetting[]>(existing?.settings ?? []);
   const [error, setError] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   function addRow() {
     setSettings((prev) => [
@@ -36,6 +39,8 @@ export function NewRegistrationPage() {
 
   function removeRow(id: string) {
     setSettings((prev) => prev.filter((row) => row.id !== id));
+    setToastMessage("削除されました。");
+    setShowToast(true);
   }
 
   function handleSubmit() {
@@ -49,7 +54,7 @@ export function NewRegistrationPage() {
     };
     if (isEditing && unitId) {
       updateUnit(unitId, unit);
-      navigate(`${basePath}/metal-detectors/${unitId}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/metal-detectors/${unitId}`, { state: { justSaved: true } });
     } else {
       addUnit(unit);
       navigate(`${basePath}/metal-detectors/new/complete`);
@@ -68,7 +73,7 @@ export function NewRegistrationPage() {
           { label: isEditing ? "編集" : "新規登録" },
         ]}
       />
-      <div className="flex flex-col gap-10 items-start p-6">
+      <div className="flex flex-col gap-6 items-start p-6">
         <div className="flex flex-col gap-1 items-start w-[480px]">
           <div className="flex gap-2 items-center">
             <p className="text-xl text-[var(--semantic-text-primary)]">金属探知機名</p>
@@ -95,21 +100,21 @@ export function NewRegistrationPage() {
             使用しないテストピースにはサイズを「0」と入力してください。
           </p>
 
-          <div className="flex flex-col items-start rounded-lg overflow-hidden w-full mt-2">
-            <div className="bg-[#f6f6f6] flex h-[50px] items-center w-full">
-              <div className="flex-1 flex items-center justify-center p-2 h-full">
+          <div className="flex flex-col items-start rounded-lg w-full mt-2 border border-[#d0d0d0]">
+            <div className="bg-[#f6f6f6] flex h-[50px] items-center w-full rounded-t-lg">
+              <div className="w-[440px] flex items-center justify-center p-2 h-full">
                 <p className="text-sm text-[var(--semantic-brand-primary)]">製品名/規格</p>
               </div>
-              <div className="w-[160px] flex items-center justify-center p-2 h-full">
+              <div className="w-[100px] flex items-center justify-center p-2 h-full">
                 <p className="text-sm text-[var(--semantic-brand-primary)]">設定番号</p>
               </div>
-              <div className="w-[120px] flex items-center justify-center p-2 h-full">
+              <div className="w-[100px] flex items-center justify-center p-2 h-full">
                 <p className="text-sm text-[var(--semantic-brand-primary)]">Fe</p>
               </div>
-              <div className="w-[120px] flex items-center justify-center p-2 h-full">
+              <div className="w-[100px] flex items-center justify-center p-2 h-full">
                 <p className="text-sm text-[var(--semantic-brand-primary)]">Sus</p>
               </div>
-              <div className="w-20 flex items-center justify-center p-2 h-full">
+              <div className="w-[100px] flex items-center justify-center p-2 h-full">
                 <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
               </div>
             </div>
@@ -123,45 +128,45 @@ export function NewRegistrationPage() {
               settings.map((row, index) => (
                 <div
                   key={row.id}
-                  className={`flex items-center w-full ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                  className={`flex h-[64px] items-center w-full ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
                 >
-                  <div className="flex-1 p-2">
+                  <div className="p-2 flex items-center h-full">
                     <Pulldown
                       value={row.productName}
                       onChange={(value) => updateRow(row.id, "productName", value)}
                       options={CANDIDATE_PRODUCTS.map((product) => ({ value: product, label: product }))}
-                      placeholder="例）マンゴープリン　ストレート　1kg"
-                      className="bg-white border border-[#d0d0d0] flex items-center min-h-10 px-4 py-2 rounded-lg w-full text-base text-[var(--semantic-text-primary)]"
+                      placeholder=""
+                      className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[424px]"
                     />
                   </div>
-                  <div className="w-[160px] p-2">
+                  <div className="w-[100px] p-2 flex items-center justify-center h-full">
                     <input
                       type="text"
                       value={row.settingNumber}
                       onChange={(e) => updateRow(row.id, "settingNumber", e.target.value)}
                       placeholder="ー"
-                      className="bg-white border border-[#d0d0d0] flex items-center min-h-10 px-4 py-2 rounded-lg w-full text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
+                      className="bg-white border border-[#d0d0d0] flex items-center min-h-10 px-4 py-2 rounded-lg w-full text-base text-center text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
                     />
                   </div>
-                  <div className="w-[120px] p-2">
+                  <div className="w-[100px] p-2 flex items-center justify-center h-full">
                     <input
                       type="text"
                       value={row.fe}
                       onChange={(e) => updateRow(row.id, "fe", e.target.value)}
                       placeholder="ー"
-                      className="bg-white border border-[#d0d0d0] flex items-center min-h-10 px-4 py-2 rounded-lg w-full text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
+                      className="bg-white border border-[#d0d0d0] flex items-center min-h-10 px-4 py-2 rounded-lg w-full text-base text-center text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
                     />
                   </div>
-                  <div className="w-[120px] p-2">
+                  <div className="w-[100px] p-2 flex items-center justify-center h-full">
                     <input
                       type="text"
                       value={row.sus}
                       onChange={(e) => updateRow(row.id, "sus", e.target.value)}
                       placeholder="ー"
-                      className="bg-white border border-[#d0d0d0] flex items-center min-h-10 px-4 py-2 rounded-lg w-full text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
+                      className="bg-white border border-[#d0d0d0] flex items-center min-h-10 px-4 py-2 rounded-lg w-full text-base text-center text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
                     />
                   </div>
-                  <div className="w-20 flex items-center justify-center p-2">
+                  <div className={`w-[100px] p-2 flex items-center justify-center h-full ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}>
                     <button
                       type="button"
                       onClick={() => removeRow(row.id)}
@@ -204,6 +209,7 @@ export function NewRegistrationPage() {
           </button>
         </div>
       </div>
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

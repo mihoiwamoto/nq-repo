@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useWeightChecker } from "./WeightCheckerContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
@@ -12,19 +13,25 @@ export function WeightCheckerDetailPage() {
   const location = useLocation();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showUpdatedToast, setShowUpdatedToast] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const unit = units.find((u) => u.id === unitId);
 
   useEffect(() => {
-    const state = location.state as { justUpdated?: boolean } | null;
-    if (state?.justUpdated) {
-      setShowUpdatedToast(true);
-      const timer = setTimeout(() => setShowUpdatedToast(false), 3000);
-      navigate(location.pathname, { replace: true });
+    if (location.state?.justSaved) {
+      setToastMessage("更新されました。");
+      setShowToast(true);
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [location, navigate]);
+    if (location.state?.deleted) {
+      setToastMessage("削除されました。");
+      setShowToast(true);
+    }
+  }, [location.state?.justSaved, location.state?.deleted]);
 
   if (!unit) {
     return (
@@ -37,7 +44,8 @@ export function WeightCheckerDetailPage() {
   function handleDelete() {
     if (!unit) return;
     removeUnit(unit.id);
-    navigate(`${basePath}/weight-checkers/deleted`);
+    setDeleteDialogOpen(false);
+    navigate(`${basePath}/weight-checkers/deleted`, { state: { deleted: true } });
   }
 
   return (
@@ -70,7 +78,7 @@ export function WeightCheckerDetailPage() {
         </div>
 
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
-          <div className="flex items-center justify-between w-full gap-4">
+          <div className="flex items-center justify-start w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[200px]">ウェイトチェッカー名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">{unit.name}</p>
           </div>
@@ -109,15 +117,7 @@ export function WeightCheckerDetailPage() {
         </div>
       )}
 
-      {showUpdatedToast && (
-        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
-          <span>✓</span>
-          <span className="text-xl">更新されました。</span>
-          <button type="button" onClick={() => setShowUpdatedToast(false)} className="ml-2">
-            ×
-          </button>
-        </div>
-      )}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

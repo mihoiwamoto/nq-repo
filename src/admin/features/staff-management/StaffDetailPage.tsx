@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { getCompanyName } from "../../../data/companies";
 import { ROLE_COLORS, ROLE_LABELS, SYSTEM_AUTHORITY_LABELS } from "./types";
@@ -23,19 +24,21 @@ export function StaffDetailPage() {
   const { staffId } = useParams<{ staffId: string }>();
   const { staff, removeStaff } = useStaffManagement();
   const navigate = useNavigate();
-  const routerLocation = useLocation();
+  const location = useLocation();
   const member = staff.find((s) => s.id === staffId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showUpdatedToast, setShowUpdatedToast] = useState(
-    Boolean((routerLocation.state as { justUpdated?: boolean } | null)?.justUpdated)
-  );
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   useEffect(() => {
-    if (!showUpdatedToast) return;
-    const timer = setTimeout(() => setShowUpdatedToast(false), 3000);
-    return () => clearTimeout(timer);
-  }, [showUpdatedToast]);
+    if ((location.state as any)?.justSaved) {
+      setShowUpdateToast(true);
+    }
+    if ((location.state as any)?.deleted) {
+      setShowDeleteToast(true);
+    }
+  }, [location.state]);
 
   if (!member) {
     return (
@@ -47,7 +50,8 @@ export function StaffDetailPage() {
 
   function handleDelete() {
     removeStaff(member!.id);
-    navigate("/admin/staff/deleted");
+    setDeleteDialogOpen(false);
+    navigate("/admin/staff/deleted", { state: { deleted: true } });
   }
 
   return (
@@ -139,19 +143,8 @@ export function StaffDetailPage() {
         </div>
       )}
 
-      {showUpdatedToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-4 py-3 w-[340px]">
-          <img src={iconCheckmark} alt="" className="size-5" />
-          <p className="text-sm text-[var(--semantic-text-primary)] flex-1">職員が更新されました</p>
-          <button
-            type="button"
-            onClick={() => setShowUpdatedToast(false)}
-            className="text-[var(--semantic-text-secondary)]"
-          >
-            <img src={iconXMark} alt="閉じる" className="size-4" />
-          </button>
-        </div>
-      )}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );
 }

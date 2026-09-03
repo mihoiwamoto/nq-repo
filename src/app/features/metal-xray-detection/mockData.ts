@@ -7,6 +7,8 @@ export type Machine = {
   metalDetectorModel: string;
   xrayDetectorModel: string;
   weightCheckerModel: string;
+  displayFrom?: string;
+  displayTo?: string;
 };
 
 export const MACHINE_STATUS_LABELS: Record<MachineStatus, string> = {
@@ -22,6 +24,32 @@ export const MACHINE_STATUS_COLORS: Record<MachineStatus, string> = {
   not_inspected: "var(--semantic-text-secondary)",
   inspected: "#DCAA14",
 };
+
+export function isMachineDisplayable(machine: Machine): boolean {
+  if (!machine.displayFrom && !machine.displayTo) {
+    return true;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (machine.displayFrom) {
+    const fromDate = new Date(machine.displayFrom);
+    if (today < fromDate) {
+      return false;
+    }
+  }
+
+  if (machine.displayTo) {
+    const toDate = new Date(machine.displayTo);
+    toDate.setHours(23, 59, 59, 999);
+    if (today > toDate) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export const MACHINES: Machine[] = [
   {
@@ -47,6 +75,8 @@ export const MACHINES: Machine[] = [
     metalDetectorModel: "GM-2000S",
     xrayDetectorModel: "XR-2000S",
     weightCheckerModel: "WC-2000S",
+    displayFrom: "2026-09-01",
+    displayTo: "2026-09-30",
   },
   {
     id: "m4",

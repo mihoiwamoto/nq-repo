@@ -2,8 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 
 export function NqProductCompletePage() {
-  const routerLocation = useLocation();
-  const productName = (routerLocation.state as { productName?: string } | null)?.productName;
+  const location = useLocation();
+  const productName = (location.state as { productName?: string } | null)?.productName;
   const message = productName ? `${productName}の新規登録が完了しました` : "製品の削除が完了しました";
 
   return (

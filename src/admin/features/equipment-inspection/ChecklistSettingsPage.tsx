@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
+import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import type { ChecklistItem } from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -16,6 +17,7 @@ export function ChecklistSettingsPage() {
   const navigate = useNavigate();
   const [draft, setDraft] = useState<ChecklistItem[]>(checklistItems);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   function updateText(id: string, text: string) {
     setDraft((prev) => prev.map((item) => (item.id === id ? { ...item, text } : item)));
@@ -29,15 +31,17 @@ export function ChecklistSettingsPage() {
     if (!pendingDeleteId) return;
     setDraft((prev) => prev.filter((item) => item.id !== pendingDeleteId));
     setPendingDeleteId(null);
+    setShowToast(true);
   }
 
   function handleSave() {
     saveChecklistItems(draft.filter((item) => item.text.trim() !== ""));
-    navigate(`${basePath}/schedule`);
+    navigate(`${basePath}/schedule`, { state: { justSaved: true } });
   }
 
   return (
     <div>
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar title="確認項目の設定" showBack />
       <Breadcrumb
         items={[

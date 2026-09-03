@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Toast } from "../../components/Toast";
 import { useChemicalManagement } from "./ChemicalManagementContext";
 import { STORAGE_LOCATIONS } from "../../../data/storageLocations";
 
@@ -32,7 +33,7 @@ export function NewRegistrationPage() {
     }
     if (isEditing && existing) {
       updateChemical(existing.id, { name, spec, unit, storageLocation });
-      navigate(`${basePath}/chemicals/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`${basePath}/chemicals/${existing?.id}`, { state: { justSaved: true } });
     } else {
       addChemical({ name, spec, unit, storageLocation });
       navigate(basePath);

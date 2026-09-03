@@ -22,7 +22,7 @@ export function CompanyFormPage() {
     }
     if (isEditing && existing) {
       updateCompany(existing.id, { name, address });
-      navigate(`/admin/company/${existing.id}`, { state: { justUpdated: true } });
+      navigate(`/admin/company/${existing.id}`, { state: { updated: true } });
     } else {
       addCompany({ name, address });
       navigate("/admin/company/new/complete");

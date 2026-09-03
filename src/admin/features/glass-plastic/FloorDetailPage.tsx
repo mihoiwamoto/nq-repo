@@ -1,7 +1,8 @@
-import { useState, type ReactNode } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect, type ReactNode } from "react";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useGlassPlastic } from "./GlassPlasticContext";
 import { getFactoryName } from "../../../data/factories";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -108,11 +109,19 @@ export function FloorDetailPage() {
   const { factoryId, floorId } = useParams<{ factoryId: string; floorId: string }>();
   const { floors, removeFloor, updateRepairStatus } = useGlassPlastic();
   const navigate = useNavigate();
+  const location = useLocation();
   const basePath = `/admin/ledger-management/glass-plastic/factories/${factoryId}`;
   const factoryName = getFactoryName(factoryId);
   const floor = floors.find((f) => f.id === floorId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if ((location.state as any)?.deleted) {
+      setShowToast(true);
+    }
+  }, [location.state]);
 
   if (!floor) {
     return (
@@ -124,7 +133,8 @@ export function FloorDetailPage() {
 
   function handleDelete() {
     removeFloor(floor!.id);
-    navigate(`${basePath}/floors/deleted`);
+    setDeleteDialogOpen(false);
+    navigate(`${basePath}/floors/deleted`, { state: { deleted: true } });
   }
 
   return (
@@ -266,6 +276,8 @@ export function FloorDetailPage() {
           </div>
         </div>
       )}
+
+      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );
 }
