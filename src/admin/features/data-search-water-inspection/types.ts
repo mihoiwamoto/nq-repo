@@ -1,5 +1,12 @@
 export type ApprovalStatus = "pending" | "approved" | "rejected";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export type WaterCheckResult = {
   status: "normal" | "abnormal";
   cause?: string;
@@ -27,4 +34,5 @@ export type WaterSearchRecord = {
   confirmer: string;
   approvalStatus: ApprovalStatus;
   comment?: string;
+  comments?: Comment[];
 };

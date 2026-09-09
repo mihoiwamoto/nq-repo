@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useCleaningRecord } from "./CleaningRecordContext";
 import { getFactoryName } from "../../../data/factories";
-import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
+import { buildMonthGrid, formatDateLabel, formatMonthLabel, toDateKey, WEEKDAY_LABELS } from "./calendarUtils";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import iconKebabMenu from "../../../assets/figma/icons/common/kebab-menu.svg";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 const FREQUENCY_LABEL = { daily: "毎日", weekly: "毎週", monthly: "毎月", yearly: "毎年" } as const;
 
+const todayKey = toDateKey(2025, 3, 3);
+
 export function CalendarPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
-  const { lines, entries } = useCleaningRecord();
+  const { lines, entries, upsertEntry } = useCleaningRecord();
   const navigate = useNavigate();
   const location = useLocation();
   const factoryName = getFactoryName(factoryId);
@@ -22,6 +27,9 @@ export function CalendarPage() {
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("更新されました。");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const state = location.state as { justSaved?: boolean; date?: string } | null;
@@ -32,12 +40,23 @@ export function CalendarPage() {
         setYear(y);
         setMonth(m - 1);
       }
+      setToastMessage("更新されました。");
       setShowToast(true);
       const timer = setTimeout(() => setShowToast(false), 3000);
       navigate(location.pathname, { replace: true });
       return () => clearTimeout(timer);
     }
   }, [location, navigate]);
+
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
 
   const grid = buildMonthGrid(year, month);
   const selectedEntry = entries[selectedDateKey];
@@ -51,6 +70,20 @@ export function CalendarPage() {
     setMonth(next.getMonth());
   }
 
+  function handleDuplicate() {
+    setMenuOpen(false);
+    navigate(`${basePath}/schedule/register`, {
+      state: { duplicateLineIds: selectedEntry?.lineIds ?? [] },
+    });
+  }
+
+  function handleDelete() {
+    setMenuOpen(false);
+    upsertEntry(selectedDateKey, []);
+    setToastMessage("削除されました。");
+    setShowToast(true);
+  }
+
   return (
     <div>
       <PageTitleBar
@@ -58,7 +91,7 @@ export function CalendarPage() {
         showBack
         action={
           <Link
-            to={`${basePath}/schedule/register?date=${selectedDateKey}`}
+            to={`${basePath}/schedule/register`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
@@ -138,6 +171,7 @@ export function CalendarPage() {
               <div className="flex flex-wrap w-56">
                 {grid.map((cell) => {
                   const isSelected = cell.dateKey === selectedDateKey;
+                  const isToday = cell.dateKey === todayKey;
                   return (
                     <button
                       key={cell.dateKey}
@@ -152,7 +186,7 @@ export function CalendarPage() {
                             : cell.monthOffset !== 0
                               ? "text-[#d0d0d0]"
                               : "text-[var(--semantic-text-primary)]"
-                        }`}
+                        } ${isToday ? "border-2 border-[var(--semantic-brand-primary)]" : ""}`}
                       >
                         {cell.day}
                       </span>
@@ -162,17 +196,47 @@ export function CalendarPage() {
               </div>
             </div>
           </div>
-          <div className="bg-white flex flex-col rounded-lg w-[912px] overflow-hidden">
-            <div className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex gap-6 items-center px-4 py-3">
+          <div className="bg-white flex flex-col rounded-lg w-[912px]">
+            <div className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex gap-6 items-center px-4 py-3 rounded-t-lg">
               <p className="flex-1 text-base text-[var(--semantic-text-primary)]">
                 {formatDateLabel(selectedDateKey)}
               </p>
-              <Link
-                to={`${basePath}/schedule/register?date=${selectedDateKey}`}
-                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
-              >
-                ✎ 編集
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`${basePath}/schedule/register?date=${selectedDateKey}`}
+                  className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+                >
+                  <img src={iconEdit} alt="編集" className="size-5" />
+                  編集
+                </Link>
+                <div ref={menuRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen((v) => !v)}
+                    className="bg-white flex items-center justify-center rounded-lg size-10"
+                  >
+                    <img src={iconKebabMenu} alt="メニュー" className="size-6" />
+                  </button>
+                  {menuOpen && (
+                    <div className="absolute right-0 top-full mt-1 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 w-60 z-50">
+                      <button
+                        type="button"
+                        onClick={handleDuplicate}
+                        className="flex h-12 items-center px-2 rounded-lg w-full text-left text-base text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
+                      >
+                        この内容を複製して登録
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="flex h-12 items-center px-2 rounded-lg w-full text-left text-base text-[var(--semantic-brand-danger)] hover:bg-[var(--semantic-background-page)]"
+                      >
+                        削除
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="flex flex-col px-4 py-2">
               {!selectedLines || selectedLines.length === 0 ? (
@@ -183,10 +247,10 @@ export function CalendarPage() {
                 selectedLines.map((line, i) => (
                   <div key={`${line.id}-${i}`}>
                     <div className="flex gap-4 h-12 items-center">
-                      <span className="text-base text-[var(--semantic-text-primary)] w-28">
+                      <span className="text-base text-[var(--semantic-text-primary)] w-28 whitespace-nowrap">
                         持ち場/ライン名
                       </span>
-                      <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                      <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right whitespace-nowrap overflow-hidden text-ellipsis">
                         【{FREQUENCY_LABEL[line.frequency]}】{line.name}
                       </span>
                     </div>
@@ -198,15 +262,7 @@ export function CalendarPage() {
           </div>
         </div>
       </div>
-      {showToast && (
-        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
-          <span>✓</span>
-          <span className="text-xl">更新されました。</span>
-          <button type="button" onClick={() => setShowToast(false)} className="ml-2">
-            ×
-          </button>
-        </div>
-      )}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

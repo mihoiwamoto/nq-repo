@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { sampleApprovalRecords } from "./mockData";
 import type { SampleApprovalRecord } from "./types";
 import type { ApprovalStatus } from "../../data/approvals";
+import { CURRENT_ACCOUNT } from "../account/mockData";
 
 type RecordsContextValue = {
   records: SampleApprovalRecord[];
@@ -19,8 +20,25 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
     setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, approvalStatus: status } : r)));
   }
 
-  function addComment(id: string, comment: string) {
-    setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, comment } : r)));
+  function addComment(id: string, text: string) {
+    setRecords((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              comments: [
+                ...(r.comments ?? []),
+                {
+                  id: `${id}-${Date.now()}`,
+                  author: CURRENT_ACCOUNT.name,
+                  timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                  text,
+                },
+              ],
+            }
+          : r
+      )
+    );
   }
 
   return (

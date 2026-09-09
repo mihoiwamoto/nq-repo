@@ -14,6 +14,20 @@ export const additiveRecords: AdditiveRecord[] = [
     implementer: "佐藤花子",
     confirmer: "鈴木由美",
     approvalStatus: "approved",
+    comments: [
+      {
+        id: "c1",
+        author: "鈴木修",
+        timestamp: "2026.08.19 10:39",
+        text: "検索条件を確認しました。問題ありません。",
+      },
+      {
+        id: "c2",
+        author: "山田花子",
+        timestamp: "2026.08.23 15:45",
+        text: "データ抽出の期間を再度ご確認ください。",
+      },
+    ],
   },
   {
     id: "add2",

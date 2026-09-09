@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { AnomalyDialog } from "./AnomalyDialog";
@@ -89,7 +89,7 @@ function OkNgToggle({ value, onChange, onNgClick, inspectorName, inspectionDate,
             value === "ok" ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
           }`}
         >
-          <img src={iconCheck} alt="正常" className="size-5" />
+          <img src={iconCheck} alt="正常" className="size-5 brightness-0 invert" />
         </button>
       </div>
       {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)]">{timestamp}</p>}
@@ -134,6 +134,79 @@ function PulldownSelect({
                 {option}
               </button>
             ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+const TIME_PICKER_HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+const TIME_PICKER_MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
+
+function TimePickerInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const hourListRef = useRef<HTMLDivElement>(null);
+  const minuteListRef = useRef<HTMLDivElement>(null);
+  const [hour, minute] = value ? value.split(":") : ["", ""];
+
+  useEffect(() => {
+    if (!open) return;
+    hourListRef.current?.querySelector('[data-selected="true"]')?.scrollIntoView({ block: "center" });
+    minuteListRef.current?.querySelector('[data-selected="true"]')?.scrollIntoView({ block: "center" });
+  }, [open]);
+
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg flex items-center justify-between gap-2 text-base text-[var(--semantic-text-primary)] w-[160px]"
+      >
+        <span>{value || "--:--"}</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0">
+          <circle cx="8" cy="8" r="6.5" stroke="var(--semantic-text-secondary)" />
+          <path d="M8 4.5V8L10.2 9.5" stroke="var(--semantic-text-secondary)" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-[0px_0px_3px_rgba(51,51,51,0.24)] p-2 z-50 flex gap-1">
+            <div ref={hourListRef} className="flex flex-col gap-0.5 max-h-48 overflow-y-auto w-14">
+              {TIME_PICKER_HOURS.map((h) => (
+                <button
+                  key={h}
+                  type="button"
+                  data-selected={h === hour}
+                  onClick={() => onChange(`${h}:${minute || "00"}`)}
+                  className={`h-9 shrink-0 rounded-lg text-base ${
+                    h === hour
+                      ? "bg-[var(--semantic-brand-primary)] text-white"
+                      : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
+                  }`}
+                >
+                  {h}
+                </button>
+              ))}
+            </div>
+            <div ref={minuteListRef} className="flex flex-col gap-0.5 max-h-48 overflow-y-auto w-14">
+              {TIME_PICKER_MINUTES.map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  data-selected={m === minute}
+                  onClick={() => onChange(`${hour || "00"}:${m}`)}
+                  className={`h-9 shrink-0 rounded-lg text-base ${
+                    m === minute
+                      ? "bg-[var(--semantic-brand-primary)] text-white"
+                      : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
           </div>
         </>
       )}
@@ -204,14 +277,12 @@ function DetectorGroup({
             >
               現在時刻
             </button>
-            <input
-              type="time"
+            <TimePickerInput
               value={time}
-              onChange={(e) => {
-                onTimeChange(e.target.value);
+              onChange={(v) => {
+                onTimeChange(v);
                 onTimeTimestampChange(currentTimeString(inspectorName));
               }}
-              className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px]"
             />
           </div>
         </div>
@@ -240,14 +311,21 @@ function DetectorGroup({
                     onNgClick={() => onAnomalyClick?.("machine-record", item.label, machineType, item.key)}
                     inspectionDate={inspectionDate}
                     time={time}
-                    timestamp={checkTimestamps[item.key]}
+                    timestamp={checks[item.key] === "ng" ? undefined : checkTimestamps[item.key]}
                   />
                 </div>
                 {checks[item.key] === "ng" && (
-                  <div className="flex flex-col gap-1 items-start w-full ml-4">
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">原因：{anomalies?.[item.key]?.cause || ""}</p>
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">対応：{anomalies?.[item.key]?.response || ""}</p>
-                  </div>
+                  <>
+                    <div className="flex flex-col gap-1 items-start w-full ml-4">
+                      <p className="text-sm text-[var(--semantic-text-secondary)]">原因：{anomalies?.[item.key]?.cause || ""}</p>
+                      <p className="text-sm text-[var(--semantic-text-secondary)]">対応：{anomalies?.[item.key]?.response || ""}</p>
+                    </div>
+                    {checkTimestamps[item.key] && (
+                      <div className="flex items-center justify-end w-full">
+                        <p className="text-sm text-[var(--semantic-text-secondary)]">{checkTimestamps[item.key]}</p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             ))}
@@ -332,14 +410,12 @@ function TestPieceDetectorGroup({
             >
               現在時刻
             </button>
-            <input
-              type="time"
+            <TimePickerInput
               value={time}
-              onChange={(e) => {
-                onTimeChange(e.target.value);
+              onChange={(v) => {
+                onTimeChange(v);
                 onTimeTimestampChange(currentTimeString(inspectorName));
               }}
-              className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px]"
             />
           </div>
         </div>
@@ -765,14 +841,12 @@ export function MachineRecordFormPage() {
                     >
                       現在時刻
                     </button>
-                    <input
-                      type="time"
+                    <TimePickerInput
                       value={weightCheckerTime}
-                      onChange={(e) => {
-                        setWeightCheckerTime(e.target.value);
+                      onChange={(v) => {
+                        setWeightCheckerTime(v);
                         setWeightCheckerTimestamp(currentTimeString(inspectorName));
                       }}
-                      className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px]"
                     />
                   </div>
                 </div>
@@ -820,7 +894,7 @@ export function MachineRecordFormPage() {
                             setWeightCalibrationTimestamp(currentTimeString(inspectorName));
                           }}
                           onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "分銲を乗せての校正点検" })}
-                          timestamp={weightCalibrationTimestamp}
+                          timestamp={weightCalibrationCheck === "ng" ? undefined : weightCalibrationTimestamp}
                         />
                       </div>
                       {weightCalibrationAnomaly && (
@@ -829,6 +903,11 @@ export function MachineRecordFormPage() {
                             <p className="text-sm text-[var(--semantic-text-secondary)]">原因：{weightCalibrationAnomaly.cause}</p>
                           )}
                           <p className="text-sm text-[var(--semantic-text-secondary)]">対応：{weightCalibrationAnomaly.response}</p>
+                        </div>
+                      )}
+                      {weightCalibrationCheck === "ng" && weightCalibrationTimestamp && (
+                        <div className="flex items-center justify-end w-full">
+                          <p className="text-sm text-[var(--semantic-text-secondary)]">{weightCalibrationTimestamp}</p>
                         </div>
                       )}
                       <div className="flex items-center justify-between w-full">
@@ -843,7 +922,7 @@ export function MachineRecordFormPage() {
                             setWeightPackageMatchTimestamp(currentTimeString(inspectorName));
                           }}
                           onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "通過させる製品のパッケージ（印字）との照合" })}
-                          timestamp={weightPackageMatchTimestamp}
+                          timestamp={weightPackageMatchCheck === "ng" ? undefined : weightPackageMatchTimestamp}
                         />
                       </div>
                       {weightPackageMatchAnomaly && (
@@ -852,6 +931,11 @@ export function MachineRecordFormPage() {
                             <p className="text-sm text-[var(--semantic-text-secondary)]">原因：{weightPackageMatchAnomaly.cause}</p>
                           )}
                           <p className="text-sm text-[var(--semantic-text-secondary)]">対応：{weightPackageMatchAnomaly.response}</p>
+                        </div>
+                      )}
+                      {weightPackageMatchCheck === "ng" && weightPackageMatchTimestamp && (
+                        <div className="flex items-center justify-end w-full">
+                          <p className="text-sm text-[var(--semantic-text-secondary)]">{weightPackageMatchTimestamp}</p>
                         </div>
                       )}
                     </div>
@@ -881,14 +965,12 @@ export function MachineRecordFormPage() {
                     >
                       現在時刻
                     </button>
-                    <input
-                      type="time"
+                    <TimePickerInput
                       value={sealingTime}
-                      onChange={(e) => {
-                        setSealingTime(e.target.value);
+                      onChange={(v) => {
+                        setSealingTime(v);
                         setSealingTimeTimestamp(currentTimeString(inspectorName));
                       }}
-                      className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px]"
                     />
                   </div>
                 </div>
@@ -910,13 +992,18 @@ export function MachineRecordFormPage() {
                       setSealingTimestamp(currentTimeString(inspectorName));
                     }}
                     onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "シーリング" })}
-                    timestamp={sealingTimestamp}
+                    timestamp={sealingCheck === "ng" ? undefined : sealingTimestamp}
                   />
                 </div>
                 {sealingAnomaly && (
                   <div className="flex flex-col gap-2 items-start w-full">
                     <p className="text-sm text-[var(--semantic-text-primary)]">原因：{sealingAnomaly.cause}</p>
                     <p className="text-sm text-[var(--semantic-text-primary)]">対応：{sealingAnomaly.response}</p>
+                  </div>
+                )}
+                {sealingCheck === "ng" && sealingTimestamp && (
+                  <div className="flex items-center justify-end w-full">
+                    <p className="text-sm text-[var(--semantic-text-secondary)]">{sealingTimestamp}</p>
                   </div>
                 )}
               </div>

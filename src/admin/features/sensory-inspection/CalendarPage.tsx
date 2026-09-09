@@ -7,6 +7,8 @@ import { getFactoryName } from "../../../data/factories";
 import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import iconTrash from "../../../assets/figma/icons/common/trash.svg";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 export function CalendarPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -174,8 +176,8 @@ export function CalendarPage() {
               </div>
             </div>
           </div>
-          <div className="bg-white flex flex-col rounded-lg w-[912px] overflow-hidden">
-            <div className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex gap-6 items-center px-4 py-3">
+          <div className="bg-white flex flex-col rounded-lg w-[912px]">
+            <div className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex gap-6 items-center px-4 py-3 rounded-t-lg">
               <p className="flex-1 text-base text-[var(--semantic-text-primary)]">
                 {formatDateLabel(selectedDateKey)}
               </p>
@@ -185,7 +187,8 @@ export function CalendarPage() {
                     to={`${basePath}/schedule/register?date=${selectedDateKey}`}
                     className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
                   >
-                    ✎ 編集
+                    <img src={iconEdit} alt="編集" className="size-5" />
+                    編集
                   </Link>
                   <div className="relative">
                     <button
@@ -213,9 +216,11 @@ export function CalendarPage() {
                             setMenuOpen(false);
                             setDeleteDialogOpen(true);
                           }}
-                          className="w-full text-left px-4 py-2 text-sm text-[var(--semantic-brand-danger)] hover:bg-[var(--semantic-background-page)]"
+                          className="w-full px-4 py-2 hover:bg-[var(--semantic-background-page)]"
                         >
-                          削除
+                          <span className="bg-white border border-[var(--semantic-brand-danger)] rounded-lg flex items-center justify-center size-8 shrink-0">
+                            <img src={iconTrash} alt="削除" className="size-5" />
+                          </span>
                         </button>
                       </div>
                     )}

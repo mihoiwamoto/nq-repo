@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
 import type { LineFrequency } from "./types";
 import { useCleaningRecord } from "./CleaningRecordContext";
 
@@ -19,7 +18,6 @@ export function AddLineDialog({
   onClose: () => void;
   onConfirm: (ids: string[]) => void;
 }) {
-  const { factoryId } = useParams<{ factoryId: string }>();
   const { lines } = useCleaningRecord();
   const [activeTab, setActiveTab] = useState<LineFrequency>("daily");
   const [search, setSearch] = useState("");
@@ -106,12 +104,6 @@ export function AddLineDialog({
               ))
             )}
           </div>
-          <Link
-            to={`/admin/ledger-management/cleaning-record/factories/${factoryId}/lines/new`}
-            className="text-sm text-[var(--semantic-brand-primary)]"
-          >
-            + 新しい持ち場/ラインを登録する
-          </Link>
         </div>
         <div className="flex gap-10 items-center justify-center w-full">
           <button

@@ -1,5 +1,12 @@
 export type ApprovalStatus = "pending" | "approved" | "rejected";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export type CleaningItemResult = {
   name: string;
   cleaned: boolean;
@@ -24,4 +31,5 @@ export type CleaningSearchRecord = {
   cleaningPoints: CleaningPointResult[];
   detailRemarks?: string;
   comment?: string;
+  comments?: Comment[];
 };

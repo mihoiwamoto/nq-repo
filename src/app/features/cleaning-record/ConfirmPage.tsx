@@ -92,7 +92,7 @@ export function ConfirmPage() {
                       </span>
                     </div>
                     {record?.timestamp && (
-                      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">
+                      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                         {record.inspector} {record.timestamp}
                       </p>
                     )}

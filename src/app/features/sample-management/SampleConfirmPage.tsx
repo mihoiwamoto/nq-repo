@@ -20,7 +20,7 @@ function ConfirmRow({
           <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
           <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
         </div>
-        {meta && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">{meta}</p>}
+        {meta && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{meta}</p>}
       </div>
       <div className="border-t border-[#d0d0d0] w-full" />
     </>

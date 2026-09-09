@@ -1,10 +1,24 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useWaterInspection } from "./WaterInspectionContext";
 import { getFactoryName } from "../../../data/factories";
 import { WATER_INSPECTION_FORM_FIELDS, type WaterInspectionToggleKey } from "./types";
+
+const EMPTY_CHECKS: Record<WaterInspectionToggleKey, boolean> = {
+  taste: false,
+  smell: false,
+  color: false,
+  turbidity: false,
+  foreignMatter: false,
+  ph: false,
+  chlorine: false,
+  uvOperatingHours: false,
+  uvIndicatorLight: false,
+  abnormalDetectionLight: false,
+};
 
 function ToggleField({
   label,
@@ -17,15 +31,18 @@ function ToggleField({
 }) {
   return (
     <div className="flex flex-col gap-1 items-start w-[416px]">
-      <p className="text-xl text-[var(--semantic-text-primary)]">{label}</p>
+      <div className="flex gap-2 items-center">
+        <p className="text-xl text-[var(--semantic-text-primary)]">{label}</p>
+        <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+      </div>
       <div className="flex gap-4 items-center w-full">
         <button
           type="button"
           onClick={() => onChange(false)}
-          className={`flex-1 h-12 rounded-lg text-base shadow-[0px_2px_2px_rgba(51,51,51,0.24)] ${
+          className={`flex-1 h-12 rounded-lg text-base shadow-[0px_2px_2px_rgba(51,51,51,0.24)] bg-white ${
             !value
-              ? "bg-white text-[var(--semantic-text-secondary)]"
-              : "bg-white text-[var(--semantic-text-secondary)] opacity-60"
+              ? "border border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
+              : "text-[var(--semantic-text-secondary)] opacity-60"
           }`}
         >
           記録しない
@@ -59,18 +76,7 @@ export function PointFormPage() {
   const [displayFrom, setDisplayFrom] = useState(existing?.displayFrom ?? "");
   const [displayTo, setDisplayTo] = useState(existing?.displayTo ?? "");
   const [checks, setChecks] = useState<Record<WaterInspectionToggleKey, boolean>>(
-    existing?.checks ?? {
-      taste: false,
-      smell: false,
-      color: false,
-      turbidity: false,
-      foreignMatter: false,
-      ph: false,
-      chlorine: false,
-      uvOperatingHours: false,
-      uvIndicatorLight: false,
-      abnormalDetectionLight: false,
-    }
+    existing?.checks ?? EMPTY_CHECKS
   );
   const [uvAlertHours, setUvAlertHours] = useState(existing?.uvAlertHours ?? "");
   const [error, setError] = useState("");
@@ -92,8 +98,8 @@ export function PointFormPage() {
       updatePoint(existing.id, input);
       navigate(`${basePath}/points/${existing.id}`, { state: { justSaved: true } });
     } else {
-      const created = addPoint(input);
-      navigate(`${basePath}/points/${created.id}`);
+      addPoint(input);
+      navigate(`${basePath}/points/registered`);
     }
   }
 
@@ -115,7 +121,10 @@ export function PointFormPage() {
 
         <div className="flex flex-col gap-6 items-start">
           <div className="flex flex-col gap-1 items-start w-[480px]">
-            <p className="text-xl text-[var(--semantic-text-primary)]">点検場所</p>
+            <div className="flex gap-2 items-center">
+              <p className="text-xl text-[var(--semantic-text-primary)]">点検場所</p>
+              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+            </div>
             <input
               type="text"
               value={name}
@@ -126,24 +135,17 @@ export function PointFormPage() {
           </div>
 
           <div className="flex flex-col gap-1 items-start">
-            <p className="text-xl text-[var(--semantic-text-primary)]">アプリ表示期間</p>
+            <div className="flex gap-2 items-center">
+              <p className="text-xl text-[var(--semantic-text-primary)]">アプリ表示期間</p>
+              <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
+            </div>
             <p className="text-sm text-[#808080]">
               日付指定が無い場合は、常にアプリ上に表示されます。
             </p>
             <div className="flex gap-2 items-center">
-              <input
-                type="date"
-                value={displayFrom}
-                onChange={(e) => setDisplayFrom(e.target.value)}
-                className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-              />
+              <DateFilterInput value={displayFrom} onChange={setDisplayFrom} />
               <span className="text-[var(--semantic-text-primary)]">〜</span>
-              <input
-                type="date"
-                value={displayTo}
-                onChange={(e) => setDisplayTo(e.target.value)}
-                className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-              />
+              <DateFilterInput value={displayTo} onChange={setDisplayTo} />
             </div>
           </div>
 
@@ -157,7 +159,10 @@ export function PointFormPage() {
               />
             ) : (
               <div key={field.key} className="flex flex-col gap-1 items-start w-[480px]">
-                <p className="text-xl text-[var(--semantic-text-primary)]">{field.label}</p>
+                <div className="flex gap-2 items-center">
+                  <p className="text-xl text-[var(--semantic-text-primary)]">{field.label}</p>
+                  <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+                </div>
                 <input
                   type="text"
                   value={uvAlertHours}
@@ -185,7 +190,7 @@ export function PointFormPage() {
             onClick={handleSubmit}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
-            保存
+            {isEditing ? "保存" : "登録"}
           </button>
         </div>
       </div>

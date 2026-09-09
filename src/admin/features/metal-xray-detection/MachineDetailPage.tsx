@@ -6,6 +6,7 @@ import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useMetalXrayManagement } from "./MetalXrayManagementContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 function formatDisplayPeriod(displayFrom?: string, displayTo?: string) {
   if (!displayFrom && !displayTo) return "指定なし";
@@ -78,6 +79,7 @@ export function MachineDetailPage() {
             to={`${basePath}/machines/${machine.id}/edit`}
             className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
+            <img src={iconEdit} alt="編集" className="size-5" />
             編集
           </Link>
           <button

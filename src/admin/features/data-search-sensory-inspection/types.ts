@@ -1,5 +1,12 @@
 import type { ApprovalStatus } from "../../data/approvals";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export const CRITERIA = ["味", "形", "色", "食感", "香り", "とろみ"] as const;
 export type Criterion = (typeof CRITERIA)[number];
 
@@ -32,4 +39,5 @@ export type SensoryRecord = {
   approvalStatus: ApprovalStatus;
   scoreEntries: ScoreEntry[];
   comment?: string;
+  comments?: Comment[];
 };

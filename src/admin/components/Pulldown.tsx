@@ -4,7 +4,18 @@ import iconPulldown from "../../assets/figma/icons/common/pulldown.svg";
 export type PulldownOption = { value: string; label: string };
 
 const DEFAULT_TRIGGER_CLASSNAME =
-  "bg-white border border-[#d0d0d0] h-12 px-8 rounded-lg text-base text-[var(--semantic-text-primary)] w-full";
+  "bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]";
+
+function getArrowFilterColor(className?: string, backgroundColor?: string | CSSProperties): string {
+  const hasWhiteText = className?.includes('text-white');
+  if (hasWhiteText) return 'brightness(0) invert(1)';
+
+  const bgColor = String(backgroundColor).toLowerCase();
+  const darkColors = ['#f85c5c', '#ff6b6b', '#ff4444', '#d32f2f', 'rgb(248, 92, 92)', 'rgb(255, 107, 107)'];
+  const isDarkBg = darkColors.some(color => bgColor.includes(color.replace('#', '')) || bgColor.includes(color));
+
+  return isDarkBg ? 'brightness(0) invert(1)' : 'invert(0.7) brightness(1.2)';
+}
 
 export function Pulldown({
   value,
@@ -50,19 +61,31 @@ export function Pulldown({
         type="button"
         disabled={disabled}
         onClick={() => setOpen((v) => !v)}
-        className={`${className ?? DEFAULT_TRIGGER_CLASSNAME} flex items-center justify-between gap-2 disabled:text-[var(--semantic-text-secondary)] disabled:cursor-not-allowed`}
+        className={`${className ?? DEFAULT_TRIGGER_CLASSNAME} flex items-center gap-2 disabled:cursor-not-allowed`}
         style={style}
       >
-        <span className={`truncate ${!selectedLabel ? 'text-[var(--semantic-text-secondary)]' : ''}`}>{triggerLabel}</span>
-        <img
-          src={iconPulldown}
-          alt=""
-          aria-hidden
-          className={`inline-block size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
-          style={{
-            filter: 'invert(0.7) brightness(1.2)',
-          }}
-        />
+        <span
+          className={`flex-1 min-w-0 text-left truncate ${
+            !selectedLabel
+              ? className?.includes('text-white')
+                ? 'font-bold'
+                : 'text-[var(--semantic-text-secondary)] font-bold'
+              : ''
+          }`}
+        >
+          {triggerLabel}
+        </span>
+        {!disabled && (
+          <img
+            src={iconPulldown}
+            alt=""
+            aria-hidden
+            className={`inline-block size-4 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+            style={{
+              filter: getArrowFilterColor(className, (style as any)?.backgroundColor),
+            }}
+          />
+        )}
       </button>
       {open && !disabled && (
         <div className="absolute top-full left-0 mt-1 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 min-w-full w-max max-w-[calc(100vw-32px)] max-h-[290px] overflow-y-auto z-50" style={{ pointerEvents: "auto" }}>

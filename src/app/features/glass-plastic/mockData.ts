@@ -132,8 +132,6 @@ export const rooms: Room[] = [
 
 export type RepairStatus = "action_needed" | "no_repair" | "repairing" | "repaired";
 
-export const REPAIR_STATUS_ORDER: RepairStatus[] = ["action_needed", "no_repair", "repairing", "repaired"];
-
 export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
   action_needed: "要対応",
   no_repair: "修理しない",
@@ -146,6 +144,13 @@ export const REPAIR_STATUS_COLORS: Record<RepairStatus, string> = {
   no_repair: "var(--semantic-text-secondary)",
   repairing: "var(--semantic-status-caution)",
   repaired: "var(--semantic-status-success)",
+};
+
+export const REPAIR_STATUS_NEXT_OPTIONS: Record<RepairStatus, RepairStatus[]> = {
+  action_needed: ["action_needed", "repairing", "no_repair"],
+  repairing: ["repairing", "repaired"],
+  no_repair: ["no_repair"],
+  repaired: ["repaired"],
 };
 
 export const initialInspectionRecords: Record<string, RoomItemRecord> = {};

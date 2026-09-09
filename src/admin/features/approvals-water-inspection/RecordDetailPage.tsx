@@ -3,7 +3,14 @@ import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Comments } from "../../components/Comments";
+import { CommentInputBox } from "../../components/CommentInputBox";
+import { APPROVAL_STATUS_COLOR } from "../../components/ApprovalStatusBadge";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
+import { RejectReasonDialog } from "../../components/RejectReasonDialog";
+import { Toast } from "../../components/Toast";
 import { useRecords } from "./RecordsContext";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { WaterCheckResult } from "./types";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
@@ -31,9 +38,27 @@ function StatusTag({ result }: { result: WaterCheckResult }) {
   );
 }
 
-function CheckRow({ label, result }: { label: string; result: WaterCheckResult }) {
+function Timestamp({ implementer, timestamp }: { implementer: string; timestamp: string }) {
   return (
-    <div className="flex flex-col gap-2 items-start w-full">
+    <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+      {implementer} {timestamp}
+    </p>
+  );
+}
+
+function CheckRow({
+  label,
+  result,
+  implementer,
+  timestamp,
+}: {
+  label: string;
+  result: WaterCheckResult;
+  implementer: string;
+  timestamp: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1 items-start w-full">
       <div className="flex items-center justify-between w-full">
         <p className="text-xl text-[var(--semantic-text-primary)]">{label}</p>
         <StatusTag result={result} />
@@ -44,6 +69,7 @@ function CheckRow({ label, result }: { label: string; result: WaterCheckResult }
           <p>対応：{result.action || "記録なし"}</p>
         </div>
       )}
+      <Timestamp implementer={implementer} timestamp={timestamp} />
     </div>
   );
 }
@@ -51,9 +77,21 @@ function CheckRow({ label, result }: { label: string; result: WaterCheckResult }
 export function RecordDetailPage() {
   const { recordId } = useParams<{ recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
+  const {
+    showConfirmDialog,
+    showRejectDialog,
+    showToast,
+    closeToast,
+    requestApproval,
+    confirmApproval,
+    cancelApproval,
+    requestRejection,
+    confirmRejection,
+    cancelRejection,
+  } = useApprovalConfirm();
 
   const record = records.find((r) => r.id === recordId);
-  const [comment, setComment] = useState(record?.comment ?? "");
+  const [newComment, setNewComment] = useState("");
 
   if (!record) {
     return (
@@ -63,8 +101,31 @@ export function RecordDetailPage() {
     );
   }
 
+  function handleAddComment() {
+    if (!record || !newComment.trim()) return;
+    addComment(record.id, newComment.trim());
+    setNewComment("");
+  }
+
+  const handleStatusChange = (value: string) => {
+    if (value === "approved") {
+      requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
+    } else if (value === "rejected") {
+      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
+    } else {
+      setApprovalStatus(record.id, value as ApprovalStatus);
+    }
+  };
+
   return (
     <div>
+      {showConfirmDialog && (
+        <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
+      )}
+      {showRejectDialog && (
+        <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
+      )}
+      {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
@@ -80,9 +141,11 @@ export function RecordDetailPage() {
           </div>
           <Pulldown
             value={record.approvalStatus}
-            onChange={(value) => setApprovalStatus(record.id, value as ApprovalStatus)}
+            onChange={handleStatusChange}
             options={STATUS_OPTIONS}
-            className="bg-[#808080] border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
+            disabled={record.approvalStatus !== "pending"}
+            className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
+            style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
           />
         </div>
 
@@ -110,20 +173,48 @@ export function RecordDetailPage() {
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <CheckRow label="味" result={record.taste} />
+          <CheckRow
+            label="味"
+            result={record.taste}
+            implementer={record.implementer}
+            timestamp={`${formatDate(record.date)} ${record.time}`}
+          />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="臭い" result={record.smell} />
+          <CheckRow
+            label="臭い"
+            result={record.smell}
+            implementer={record.implementer}
+            timestamp={`${formatDate(record.date)} ${record.time}`}
+          />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="色" result={record.color} />
+          <CheckRow
+            label="色"
+            result={record.color}
+            implementer={record.implementer}
+            timestamp={`${formatDate(record.date)} ${record.time}`}
+          />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="濁り" result={record.turbidity} />
+          <CheckRow
+            label="濁り"
+            result={record.turbidity}
+            implementer={record.implementer}
+            timestamp={`${formatDate(record.date)} ${record.time}`}
+          />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="異物" result={record.foreignMatter} />
+          <CheckRow
+            label="異物"
+            result={record.foreignMatter}
+            implementer={record.implementer}
+            timestamp={`${formatDate(record.date)} ${record.time}`}
+          />
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">ph値</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.ph}</p>
+          <div className="flex flex-col gap-1 items-start w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-xl text-[var(--semantic-text-primary)]">ph値</p>
+              <p className="text-xl text-[var(--semantic-text-primary)]">{record.ph}</p>
+            </div>
+            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -138,6 +229,7 @@ export function RecordDetailPage() {
                 塩素補充
               </span>
             )}
+            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -152,63 +244,48 @@ export function RecordDetailPage() {
                 UV殺菌灯交換
               </span>
             )}
+            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">UV表示灯</p>
-            <p
-              className={`text-xl ${
-                record.uvIndicatorLight === "off"
-                  ? "text-[var(--semantic-brand-danger)]"
-                  : "text-[var(--semantic-text-primary)]"
-              }`}
-            >
-              {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
-            </p>
+          <div className="flex flex-col gap-1 items-start w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-xl text-[var(--semantic-text-primary)]">UV表示灯</p>
+              <p
+                className={`text-xl ${
+                  record.uvIndicatorLight === "off"
+                    ? "text-[var(--semantic-brand-danger)]"
+                    : "text-[var(--semantic-text-primary)]"
+                }`}
+              >
+                {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
+              </p>
+            </div>
+            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">異常検出灯</p>
-            <p
-              className={`text-xl ${
-                record.abnormalDetectionLight === "on"
-                  ? "text-[var(--semantic-brand-danger)]"
-                  : "text-[var(--semantic-text-primary)]"
-              }`}
-            >
-              {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
-            </p>
+          <div className="flex flex-col gap-1 items-start w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-xl text-[var(--semantic-text-primary)]">異常検出灯</p>
+              <p
+                className={`text-xl ${
+                  record.abnormalDetectionLight === "on"
+                    ? "text-[var(--semantic-brand-danger)]"
+                    : "text-[var(--semantic-text-primary)]"
+                }`}
+              >
+                {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
+              </p>
+            </div>
+            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 items-start w-full">
+        <div className="flex flex-col gap-2 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-          <div className="flex flex-col gap-2 items-start w-full">
-            <div className="flex gap-2 items-start w-full">
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value.slice(0, 255))}
-                placeholder="コメントを入力"
-                rows={3}
-                className="flex-1 bg-white border border-[#d0d0d0] px-2 py-2 rounded-lg text-base font-light text-[var(--semantic-text-primary)] placeholder:text-[#808080] resize-none"
-              />
-              <button
-                type="button"
-                onClick={() => addComment(record.id, comment)}
-                disabled={!comment.trim()}
-                className={`size-12 rounded-lg flex items-center justify-center text-white text-lg shrink-0 ${
-                  comment.trim() ? "bg-[#094]" : "bg-[#d0d0d0]"
-                }`}
-              >
-                ➤
-              </button>
-            </div>
-            <span className="text-sm text-[#333] text-right w-full">
-              {comment.length}/255
-            </span>
-          </div>
+          <Comments comments={record.comments || []} />
+          <CommentInputBox value={newComment} onChange={setNewComment} onSubmit={handleAddComment} />
         </div>
       </div>
     </div>

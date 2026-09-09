@@ -4,12 +4,49 @@ import { AdminHomePage } from "./admin/pages/AdminHomePage";
 import { LedgerManagementPage } from "./admin/pages/LedgerManagementPage";
 import { DataSearchPage } from "./admin/pages/DataSearchPage";
 import { ApprovalManagementPage } from "./admin/pages/ApprovalManagementPage";
+import { ConfirmationManagementPage } from "./admin/pages/ConfirmationManagementPage";
+import { ConfirmationFactorySelectionPage } from "./admin/pages/ConfirmationFactorySelectionPage";
+import { ConfirmationDataListPlaceholderPage } from "./admin/pages/ConfirmationDataListPlaceholderPage";
+import { RecordsProviderOutlet as WaterConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-water-inspection/RecordsContext";
+import { RecordsListPage as WaterConfirmationRecordsListPage } from "./admin/features/confirmations-water-inspection/RecordsListPage";
+import { RecordDetailPage as WaterConfirmationRecordDetailPage } from "./admin/features/confirmations-water-inspection/RecordDetailPage";
+import { RecordsProviderOutlet as GlassPlasticConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-glass-plastic/RecordsContext";
+import { RecordsListPage as GlassPlasticConfirmationRecordsListPage } from "./admin/features/confirmations-glass-plastic/RecordsListPage";
+import { RecordDetailPage as GlassPlasticConfirmationRecordDetailPage } from "./admin/features/confirmations-glass-plastic/RecordDetailPage";
+import { RecordsProviderOutlet as ScaleConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-scale-inspection/RecordsContext";
+import { RecordsListPage as ScaleConfirmationRecordsListPage } from "./admin/features/confirmations-scale-inspection/RecordsListPage";
+import { RecordDetailPage as ScaleConfirmationRecordDetailPage } from "./admin/features/confirmations-scale-inspection/RecordDetailPage";
+import { RecordsProviderOutlet as SensoryConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-sensory-inspection/RecordsContext";
+import { DataListPage as SensoryConfirmationDataListPage } from "./admin/features/confirmations-sensory-inspection/DataListPage";
+import { RecordDetailPage as SensoryConfirmationRecordDetailPage } from "./admin/features/confirmations-sensory-inspection/RecordDetailPage";
+import { ScoreDetailPage as SensoryConfirmationScoreDetailPage } from "./admin/features/confirmations-sensory-inspection/ScoreDetailPage";
+import { RecordsProviderOutlet as MetalConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-metal-xray-detection/RecordsContext";
+import { RecordsListPage as MetalConfirmationRecordsListPage } from "./admin/features/confirmations-metal-xray-detection/RecordsListPage";
+import { RecordDetailPage as MetalConfirmationRecordDetailPage } from "./admin/features/confirmations-metal-xray-detection/RecordDetailPage";
+import { RecordsProviderOutlet as SampleConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-sample-management/RecordsContext";
+import { RecordsListPage as SampleConfirmationRecordsListPage } from "./admin/features/confirmations-sample-management/RecordsListPage";
+import { RecordDetailPage as SampleConfirmationRecordDetailPage } from "./admin/features/confirmations-sample-management/RecordDetailPage";
+import { RecordsProviderOutlet as EquipmentConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-equipment-inspection/RecordsContext";
+import { RecordsListPage as EquipmentConfirmationRecordsListPage } from "./admin/features/confirmations-equipment-inspection/RecordsListPage";
+import { RecordDetailPage as EquipmentConfirmationRecordDetailPage } from "./admin/features/confirmations-equipment-inspection/RecordDetailPage";
+import { RecordsProviderOutlet as CleaningConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-cleaning-record/RecordsContext";
+import { RecordsListPage as CleaningConfirmationRecordsListPage } from "./admin/features/confirmations-cleaning-record/RecordsListPage";
+import { RecordDetailPage as CleaningConfirmationRecordDetailPage } from "./admin/features/confirmations-cleaning-record/RecordDetailPage";
+import { RecordsProviderOutlet as ChemicalConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-chemical-management/RecordsContext";
+import { RecordsListPage as ChemicalConfirmationRecordsListPage } from "./admin/features/confirmations-chemical-management/RecordsListPage";
+import { RecordDetailPage as ChemicalConfirmationRecordDetailPage } from "./admin/features/confirmations-chemical-management/RecordDetailPage";
+import { RecordsProviderOutlet as AdditiveConfirmationRecordsProviderOutlet } from "./admin/features/confirmations-additive-management/RecordsContext";
+import { RecordsListPage as AdditiveConfirmationRecordsListPage } from "./admin/features/confirmations-additive-management/RecordsListPage";
+import { RecordDetailPage as AdditiveConfirmationRecordDetailPage } from "./admin/features/confirmations-additive-management/RecordDetailPage";
 import { AdminLedgerDetailPage } from "./admin/pages/AdminLedgerDetailPage";
 import { ScheduleProviderOutlet } from "./admin/features/equipment-inspection/ScheduleContext";
 import { CalendarPage } from "./admin/features/equipment-inspection/CalendarPage";
 import { NewRegistrationPage } from "./admin/features/equipment-inspection/NewRegistrationPage";
+import { ScheduleRegistrationCompletePage } from "./admin/features/equipment-inspection/ScheduleRegistrationCompletePage";
 import { ChecklistSettingsPage } from "./admin/features/equipment-inspection/ChecklistSettingsPage";
+import { ChecklistDeleteCompletePage } from "./admin/features/equipment-inspection/ChecklistDeleteCompletePage";
 import { LineRegistrationPage } from "./admin/features/equipment-inspection/LineRegistrationPage";
+import { LineRegistrationCompletePage } from "./admin/features/equipment-inspection/LineRegistrationCompletePage";
 import { FactorySelectionPage } from "./admin/features/equipment-inspection/FactorySelectionPage";
 import { LineSelectionPage } from "./admin/features/equipment-inspection/LineSelectionPage";
 import { LineDetailPage } from "./admin/features/equipment-inspection/LineDetailPage";
@@ -24,10 +61,14 @@ import { CleaningRecordProviderOutlet } from "./admin/features/cleaning-record/C
 import { FactorySelectionPage as CleaningRecordFactorySelectionPage } from "./admin/features/cleaning-record/FactorySelectionPage";
 import { LineSelectionPage as CleaningRecordLineSelectionPage } from "./admin/features/cleaning-record/LineSelectionPage";
 import { LineDetailPage as CleaningRecordLineDetailPage } from "./admin/features/cleaning-record/LineDetailPage";
+import { LineRegistrationPage as CleaningRecordLineRegistrationPage } from "./admin/features/cleaning-record/LineRegistrationPage";
+import { LineRegistrationCompletePage as CleaningRecordLineRegistrationCompletePage } from "./admin/features/cleaning-record/LineRegistrationCompletePage";
 import { CalendarPage as CleaningRecordCalendarPage } from "./admin/features/cleaning-record/CalendarPage";
 import { NewRegistrationPage as CleaningRecordNewRegistrationPage } from "./admin/features/cleaning-record/NewRegistrationPage";
+import { ScheduleRegistrationCompletePage as CleaningRecordScheduleRegistrationCompletePage } from "./admin/features/cleaning-record/ScheduleRegistrationCompletePage";
 import { ApprovalRecordsListPage } from "./admin/features/approvals-cleaning-record/ApprovalRecordsListPage";
 import { RecordDetailPage as CleaningApprovalRecordDetailPage } from "./admin/features/approvals-cleaning-record/RecordDetailPage";
+import { RecordsProviderOutlet as CleaningApprovalRecordsProviderOutlet } from "./admin/features/approvals-cleaning-record/RecordsContext";
 import { ApprovalRecordsListPage as EquipmentApprovalRecordsListPage } from "./admin/features/approvals-equipment-inspection/ApprovalRecordsListPage";
 import { RecordsProviderOutlet as EquipmentApprovalRecordsProviderOutlet } from "./admin/features/approvals-equipment-inspection/RecordsContext";
 import { RecordDetailPage as EquipmentApprovalRecordDetailPage } from "./admin/features/approvals-equipment-inspection/RecordDetailPage";
@@ -54,6 +95,8 @@ import { ScoreDetailPage as SensoryApprovalScoreDetailPage } from "./admin/featu
 import { ApprovalRecordsListPage as WaterApprovalRecordsListPage } from "./admin/features/approvals-water-inspection/ApprovalRecordsListPage";
 import { RecordsProviderOutlet as WaterApprovalRecordsProviderOutlet } from "./admin/features/approvals-water-inspection/RecordsContext";
 import { RecordDetailPage as WaterApprovalRecordDetailPage } from "./admin/features/approvals-water-inspection/RecordDetailPage";
+import { RecordsProviderOutlet as GlassPlasticApprovalRecordsProviderOutlet } from "./admin/features/approvals-glass-plastic/RecordsContext";
+import { RecordDetailPage as GlassPlasticApprovalRecordDetailPage } from "./admin/features/approvals-glass-plastic/RecordDetailPage";
 import { RecordsProviderOutlet as CleaningRecordsProviderOutlet } from "./admin/features/data-search-cleaning-record/RecordsContext";
 import { SearchFactorySelectionPage as CleaningSearchFactorySelectionPage } from "./admin/features/data-search-cleaning-record/SearchFactorySelectionPage";
 import { DataListPage as CleaningDataListPage } from "./admin/features/data-search-cleaning-record/DataListPage";
@@ -104,18 +147,21 @@ import { FloorRegistrationPage as LedgerGlassPlasticFloorRegistrationPage } from
 import { FloorDetailPage as LedgerGlassPlasticFloorDetailPage } from "./admin/features/glass-plastic/FloorDetailPage";
 import { FloorEditPage as LedgerGlassPlasticFloorEditPage } from "./admin/features/glass-plastic/FloorEditPage";
 import { FloorDeleteCompletePage as LedgerGlassPlasticFloorDeleteCompletePage } from "./admin/features/glass-plastic/FloorDeleteCompletePage";
+import { FloorRegistrationCompletePage as LedgerGlassPlasticFloorRegistrationCompletePage } from "./admin/features/glass-plastic/FloorRegistrationCompletePage";
 import { AdditiveManagementProviderOutlet } from "./admin/features/additive-management/AdditiveManagementContext";
 import { FactorySelectionPage as AdditiveManagementFactorySelectionPage } from "./admin/features/additive-management/FactorySelectionPage";
 import { AdditiveSelectionPage } from "./admin/features/additive-management/AdditiveSelectionPage";
 import { NewRegistrationPage as AdditiveNewRegistrationPage } from "./admin/features/additive-management/NewRegistrationPage";
 import { AdditiveDetailPage } from "./admin/features/additive-management/AdditiveDetailPage";
 import { AdditiveDeleteCompletePage } from "./admin/features/additive-management/AdditiveDeleteCompletePage";
+import { AdditiveRegistrationCompletePage } from "./admin/features/additive-management/AdditiveRegistrationCompletePage";
 import { ChemicalManagementProviderOutlet } from "./admin/features/chemical-management/ChemicalManagementContext";
 import { FactorySelectionPage as ChemicalManagementFactorySelectionPage } from "./admin/features/chemical-management/FactorySelectionPage";
 import { ChemicalSelectionPage } from "./admin/features/chemical-management/ChemicalSelectionPage";
 import { NewRegistrationPage as ChemicalNewRegistrationPage } from "./admin/features/chemical-management/NewRegistrationPage";
 import { ChemicalDetailPage } from "./admin/features/chemical-management/ChemicalDetailPage";
 import { ChemicalDeleteCompletePage } from "./admin/features/chemical-management/ChemicalDeleteCompletePage";
+import { ChemicalRegistrationCompletePage } from "./admin/features/chemical-management/ChemicalRegistrationCompletePage";
 import { MetalXrayManagementProviderOutlet } from "./admin/features/metal-xray-detection/MetalXrayManagementContext";
 import { FactorySelectionPage as MetalXrayFactorySelectionPage } from "./admin/features/metal-xray-detection/FactorySelectionPage";
 import { MachineSelectionPage as MetalXrayMachineSelectionPage } from "./admin/features/metal-xray-detection/MachineSelectionPage";
@@ -149,6 +195,7 @@ import { FactorySelectionPage as WaterInspectionFactorySelectionPage } from "./a
 import { PointSelectionPage as WaterInspectionPointSelectionPage } from "./admin/features/water-inspection/PointSelectionPage";
 import { PointDetailPage as WaterInspectionPointDetailPage } from "./admin/features/water-inspection/PointDetailPage";
 import { PointFormPage as WaterInspectionPointFormPage } from "./admin/features/water-inspection/PointFormPage";
+import { PointRegistrationCompletePage as WaterInspectionPointRegistrationCompletePage } from "./admin/features/water-inspection/PointRegistrationCompletePage";
 import { SampleManagementProviderOutlet } from "./admin/features/sample-management/SampleManagementContext";
 import { FactorySelectionPage as SampleManagementFactorySelectionPage } from "./admin/features/sample-management/FactorySelectionPage";
 import { ProductSelectionPage as SampleManagementProductSelectionPage } from "./admin/features/sample-management/ProductSelectionPage";
@@ -174,6 +221,7 @@ import { FactorySelectionPage as ScaleInspectionFactorySelectionPage } from "./a
 import { SettingsPage as ScaleInspectionSettingsPage } from "./admin/features/scale-inspection/SettingsPage";
 import { ScaleDetailPage as ScaleInspectionScaleDetailPage } from "./admin/features/scale-inspection/ScaleDetailPage";
 import { ScaleFormPage as ScaleInspectionScaleFormPage } from "./admin/features/scale-inspection/ScaleFormPage";
+import { ScaleCompletePage as ScaleInspectionScaleCompletePage } from "./admin/features/scale-inspection/ScaleCompletePage";
 import { PostDetailPage as ScaleInspectionPostDetailPage } from "./admin/features/scale-inspection/PostDetailPage";
 import { PostFormPage as ScaleInspectionPostFormPage } from "./admin/features/scale-inspection/PostFormPage";
 import { ScaleManagementDetailPage } from "./admin/features/scale-inspection/ScaleManagementDetailPage";
@@ -352,10 +400,22 @@ function App() {
           <Route path="factories/:factoryId/schedule" element={<CalendarPage />} />
           <Route path="factories/:factoryId/schedule/register" element={<NewRegistrationPage />} />
           <Route
+            path="factories/:factoryId/schedule/register/complete"
+            element={<ScheduleRegistrationCompletePage />}
+          />
+          <Route
             path="factories/:factoryId/checklist-settings"
             element={<ChecklistSettingsPage />}
           />
+          <Route
+            path="factories/:factoryId/checklist-settings/deleted"
+            element={<ChecklistDeleteCompletePage />}
+          />
           <Route path="factories/:factoryId/lines/new" element={<LineRegistrationPage />} />
+          <Route
+            path="factories/:factoryId/lines/registered"
+            element={<LineRegistrationCompletePage />}
+          />
           <Route path="factories/:factoryId/lines/:lineId" element={<LineDetailPage />} />
         </Route>
         <Route path="ledger-management/cleaning-record" element={<CleaningRecordProviderOutlet />}>
@@ -370,8 +430,16 @@ function App() {
             element={<CleaningRecordNewRegistrationPage />}
           />
           <Route
+            path="factories/:factoryId/schedule/registered"
+            element={<CleaningRecordScheduleRegistrationCompletePage />}
+          />
+          <Route
             path="factories/:factoryId/lines/new"
-            element={<ComingSoonPage title="持ち場/ライン新規登録" />}
+            element={<CleaningRecordLineRegistrationPage />}
+          />
+          <Route
+            path="factories/:factoryId/lines/registered"
+            element={<CleaningRecordLineRegistrationCompletePage />}
           />
           <Route
             path="factories/:factoryId/lines/:lineId"
@@ -385,6 +453,10 @@ function App() {
           <Route index element={<AdditiveManagementFactorySelectionPage />} />
           <Route path="factories/:factoryId" element={<AdditiveSelectionPage />} />
           <Route path="factories/:factoryId/additives/new" element={<AdditiveNewRegistrationPage />} />
+          <Route
+            path="factories/:factoryId/additives/registered"
+            element={<AdditiveRegistrationCompletePage />}
+          />
           <Route
             path="factories/:factoryId/additives/deleted"
             element={<AdditiveDeleteCompletePage />}
@@ -403,6 +475,10 @@ function App() {
           <Route path="factories/:factoryId" element={<ChemicalSelectionPage />} />
           <Route path="factories/:factoryId/chemicals/new" element={<ChemicalNewRegistrationPage />} />
           <Route
+            path="factories/:factoryId/chemicals/registered"
+            element={<ChemicalRegistrationCompletePage />}
+          />
+          <Route
             path="factories/:factoryId/chemicals/deleted"
             element={<ChemicalDeleteCompletePage />}
           />
@@ -419,6 +495,10 @@ function App() {
           <Route index element={<WaterInspectionFactorySelectionPage />} />
           <Route path="factories/:factoryId" element={<WaterInspectionPointSelectionPage />} />
           <Route path="factories/:factoryId/points/new" element={<WaterInspectionPointFormPage />} />
+          <Route
+            path="factories/:factoryId/points/registered"
+            element={<WaterInspectionPointRegistrationCompletePage />}
+          />
           <Route path="factories/:factoryId/points/:pointId" element={<WaterInspectionPointDetailPage />} />
           <Route
             path="factories/:factoryId/points/:pointId/edit"
@@ -570,6 +650,10 @@ function App() {
           <Route index element={<ScaleInspectionFactorySelectionPage />} />
           <Route path="factories/:factoryId" element={<ScaleInspectionSettingsPage />} />
           <Route path="factories/:factoryId/scales/new" element={<ScaleInspectionScaleFormPage />} />
+          <Route
+            path="factories/:factoryId/scales/registered"
+            element={<ScaleInspectionScaleCompletePage />}
+          />
           <Route path="factories/:factoryId/scales/:scaleId" element={<ScaleInspectionScaleDetailPage />} />
           <Route
             path="factories/:factoryId/scales/:scaleId/edit"
@@ -635,6 +719,10 @@ function App() {
           <Route
             path="factories/:factoryId/floors/deleted"
             element={<LedgerGlassPlasticFloorDeleteCompletePage />}
+          />
+          <Route
+            path="factories/:factoryId/floors/registered"
+            element={<LedgerGlassPlasticFloorRegistrationCompletePage />}
           />
           <Route
             path="factories/:factoryId/floors/:floorId/edit"
@@ -760,7 +848,84 @@ function App() {
           element={<AdminLedgerDetailPage basePath="/admin/data-search" backLabel="データ検索" />}
         />
         <Route path="approvals" element={<ApprovalManagementPage />} />
-        <Route path="approvals/cleaning-record">
+        <Route path="confirmations" element={<ConfirmationManagementPage />} />
+        <Route path="confirmations/:slug" element={<ConfirmationFactorySelectionPage />} />
+        <Route
+          path="confirmations/water-inspection/factories/:factoryId"
+          element={<WaterConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<WaterConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<WaterConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/glass-plastic/factories/:factoryId"
+          element={<GlassPlasticConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<GlassPlasticConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<GlassPlasticConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/scale-inspection/factories/:factoryId"
+          element={<ScaleConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<ScaleConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<ScaleConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/sensory-inspection/factories/:factoryId"
+          element={<SensoryConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<SensoryConfirmationDataListPage />} />
+          <Route path="records/:recordId" element={<SensoryConfirmationRecordDetailPage />} />
+          <Route path="records/:recordId/scores/:scoreId" element={<SensoryConfirmationScoreDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/metal-xray-detection/factories/:factoryId"
+          element={<MetalConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<MetalConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<MetalConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/sample-management/factories/:factoryId"
+          element={<SampleConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<SampleConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<SampleConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/equipment-inspection/factories/:factoryId"
+          element={<EquipmentConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<EquipmentConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<EquipmentConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/cleaning-record/factories/:factoryId"
+          element={<CleaningConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<CleaningConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<CleaningConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/chemical-management/factories/:factoryId"
+          element={<ChemicalConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<ChemicalConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<ChemicalConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/additive-management/factories/:factoryId"
+          element={<AdditiveConfirmationRecordsProviderOutlet />}
+        >
+          <Route index element={<AdditiveConfirmationRecordsListPage />} />
+          <Route path="records/:recordId" element={<AdditiveConfirmationRecordDetailPage />} />
+        </Route>
+        <Route
+          path="confirmations/:slug/factories/:factoryId"
+          element={<ConfirmationDataListPlaceholderPage />}
+        />
+        <Route path="approvals/cleaning-record" element={<CleaningApprovalRecordsProviderOutlet />}>
           <Route index element={<ApprovalRecordsListPage />} />
           <Route path="records/:recordId" element={<CleaningApprovalRecordDetailPage />} />
         </Route>
@@ -827,6 +992,12 @@ function App() {
         >
           <Route index element={<WaterApprovalRecordsListPage />} />
           <Route path="records/:recordId" element={<WaterApprovalRecordDetailPage />} />
+        </Route>
+        <Route
+          path="approvals/glass-plastic"
+          element={<GlassPlasticApprovalRecordsProviderOutlet />}
+        >
+          <Route index element={<GlassPlasticApprovalRecordDetailPage />} />
         </Route>
         <Route path="products" element={<ProductManagementProviderOutlet />}>
           <Route index element={<ProductListPage />} />

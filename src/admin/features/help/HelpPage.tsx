@@ -48,7 +48,7 @@ export function HelpPage() {
       <div className="flex flex-col gap-10 items-start p-6">
         <div className="flex flex-col gap-2 items-start w-full">
           <h2 className="text-2xl text-[var(--semantic-text-primary)]">どんなことにお困りですか？</h2>
-          <div className="bg-white flex gap-6 items-center justify-end p-4 rounded-lg w-full">
+          <div className="bg-white flex gap-6 items-center justify-between p-4 rounded-lg w-full">
             <input
               type="text"
               value={keywordInput}
@@ -72,13 +72,13 @@ export function HelpPage() {
         {!isFiltering && (
           <div className="flex flex-col gap-2 items-start w-full">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">カテゴリから探す</h2>
-            <div className="flex flex-wrap gap-6">
+            <div className="grid grid-cols-3 gap-6 w-full">
               {HELP_CATEGORIES.map((category) => (
                 <button
                   key={category.id}
                   type="button"
                   onClick={() => handleSelectCategory(category.id)}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 w-[270px] flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
                 >
                   {category.label}
                 </button>

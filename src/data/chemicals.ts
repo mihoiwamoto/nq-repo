@@ -8,7 +8,7 @@ export type Chemical = {
 
 export const CHEMICALS: Chemical[] = [
   { id: "c1", name: "次亜塩素酸ナトリウム", spec: "1000", unit: "g", storageLocation: "小型物置" },
-  { id: "c2", name: "ジオキシー" },
+  { id: "c2", name: "ジオキシー", spec: "500", unit: "ml", storageLocation: "薬品庫" },
   { id: "c3", name: "塩酸" },
   { id: "c4", name: "次亜塩素酸ソーダ" },
 ];

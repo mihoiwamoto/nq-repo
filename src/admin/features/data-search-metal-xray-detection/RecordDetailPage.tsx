@@ -2,7 +2,6 @@ import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Comments } from "../../components/Comments";
 import { CommentsSection } from "../../components/CommentsSection";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
@@ -139,7 +138,7 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">点検時間</p>
                   <p className="text-xl text-[#333]">{inspectionRecord.time}</p>
                 </div>
-                <p className="text-xs text-[#808080] text-right w-full">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -149,7 +148,7 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">異常製品</p>
                   <p className="text-xl text-[#333]">{inspectionRecord.passedProduct}</p>
                 </div>
-                <p className="text-xs text-[#808080] text-right w-full">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -159,7 +158,7 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">通過数量</p>
                   <p className="text-xl text-[#333]">200</p>
                 </div>
-                <p className="text-xs text-[#808080] text-right w-full">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -169,7 +168,7 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">異常数量</p>
                   <p className="text-xl text-[#333]">5</p>
                 </div>
-                <p className="text-xs text-[#808080] text-right w-full">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -180,7 +179,7 @@ export function RecordDetailPage() {
                   <p className="text-xl text-[#333]">異物混入</p>
                 </div>
                 <p className="text-base text-[#808080]">検査時に金属異物が検知され、金属探知機が反応しました。原因は食材の加工過程で混入した金属片と推定されます。</p>
-                <p className="text-xs text-[#808080] text-right w-full">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -191,7 +190,7 @@ export function RecordDetailPage() {
                   <p className="text-xl text-[#333]">点検調整</p>
                 </div>
                 <p className="text-base text-[#808080]">異常が検知された製品は廃棄処理しました。金属探知機の感度を確認し、キャリブレーションを実施しました。今後は同じロットの製品について追加検査を実施します。</p>
-                <p className="text-xs text-[#808080] text-right w-full">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -201,9 +200,6 @@ export function RecordDetailPage() {
                 <p className="text-base text-[#333]">{inspectionRecord.remarks || "検査日時における異常検知について報告いたします。該当製品は速やかに隔離し、廃棄処理を完了いたしました。"}</p>
               </div>
             </div>
-
-            {/* Comments Section */}
-            <Comments comments={inspectionRecord.comments || []} />
           </div>
         </div>
       </div>
@@ -267,7 +263,7 @@ export function RecordDetailPage() {
                 <p className="text-xl text-[#333]">点検時間</p>
                 <p className="text-xl text-[#333]">08:25</p>
               </div>
-              <p className="text-xs text-[#808080] text-right w-full">田中太郎 2026/08/27 08:25</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/27 08:25</p>
             </div>
 
             <div className="h-px bg-[#d0d0d0] w-full" />
@@ -281,7 +277,7 @@ export function RecordDetailPage() {
                     <p className="text-xl text-[#333]">{check.detail}</p>
                     <StatusTag status="正常" />
                   </div>
-                  <p className="text-xs text-[#808080] text-right w-full">田中太郎 2026/08/27 08:25</p>
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/27 08:25</p>
                   {index < METAL_CHECKS.length - 1 && <div className="h-px bg-[#d0d0d0] w-full" />}
                 </div>
               );
@@ -312,7 +308,7 @@ export function RecordDetailPage() {
                 <p className="text-xl text-[#333]">点検時間</p>
                 <p className="text-xl text-[#333]">08:25</p>
               </div>
-              <p className="text-xs text-[#808080] text-right w-full">田中太郎 2026/08/27 08:25</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/27 08:25</p>
             </div>
 
             <div className="h-px bg-[#d0d0d0] w-full" />
@@ -326,18 +322,12 @@ export function RecordDetailPage() {
                     <p className="text-xl text-[#333]">{check.detail}</p>
                     <StatusTag status="正常" />
                   </div>
-                  <p className="text-xs text-[#808080] text-right w-full">田中太郎 2026/08/27 08:25</p>
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/27 08:25</p>
                   {index < XRAY_CHECKS.length - 1 && <div className="h-px bg-[#d0d0d0] w-full" />}
                 </div>
               );
             })}
 
-            <div className="h-px bg-[#d0d0d0] w-full mt-4" />
-
-            {/* X-ray Detector Comments */}
-            <div className="pt-4">
-              <CommentsSection comments={record.xrayComments || []} />
-            </div>
           </div>
 
           <div className="border-t border-[#d0d0d0]" />
@@ -349,11 +339,6 @@ export function RecordDetailPage() {
             </p>
           </div>
 
-          <div className="border-t border-[#d0d0d0] px-4 mx-4 pt-6">
-            <div className="flex flex-col gap-4 items-start w-full">
-              <Comments comments={record.comments || []} />
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -446,7 +431,7 @@ function OperationCheckDetailPage({
               <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">点検時間</p>
               <p className="text-xl text-[var(--semantic-text-primary)]">08:25</p>
             </div>
-            <p className="text-sm text-[#808080] text-right">山田太郎 2026/08/27 08:25</p>
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">山田太郎 2026/08/27 08:25</p>
 
             <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -475,7 +460,7 @@ function OperationCheckDetailPage({
                     </div>
                   </div>
                 )}
-                <p className="text-sm text-[#808080] text-right">山田太郎 2026/08/27 08:25</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">山田太郎 2026/08/27 08:25</p>
                 {index < METAL_OPERATION_CHECKS.length - 1 && <div className="border-t border-[#d0d0d0] w-full" />}
               </div>
             ))}
@@ -501,7 +486,7 @@ function OperationCheckDetailPage({
               <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">点検時間</p>
               <p className="text-xl text-[var(--semantic-text-primary)]">08:25</p>
             </div>
-            <p className="text-sm text-[#808080] text-right">鈴木花子 2026/08/27 08:25</p>
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">鈴木花子 2026/08/27 08:25</p>
 
             <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -512,17 +497,11 @@ function OperationCheckDetailPage({
                   <p className="text-xl text-[var(--semantic-text-primary)]">{check.detail}</p>
                   <StatusTag status="正常" />
                 </div>
-                <p className="text-sm text-[#808080] text-right">鈴木花子 2026/08/27 08:25</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">鈴木花子 2026/08/27 08:25</p>
                 {index < XRAY_OPERATION_CHECKS.length - 1 && <div className="border-t border-[#d0d0d0] w-full" />}
               </div>
             ))}
 
-            <div className="border-t border-[#d0d0d0] w-full mt-4" />
-
-            {/* X-ray Detector Operation Comments */}
-            <div className="pt-4">
-              <CommentsSection comments={record.xrayOperationComments || []} />
-            </div>
           </div>
 
           <div className="border-t border-[#d0d0d0] px-4 mx-4" />
@@ -535,10 +514,6 @@ function OperationCheckDetailPage({
             </p>
           </div>
 
-          {/* Comments Section */}
-          <div className="border-t border-[#d0d0d0] px-4 pt-6">
-            <Comments comments={record.comments || []} />
-          </div>
         </div>
       </div>
     </div>

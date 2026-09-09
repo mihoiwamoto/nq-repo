@@ -89,7 +89,7 @@ function TestPieceSection({
               <p className="text-xl text-[#333]">点検時間</p>
               <p className="text-xl text-[#333]">{item.time}</p>
             </div>
-            <p className="text-xs text-[#808080] text-right w-full">
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
               {inspectorName} 2026/08/27 08:25
             </p>
             {itemIndex === 0 && item.pieces.length > 0 && (
@@ -109,7 +109,7 @@ function TestPieceSection({
                     )}
                   </div>
                   {pieceIndex < item.pieces.length - 1 && (
-                    <p className="text-xs text-[#808080] text-right w-full">
+                    <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                       {inspectorName} 2026/08/27 08:25
                     </p>
                   )}
@@ -218,7 +218,7 @@ export function TestPieceDetailPage() {
               <p className="text-xl text-[#333]">通過製品/カテゴリ</p>
               <p className="text-xl text-[#333]">マンゴープリン　ストレート　1kg</p>
             </div>
-            <p className="text-sm text-[#808080] text-right w-full">田中太郎 2026/08/27 08:25</p>
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/27 08:25</p>
           </div>
 
           <TestPieceSection

@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useGlassPlastic } from "./GlassPlasticContext";
 import { FloorPlanEditor } from "./FloorPlanEditor";
@@ -55,7 +56,7 @@ export function FloorRegistrationPage() {
       mapItems,
       repairItems: [],
     });
-    navigate(basePath);
+    navigate(`${basePath}/floors/registered`);
   }
 
   return (
@@ -93,19 +94,9 @@ export function FloorRegistrationPage() {
             日付指定が無い場合は、常にアプリ上に表示されます。
           </p>
           <div className="flex gap-2 items-center">
-            <input
-              type="date"
-              value={displayFrom}
-              onChange={(e) => setDisplayFrom(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={displayFrom} onChange={setDisplayFrom} />
             <span className="text-[var(--semantic-text-primary)]">〜</span>
-            <input
-              type="date"
-              value={displayTo}
-              onChange={(e) => setDisplayTo(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={displayTo} onChange={setDisplayTo} />
           </div>
         </div>
 

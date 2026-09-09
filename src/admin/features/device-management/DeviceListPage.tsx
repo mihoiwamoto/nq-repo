@@ -4,18 +4,19 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Toast } from "../../components/Toast";
 import { FACTORIES, getFactoryName } from "../../../data/factories";
-import { INITIAL_DEVICES } from "./mockData";
+import { loadDevices, saveDevices, popNewDeviceQueue, NEW_DEVICE_EVENT } from "../../../data/deviceStore";
 import { DEVICE_STATUS_LABELS, type DeviceStatus, type LoginDevice } from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import iconReload from "../../../assets/figma/icons/common/reload.svg";
 
 const PAGE_SIZE = 10;
 
 export function DeviceListPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [devices, setDevices] = useState<LoginDevice[]>(INITIAL_DEVICES);
+  const [devices, setDevices] = useState<LoginDevice[]>(() => loadDevices());
   const [filterOpen, setFilterOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [factoryInput, setFactoryInput] = useState("");
@@ -25,7 +26,8 @@ export function DeviceListPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("変更が完了しました");
   const [notifiedDeviceId, setNotifiedDeviceId] = useState<string | null>(null);
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const [notificationQueue, setNotificationQueue] = useState<string[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     if ((location.state as any)?.deleted) {
@@ -39,6 +41,39 @@ export function DeviceListPage() {
     const timer = setTimeout(() => setShowToast(false), 3000);
     return () => clearTimeout(timer);
   }, [showToast]);
+
+  // アプリ側で初めてログインした端末を、管理画面を開いた時点で通知キューに積む
+  useEffect(() => {
+    const queued = popNewDeviceQueue();
+    if (queued.length > 0) setNotificationQueue((prev) => [...prev, ...queued]);
+  }, []);
+
+  // 同一タブでの新規端末登録、他タブでのログイン端末データ変更を検知する
+  useEffect(() => {
+    function handleNewDevice(e: Event) {
+      const device = (e as CustomEvent<LoginDevice>).detail;
+      setDevices(loadDevices());
+      if (device) setNotificationQueue((prev) => [...prev, device.id]);
+    }
+    function handleStorage() {
+      setDevices(loadDevices());
+    }
+    window.addEventListener(NEW_DEVICE_EVENT, handleNewDevice);
+    window.addEventListener("storage", handleStorage);
+    return () => {
+      window.removeEventListener(NEW_DEVICE_EVENT, handleNewDevice);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
+
+  // 通知キューに積まれた端末を、ログイン端末認証ダイアログとして1件ずつ表示する
+  useEffect(() => {
+    if (notifiedDeviceId || notificationQueue.length === 0) return;
+    const [nextId, ...rest] = notificationQueue;
+    setNotificationQueue(rest);
+    const device = devices.find((d) => d.id === nextId && d.status === "pending");
+    if (device) setNotifiedDeviceId(device.id);
+  }, [notificationQueue, notifiedDeviceId, devices]);
 
   const filtered = useMemo(
     () =>
@@ -67,31 +102,39 @@ export function DeviceListPage() {
   }
 
   function updateStatus(id: string, status: DeviceStatus) {
-    setDevices((prev) => prev.map((d) => (d.id === id ? { ...d, status } : d)));
+    setDevices((prev) => {
+      const next = prev.map((d) => (d.id === id ? { ...d, status } : d));
+      saveDevices(next);
+      return next;
+    });
     setToastMessage("変更が完了しました");
     setShowToast(true);
   }
 
   function handleDelete() {
     if (!deleteTargetId) return;
-    setDevices((prev) => prev.filter((d) => d.id !== deleteTargetId));
+    setDevices((prev) => {
+      const next = prev.filter((d) => d.id !== deleteTargetId);
+      saveDevices(next);
+      return next;
+    });
     setDeleteTargetId(null);
     navigate("/admin/devices/deleted", { state: { deleted: true } });
   }
 
   function handleRefresh() {
-    const nextPending = devices.find((d) => d.status === "pending" && !dismissedIds.has(d.id));
-    setNotifiedDeviceId(nextPending ? nextPending.id : null);
+    setDevices(loadDevices());
+    setPage(1);
+    setIsRefreshing(true);
+    setTimeout(() => setIsRefreshing(false), 600);
   }
 
-  function closeNotification(id: string) {
-    setDismissedIds((prev) => new Set(prev).add(id));
+  function closeNotification() {
     setNotifiedDeviceId(null);
   }
 
   function approveFromNotification(id: string) {
     updateStatus(id, "authenticated");
-    setDismissedIds((prev) => new Set(prev).add(id));
     setNotifiedDeviceId(null);
   }
 
@@ -105,7 +148,20 @@ export function DeviceListPage() {
             onClick={handleRefresh}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            ↻ 更新
+            <span
+              aria-hidden
+              className={`inline-block size-4 shrink-0 ${isRefreshing ? "animate-spin" : ""}`}
+              style={{
+                WebkitMaskImage: `url("${iconReload}")`,
+                maskImage: `url("${iconReload}")`,
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                backgroundColor: "white",
+              }}
+            />
+            更新
           </button>
         }
       />
@@ -119,14 +175,7 @@ export function DeviceListPage() {
             絞り込み検索 {filterOpen ? "−" : "+"}
           </button>
           {filterOpen && (
-            <div className="flex gap-4 items-center justify-end w-full flex-wrap">
-              <input
-                type="text"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                placeholder="端末名で探す"
-                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[300px] placeholder:text-[#808080]"
-              />
+            <div className="flex gap-4 items-center w-full flex-wrap">
               <Pulldown
                 value={factoryInput}
                 onChange={setFactoryInput}
@@ -134,6 +183,14 @@ export function DeviceListPage() {
                 placeholder="工場選択"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
               />
+              <input
+                type="text"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                placeholder="端末名で探す"
+                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[300px] placeholder:text-[#808080]"
+              />
+              <div className="flex-1" />
               <div className="flex gap-2 items-center">
                 <button
                   type="button"
@@ -157,20 +214,20 @@ export function DeviceListPage() {
         <div className="flex flex-col items-start w-full rounded-lg overflow-hidden">
           <div className="bg-[#f6f6f6] flex h-10 items-center w-full">
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">
+              <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full">
                 ログイン端末名
               </p>
             </div>
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">工場名</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full">工場名</p>
             </div>
             <div className="w-40 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">
+              <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full">
                 ステータス
               </p>
             </div>
             <div className="w-[120px] h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">操作</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full">操作</p>
             </div>
           </div>
           {pageItems.length === 0 ? (
@@ -316,7 +373,7 @@ export function DeviceListPage() {
 
       {notifiedDevice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => closeNotification(notifiedDevice.id)} />
+          <div className="absolute inset-0 bg-black/40" onClick={() => closeNotification()} />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
@@ -347,7 +404,7 @@ export function DeviceListPage() {
             <div className="flex gap-6 items-center justify-center w-full">
               <button
                 type="button"
-                onClick={() => closeNotification(notifiedDevice.id)}
+                onClick={() => closeNotification()}
                 className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
               >
                 保留

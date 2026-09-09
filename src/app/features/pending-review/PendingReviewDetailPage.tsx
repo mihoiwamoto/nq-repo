@@ -32,7 +32,7 @@ import {
   rooms as glassPlasticRooms,
   REPAIR_STATUS_COLORS,
   REPAIR_STATUS_LABELS,
-  REPAIR_STATUS_ORDER,
+  REPAIR_STATUS_NEXT_OPTIONS,
   type RepairStatus,
 } from "../glass-plastic/mockData";
 import {
@@ -158,7 +158,7 @@ function MetalXrayChecklistGroup({
                       {RESULT_LABELS[checks[item.key] === "ok" ? "OK" : "NG"]}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">{timestamp}</p>
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
                 </div>
               ))}
             </div>
@@ -187,6 +187,7 @@ function RepairStatusDropdown({
   onChange: (value: RepairStatus) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const options = REPAIR_STATUS_NEXT_OPTIONS[value];
   return (
     <div className="relative shrink-0">
       <button
@@ -202,7 +203,7 @@ function RepairStatusDropdown({
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-[0px_2px_3px_rgba(51,51,51,0.24)] overflow-hidden z-20 w-32">
-            {REPAIR_STATUS_ORDER.map((status) => (
+            {options.map((status) => (
               <button
                 key={status}
                 type="button"
@@ -727,7 +728,7 @@ export function PendingReviewDetailPage() {
                   <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
                   <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                   {sampleDetail.inspectorName} {sampleDetail.timestamp}
                 </p>
                 <div className="border-t border-[#d0d0d0] w-full" />
@@ -931,7 +932,7 @@ export function PendingReviewDetailPage() {
                   <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
                   <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                   {sampleDetail.inspectorName} {sampleDetail.timestamp}
                 </p>
                 <div className="border-t border-[#d0d0d0] w-full" />
@@ -1698,7 +1699,7 @@ export function PendingReviewDetailPage() {
             <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40">
               <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
               <p className="text-sm text-[var(--semantic-text-secondary)]">
-                異常があった秤は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「対応完了」ステータスに変更してください。
+                異常があった秤は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
               </p>
             </div>
             <div className="bg-white rounded-lg p-4 flex flex-col gap-6 items-start w-full max-w-full max-w-[480px] mx-40">
@@ -2171,7 +2172,7 @@ export function PendingReviewDetailPage() {
                   <p className="text-base text-[var(--semantic-text-primary)]">点検時間</p>
                   <p className="text-base text-[var(--semantic-text-primary)]">{record.time}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                   {recordTimestamp}
                 </p>
               </div>
@@ -2751,7 +2752,7 @@ export function PendingReviewDetailPage() {
                           </span>
                         </div>
                         {record?.timestamp && (
-                          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">
+                          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                             {record.inspector} {record.timestamp}
                           </p>
                         )}
@@ -2805,7 +2806,7 @@ export function PendingReviewDetailPage() {
                               </div>
                             )}
                             {record?.timestamp && (
-                              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">
+                              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                                 {record.inspector} {record.timestamp}
                               </p>
                             )}

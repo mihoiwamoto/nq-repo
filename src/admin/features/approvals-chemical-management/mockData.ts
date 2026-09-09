@@ -13,7 +13,7 @@ export const chemicalApprovalRecords: ChemicalApprovalRecord[] = [
     remarks: "月次定期発注による補充入庫",
     implementer: "田中裕子",
     confirmer: "山本真理",
-    approvalStatus: "pending",
+    approvalStatus: "rejected",
   },
   {
     id: "ch2",

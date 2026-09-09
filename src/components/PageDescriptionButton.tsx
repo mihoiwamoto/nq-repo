@@ -11,7 +11,7 @@ export function PageDescriptionButton() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+        className="page-description-fab fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
         title="画面説明"
         aria-label="画面説明を表示"
       >
@@ -81,6 +81,11 @@ export function PageDescriptionButton() {
         }
         .animation-slide-up {
           animation: slide-up 0.2s ease-out;
+        }
+        @media (max-height: 700px) {
+          .page-description-fab {
+            display: none;
+          }
         }
       `}</style>
     </>

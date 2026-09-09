@@ -3,8 +3,15 @@ import { useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { Comments } from "../../components/Comments";
+import { CommentInputBox } from "../../components/CommentInputBox";
+import { APPROVAL_STATUS_COLOR } from "../../components/ApprovalStatusBadge";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
+import { RejectReasonDialog } from "../../components/RejectReasonDialog";
+import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "./types";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
@@ -21,9 +28,21 @@ export function RecordDetailPage() {
   const { factoryId, recordId } = useParams<{ factoryId?: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
   const factoryName = getFactoryName(factoryId ?? "f1");
+  const {
+    showConfirmDialog,
+    showRejectDialog,
+    showToast,
+    closeToast,
+    requestApproval,
+    confirmApproval,
+    cancelApproval,
+    requestRejection,
+    confirmRejection,
+    cancelRejection,
+  } = useApprovalConfirm();
 
   const record = records.find((r) => r.id === recordId);
-  const [comment, setComment] = useState(record?.comment ?? "");
+  const [comment, setComment] = useState("");
 
   if (!record) {
     return (
@@ -33,8 +52,25 @@ export function RecordDetailPage() {
     );
   }
 
+  const handleStatusChange = (value: string) => {
+    if (value === "approved") {
+      requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
+    } else if (value === "rejected") {
+      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
+    } else {
+      setApprovalStatus(record.id, value as ApprovalStatus);
+    }
+  };
+
   return (
     <div>
+      {showConfirmDialog && (
+        <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
+      )}
+      {showRejectDialog && (
+        <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
+      )}
+      {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
@@ -50,9 +86,11 @@ export function RecordDetailPage() {
           </div>
           <Pulldown
             value={record.approvalStatus}
-            onChange={(value) => setApprovalStatus(record.id, value as ApprovalStatus)}
+            onChange={handleStatusChange}
             options={STATUS_OPTIONS}
-            className="bg-[#808080] border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
+            disabled={record.approvalStatus !== "pending"}
+            className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
+            style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
           />
         </div>
 
@@ -142,22 +180,16 @@ export function RecordDetailPage() {
         )}
 
         <div className="flex flex-col gap-4 items-start w-full">
-          <div className="flex flex-col gap-2 items-start w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="コメントを入力"
-              className="bg-white min-h-20 p-2 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => addComment(record.id, comment)}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
-          >
-            コメントを残す
-          </button>
+          <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
+          <Comments comments={record.comments || []} />
+          <CommentInputBox
+            value={comment}
+            onChange={setComment}
+            onSubmit={() => {
+              addComment(record.id, comment);
+              setComment("");
+            }}
+          />
         </div>
       </div>
     </div>

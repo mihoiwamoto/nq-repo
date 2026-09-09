@@ -10,6 +10,20 @@ export const mockRecords: CleaningSearchRecord[] = [
     implementer: "高橋和子",
     confirmer: "加藤由美",
     approvalStatus: "pending",
+    comments: [
+      {
+        id: "c1",
+        author: "鈴木修",
+        timestamp: "2026.08.19 10:39",
+        text: "検索条件を確認しました。問題ありません。",
+      },
+      {
+        id: "c2",
+        author: "山田花子",
+        timestamp: "2026.08.23 15:45",
+        text: "データ抽出の期間を再度ご確認ください。",
+      },
+    ],
     detailRemarks:
       "充填包装機のコンベア清掃時、ベルト裏面に微量の粉体付着あり。通常清掃にて除去済み。次回も重点確認予定。",
     cleaningPoints: [

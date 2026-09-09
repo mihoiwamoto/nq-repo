@@ -43,12 +43,26 @@ export const glassPlasticRecords: GlassPlasticRecord[] = [
         actionType: "修理依頼",
       },
       "entrance|窓ガラス1": {
-        status: "repairing",
+        status: "issue",
         content: "ひび割れ",
         cause: "人や物との接触",
         actionType: "補修テープでの応急処置",
       },
     }),
+    comments: [
+      {
+        id: "c1",
+        author: "鈴木修",
+        timestamp: "2026.08.19 10:39",
+        text: "検索条件を確認しました。問題ありません。",
+      },
+      {
+        id: "c2",
+        author: "山田花子",
+        timestamp: "2026.08.23 15:45",
+        text: "データ抽出の期間を再度ご確認ください。",
+      },
+    ],
   },
   {
     id: "dgp2",

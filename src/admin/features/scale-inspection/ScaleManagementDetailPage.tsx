@@ -6,10 +6,14 @@ import { Pulldown } from "../../components/Pulldown";
 import { Toast } from "../../components/Toast";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { getFactoryName } from "../../../data/factories";
-import { SCALE_REPAIR_STATUS_COLORS, SCALE_REPAIR_STATUS_LABELS, type ScaleRepairStatus } from "./types";
+import {
+  SCALE_REPAIR_STATUS_COLORS,
+  SCALE_REPAIR_STATUS_LABELS,
+  SCALE_REPAIR_STATUS_NEXT_OPTIONS,
+  type ScaleRepairStatus,
+} from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
-
-const REPAIR_STATUS_OPTIONS: ScaleRepairStatus[] = ["action_needed", "repairing", "done"];
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -81,7 +85,8 @@ export function ScaleManagementDetailPage() {
             onClick={() => navigate(`${basePath}/scale-management/${scale.id}/edit`)}
             className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
-            ✎ 編集
+            <img src={iconEdit} alt="編集" className="size-5" />
+            編集
           </button>
           <button
             type="button"
@@ -122,7 +127,7 @@ export function ScaleManagementDetailPage() {
         <div className="flex flex-col gap-2 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
           <p className="text-sm text-[var(--semantic-text-secondary)]">
-            異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「対応完了」ステータスに変更してください。
+            異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
           </p>
           <div className="bg-white flex items-center justify-between w-full px-4 py-6 rounded-lg">
             <p className="text-xl text-[var(--semantic-text-primary)]">{scale.label}</p>
@@ -131,11 +136,16 @@ export function ScaleManagementDetailPage() {
               onChange={(value) =>
                 setScaleRepairStatus(scale.id, value ? (value as ScaleRepairStatus) : null)
               }
-              options={REPAIR_STATUS_OPTIONS.map((opt) => ({ value: opt, label: SCALE_REPAIR_STATUS_LABELS[opt] }))}
+              options={SCALE_REPAIR_STATUS_NEXT_OPTIONS[scale.repairStatus ?? "action_needed"].map((opt) => ({
+                value: opt,
+                label: SCALE_REPAIR_STATUS_LABELS[opt],
+              }))}
               placeholder="異常なし"
               className="h-10 px-4 rounded-lg text-sm text-white"
               style={{
-                backgroundColor: scale.repairStatus ? SCALE_REPAIR_STATUS_COLORS[scale.repairStatus] : "#808080",
+                backgroundColor: scale.repairStatus
+                  ? SCALE_REPAIR_STATUS_COLORS[scale.repairStatus]
+                  : "var(--semantic-status-success)",
               }}
             />
           </div>

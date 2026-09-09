@@ -1,203 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useMetalXrayManagement } from "./MetalXrayManagementContext";
 import { AddProductDialog } from "./AddProductDialog";
-import iconCalendar from "../../../assets/figma/icons/common/calendar.svg";
 import { METAL_DETECTORS, XRAY_DETECTORS, WEIGHT_CHECKERS } from "./mockData";
-
-function DatePicker({
-  value,
-  onChange,
-  onClose,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  onClose: () => void;
-}) {
-  const [currentDate, setCurrentDate] = useState(
-    value ? new Date(value) : new Date()
-  );
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
-
-  const getDaysInMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  };
-
-  const getFirstDayOfMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-  };
-
-  const handlePrevMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-    );
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-    );
-  };
-
-  const handleSelectDate = (day: number) => {
-    const selectedDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day
-    );
-    const dateString = selectedDate.toISOString().split("T")[0];
-    onChange(dateString);
-    onClose();
-  };
-
-  const daysInMonth = getDaysInMonth(currentDate);
-  const firstDay = getFirstDayOfMonth(currentDate);
-  const days = [];
-
-  for (let i = 0; i < firstDay; i++) {
-    days.push(null);
-  }
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push(i);
-  }
-
-  const monthYear = currentDate.toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "long",
-  });
-
-  return (
-    <div
-      ref={containerRef}
-      className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg z-50 p-4 w-[280px]"
-    >
-      <div className="flex items-center justify-between mb-4">
-        <button
-          type="button"
-          onClick={handlePrevMonth}
-          className="px-2 py-1 hover:bg-gray-100 rounded"
-        >
-          ←
-        </button>
-        <div className="text-base font-semibold text-[var(--semantic-text-primary)]">
-          {monthYear}
-        </div>
-        <button
-          type="button"
-          onClick={handleNextMonth}
-          className="px-2 py-1 hover:bg-gray-100 rounded"
-        >
-          →
-        </button>
-      </div>
-
-      <div className="grid grid-cols-7 gap-1">
-        {["日", "月", "火", "水", "木", "金", "土"].map((day) => (
-          <div
-            key={day}
-            className="text-center text-sm font-semibold text-[var(--semantic-text-secondary)] p-1"
-          >
-            {day}
-          </div>
-        ))}
-
-        {days.map((day, index) => (
-          <button
-            key={index}
-            type="button"
-            onClick={() => day && handleSelectDate(day)}
-            disabled={!day}
-            className={`w-8 h-8 flex items-center justify-center text-sm rounded-full ${
-              day
-                ? `text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-brand-primary)] hover:text-white cursor-pointer ${
-                    value ===
-                    new Date(
-                      currentDate.getFullYear(),
-                      currentDate.getMonth(),
-                      day
-                    )
-                      .toISOString()
-                      .split("T")[0]
-                      ? "bg-[var(--semantic-brand-primary)] text-white"
-                      : ""
-                  }`
-                : "text-gray-300"
-            }`}
-          >
-            {day}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DateInput({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleIconClick = () => {
-    setIsOpen(true);
-  };
-
-  const displayValue = value
-    ? new Date(value).toLocaleDateString("ja-JP", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      })
-    : "";
-
-  return (
-    <div className="relative">
-      <label className="relative flex items-center">
-        {!value && (
-          <span className="absolute left-4 text-[var(--semantic-text-secondary)] pointer-events-none">
-            日付を選択
-          </span>
-        )}
-        <input
-          type="text"
-          value={displayValue}
-          readOnly
-          placeholder="日付を選択"
-          className="bg-white h-12 px-4 pr-12 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px] cursor-pointer border border-transparent"
-        />
-        <img
-          src={iconCalendar}
-          alt="日付を選択"
-          className="absolute right-4 w-6 h-6 cursor-pointer"
-          onClick={handleIconClick}
-        />
-      </label>
-      {isOpen && (
-        <DatePicker value={value} onChange={onChange} onClose={() => setIsOpen(false)} />
-      )}
-    </div>
-  );
-}
 
 function RecordToggle({
   value,
@@ -416,9 +225,9 @@ export function NewRegistrationPage() {
             日付指定が無い場合は、常にアプリ上に表示されます。
           </p>
           <div className="flex gap-2 items-center">
-            <DateInput value={displayFrom} onChange={setDisplayFrom} />
+            <DateFilterInput value={displayFrom} onChange={setDisplayFrom} />
             <span className="text-[var(--semantic-text-primary)]">〜</span>
-            <DateInput value={displayTo} onChange={setDisplayTo} />
+            <DateFilterInput value={displayTo} onChange={setDisplayTo} />
           </div>
         </div>
 

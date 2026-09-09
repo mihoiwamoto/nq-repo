@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Pulldown } from "../../components/Pulldown";
 import { getFactoryName } from "../../../data/factories";
 import { useStorageManagement } from "./StorageManagementContext";
 
@@ -8,8 +9,24 @@ export function StorageListPage() {
   const { storageLocations } = useStorageManagement();
   const [filterOpen, setFilterOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [factoryFilter, setFactoryFilter] = useState("");
+  const [tempFactoryFilter, setTempFactoryFilter] = useState("");
 
-  const filtered = storageLocations.filter((location) => location.name.includes(search));
+  const filtered = storageLocations.filter((location) => {
+    const nameMatch = location.name.includes(search);
+    const factoryMatch = !factoryFilter || location.factoryId === factoryFilter;
+    return nameMatch && factoryMatch;
+  });
+
+  const handleReset = () => {
+    setSearch("");
+    setFactoryFilter("");
+    setTempFactoryFilter("");
+  };
+
+  const handleSearch = () => {
+    setFactoryFilter(tempFactoryFilter);
+  };
 
   return (
     <div>
@@ -35,30 +52,79 @@ export function StorageListPage() {
               絞り込み検索 {filterOpen ? "−" : "+"}
             </button>
             {filterOpen && (
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="保管場所名で検索"
-                className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full max-w-md placeholder:text-[var(--semantic-text-secondary)]"
-              />
+              <div className="flex gap-4 items-center w-full">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="保管場所で検索"
+                  className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
+                />
+                <Pulldown
+                  value={tempFactoryFilter}
+                  onChange={(value) => setTempFactoryFilter(value)}
+                  options={[
+                    { value: "", label: "工場選択" },
+                    ...Array.from(new Set(storageLocations.map(l => l.factoryId)))
+                      .sort()
+                      .map((factoryId) => ({
+                        value: factoryId,
+                        label: getFactoryName(factoryId),
+                      })),
+                  ]}
+                  className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base w-[240px] text-[var(--semantic-text-secondary)]"
+                  style={{
+                    color: tempFactoryFilter ? 'var(--semantic-text-primary)' : undefined,
+                    fontWeight: tempFactoryFilter ? 700 : 400,
+                  }}
+                />
+                <div className="flex gap-3 ml-auto">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="bg-white border border-[var(--semantic-brand-primary)] h-10 px-6 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                  >
+                    リセット
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSearch}
+                    className="bg-[var(--semantic-brand-primary)] h-10 px-6 rounded-lg flex items-center justify-center gap-2 text-sm text-white"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    検索
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 
           <div className="flex flex-col items-start w-full rounded-lg overflow-hidden">
             <div className="bg-[#f6f6f6] flex h-10 items-center w-full">
               <div className="flex-1 h-full flex items-center px-2">
-                <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">
+                <p className="text-sm text-[var(--semantic-brand-primary)] w-full">
                   保管場所
                 </p>
               </div>
               <div className="flex-1 h-full flex items-center px-2">
-                <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">
+                <p className="text-sm text-[var(--semantic-brand-primary)] w-full">
                   工場
                 </p>
               </div>
               <div className="w-[120px] h-full flex items-center px-2">
-                <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">
+                <p className="text-sm text-[var(--semantic-brand-primary)] w-full">
                   操作
                 </p>
               </div>

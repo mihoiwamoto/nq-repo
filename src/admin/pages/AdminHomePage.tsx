@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { PageTitleBar } from "../components/PageTitleBar";
 import iconDataSearch from "../../assets/figma/icons/nav/data-search.svg";
 import iconApproval from "../../assets/figma/icons/nav/approval.svg";
+import iconConfirmation from "../../assets/figma/icons/nav/confirmation.svg";
 import iconLedgerManagement from "../../assets/figma/icons/nav/ledger-management.svg";
 import iconCompany from "../../assets/figma/icons/nav/company.svg";
 import iconFactory from "../../assets/figma/icons/nav/factory.svg";
@@ -21,7 +22,13 @@ const HOME_SHORTCUTS = [
     label: "承認申請管理",
     icon: iconApproval,
     path: "/admin/approvals",
-    description: "工場で点検された帳票を確認・承認する画面です",
+    description: "工場で点検された帳票を承認する画面です",
+  },
+  {
+    label: "確認管理",
+    icon: iconConfirmation,
+    path: "/admin/confirmations",
+    description: "工場で点検された帳票を確認する画面です",
   },
   {
     label: "帳票管理",
@@ -72,12 +79,12 @@ export function AdminHomePage() {
     <div className="w-full h-full flex flex-col">
       <PageTitleBar title="ホーム" />
       <div className="flex-1 flex flex-col justify-start p-6 overflow-auto">
-        <div className="mx-auto w-full max-w-4xl flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-4">
           {HOME_SHORTCUTS.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className="bg-white flex items-center gap-6 px-4 py-3 rounded-lg w-full"
+              className="bg-[var(--semantic-background-surface)] flex items-center gap-6 px-4 py-3 rounded-lg w-full"
             >
               <div className="flex items-center gap-3 h-8 w-[228px] shrink-0">
                 <span
@@ -93,10 +100,14 @@ export function AdminHomePage() {
                     backgroundColor: "var(--semantic-brand-primary)",
                   }}
                 />
-                <span className="flex-1 text-xl text-[var(--semantic-brand-primary)]">{item.label}</span>
+                <span className="flex-1 text-xl font-semibold leading-[1.4] text-[var(--semantic-brand-primary)]">
+                  {item.label}
+                </span>
               </div>
-              <div className="w-px self-stretch bg-[#d0d0d0]" />
-              <p className="flex-1 text-base text-[var(--semantic-text-primary)]">{item.description}</p>
+              <div className="w-px self-stretch bg-[var(--semantic-text-secondary)]" />
+              <p className="flex-1 text-base font-light leading-[1.6] text-[var(--semantic-text-primary)]">
+                {item.description}
+              </p>
             </Link>
           ))}
         </div>

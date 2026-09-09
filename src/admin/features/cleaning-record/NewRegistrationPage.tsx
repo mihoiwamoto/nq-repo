@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useCleaningRecord } from "./CleaningRecordContext";
 import { AddLineDialog } from "./AddLineDialog";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
+import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
 const FREQUENCY_LABEL = { daily: "毎日", weekly: "毎週", monthly: "毎月", yearly: "毎年" } as const;
 
@@ -13,13 +16,15 @@ export function NewRegistrationPage() {
   const basePath = `/admin/ledger-management/cleaning-record/factories/${factoryId}`;
   const { lines, entries, upsertEntry } = useCleaningRecord();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const initialDate = searchParams.get("date") ?? "";
   const existingEntry = initialDate ? entries[initialDate] : undefined;
   const isEditing = Boolean(existingEntry);
+  const duplicateLineIds = (location.state as { duplicateLineIds?: string[] } | null)?.duplicateLineIds;
 
   const [date, setDate] = useState(initialDate);
-  const [lineIds, setLineIds] = useState<string[]>(existingEntry?.lineIds ?? []);
+  const [lineIds, setLineIds] = useState<string[]>(existingEntry?.lineIds ?? duplicateLineIds ?? []);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -35,7 +40,11 @@ export function NewRegistrationPage() {
       return;
     }
     upsertEntry(date, lineIds);
-    navigate(`${basePath}/schedule`, { state: { justSaved: isEditing, date } });
+    if (isEditing) {
+      navigate(`${basePath}/schedule`, { state: { justSaved: true, date } });
+    } else {
+      navigate(`${basePath}/schedule/registered`);
+    }
   }
 
   return (
@@ -57,12 +66,7 @@ export function NewRegistrationPage() {
               <p className="text-xl text-[var(--semantic-text-primary)]">点検日</p>
               <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full"
-            />
+            <DateFilterInput value={date} onChange={setDate} className="w-full" />
           </div>
 
           <div className="flex flex-col items-start rounded-lg w-full overflow-hidden">
@@ -76,7 +80,8 @@ export function NewRegistrationPage() {
                 onClick={() => setDialogOpen(true)}
                 className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
               >
-                + 追加
+                <img src={iconPlus} alt="" aria-hidden className="size-5" />
+                追加
               </button>
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
@@ -98,9 +103,9 @@ export function NewRegistrationPage() {
                         setToastMessage("削除されました。");
                         setShowToast(true);
                       }}
-                      className="text-sm text-[var(--semantic-text-secondary)]"
+                      className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center shrink-0"
                     >
-                      削除
+                      <img src={iconTrash} alt="削除" className="size-6" />
                     </button>
                   </div>
                 ))
@@ -124,7 +129,7 @@ export function NewRegistrationPage() {
             onClick={handleSubmit}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
-            登録
+            {isEditing ? "保存" : "登録"}
           </button>
         </div>
       </div>

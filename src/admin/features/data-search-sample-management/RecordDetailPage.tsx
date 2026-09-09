@@ -51,7 +51,7 @@ export function RecordDetailPage() {
         ]}
       />
       <div className="flex flex-col gap-4 p-6">
-        <div className="bg-white flex items-center px-4 py-2 rounded-lg">
+        <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
           <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
         </div>
 
@@ -77,34 +77,76 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">{record.confirmer}</p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">実施日</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.date)}</p>
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.date)}</p>
+              {record.timestamp && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
+                  {record.timestamp}
+                </p>
+              )}
+            </div>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">製造日</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.manufactureDate)}</p>
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.manufactureDate)}</p>
+              {record.timestamp && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
+                  {record.timestamp}
+                </p>
+              )}
+            </div>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">検体種別</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.sampleType}</p>
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-xl text-[var(--semantic-text-primary)]">{record.sampleType}</p>
+              {record.timestamp && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
+                  {record.timestamp}
+                </p>
+              )}
+            </div>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">検体数量</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.sampleQuantity}</p>
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-xl text-[var(--semantic-text-primary)]">{record.sampleQuantity}</p>
+              {record.timestamp && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
+                  {record.timestamp}
+                </p>
+              )}
+            </div>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">単位</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.unit}</p>
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-xl text-[var(--semantic-text-primary)]">{record.unit}</p>
+              {record.timestamp && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
+                  {record.timestamp}
+                </p>
+              )}
+            </div>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-start justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">保管場所</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.storageLocation}</p>
+            <div className="flex flex-col items-end gap-1">
+              <p className="text-xl text-[var(--semantic-text-primary)]">{record.storageLocation}</p>
+              {record.timestamp && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
+                  {record.timestamp}
+                </p>
+              )}
+            </div>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           {record.remarks && (
@@ -144,6 +186,7 @@ export function RecordDetailPage() {
 
         {/* Comments Display Section */}
         <div className="flex flex-col gap-4 items-start w-full">
+          <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
         </div>
       </div>

@@ -2,7 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { useRecords } from "./RecordsContext";
+import { getDateStripeClasses } from "../../utils/tableStripe";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
+import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import type { ResultIcon } from "./types";
 
 function formatDateShort(date: string) {
@@ -48,9 +52,22 @@ function ResultBadge({ icon }: { icon: ResultIcon }) {
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
   const { records } = useRecords();
+  const rowStripeClasses = getDateStripeClasses(records, (r) => r.date);
+  const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
+  const request = approvalRequests.find((r) => r.ledgerSlug === "equipment-inspection");
+
+  const handleApprove = () => {
+    requestApproval(() => {
+      if (request) updateApprovalRequestStatus(request.id, "approved");
+      navigate("/admin/approvals", { state: { statusChanged: "approved" } });
+    });
+  };
 
   return (
     <div>
+      {showConfirmDialog && (
+        <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
+      )}
       <PageTitleBar title="データ一覧" showBack />
       <Breadcrumb
         items={[
@@ -84,7 +101,7 @@ export function ApprovalRecordsListPage() {
                 {records.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
                   >
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
                       <Link
@@ -109,7 +126,7 @@ export function ApprovalRecordsListPage() {
                       <ResultBadge icon={record.resultIcon} />
                     </div>
                     <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left">
-                      {record.remarks}
+                      {record.remarks.length > 20 ? `${record.remarks.substring(0, 20)}...` : record.remarks}
                     </div>
                     <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.implementer}
@@ -125,7 +142,7 @@ export function ApprovalRecordsListPage() {
         </div>
         <button
           type="button"
-          onClick={() => navigate("/admin/approvals")}
+          onClick={handleApprove}
           className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する

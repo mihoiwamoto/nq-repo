@@ -72,29 +72,29 @@ export function StaffListPage() {
             絞り込み検索 {filterOpen ? "−" : "+"}
           </button>
           {filterOpen && (
-            <div className="flex gap-6 items-center justify-end w-full flex-wrap">
+            <div className="flex gap-6 items-center w-full flex-nowrap">
               <input
                 type="text"
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
                 placeholder="名前で探す"
-                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[300px] placeholder:text-[#808080]"
+                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px] placeholder:text-[#808080] shrink-0"
               />
               <Pulldown
                 value={factoryInput}
                 onChange={setFactoryInput}
                 options={FACTORIES.map((factory) => ({ value: factory.id, label: factory.name }))}
                 placeholder="工場選択"
-                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
+                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px] shrink-0"
               />
               <Pulldown
                 value={roleInput}
                 onChange={(value) => setRoleInput(value as StaffRole | "")}
                 options={ROLE_OPTIONS.map((role) => ({ value: role, label: ROLE_LABELS[role] }))}
                 placeholder="権限選択"
-                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
+                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px] shrink-0"
               />
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center shrink-0 ml-auto">
                 <button
                   type="button"
                   onClick={handleReset}
@@ -117,22 +117,22 @@ export function StaffListPage() {
         <div className="flex flex-col items-start w-full rounded-lg overflow-hidden">
           <div className="bg-[#f6f6f6] flex h-10 items-center w-full">
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">名前</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">名前</p>
             </div>
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">社員番号</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">社員番号</p>
             </div>
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">工場</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">工場</p>
             </div>
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">企業</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">企業</p>
             </div>
             <div className="w-[120px] h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">権限</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">権限</p>
             </div>
             <div className="w-[120px] h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">操作</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
             </div>
           </div>
           {pageItems.length === 0 ? (
@@ -157,7 +157,12 @@ export function StaffListPage() {
                   </div>
                   <div className="flex-1 h-full flex items-center px-2">
                     <p className="text-sm text-[var(--semantic-text-primary)] truncate">
-                      {primary ? getFactoryName(primary.factoryId) : "—"}
+                      {primary
+                        ? (() => {
+                            const name = getFactoryName(primary.factoryId);
+                            return name.length > 10 ? `${name.substring(0, 10)}...` : name;
+                          })()
+                        : "—"}
                     </p>
                   </div>
                   <div className="flex-1 h-full flex items-center px-2">

@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { approvalRequests, type ApprovalStatus } from "../data/approvals";
 import { ledgerCategories } from "../../data/ledgers";
 import { ApprovalStatusBadge } from "../components/ApprovalStatusBadge";
+import { Toast } from "../components/Toast";
 
 const TABS: { status: ApprovalStatus; label: string }[] = [
   { status: "pending", label: "承認待ち" },
@@ -11,12 +12,25 @@ const TABS: { status: ApprovalStatus; label: string }[] = [
 ];
 
 export function ApprovalManagementPage() {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<ApprovalStatus>("pending");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const items = approvalRequests.filter((item) => item.status === activeTab);
   const pendingCount = approvalRequests.filter((item) => item.status === "pending").length;
 
+  useEffect(() => {
+    const statusChanged = (location.state as any)?.statusChanged as ApprovalStatus | undefined;
+    if (statusChanged === "approved" || statusChanged === "rejected") {
+      setActiveTab(statusChanged);
+      setToastMessage(statusChanged === "approved" ? "承認しました。" : "差し戻しました。");
+    }
+  }, [location.state]);
+
   return (
     <div>
+      {toastMessage && (
+        <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+      )}
       <div className="bg-[var(--semantic-background-page)] shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex items-center p-6">
         <h1 className="text-[28px] leading-[1.4] font-semibold text-[var(--semantic-text-primary)]">
           承認申請管理
@@ -81,7 +95,8 @@ export function ApprovalManagementPage() {
                 item.ledgerSlug === "sample-management" ||
                 item.ledgerSlug === "metal-xray-detection" ||
                 item.ledgerSlug === "sensory-inspection" ||
-                item.ledgerSlug === "water-inspection"
+                item.ledgerSlug === "water-inspection" ||
+                item.ledgerSlug === "glass-plastic"
               ) {
                 return (
                   <Link key={item.id} to={`/admin/approvals/${item.ledgerSlug}`} className={cardClassName}>

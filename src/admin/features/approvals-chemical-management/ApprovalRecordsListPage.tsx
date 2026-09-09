@@ -4,7 +4,12 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { Pulldown } from "../../components/Pulldown";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { useRecords } from "./RecordsContext";
+import { getDateStripeClasses } from "../../utils/tableStripe";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
+import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import type { ChemicalTransactionType } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
@@ -32,6 +37,8 @@ const COLUMNS = [
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
   const { records } = useRecords();
+  const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
+  const request = approvalRequests.find((r) => r.ledgerSlug === "chemical-management");
 
   const [filterOpen, setFilterOpen] = useState(true);
   const [dateFilter, setDateFilter] = useState("");
@@ -55,6 +62,7 @@ export function ApprovalRecordsListPage() {
     if (onlyRejected && r.approvalStatus !== "rejected") return false;
     return true;
   });
+  const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
@@ -69,8 +77,18 @@ export function ApprovalRecordsListPage() {
     setOnlyRejected(false);
   }
 
+  const handleApprove = () => {
+    requestApproval(() => {
+      if (request) updateApprovalRequestStatus(request.id, "approved");
+      navigate("/admin/approvals", { state: { statusChanged: "approved" } });
+    });
+  };
+
   return (
     <div>
+      {showConfirmDialog && (
+        <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
+      )}
       <PageTitleBar title="データ一覧" showBack />
       <Breadcrumb
         items={[
@@ -113,12 +131,7 @@ export function ApprovalRecordsListPage() {
               <div className="flex gap-6 items-end justify-between w-full">
                 <div className="flex flex-col gap-4 flex-1">
                   <div className="flex gap-4 items-center">
-                    <input
-                      type="date"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                      className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-                    />
+                    <DateFilterInput value={dateFilter} onChange={setDateFilter} />
                     <Pulldown
                       value={chemicalFilter}
                       onChange={setChemicalFilter}
@@ -228,7 +241,7 @@ export function ApprovalRecordsListPage() {
                   filtered.map((record, index) => (
                     <div
                       key={record.id}
-                      className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                      className={`flex h-14 items-center ${rowStripeClasses[index]}`}
                     >
                       <div className="w-[104px] flex items-center justify-center p-2 h-full">
                         <Link
@@ -277,7 +290,7 @@ export function ApprovalRecordsListPage() {
         </div>
         <button
           type="button"
-          onClick={() => navigate("/admin/approvals")}
+          onClick={handleApprove}
           className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する

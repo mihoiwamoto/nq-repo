@@ -1,5 +1,12 @@
 import type { ApprovalStatus } from "../../data/approvals";
 
+export type Comment = {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+};
+
 export type InspectionCategory = "開始" | "終了" | "ー";
 export type InspectionContent = "動作確認" | "テストピース" | "製品通過" | "異常反応";
 export type InspectionResult = "OK" | "NG";
@@ -28,6 +35,8 @@ export type InspectionRecord = {
   remarks: string;
   inspectorName: string;
   checklistDetail?: ChecklistDetail;
+  cause?: string;
+  response?: string;
 };
 
 export type MachineApprovalRecord = {
@@ -37,5 +46,5 @@ export type MachineApprovalRecord = {
   confirmer: string;
   approvalStatus: ApprovalStatus;
   records: InspectionRecord[];
-  comment?: string;
+  comments?: Comment[];
 };

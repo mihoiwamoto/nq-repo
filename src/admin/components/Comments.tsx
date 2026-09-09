@@ -19,10 +19,10 @@ export function Comments({ comments }: CommentsProps) {
             <div key={comment.id}>
               <div className="flex flex-col gap-2 py-4 px-4">
                 <div className="flex flex-col gap-1">
-                  <p className="text-base font-bold text-[#00a651]">{comment.author}</p>
+                  <p className="text-[20px] font-bold text-[var(--semantic-brand-primary)]">{comment.author}</p>
                   <p className="text-sm text-[var(--semantic-text-secondary)]">{comment.timestamp}</p>
                 </div>
-                <p className="text-base text-[var(--semantic-text-primary)]">{comment.text}</p>
+                <p className="text-[18px] text-[var(--semantic-text-primary)]">{comment.text}</p>
               </div>
               {index < comments.length - 1 && (
                 <div className="border-t border-[#d0d0d0] mx-4" />

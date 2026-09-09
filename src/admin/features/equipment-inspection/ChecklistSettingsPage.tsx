@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { ConfirmDialog } from "../../components/ConfirmDialog";
-import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import type { ChecklistItem } from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -17,7 +15,6 @@ export function ChecklistSettingsPage() {
   const navigate = useNavigate();
   const [draft, setDraft] = useState<ChecklistItem[]>(checklistItems);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
 
   function updateText(id: string, text: string) {
     setDraft((prev) => prev.map((item) => (item.id === id ? { ...item, text } : item)));
@@ -29,9 +26,10 @@ export function ChecklistSettingsPage() {
 
   function confirmDelete() {
     if (!pendingDeleteId) return;
-    setDraft((prev) => prev.filter((item) => item.id !== pendingDeleteId));
-    setPendingDeleteId(null);
-    setShowToast(true);
+    const remaining = draft.filter((item) => item.id !== pendingDeleteId);
+    setDraft(remaining);
+    saveChecklistItems(remaining.filter((item) => item.text.trim() !== ""));
+    navigate(`${basePath}/checklist-settings/deleted`);
   }
 
   function handleSave() {
@@ -41,7 +39,6 @@ export function ChecklistSettingsPage() {
 
   return (
     <div>
-      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar title="確認項目の設定" showBack />
       <Breadcrumb
         items={[
@@ -115,11 +112,35 @@ export function ChecklistSettingsPage() {
       </div>
 
       {pendingDeleteId && (
-        <ConfirmDialog
-          title="この確認項目を削除しますか？"
-          onCancel={() => setPendingDeleteId(null)}
-          onConfirm={confirmDelete}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setPendingDeleteId(null)} />
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+            <div className="flex flex-col gap-6 items-start w-full">
+              <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+                確認項目の削除
+              </h2>
+              <p className="text-base text-[var(--semantic-text-primary)]">
+                削除した情報は元に戻せません。本当に削除しますか？
+              </p>
+            </div>
+            <div className="flex gap-6 items-center justify-center w-full">
+              <button
+                type="button"
+                onClick={() => setPendingDeleteId(null)}
+                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+              >
+                削除
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

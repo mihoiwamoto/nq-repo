@@ -114,7 +114,7 @@ export function InspectionItemDetailPage() {
             </div>
             <div className="flex flex-col items-end">
               <p className="text-[14px] text-[var(--semantic-text-primary)]">{formatTime(selectedItem.timestamp)}</p>
-              <p className="text-sm text-[#999999]">実施者名, {formatDate(record.date)} HH:mm</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">実施者名, {formatDate(record.date)} HH:mm</p>
             </div>
           </div>
 
@@ -125,7 +125,7 @@ export function InspectionItemDetailPage() {
             </div>
             <div className="flex flex-col items-end">
               <p className="text-[14px] text-[var(--semantic-text-primary)]">マンゴープリン　ストレート　1kg</p>
-              <p className="text-sm text-[#999999]">実施者名, {formatDate(record.date)} HH:mm</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">実施者名, {formatDate(record.date)} HH:mm</p>
             </div>
           </div>
 
@@ -136,7 +136,7 @@ export function InspectionItemDetailPage() {
             </div>
             <div className="flex flex-col items-end">
               <p className="text-[14px] text-[var(--semantic-text-primary)]">200</p>
-              <p className="text-sm text-[#999999]">実施者名, {formatDate(record.date)} HH:mm</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">実施者名, {formatDate(record.date)} HH:mm</p>
             </div>
           </div>
 
@@ -147,7 +147,7 @@ export function InspectionItemDetailPage() {
             </div>
             <div className="flex flex-col items-end">
               <p className="text-[14px] text-[var(--semantic-text-primary)]">5</p>
-              <p className="text-sm text-[#999999]">実施者名, {formatDate(record.date)} HH:mm</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">実施者名, {formatDate(record.date)} HH:mm</p>
             </div>
           </div>
 
@@ -162,7 +162,7 @@ export function InspectionItemDetailPage() {
                   {selectedItem.cause || "異物混入\nテキストテキストテキストテキストテキストテキストテキスト"}
                 </p>
               </div>
-              <p className="text-[11px] text-[#999999] mt-2">実施者名, {formatDate(record.date)} HH:mm</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal mt-2">実施者名, {formatDate(record.date)} HH:mm</p>
             </div>
           </div>
 
@@ -177,7 +177,7 @@ export function InspectionItemDetailPage() {
                   {selectedItem.action || "点検調整\nテキストテキストテキストテキストテキストテキストテキスト"}
                 </p>
               </div>
-              <p className="text-[11px] text-[#999999] mt-2">実施者名, {formatDate(record.date)} HH:mm</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal mt-2">実施者名, {formatDate(record.date)} HH:mm</p>
             </div>
           </div>
 

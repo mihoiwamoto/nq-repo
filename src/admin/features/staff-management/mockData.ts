@@ -8,8 +8,8 @@ export const INITIAL_STAFF: Staff[] = [
     systemAuthority: "factory_staff",
     companyId: "c1",
     assignments: [
-      { factoryId: "f1", role: "operator" },
-      { factoryId: "f2", role: "admin" },
+      { factoryId: "f1", role: "approver" },
+      { factoryId: "f2", role: "checker" },
     ],
     email: "yamada@example.com",
     hasPassword: true,

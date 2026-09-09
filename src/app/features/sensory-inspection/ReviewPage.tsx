@@ -55,7 +55,7 @@ export function ReviewPage() {
           {!locked && (
             <Link
               to={`/app/ledger-list/sensory-inspection/products/${productId}`}
-              className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center h-10 px-4 rounded-lg text-base text-[var(--semantic-brand-primary)]"
+              className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center h-10 px-4 rounded-lg text-sm text-[var(--semantic-brand-primary)]"
             >
               <img src={iconEdit} alt="編集" className="size-5" />
               編集

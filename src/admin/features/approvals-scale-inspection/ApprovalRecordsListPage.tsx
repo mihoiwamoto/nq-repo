@@ -2,9 +2,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
-import { approvalRequests } from "../../data/approvals";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
+import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import { useRecords } from "./RecordsContext";
+import { getDateStripeClasses } from "../../utils/tableStripe";
 import { RepairStatusSection } from "./RepairStatusSection";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ScaleApprovalRecord } from "./types";
 
 function CheckCell({ record, field }: { record: ScaleApprovalRecord; field: "operation" | "level" | "dirt" }) {
@@ -104,13 +107,25 @@ export function ApprovalRecordsListPage() {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
   const { records } = useRecords();
+  const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
 
   const request = approvalRequests.find((r) => r.id === requestId);
   const batchRecords = records.filter((r) => r.requestId === requestId);
   const basePath = `/admin/approvals/scale-inspection/${requestId}`;
+  const rowStripeClasses = getDateStripeClasses(batchRecords, (r) => r.date);
+
+  const handleApproveClick = () => {
+    requestApproval(() => {
+      if (request) updateApprovalRequestStatus(request.id, "approved");
+      navigate("/admin/approvals", { state: { statusChanged: "approved" } });
+    });
+  };
 
   return (
     <div>
+      {showConfirmDialog && (
+        <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
+      )}
       <PageTitleBar title="点検内容一覧" showBack />
       <Breadcrumb
         items={[
@@ -140,7 +155,7 @@ export function ApprovalRecordsListPage() {
                 {batchRecords.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
                   >
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
                       <Link
@@ -197,7 +212,7 @@ export function ApprovalRecordsListPage() {
 
         <button
           type="button"
-          onClick={() => navigate("/admin/approvals")}
+          onClick={handleApproveClick}
           className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する

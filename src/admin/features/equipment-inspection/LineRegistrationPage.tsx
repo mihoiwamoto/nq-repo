@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useSchedule } from "./ScheduleContext";
 import type { InspectionPoint, LineFrequency } from "./types";
+import cancelIcon from "@images/Icon/cancel.svg";
 
 const FREQUENCY_OPTIONS: { key: LineFrequency; label: string }[] = [
   { key: "daily", label: "毎日" },
@@ -55,6 +57,12 @@ export function LineRegistrationPage() {
     setPoints((prev) => [...prev, emptyPoint()]);
   }
 
+  function deletePoint(pointId: string) {
+    if (points.length > 1) {
+      setPoints((prev) => prev.filter((p) => p.id !== pointId));
+    }
+  }
+
   function handleSubmit() {
     if (!name.trim() || !points[0]?.location.trim()) {
       setError("持ち場/ライン名と点検箇所は必須です");
@@ -70,7 +78,7 @@ export function LineRegistrationPage() {
         .filter((p) => p.location.trim() !== "")
         .map((p) => ({ ...p, items: p.items.filter((item) => item.trim() !== "") })),
     });
-    navigate(`${basePath}/schedule`);
+    navigate(`${basePath}/lines/registered`);
   }
 
   return (
@@ -94,19 +102,9 @@ export function LineRegistrationPage() {
             日付指定が無い場合は、常にアプリ上に表示されます。
           </p>
           <div className="flex gap-2 items-center">
-            <input
-              type="date"
-              value={displayFrom}
-              onChange={(e) => setDisplayFrom(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={displayFrom} onChange={setDisplayFrom} />
             <span className="text-[var(--semantic-text-primary)]">〜</span>
-            <input
-              type="date"
-              value={displayTo}
-              onChange={(e) => setDisplayTo(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={displayTo} onChange={setDisplayTo} />
           </div>
         </div>
 
@@ -138,7 +136,7 @@ export function LineRegistrationPage() {
                 key={option.key}
                 type="button"
                 onClick={() => setFrequency(option.key)}
-                className={`h-10 w-[120px] rounded-lg border shadow-[0px_2px_2px_rgba(51,51,51,0.24)] text-base ${
+                className={`h-10 w-[120px] rounded-lg border bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] text-base ${
                   frequency === option.key
                     ? "border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
                     : "border-[#808080] text-[var(--semantic-text-secondary)]"
@@ -151,19 +149,30 @@ export function LineRegistrationPage() {
         </div>
 
         <div className="flex flex-col gap-6 items-start w-full">
-          {points.map((point) => (
+          {points.map((point, pointIndex) => (
             <div key={point.id} className="flex flex-col gap-2 items-start w-[480px]">
               <div className="flex gap-2 items-center">
                 <p className="text-xl text-[var(--semantic-text-primary)]">点検箇所</p>
                 <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
               </div>
-              <input
-                type="text"
-                value={point.location}
-                onChange={(e) => updateLocation(point.id, e.target.value)}
-                placeholder="例）エコスター"
-                className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
-              />
+              <div className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  value={point.location}
+                  onChange={(e) => updateLocation(point.id, e.target.value)}
+                  placeholder="例）エコスター"
+                  className="bg-white h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[480px] placeholder:text-[var(--semantic-text-secondary)]"
+                />
+                {pointIndex > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => deletePoint(point.id)}
+                    className="h-10 w-10 rounded-full bg-white flex items-center justify-center hover:opacity-60"
+                  >
+                    <img src={cancelIcon} alt="削除" className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
               <div className="flex flex-col gap-2 items-start pl-6 w-full border-l border-[#d0d0d0]">
                 <p className="text-xl text-[var(--semantic-text-primary)]">点検項目</p>
                 {point.items.map((item, index) => (
@@ -179,7 +188,7 @@ export function LineRegistrationPage() {
                 <button
                   type="button"
                   onClick={() => addItem(point.id)}
-                  className="border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-sm text-[var(--semantic-brand-primary)]"
+                  className="border border-[var(--semantic-brand-primary)] bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-sm text-[var(--semantic-brand-primary)]"
                 >
                   + 追加
                 </button>

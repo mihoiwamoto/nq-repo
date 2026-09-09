@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { useGlassPlastic } from "./GlassPlasticContext";
 import { FloorPlanPreview } from "./FloorPlanPreview";
 
@@ -36,7 +37,7 @@ export function FloorEditPage() {
       displayFrom: displayFrom || undefined,
       displayTo: displayTo || undefined,
     });
-    navigate(detailPath);
+    navigate(detailPath, { state: { justSaved: true } });
   }
 
   return (
@@ -68,18 +69,16 @@ export function FloorEditPage() {
             日付指定が無い場合は、常にアプリ上に表示されます。
           </p>
           <div className="flex gap-2 items-center">
-            <input
-              type="date"
+            <DateFilterInput
               value={displayFrom}
-              onChange={(e) => setDisplayFrom(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
+              onChange={setDisplayFrom}
+              placeholder="開始日を選択"
             />
             <span className="text-[var(--semantic-text-primary)]">〜</span>
-            <input
-              type="date"
+            <DateFilterInput
               value={displayTo}
-              onChange={(e) => setDisplayTo(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
+              onChange={setDisplayTo}
+              placeholder="終了日を選択"
             />
           </div>
         </div>

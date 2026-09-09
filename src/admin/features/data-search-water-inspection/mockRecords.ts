@@ -23,6 +23,20 @@ export const mockRecords: WaterSearchRecord[] = [
     implementer: "田中太郎",
     confirmer: "佐藤花子",
     approvalStatus: "pending",
+    comments: [
+      {
+        id: "c1",
+        author: "鈴木修",
+        timestamp: "2026.08.19 10:39",
+        text: "検索条件を確認しました。問題ありません。",
+      },
+      {
+        id: "c2",
+        author: "山田花子",
+        timestamp: "2026.08.23 15:45",
+        text: "データ抽出の期間を再度ご確認ください。",
+      },
+    ],
   },
   {
     id: "wr2",

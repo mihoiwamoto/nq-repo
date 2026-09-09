@@ -8,10 +8,11 @@ import { getFactoryName } from "../../../data/factories";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import { FloorPlanPreview } from "./FloorPlanPreview";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import {
   REPAIR_STATUS_COLORS,
   REPAIR_STATUS_LABELS,
-  REPAIR_STATUS_ORDER,
+  REPAIR_STATUS_NEXT_OPTIONS,
   type RepairItem,
   type RepairStatus,
 } from "./types";
@@ -40,6 +41,7 @@ function RepairStatusDropdown({
   onChange: (status: RepairStatus) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const options = REPAIR_STATUS_NEXT_OPTIONS[status];
 
   return (
     <div className="relative shrink-0">
@@ -68,7 +70,7 @@ function RepairStatusDropdown({
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-full mt-1 z-20 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col p-2 w-40">
-            {REPAIR_STATUS_ORDER.map((option) => (
+            {options.map((option) => (
               <button
                 key={option}
                 type="button"
@@ -116,10 +118,14 @@ export function FloorDetailPage() {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   useEffect(() => {
     if ((location.state as any)?.deleted) {
       setShowToast(true);
+    }
+    if ((location.state as any)?.justSaved) {
+      setShowUpdateToast(true);
     }
   }, [location.state]);
 
@@ -212,7 +218,8 @@ export function FloorDetailPage() {
               to={`${basePath}/floors/${floorId}/edit`}
               className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
             >
-              ✎ 編集
+              <img src={iconEdit} alt="編集" className="size-5" />
+              編集
             </Link>
             <button
               type="button"
@@ -277,6 +284,7 @@ export function FloorDetailPage() {
         </div>
       )}
 
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
       {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );

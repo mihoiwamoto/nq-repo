@@ -1,8 +1,7 @@
-import { Link } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { getCompanyName } from "../../../data/companies";
-import { ROLE_COLORS, ROLE_LABELS, SYSTEM_AUTHORITY_LABELS } from "../staff-management/types";
+import { ROLE_COLORS, ROLE_LABELS } from "../staff-management/types";
 import { CURRENT_ACCOUNT } from "./mockData";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -26,8 +25,6 @@ export function AccountPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
           <Row label="社員番号">{account.employeeNumber}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="システム権限">{SYSTEM_AUTHORITY_LABELS[account.systemAuthority]}</Row>
-          <div className="border-t border-[#d0d0d0] w-full" />
           <Row label="企業">{getCompanyName(account.companyId)}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -50,23 +47,9 @@ export function AccountPage() {
             </div>
           ))}
 
-          <Row label="メールアドレス">
-            <div className="flex items-center gap-4">
-              <span>{account.email}</span>
-              <Link to="/admin/account/email" className="text-base text-[var(--semantic-brand-primary)]">
-                変更する
-              </Link>
-            </div>
-          </Row>
+          <Row label="メールアドレス">{account.email}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="パスワード">
-            <div className="flex items-center gap-4">
-              <span>{account.hasPassword ? "登録済み" : "未登録"}</span>
-              <Link to="/admin/account/password" className="text-base text-[var(--semantic-brand-primary)]">
-                変更する
-              </Link>
-            </div>
-          </Row>
+          <Row label="パスワード">{account.hasPassword ? "登録済み" : "未登録"}</Row>
         </div>
       </div>
     </div>

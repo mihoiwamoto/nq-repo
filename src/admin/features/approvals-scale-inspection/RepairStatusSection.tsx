@@ -1,9 +1,13 @@
 import { type CSSProperties } from "react";
 import { Pulldown } from "../../components/Pulldown";
 import { useRecords } from "./RecordsContext";
-import { REPAIR_STATUS_COLORS, REPAIR_STATUS_LABELS, type RepairStatus, type ScaleApprovalRecord } from "./types";
-
-const REPAIR_STATUS_OPTIONS: RepairStatus[] = ["action_needed", "no_repair", "repairing", "done"];
+import {
+  REPAIR_STATUS_COLORS,
+  REPAIR_STATUS_LABELS,
+  REPAIR_STATUS_NEXT_OPTIONS,
+  type RepairStatus,
+  type ScaleApprovalRecord,
+} from "./types";
 
 export function RepairStatusSection({ records }: { records: ScaleApprovalRecord[] }) {
   const { setRepairStatus } = useRecords();
@@ -15,7 +19,7 @@ export function RepairStatusSection({ records }: { records: ScaleApprovalRecord[
     <div className="flex flex-col gap-2 items-start w-full">
       <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
       <p className="text-sm text-[var(--semantic-text-secondary)]">
-        異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「対応完了」ステータスに変更してください。
+        異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
       </p>
       <div className="bg-white flex flex-col gap-3 items-start p-4 rounded-lg w-full">
         {ngRecords.map((record, index) => (
@@ -26,7 +30,10 @@ export function RepairStatusSection({ records }: { records: ScaleApprovalRecord[
               <Pulldown
                 value={record.repairStatus ?? "action_needed"}
                 onChange={(value) => setRepairStatus(record.id, value as RepairStatus)}
-                options={REPAIR_STATUS_OPTIONS.map((opt) => ({ value: opt, label: REPAIR_STATUS_LABELS[opt] }))}
+                options={REPAIR_STATUS_NEXT_OPTIONS[record.repairStatus ?? "action_needed"].map((opt) => ({
+                  value: opt,
+                  label: REPAIR_STATUS_LABELS[opt],
+                }))}
                 className="h-8 px-3 rounded-lg text-sm text-white shrink-0"
                 style={{ backgroundColor: REPAIR_STATUS_COLORS[record.repairStatus ?? "action_needed"], "--arrow-color": "white" } as CSSProperties}
               />

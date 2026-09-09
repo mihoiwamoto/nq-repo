@@ -3,15 +3,16 @@ import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
-import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
+import { getDateStripeClasses } from "../../utils/tableStripe";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
-import iconCalendar from "../../../assets/figma/icons/common/calendar.svg";
+import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadElementAsPdf } from "../../utils/pdf";
 
 function HyphenIcon() {
@@ -45,14 +46,13 @@ const MONTH_LABELS = [
   "7月", "8月", "9月", "10月", "11月", "12月",
 ];
 
-const COLUMNS = [
+const COLUMNS: { label: string; width: string; marginLeft?: string; justify?: string }[] = [
   { label: "操作", width: "w-[104px]" },
-  { label: "ステータス", width: "w-[104px]" },
   { label: "実施日", width: "w-[96px]" },
   { label: "製品名", width: "w-[200px]" },
-  { label: "賞味期限", width: "w-[96px]" },
-  { label: "製造日", width: "w-[96px]" },
-  { label: "検体種別", width: "w-[88px]" },
+  { label: "賞味期限", width: "w-[96px]", marginLeft: "ml-4" },
+  { label: "製造日", width: "w-[96px]", marginLeft: "ml-4" },
+  { label: "検体種別", width: "w-[88px]", marginLeft: "ml-4" },
   { label: "検体数量", width: "w-[88px]" },
   { label: "単位", width: "w-[64px]" },
   { label: "保管場所", width: "w-[104px]" },
@@ -93,6 +93,7 @@ export function DataListPage() {
     if (onlyRejected && r.approvalStatus !== "rejected") return false;
     return true;
   });
+  const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
@@ -121,7 +122,6 @@ export function DataListPage() {
       "破棄日",
       "実施者",
       "確認者",
-      "ステータス",
     ];
     const rows = filtered.map((r) => [
       r.date,
@@ -137,7 +137,6 @@ export function DataListPage() {
       r.discardedDate ?? "",
       r.implementer,
       r.confirmer,
-      r.approvalStatus,
     ]);
     downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
   }
@@ -194,7 +193,7 @@ export function DataListPage() {
             {filterOpen ? (
               <span
                 aria-hidden
-                className="inline-block size-4 shrink-0"
+                className="inline-block size-5 shrink-0"
                 style={{
                   WebkitMaskImage: `url("${iconMinus}")`,
                   maskImage: `url("${iconMinus}")`,
@@ -210,38 +209,10 @@ export function DataListPage() {
             )}
           </button>
           {filterOpen && (
-            <div className="flex gap-6 items-end justify-between w-full">
+            <div className="flex gap-6 items-center justify-end w-full">
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex gap-4 items-center">
-                  <div className="relative w-[200px]">
-                    <div className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base w-full flex items-center">
-                      {!dateFilter && (
-                        <span className="text-base text-[var(--semantic-text-secondary)]">
-                          日付を選択
-                        </span>
-                      )}
-                      {dateFilter && (
-                        <span className="text-base text-[var(--semantic-text-primary)]">
-                          {dateFilter.replaceAll("-", "/")}
-                        </span>
-                      )}
-                      <img
-                        src={iconCalendar}
-                        alt=""
-                        className="w-5 h-5 ml-auto"
-                      />
-                    </div>
-                    <input
-                      type="date"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    />
-                  </div>
+                  <DateFilterInput value={dateFilter} onChange={setDateFilter} />
                   <Pulldown
                     value={productFilter}
                     onChange={setProductFilter}
@@ -263,14 +234,15 @@ export function DataListPage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="bg-white border border-[#808080] h-10 w-16 rounded-lg text-sm text-[var(--semantic-text-secondary)]"
+                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
                 >
                   リセット
                 </button>
                 <button
                   type="button"
-                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-sm text-white"
+                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
                 >
+                  <img src={iconSearch} alt="" className="size-5" />
                   検索
                 </button>
               </div>
@@ -409,12 +381,12 @@ export function DataListPage() {
           </div>
 
           <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1400px]">
+            <div className="flex flex-col min-w-[1528px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
                   <div
                     key={col.label}
-                    className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
+                    className={`flex items-center ${col.justify ?? "justify-center"} p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width} ${col.marginLeft ?? ""} ${col.width.startsWith("flex-1") ? "" : "shrink-0"}`}
                   >
                     {col.label}
                   </div>
@@ -428,9 +400,9 @@ export function DataListPage() {
                 filtered.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
                   >
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                    <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
                       <Link
                         to={`${basePath}/records/${record.id}`}
                         className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
@@ -438,46 +410,43 @@ export function DataListPage() {
                         詳細
                       </Link>
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
-                      <ApprovalStatusBadge status={record.approvalStatus} />
-                    </div>
-                    <div className="w-[96px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="w-[96px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       <DateDisplay date={record.date} />
                     </div>
-                    <div className="w-[200px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
+                    <div className="w-[200px] shrink-0 flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left whitespace-nowrap overflow-hidden text-ellipsis" title={record.productName}>
                       {record.productName}
                     </div>
-                    <div className="w-[96px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="w-[96px] ml-4 shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       <DateDisplay date={record.expirationDate} />
                     </div>
-                    <div className="w-[96px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="w-[96px] ml-4 shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       <DateDisplay date={record.manufactureDate} />
                     </div>
-                    <div className="w-[88px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="w-[88px] ml-4 shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       {record.sampleType}
                     </div>
-                    <div className="w-[88px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="w-[88px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       {record.sampleQuantity}
                     </div>
-                    <div className="w-[64px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="w-[64px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       {record.unit}
                     </div>
-                    <div className="w-[104px] flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left">
+                    <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.storageLocation}
                     </div>
-                    <div className="flex-1 min-w-[160px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
+                    <div className="flex-1 min-w-[160px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       {record.remarks}
                     </div>
-                    <div className="w-[88px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="w-[88px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.status}
                     </div>
-                    <div className="w-[96px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="w-[96px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       <DateDisplay date={record.discardedDate} />
                     </div>
-                    <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.implementer}
                     </div>
-                    <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.confirmer}
                     </div>
                   </div>

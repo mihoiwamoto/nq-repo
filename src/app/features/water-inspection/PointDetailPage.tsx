@@ -24,25 +24,32 @@ function Row({
   value,
   noBorder,
   compact,
+  timestamp,
 }: {
   label: string;
   value: string;
   noBorder?: boolean;
   compact?: boolean;
+  timestamp?: string;
 }) {
   return (
     <div
-      className={`flex items-center justify-between w-full ${
+      className={`flex flex-col gap-1 w-full ${
         compact ? "py-1" : "py-3"
       } ${noBorder ? "" : "border-b border-[#d0d0d0]"}`}
     >
-      <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
-      <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
+      <div className="flex items-center justify-between w-full">
+        <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
+        <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
+      </div>
+      {timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
 
-function CheckRow({ item }: { item: CheckItem }) {
+function CheckRow({ item, timestamp }: { item: CheckItem; timestamp: string }) {
   return (
     <div className="flex flex-col gap-2 w-full py-3 border-b border-[#d0d0d0]">
       <div className="flex items-center justify-between w-full">
@@ -55,6 +62,7 @@ function CheckRow({ item }: { item: CheckItem }) {
           <p>対応：{item.action}</p>
         </div>
       )}
+      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
     </div>
   );
 }
@@ -86,6 +94,7 @@ export function PointDetailPage() {
   const { recordsByPoint } = useWaterInspection();
   const record = pointId ? recordsByPoint[pointId]?.find((r) => r.id === recordId) : undefined;
   const backToHistoryPath = `/app/ledger-list/water-inspection/points/${pointId}`;
+  const timestamp = record ? `${record.inspector} ${record.date} ${record.time}` : "";
 
   if (!record) {
     return (
@@ -109,40 +118,40 @@ export function PointDetailPage() {
 
   return (
     <>
-      <AppHeader
-        title={`使用水の点検_${record.location}`}
-        action={
+      <AppHeader title={`使用水の点検_${record.location}`} />
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
+        <div className="flex justify-end w-full max-w-full max-w-[480px] mx-40">
           <Link
             to={`/app/ledger-list/water-inspection/points/${pointId}/records/${recordId}/edit`}
             className="bg-white border border-[var(--semantic-brand-primary)] flex items-center gap-2 h-11 px-3 rounded-lg shrink-0"
           >
             <img src={iconEdit} alt="編集" className="size-5" />
-            <span className="text-lg text-[var(--semantic-brand-primary)]">編集</span>
+            <span className="text-sm text-[var(--semantic-brand-primary)]">編集</span>
           </Link>
-        }
-      />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
+        </div>
         <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
           <Row label="実施者" value={record.inspector} />
           <Row label="点検場所" value={record.location} />
           <Row label="実施日" value={record.date} />
           {record.checks.map((item) => (
-            <CheckRow key={item.label} item={item} />
+            <CheckRow key={item.label} item={item} timestamp={timestamp} />
           ))}
-          <Row label="ph値" value={record.phValue} />
+          <Row label="ph値" value={record.phValue} timestamp={timestamp} />
           <div className="flex flex-col w-full">
             <Row label="残留塩素濃度(mg/ℓ)" value={record.residualChlorine} noBorder />
             <ToggleRow toggle={record.chlorineToggle} />
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">{timestamp}</p>
             <div className="border-t border-[#d0d0d0]" />
           </div>
           <div className="flex flex-col w-full">
             <Row label="UV殺菌灯稼働時間(h)" value={record.uvOperatingHours} noBorder />
             <ToggleRow toggle={record.uvToggle} />
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">{timestamp}</p>
             <div className="border-t border-[#d0d0d0]" />
           </div>
-          <Row label="UV表示灯" value={record.uvIndicatorLight} />
+          <Row label="UV表示灯" value={record.uvIndicatorLight} timestamp={timestamp} />
           <div className="h-3" />
-          <Row label="異常検出灯" value={record.errorIndicatorLight} noBorder compact />
+          <Row label="異常検出灯" value={record.errorIndicatorLight} noBorder compact timestamp={timestamp} />
         </div>
 
         <Link

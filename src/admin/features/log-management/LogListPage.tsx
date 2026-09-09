@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
+import { DateFilterInput as DateInput } from "../../components/DateFilterInput";
 import { FACTORIES, getFactoryName } from "../../../data/factories";
 import { ledgerCategories } from "../../../data/ledgers";
 import { LOG_ENTRIES } from "./mockData";
@@ -71,7 +72,7 @@ export function LogListPage() {
   return (
     <div>
       <PageTitleBar title="ログ管理" />
-      <div className="flex flex-col gap-6 items-end p-6">
+      <div className="flex flex-col gap-6 items-start p-6">
         <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
           <button
             type="button"
@@ -81,21 +82,11 @@ export function LogListPage() {
             絞り込み検索 {filterOpen ? "−" : "+"}
           </button>
           {filterOpen && (
-            <div className="flex gap-4 items-center justify-end w-full flex-wrap">
+            <div className="flex gap-4 items-center justify-start w-full flex-wrap">
               <div className="flex gap-2 items-center">
-                <input
-                  type="date"
-                  value={form.dateFrom}
-                  onChange={(e) => setForm((f) => ({ ...f, dateFrom: e.target.value }))}
-                  className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-                />
+                <DateInput value={form.dateFrom} onChange={(v) => setForm((f) => ({ ...f, dateFrom: v }))} />
                 <span className="text-[var(--semantic-text-primary)]">〜</span>
-                <input
-                  type="date"
-                  value={form.dateTo}
-                  onChange={(e) => setForm((f) => ({ ...f, dateTo: e.target.value }))}
-                  className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-                />
+                <DateInput value={form.dateTo} onChange={(v) => setForm((f) => ({ ...f, dateTo: v }))} />
               </div>
               <Pulldown
                 value={form.screenType}
@@ -125,7 +116,7 @@ export function LogListPage() {
                 placeholder="キーワードで探す"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[300px] placeholder:text-[#808080]"
               />
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center ml-auto">
                 <button
                   type="button"
                   onClick={handleReset}
@@ -148,22 +139,22 @@ export function LogListPage() {
         <div className="flex flex-col items-start w-full rounded-lg overflow-hidden">
           <div className="bg-[#f6f6f6] flex h-10 items-center w-full">
             <div className="w-[186px] h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">記録日時</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">記録日時</p>
             </div>
             <div className="w-32 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">画面種別</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">画面種別</p>
             </div>
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">工場名</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">工場名</p>
             </div>
             <div className="w-40 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">職員名</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">職員名</p>
             </div>
             <div className="w-20 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">権限</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">権限</p>
             </div>
             <div className="flex-[1.5] h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">操作内容</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">操作内容</p>
             </div>
           </div>
           {pageItems.length === 0 ? (
@@ -171,7 +162,10 @@ export function LogListPage() {
               <p className="text-sm text-[var(--semantic-text-secondary)]">該当するログがありません</p>
             </div>
           ) : (
-            pageItems.map((entry, index) => (
+            pageItems.map((entry, index) => {
+              const factoryName = getFactoryName(entry.factoryId);
+              const displayFactoryName = factoryName.length > 10 ? factoryName.slice(0, 10) + "..." : factoryName;
+              return (
               <div
                 key={entry.id}
                 className={`flex h-14 items-center w-full ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
@@ -188,7 +182,7 @@ export function LogListPage() {
                 </div>
                 <div className="flex-1 h-full flex items-center px-2">
                   <p className="text-sm text-[var(--semantic-text-primary)] truncate">
-                    {getFactoryName(entry.factoryId)}
+                    {displayFactoryName}
                   </p>
                 </div>
                 <div className="w-40 h-full flex items-center px-2">
@@ -201,7 +195,8 @@ export function LogListPage() {
                   <p className="text-sm text-[var(--semantic-text-primary)] truncate">{entry.action}</p>
                 </div>
               </div>
-            ))
+            );
+            })
           )}
         </div>
 

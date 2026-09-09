@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../../assets/figma/logo-admin.png";
-import iconEye from "../../../assets/figma/icons/common/eye.svg";
-import iconEyeOff from "../../../assets/figma/icons/common/eye-off.svg";
+import iconEye from "../../../assets/figma/icons/common/eye.svg?url";
+import iconEyeOff from "../../../assets/figma/icons/common/eye-off.svg?url";
 
 const DEMO_EMPLOYEE_NUMBER = "123456";
 const DEMO_PASSWORD = "Iwamoto1000@";

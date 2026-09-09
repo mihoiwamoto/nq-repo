@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
-import { Toast } from "../../components/Toast";
 import { useChemicalManagement } from "./ChemicalManagementContext";
 import { STORAGE_LOCATIONS } from "../../../data/storageLocations";
 
@@ -36,7 +35,7 @@ export function NewRegistrationPage() {
       navigate(`${basePath}/chemicals/${existing?.id}`, { state: { justSaved: true } });
     } else {
       addChemical({ name, spec, unit, storageLocation });
-      navigate(basePath);
+      navigate(`${basePath}/chemicals/registered`);
     }
   }
 
@@ -120,7 +119,7 @@ export function NewRegistrationPage() {
             onClick={handleSubmit}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
-            登録
+            {isEditing ? "保存" : "登録"}
           </button>
         </div>
       </div>

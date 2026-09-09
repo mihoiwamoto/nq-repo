@@ -16,6 +16,21 @@ export const sampleRecords: SampleRecord[] = [
     implementer: "田中太郎",
     confirmer: "確認者01",
     approvalStatus: "approved",
+    timestamp: "田中太郎 2025/07/01 10:30",
+    comments: [
+      {
+        id: "c1",
+        author: "鈴木修",
+        timestamp: "2026.08.19 10:39",
+        text: "検索条件を確認しました。問題ありません。",
+      },
+      {
+        id: "c2",
+        author: "山田花子",
+        timestamp: "2026.08.23 15:45",
+        text: "データ抽出の期間を再度ご確認ください。",
+      },
+    ],
   },
   {
     id: "ds2",
@@ -32,6 +47,7 @@ export const sampleRecords: SampleRecord[] = [
     implementer: "実施者02",
     confirmer: "確認者01",
     approvalStatus: "pending",
+    timestamp: "実施者02 2025/04/02 09:15",
   },
   {
     id: "ds3",
@@ -50,6 +66,7 @@ export const sampleRecords: SampleRecord[] = [
     implementer: "田中太郎",
     confirmer: "確認者02",
     approvalStatus: "approved",
+    timestamp: "田中太郎 2025/04/03 09:45",
   },
   {
     id: "ds4",
@@ -69,6 +86,7 @@ export const sampleRecords: SampleRecord[] = [
     implementer: "実施者03",
     confirmer: "確認者02",
     approvalStatus: "rejected",
+    timestamp: "実施者03 2025/04/04 11:20",
   },
   {
     id: "ds5",
@@ -85,5 +103,6 @@ export const sampleRecords: SampleRecord[] = [
     implementer: "実施者02",
     confirmer: "確認者01",
     approvalStatus: "approved",
+    timestamp: "実施者02 2025/04/05 13:50",
   },
 ];

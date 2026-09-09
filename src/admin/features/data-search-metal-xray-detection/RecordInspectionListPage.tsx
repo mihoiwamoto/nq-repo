@@ -3,6 +3,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { Comments } from "../../components/Comments";
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
@@ -165,17 +166,13 @@ export function RecordInspectionListPage() {
         )}
 
         {/* Comments Section */}
-        <div className="flex flex-col gap-4 items-start w-full">
-          <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">コメント</p>
-          <div className="bg-white flex flex-col gap-4 items-start px-4 py-6 rounded-lg w-full min-h-[100px]">
-            <div className="flex flex-col gap-2 w-full pb-4 last:pb-0">
-              <div className="flex flex-col gap-0.5">
-                <p className="text-[20px] font-bold text-[var(--semantic-brand-primary)]">鈴木修</p>
-                <p className="text-[14px] text-[#808080]">2026.08.19 10:39</p>
-              </div>
-              <p className="text-[14px] text-[var(--semantic-text-primary)] leading-relaxed font-normal">検索状況を確認しました。問題ありません。</p>
-            </div>
-          </div>
+        <div className="flex flex-col gap-2 items-start w-full">
+          <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
+          <Comments
+            comments={[
+              { id: "1", author: "鈴木修", timestamp: "2026.08.19 10:39", text: "検索状況を確認しました。問題ありません。" },
+            ]}
+          />
         </div>
       </div>
     </div>

@@ -1,18 +1,10 @@
-import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Comments } from "../../components/Comments";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
-import type { ApprovalStatus } from "../../data/approvals";
 import { CRITERIA, isAbnormalScore } from "./types";
-import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
-
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
-  { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
-  { value: "rejected", label: "差し戻し" },
-];
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
@@ -20,13 +12,11 @@ function formatDate(date: string) {
 
 export function RecordDetailPage() {
   const { factoryId, recordId } = useParams<{ factoryId: string; recordId: string }>();
-  const { records, setApprovalStatus, addComment } = useRecords();
+  const { records } = useRecords();
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/data-search/sensory-inspection/factories/${factoryId}`;
 
   const record = records.find((r) => r.id === recordId);
-  const [comment, setComment] = useState(record?.comment ?? "");
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
 
   if (!record) {
     return (
@@ -52,56 +42,8 @@ export function RecordDetailPage() {
         ]}
       />
       <div className="flex flex-col gap-6 p-6">
-        <div className="flex items-center justify-between w-full">
-          <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-            <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
-          </div>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setStatusMenuOpen((v) => !v)}
-              className="bg-[#808080] border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px] flex items-center justify-between gap-2"
-            >
-              {STATUS_OPTIONS.find((opt) => opt.value === record.approvalStatus)?.label}
-              <span
-                aria-hidden
-                className={`inline-block size-4 shrink-0 transition-transform ${statusMenuOpen ? "rotate-180" : ""}`}
-                style={{
-                  WebkitMaskImage: `url("${iconArrowDown}")`,
-                  maskImage: `url("${iconArrowDown}")`,
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  backgroundColor: "currentColor",
-                }}
-              />
-            </button>
-            {statusMenuOpen && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setStatusMenuOpen(false)} />
-                <div className="absolute right-0 top-[calc(100%+8px)] z-50 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col p-2 w-[240px]">
-                  {STATUS_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => {
-                        setApprovalStatus(record.id, opt.value);
-                        setStatusMenuOpen(false);
-                      }}
-                      className={`h-[42px] px-2 rounded-lg text-base text-left w-full ${
-                        opt.value === record.approvalStatus
-                          ? "bg-[var(--semantic-brand-primary)] text-white"
-                          : "text-[var(--semantic-text-primary)]"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+        <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
+          <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
         </div>
 
         <div className="bg-white flex flex-wrap gap-8 items-center p-4 rounded-lg w-full">
@@ -221,23 +163,9 @@ export function RecordDetailPage() {
           )}
         </div>
 
-        <div className="flex flex-col gap-4 items-start w-full">
-          <div className="flex flex-col gap-2 items-start w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="点検内容に関する補足を入力できます（任意）"
-              className="bg-white min-h-20 p-2 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
-            />
-          </div>
-          <button
-            type="button"
-            onClick={() => addComment(record.id, comment)}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
-          >
-            コメントを残す
-          </button>
+        <div className="flex flex-col gap-2 items-start w-full">
+          <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
+          <Comments comments={record.comments || []} />
         </div>
       </div>
     </div>

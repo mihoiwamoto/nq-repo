@@ -2,6 +2,13 @@ import type { ApprovalStatus } from "../../data/approvals";
 
 export type CheckStatus = "ok" | "ng";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export type ActionOption = "電池交換" | "修理" | "その他";
 
 export type WeightIssueOption = "故障" | "その他";
@@ -12,7 +19,7 @@ export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
   action_needed: "要対応",
   no_repair: "修理しない",
   repairing: "修理中",
-  done: "対応完了",
+  done: "修理完了",
 };
 
 export const REPAIR_STATUS_COLORS: Record<RepairStatus, string> = {
@@ -43,4 +50,5 @@ export type ScaleRecord = {
   confirmer: string;
   approvalStatus: ApprovalStatus;
   comment?: string;
+  comments?: Comment[];
 };

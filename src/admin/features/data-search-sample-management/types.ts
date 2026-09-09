@@ -3,6 +3,13 @@ import type { ApprovalStatus } from "../../data/approvals";
 export type SampleStatus = "保管中" | "使用済み" | "破棄済み";
 export type DiscardReason = "賞味期限切れ" | "その他";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export type SampleRecord = {
   id: string;
   date: string;
@@ -22,4 +29,6 @@ export type SampleRecord = {
   confirmer: string;
   approvalStatus: ApprovalStatus;
   comment?: string;
+  comments?: Comment[];
+  timestamp?: string;
 };

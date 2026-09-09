@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { getFactoryName } from "../../../data/factories";
@@ -146,10 +147,10 @@ export function ScaleFormPage() {
     };
     if (isEditing && existing) {
       updateScale(existing.id, input);
-      navigate(`${basePath}/scales/${existing.id}`);
+      navigate(`${basePath}/scales/${existing.id}`, { state: { justSaved: true } });
     } else {
-      const created = addScale(input);
-      navigate(`${basePath}/scales/${created.id}`);
+      addScale(input);
+      navigate(`${basePath}/scales/registered`);
     }
   }
 
@@ -183,19 +184,9 @@ export function ScaleFormPage() {
               設定した期間外は、秤が紐づいていてもこの持ち場は画面に表示されません。
             </p>
             <div className="flex gap-2 items-center">
-              <input
-                type="date"
-                value={displayFrom}
-                onChange={(e) => setDisplayFrom(e.target.value)}
-                className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-              />
+              <DateFilterInput value={displayFrom} onChange={setDisplayFrom} />
               <span className="text-[var(--semantic-text-primary)]">〜</span>
-              <input
-                type="date"
-                value={displayTo}
-                onChange={(e) => setDisplayTo(e.target.value)}
-                className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-              />
+              <DateFilterInput value={displayTo} onChange={setDisplayTo} />
             </div>
           </div>
 

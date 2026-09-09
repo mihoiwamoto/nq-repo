@@ -1,9 +1,12 @@
-import { useState, useRef } from "react";
+import { useMemo, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Pulldown } from "../../components/Pulldown";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { getDateStripeClasses } from "../../utils/tableStripe";
 import type { WaterCheckResult, WaterSearchRecord } from "./types";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
 import iconXMark from "../../../assets/figma/icons/common/x-mark.svg";
@@ -11,6 +14,8 @@ import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
+import iconMinus from "../../../assets/figma/icons/common/minus.svg";
+import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadElementAsPdf } from "../../utils/pdf";
 
 function formatDateShort(date: string) {
@@ -74,6 +79,16 @@ function CheckCell({ result, width }: { result: WaterCheckResult; width: number 
   );
 }
 
+function isRecordAbnormal(record: WaterSearchRecord) {
+  return (
+    record.taste.status === "abnormal" ||
+    record.smell.status === "abnormal" ||
+    record.color.status === "abnormal" ||
+    record.turbidity.status === "abnormal" ||
+    record.foreignMatter.status === "abnormal"
+  );
+}
+
 function downloadCsv(rows: string[][], filename: string) {
   const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
   const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
@@ -122,17 +137,37 @@ export function DataListPage() {
   const tableRef = useRef<HTMLDivElement>(null);
   const [month, setMonth] = useState(3);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(true);
+  const [dateFilter, setDateFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [onlyAbnormal, setOnlyAbnormal] = useState(false);
+
+  const locationOptions = useMemo(
+    () => Array.from(new Set(records.filter((r) => r.location === location).map((r) => r.location))),
+    [records, location]
+  );
 
   const filtered = records.filter((r) => {
     if (r.location !== location) return false;
     const [ry, rm] = r.date.split("-").map(Number);
-    return ry === year && rm === month + 1;
+    if (ry !== year || rm !== month + 1) return false;
+    if (dateFilter && r.date !== dateFilter) return false;
+    if (locationFilter && r.location !== locationFilter) return false;
+    if (onlyAbnormal && !isRecordAbnormal(r)) return false;
+    return true;
   });
+  const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
     setYear(next.getFullYear());
     setMonth(next.getMonth());
+  }
+
+  function handleReset() {
+    setDateFilter("");
+    setLocationFilter("");
+    setOnlyAbnormal(false);
   }
 
   function handleDownload() {
@@ -193,7 +228,7 @@ export function DataListPage() {
           { label: "データ一覧" },
         ]}
       />
-      <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-col gap-10 p-6">
         <div className="flex items-center gap-4">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
             <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
@@ -201,6 +236,73 @@ export function DataListPage() {
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
             <p className="text-xl text-[var(--semantic-text-primary)]">{location}</p>
           </div>
+        </div>
+
+        <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
+          <button
+            type="button"
+            onClick={() => setFilterOpen((v) => !v)}
+            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+          >
+            <span>絞り込み検索</span>
+            {filterOpen ? (
+              <span
+                aria-hidden
+                className="inline-block size-5 shrink-0"
+                style={{
+                  WebkitMaskImage: `url("${iconMinus}")`,
+                  maskImage: `url("${iconMinus}")`,
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  backgroundColor: "var(--semantic-brand-primary)",
+                }}
+              />
+            ) : (
+              <span>+</span>
+            )}
+          </button>
+          {filterOpen && (
+            <div className="flex gap-6 items-center justify-end w-full">
+              <div className="flex flex-col gap-4 flex-1">
+                <div className="flex gap-4 items-center">
+                  <DateFilterInput value={dateFilter} onChange={setDateFilter} />
+                  <Pulldown
+                    value={locationFilter}
+                    onChange={setLocationFilter}
+                    options={locationOptions.map((label) => ({ value: label, label }))}
+                    placeholder="点検場所"
+                  />
+                </div>
+                <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
+                  <input
+                    type="checkbox"
+                    checked={onlyAbnormal}
+                    onChange={(e) => setOnlyAbnormal(e.target.checked)}
+                    className="size-4 accent-[var(--semantic-brand-primary)]"
+                  />
+                  異常があるものだけ表示
+                </label>
+              </div>
+              <div className="flex gap-2 items-center">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
+                >
+                  リセット
+                </button>
+                <button
+                  type="button"
+                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
+                >
+                  <img src={iconSearch} alt="" className="size-5" />
+                  検索
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="relative flex items-center justify-between">
@@ -355,7 +457,7 @@ export function DataListPage() {
               filtered.map((record, index) => (
                 <div
                   key={record.id}
-                  className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                  className={`flex h-14 items-center ${rowStripeClasses[index]}`}
                 >
                   <div className="flex items-center justify-center p-2 h-full shrink-0" style={{ width: 96 }}>
                     <Link

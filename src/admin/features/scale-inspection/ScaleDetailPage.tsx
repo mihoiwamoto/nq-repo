@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { getFactoryName } from "../../../data/factories";
 import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 function formatPeriod(displayFrom?: string, displayTo?: string) {
   if (!displayFrom && !displayTo) return "指定なし（常に表示）";
@@ -27,12 +28,20 @@ export function ScaleDetailPage() {
   const { factoryId, scaleId } = useParams<{ factoryId: string; scaleId: string }>();
   const { scales, posts, removeScale } = useScaleInspection();
   const navigate = useNavigate();
+  const location = useLocation();
   const basePath = `/admin/ledger-management/scale-inspection/factories/${factoryId}`;
   const factoryName = getFactoryName(factoryId);
   const scale = scales.find((s) => s.id === scaleId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
+
+  useEffect(() => {
+    if ((location.state as any)?.justSaved) {
+      setShowUpdateToast(true);
+    }
+  }, [location.state]);
 
   if (!scale) {
     return (
@@ -72,7 +81,8 @@ export function ScaleDetailPage() {
             onClick={() => navigate(`${basePath}/scales/${scale.id}/edit`)}
             className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
-            ✎ 編集
+            <img src={iconEdit} alt="編集" className="size-5" />
+            編集
           </button>
           <button
             type="button"
@@ -124,6 +134,7 @@ export function ScaleDetailPage() {
         </div>
       )}
 
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
       {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );

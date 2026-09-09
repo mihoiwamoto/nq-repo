@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T01:03:36.949Z",
+  "generatedAt": "2026-09-08T06:37:49.745Z",
   "impact": {
     "src/admin/components/PageTitleBar.tsx": [
       "scr_5021db3ab2",
@@ -9,6 +9,7 @@
       "scr_4d67702f5d",
       "scr_468ab251c1",
       "scr_4faf9d1576",
+      "scr_ff1d86785c",
       "scr_0e987843f5",
       "scr_803540f1b0",
       "scr_faeba9ce95",
@@ -20,6 +21,7 @@
       "scr_c62e3ee104",
       "scr_02aab90406",
       "scr_e4d985130d",
+      "scr_945b450edc",
       "scr_5637171708",
       "scr_fe44a0b9de",
       "scr_e3158fe806",
@@ -34,18 +36,43 @@
       "scr_9ca06ad4ab",
       "scr_526e01fe67",
       "scr_aa499c89e2",
+      "scr_4391569d26",
       "scr_1eb91c5d67",
       "scr_2ad6571570",
       "scr_e4c4e7cad1",
       "scr_a64347bd49",
       "scr_e423281296",
       "scr_43e2529ebf",
+      "scr_46f6e09190",
+      "scr_a4ed50a5b3",
       "scr_8013bb91d6",
       "scr_1f83b02d30",
+      "scr_0b6a008f2c",
       "scr_9ee3be68f1",
       "scr_592c4ade84",
       "scr_e95ee519cb",
       "scr_96bf20307f",
+      "scr_d3a681894d",
+      "scr_84efdf0eb8",
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b",
+      "scr_de85f41c3b",
+      "scr_f19f179735",
+      "scr_750d95a0dc",
+      "scr_86a3ccf128",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f",
+      "scr_a9445bec31",
+      "scr_5558274cc7",
+      "scr_498aceef58",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73",
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8",
       "scr_572ca90a9d",
       "scr_1a654cc183",
       "scr_a07a32a15b",
@@ -89,12 +116,15 @@
       "scr_624ffc3e0a",
       "scr_4d1086a689",
       "scr_3ac9f1a7d5",
+      "scr_bdb45117d3",
       "scr_57db55ea20",
       "scr_da692f6ac8",
       "scr_334700f825",
+      "scr_4cd53379c2",
       "scr_eea73cd2d9",
       "scr_5cfeb6ed17",
       "scr_d6b73927b0",
+      "scr_c782fe6f3e",
       "scr_2383e8e272",
       "scr_4b65c55eaf",
       "scr_cc35f2d1db",
@@ -103,6 +133,7 @@
       "scr_e1e3a21fd6",
       "scr_a4919a37f6",
       "scr_197b052ecd",
+      "scr_e5e5136bf0",
       "scr_4e0163dd72",
       "scr_0054dd6007",
       "scr_6e5603f704",
@@ -139,6 +170,7 @@
       "scr_87cf332a4e",
       "scr_cd462cc8c8",
       "scr_c5ce1ffef8",
+      "scr_d97d21c8e3",
       "scr_3e132b95cc",
       "scr_bd5369ad31",
       "scr_fc5ef9f545",
@@ -166,6 +198,7 @@
       "scr_4ffe9573c6",
       "scr_b0a56821c0",
       "scr_1bb091e14d",
+      "scr_cf7814a386",
       "scr_87f36e45a4",
       "scr_4423a9ef67",
       "scr_4f24ce8659",
@@ -179,7 +212,9 @@
       "scr_6ff90983f3",
       "scr_5062952627",
       "scr_de9cc434ea",
-      "scr_77b50fd1b0"
+      "scr_77b50fd1b0",
+      "scr_a9726f16cb",
+      "scr_7661c3d31c"
     ],
     "src/data/factories.ts": [
       "scr_5021db3ab2",
@@ -197,6 +232,27 @@
       "scr_e423281296",
       "scr_43e2529ebf",
       "scr_8013bb91d6",
+      "scr_d3a681894d",
+      "scr_84efdf0eb8",
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b",
+      "scr_de85f41c3b",
+      "scr_f19f179735",
+      "scr_750d95a0dc",
+      "scr_86a3ccf128",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f",
+      "scr_a9445bec31",
+      "scr_5558274cc7",
+      "scr_498aceef58",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73",
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8",
       "scr_572ca90a9d",
       "scr_1a654cc183",
       "scr_a07a32a15b",
@@ -280,7 +336,8 @@
       "scr_4ffe9573c6",
       "scr_b0a56821c0",
       "scr_1bb091e14d",
-      "scr_87f36e45a4"
+      "scr_87f36e45a4",
+      "scr_7661c3d31c"
     ],
     "src/data/companies.ts": [
       "scr_5021db3ab2",
@@ -318,6 +375,7 @@
       "scr_c62e3ee104",
       "scr_02aab90406",
       "scr_e4d985130d",
+      "scr_945b450edc",
       "scr_5637171708",
       "scr_fe44a0b9de",
       "scr_e3158fe806",
@@ -337,10 +395,32 @@
       "scr_a64347bd49",
       "scr_e423281296",
       "scr_43e2529ebf",
+      "scr_a4ed50a5b3",
       "scr_8013bb91d6",
       "scr_1f83b02d30",
       "scr_592c4ade84",
       "scr_e95ee519cb",
+      "scr_d3a681894d",
+      "scr_84efdf0eb8",
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b",
+      "scr_de85f41c3b",
+      "scr_f19f179735",
+      "scr_750d95a0dc",
+      "scr_86a3ccf128",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f",
+      "scr_a9445bec31",
+      "scr_5558274cc7",
+      "scr_498aceef58",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73",
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8",
       "scr_572ca90a9d",
       "scr_1a654cc183",
       "scr_a07a32a15b",
@@ -443,21 +523,30 @@
       "scr_75d1b8efc2",
       "scr_bff992deb4",
       "scr_5062952627",
-      "scr_de9cc434ea"
+      "scr_de9cc434ea",
+      "scr_a9726f16cb",
+      "scr_7661c3d31c"
     ],
     "src/admin/components/Toast.tsx": [
       "scr_4faf9d1576",
-      "scr_faeba9ce95",
+      "scr_3f2541b7dd",
+      "scr_101c67baca",
+      "scr_c62e3ee104",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_fe44a0b9de",
+      "scr_02222d8f75",
+      "scr_95bc7c8d23",
+      "scr_e39ef00c65",
+      "scr_9ca06ad4ab",
       "scr_aa499c89e2",
-      "scr_e4c4e7cad1",
+      "scr_a64347bd49",
       "scr_43e2529ebf",
       "scr_1f83b02d30",
       "scr_592c4ade84",
       "scr_3774347e60",
-      "scr_811d66d7ff",
       "scr_4d1086a689",
       "scr_3ac9f1a7d5",
-      "scr_57db55ea20",
       "scr_334700f825",
       "scr_d6b73927b0",
       "scr_4b65c55eaf",
@@ -489,7 +578,8 @@
       "scr_75d1b8efc2",
       "scr_bff992deb4",
       "scr_5062952627",
-      "scr_de9cc434ea"
+      "scr_de9cc434ea",
+      "scr_b6d82ef7f8"
     ],
     "src/admin/features/additive-management/AdditiveManagementContext.tsx": [
       "scr_4faf9d1576",
@@ -509,6 +599,7 @@
       "scr_101c67baca",
       "scr_c62e3ee104",
       "scr_e4d985130d",
+      "scr_945b450edc",
       "scr_fe44a0b9de",
       "scr_a3e87c217e",
       "scr_02222d8f75",
@@ -517,15 +608,35 @@
       "scr_fba36e73bd",
       "scr_9ca06ad4ab",
       "scr_e4c4e7cad1",
+      "scr_d3a681894d",
+      "scr_84efdf0eb8",
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b",
+      "scr_de85f41c3b",
+      "scr_f19f179735",
+      "scr_750d95a0dc",
+      "scr_86a3ccf128",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_4d6750083f",
+      "scr_a9445bec31",
+      "scr_5558274cc7",
+      "scr_498aceef58",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8",
       "scr_572ca90a9d",
       "scr_abece7ec8a",
       "scr_f740958425",
       "scr_ea210a96a2",
+      "scr_5206f5e209",
       "scr_3774347e60",
       "scr_426b9efb29",
       "scr_4b05fcc5b5",
-      "scr_53a183ee93",
       "scr_ca1e33a598",
+      "scr_6aefb7424d",
       "scr_4d1086a689",
       "scr_cc35f2d1db",
       "scr_167c2b49a3",
@@ -538,6 +649,7 @@
       "scr_3677bb3ef3",
       "scr_7e8f1d5f88",
       "scr_5d84fe8688",
+      "scr_8802d28f1f",
       "scr_4423a9ef67",
       "scr_75d1b8efc2",
       "scr_bff992deb4"
@@ -551,29 +663,136 @@
     ],
     "src/admin/components/ApprovalStatusBadge.tsx": [
       "scr_ed3572a6d2",
+      "scr_3f2541b7dd",
+      "scr_3d2b9148f0",
+      "scr_101c67baca",
+      "scr_582809ee81",
+      "scr_c62e3ee104",
+      "scr_02aab90406",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_5637171708",
+      "scr_fe44a0b9de",
+      "scr_02222d8f75",
+      "scr_7d3efc8d7e",
+      "scr_95bc7c8d23",
+      "scr_e39ef00c65",
+      "scr_fba36e73bd",
+      "scr_9ca06ad4ab",
+      "scr_b6d82ef7f8"
+    ],
+    "src/admin/components/DateFilterInput.tsx": [
+      "scr_ed3572a6d2",
+      "scr_3d2b9148f0",
+      "scr_a3e87c217e",
+      "scr_fba36e73bd",
+      "scr_a4ed50a5b3",
+      "scr_1f83b02d30",
+      "scr_84efdf0eb8",
+      "scr_47e6f13b8b",
+      "scr_f19f179735",
+      "scr_86a3ccf128",
+      "scr_70d8e456f9",
+      "scr_4d6750083f",
+      "scr_5558274cc7",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_c60574c5f8",
+      "scr_572ca90a9d",
+      "scr_abece7ec8a",
+      "scr_f740958425",
+      "scr_ea210a96a2",
+      "scr_5206f5e209",
+      "scr_3774347e60",
+      "scr_426b9efb29",
+      "scr_4b05fcc5b5",
+      "scr_ca1e33a598",
+      "scr_6aefb7424d",
+      "scr_eea73cd2d9",
+      "scr_d6b73927b0",
+      "scr_197b052ecd",
+      "scr_4e0163dd72",
+      "scr_167c2b49a3",
+      "scr_63c54def87",
+      "scr_bd5369ad31",
+      "scr_1bb091e14d"
+    ],
+    "src/admin/components/ApprovalConfirmDialog.tsx": [
+      "scr_ed3572a6d2",
+      "scr_3f2541b7dd",
+      "scr_3d2b9148f0",
+      "scr_101c67baca",
+      "scr_582809ee81",
+      "scr_c62e3ee104",
+      "scr_02aab90406",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_5637171708",
+      "scr_fe44a0b9de",
+      "scr_a3e87c217e",
+      "scr_02222d8f75",
+      "scr_7d3efc8d7e",
+      "scr_95bc7c8d23",
+      "scr_529ad83de7",
+      "scr_e39ef00c65",
+      "scr_fba36e73bd",
+      "scr_9ca06ad4ab"
+    ],
+    "src/admin/features/approvals-additive-management/RecordsContext.tsx": [
+      "scr_ed3572a6d2",
+      "scr_3f2541b7dd"
+    ],
+    "src/admin/utils/tableStripe.ts": [
+      "scr_ed3572a6d2",
       "scr_3d2b9148f0",
       "scr_582809ee81",
       "scr_02aab90406",
       "scr_5637171708",
       "scr_a3e87c217e",
       "scr_7d3efc8d7e",
+      "scr_529ad83de7",
       "scr_fba36e73bd",
+      "scr_84efdf0eb8",
+      "scr_47e6f13b8b",
+      "scr_f19f179735",
+      "scr_86a3ccf128",
+      "scr_70d8e456f9",
+      "scr_4d6750083f",
+      "scr_5558274cc7",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_c60574c5f8",
       "scr_572ca90a9d",
       "scr_abece7ec8a",
       "scr_f740958425",
+      "scr_ea210a96a2",
+      "scr_5206f5e209",
       "scr_3774347e60",
       "scr_426b9efb29",
       "scr_4b05fcc5b5",
       "scr_ca1e33a598",
-      "scr_b6d82ef7f8"
+      "scr_6aefb7424d"
     ],
-    "src/admin/features/approvals-additive-management/RecordsContext.tsx": [
+    "src/admin/hooks/useApprovalConfirm.ts": [
       "scr_ed3572a6d2",
-      "scr_3f2541b7dd"
-    ],
-    "src/admin/features/approvals-additive-management/types.ts": [
-      "scr_ed3572a6d2",
-      "scr_3f2541b7dd"
+      "scr_3f2541b7dd",
+      "scr_3d2b9148f0",
+      "scr_101c67baca",
+      "scr_582809ee81",
+      "scr_c62e3ee104",
+      "scr_02aab90406",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_5637171708",
+      "scr_fe44a0b9de",
+      "scr_a3e87c217e",
+      "scr_02222d8f75",
+      "scr_7d3efc8d7e",
+      "scr_95bc7c8d23",
+      "scr_529ad83de7",
+      "scr_e39ef00c65",
+      "scr_fba36e73bd",
+      "scr_9ca06ad4ab"
     ],
     "src/admin/data/approvals.ts": [
       "scr_ed3572a6d2",
@@ -583,6 +802,8 @@
       "scr_582809ee81",
       "scr_c62e3ee104",
       "scr_02aab90406",
+      "scr_e4d985130d",
+      "scr_945b450edc",
       "scr_5637171708",
       "scr_fe44a0b9de",
       "scr_e3158fe806",
@@ -599,7 +820,6 @@
       "scr_1a654cc183",
       "scr_abece7ec8a",
       "scr_da887741fb",
-      "scr_f740958425",
       "scr_b6bbfd4855",
       "scr_3774347e60",
       "scr_bd2d3d317b",
@@ -615,9 +835,25 @@
       "scr_2ffa87d706",
       "scr_b6d82ef7f8"
     ],
+    "src/admin/features/approvals-additive-management/types.ts": [
+      "scr_ed3572a6d2",
+      "scr_3f2541b7dd"
+    ],
     "src/admin/features/approvals-additive-management/mockData.ts": [
       "scr_ed3572a6d2",
       "scr_3f2541b7dd"
+    ],
+    "src/admin/components/RejectReasonDialog.tsx": [
+      "scr_3f2541b7dd",
+      "scr_101c67baca",
+      "scr_c62e3ee104",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_fe44a0b9de",
+      "scr_02222d8f75",
+      "scr_95bc7c8d23",
+      "scr_e39ef00c65",
+      "scr_9ca06ad4ab"
     ],
     "src/admin/features/approvals-chemical-management/RecordsContext.tsx": [
       "scr_3d2b9148f0",
@@ -647,6 +883,27 @@
       "scr_02aab90406",
       "scr_e4d985130d"
     ],
+    "src/admin/features/approvals-glass-plastic/RecordsContext.tsx": [
+      "scr_945b450edc"
+    ],
+    "src/admin/features/approvals-glass-plastic/types.ts": [
+      "scr_945b450edc"
+    ],
+    "src/admin/features/approvals-glass-plastic/mockData.ts": [
+      "scr_945b450edc"
+    ],
+    "src/app/features/glass-plastic/mockData.ts": [
+      "scr_945b450edc",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_5206f5e209",
+      "scr_22d0602c81",
+      "scr_34762c0c5e",
+      "scr_c2ccacfb8b",
+      "scr_986fb7abe0",
+      "scr_6ac89cb9d2",
+      "scr_6d30383da0"
+    ],
     "src/admin/features/approvals-metal-xray-detection/RecordsContext.tsx": [
       "scr_5637171708",
       "scr_fe44a0b9de",
@@ -668,6 +925,18 @@
     "src/admin/features/approvals-sample-management/RecordsContext.tsx": [
       "scr_a3e87c217e",
       "scr_02222d8f75"
+    ],
+    "src/admin/utils/pdf.ts": [
+      "scr_a3e87c217e",
+      "scr_572ca90a9d",
+      "scr_abece7ec8a",
+      "scr_f740958425",
+      "scr_ea210a96a2",
+      "scr_5206f5e209",
+      "scr_426b9efb29",
+      "scr_4b05fcc5b5",
+      "scr_ca1e33a598",
+      "scr_6aefb7424d"
     ],
     "src/admin/features/approvals-sample-management/mockData.ts": [
       "scr_a3e87c217e",
@@ -733,6 +1002,7 @@
     "src/admin/features/cleaning-record/CleaningRecordContext.tsx": [
       "scr_a64347bd49",
       "scr_43e2529ebf",
+      "scr_a4ed50a5b3",
       "scr_8013bb91d6",
       "scr_1f83b02d30"
     ],
@@ -742,12 +1012,14 @@
     "src/admin/features/cleaning-record/mockData.ts": [
       "scr_a64347bd49",
       "scr_43e2529ebf",
+      "scr_a4ed50a5b3",
       "scr_8013bb91d6",
       "scr_1f83b02d30"
     ],
     "src/admin/features/cleaning-record/types.ts": [
       "scr_a64347bd49",
       "scr_43e2529ebf",
+      "scr_a4ed50a5b3",
       "scr_8013bb91d6",
       "scr_1f83b02d30"
     ],
@@ -759,6 +1031,172 @@
       "scr_e95ee519cb",
       "scr_96bf20307f"
     ],
+    "src/admin/components/Comments.tsx": [
+      "scr_d3a681894d",
+      "scr_c3729c5aa1",
+      "scr_de85f41c3b",
+      "scr_750d95a0dc",
+      "scr_f77ae947e2",
+      "scr_6bdb0bf6a6",
+      "scr_a9445bec31",
+      "scr_498aceef58",
+      "scr_391b40400a",
+      "scr_8e3cfae6c3",
+      "scr_1a654cc183",
+      "scr_da887741fb",
+      "scr_8ee734cfe0",
+      "scr_0cc4dfd849",
+      "scr_34762c0c5e",
+      "scr_3c95e7470d",
+      "scr_db140db5c2",
+      "scr_53a183ee93",
+      "scr_a66d9ce0ed",
+      "scr_811d66d7ff"
+    ],
+    "src/admin/components/ConfirmStatusBadge.tsx": [
+      "scr_d3a681894d",
+      "scr_84efdf0eb8",
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b",
+      "scr_de85f41c3b",
+      "scr_f19f179735",
+      "scr_750d95a0dc",
+      "scr_86a3ccf128",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_4d6750083f",
+      "scr_a9445bec31",
+      "scr_5558274cc7",
+      "scr_498aceef58",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8"
+    ],
+    "src/admin/features/confirmations-additive-management/RecordsContext.tsx": [
+      "scr_d3a681894d",
+      "scr_84efdf0eb8"
+    ],
+    "src/admin/features/confirmations-additive-management/types.ts": [
+      "scr_d3a681894d",
+      "scr_84efdf0eb8"
+    ],
+    "src/admin/features/confirmations-additive-management/mockData.ts": [
+      "scr_d3a681894d",
+      "scr_84efdf0eb8"
+    ],
+    "src/admin/features/confirmations-chemical-management/RecordsContext.tsx": [
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b"
+    ],
+    "src/admin/features/confirmations-chemical-management/types.ts": [
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b"
+    ],
+    "src/admin/features/confirmations-chemical-management/mockData.ts": [
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b"
+    ],
+    "src/admin/features/confirmations-cleaning-record/RecordsContext.tsx": [
+      "scr_de85f41c3b",
+      "scr_f19f179735"
+    ],
+    "src/admin/features/confirmations-cleaning-record/types.ts": [
+      "scr_de85f41c3b",
+      "scr_f19f179735"
+    ],
+    "src/admin/features/confirmations-cleaning-record/mockData.ts": [
+      "scr_de85f41c3b",
+      "scr_f19f179735"
+    ],
+    "src/admin/features/confirmations-equipment-inspection/RecordsContext.tsx": [
+      "scr_750d95a0dc",
+      "scr_86a3ccf128"
+    ],
+    "src/admin/features/confirmations-equipment-inspection/types.ts": [
+      "scr_750d95a0dc",
+      "scr_86a3ccf128"
+    ],
+    "src/admin/features/confirmations-equipment-inspection/mockData.ts": [
+      "scr_750d95a0dc",
+      "scr_86a3ccf128"
+    ],
+    "src/admin/features/confirmations-glass-plastic/RecordsContext.tsx": [
+      "scr_f77ae947e2",
+      "scr_70d8e456f9"
+    ],
+    "src/admin/features/confirmations-glass-plastic/types.ts": [
+      "scr_f77ae947e2",
+      "scr_70d8e456f9"
+    ],
+    "src/admin/features/confirmations-glass-plastic/mockData.ts": [
+      "scr_f77ae947e2",
+      "scr_70d8e456f9"
+    ],
+    "src/admin/features/confirmations-metal-xray-detection/RecordsContext.tsx": [
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f"
+    ],
+    "src/admin/features/confirmations-metal-xray-detection/types.ts": [
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f"
+    ],
+    "src/admin/features/confirmations-metal-xray-detection/mockData.ts": [
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f"
+    ],
+    "src/admin/features/confirmations-sample-management/RecordsContext.tsx": [
+      "scr_a9445bec31",
+      "scr_5558274cc7"
+    ],
+    "src/admin/features/confirmations-sample-management/types.ts": [
+      "scr_a9445bec31",
+      "scr_5558274cc7"
+    ],
+    "src/admin/features/confirmations-sample-management/mockData.ts": [
+      "scr_a9445bec31",
+      "scr_5558274cc7"
+    ],
+    "src/admin/features/confirmations-scale-inspection/RecordsContext.tsx": [
+      "scr_498aceef58",
+      "scr_2fb1b21718"
+    ],
+    "src/admin/features/confirmations-scale-inspection/types.ts": [
+      "scr_498aceef58",
+      "scr_2fb1b21718"
+    ],
+    "src/admin/features/confirmations-scale-inspection/mockData.ts": [
+      "scr_498aceef58",
+      "scr_2fb1b21718"
+    ],
+    "src/admin/features/confirmations-sensory-inspection/RecordsContext.tsx": [
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73"
+    ],
+    "src/admin/features/confirmations-sensory-inspection/types.ts": [
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73"
+    ],
+    "src/admin/features/confirmations-sensory-inspection/mockData.ts": [
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73"
+    ],
+    "src/admin/features/confirmations-water-inspection/RecordsContext.tsx": [
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8"
+    ],
+    "src/admin/features/confirmations-water-inspection/types.ts": [
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8"
+    ],
+    "src/admin/features/confirmations-water-inspection/mockData.ts": [
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8"
+    ],
     "src/admin/features/data-search-additive-management/RecordsContext.tsx": [
       "scr_572ca90a9d",
       "scr_1a654cc183"
@@ -766,16 +1204,6 @@
     "src/admin/features/data-search-additive-management/types.ts": [
       "scr_572ca90a9d",
       "scr_1a654cc183"
-    ],
-    "src/admin/utils/pdf.ts": [
-      "scr_572ca90a9d",
-      "scr_abece7ec8a",
-      "scr_f740958425",
-      "scr_ea210a96a2",
-      "scr_426b9efb29",
-      "scr_4b05fcc5b5",
-      "scr_ca1e33a598",
-      "scr_6aefb7424d"
     ],
     "src/admin/features/data-search-additive-management/mockRecords.ts": [
       "scr_572ca90a9d",
@@ -826,27 +1254,6 @@
       "scr_0cc4dfd849",
       "scr_1d34f6f6c6"
     ],
-    "src/admin/features/data-search-equipment/ApprovalStatusTag.tsx": [
-      "scr_ea210a96a2"
-    ],
-    "src/admin/components/Comments.tsx": [
-      "scr_0cc4dfd849",
-      "scr_3c95e7470d",
-      "scr_db140db5c2"
-    ],
-    "src/admin/components/CommentsSection.tsx": [
-      "scr_0cc4dfd849",
-      "scr_3c95e7470d"
-    ],
-    "src/app/features/glass-plastic/mockData.ts": [
-      "scr_5206f5e209",
-      "scr_22d0602c81",
-      "scr_34762c0c5e",
-      "scr_c2ccacfb8b",
-      "scr_986fb7abe0",
-      "scr_6ac89cb9d2",
-      "scr_6d30383da0"
-    ],
     "src/admin/features/data-search-glass-plastic/RecordsContext.tsx": [
       "scr_5206f5e209",
       "scr_34762c0c5e"
@@ -885,6 +1292,9 @@
     ],
     "src/admin/features/data-search-metal-xray-detection/DeleteRecordDialog.tsx": [
       "scr_3774347e60"
+    ],
+    "src/admin/components/CommentsSection.tsx": [
+      "scr_3c95e7470d"
     ],
     "src/admin/features/data-search-sample-management/RecordsContext.tsx": [
       "scr_426b9efb29",
@@ -940,11 +1350,17 @@
       "scr_dfa18d9388",
       "scr_811d66d7ff"
     ],
-    "src/admin/features/device-management/mockData.ts": [
-      "scr_4d1086a689"
+    "src/data/deviceStore.ts": [
+      "scr_4d1086a689",
+      "scr_ad6ab79254"
     ],
     "src/admin/features/device-management/types.ts": [
-      "scr_4d1086a689"
+      "scr_4d1086a689",
+      "scr_ad6ab79254"
+    ],
+    "src/admin/features/device-management/mockData.ts": [
+      "scr_4d1086a689",
+      "scr_ad6ab79254"
     ],
     "src/admin/features/equipment-inspection/ScheduleContext.tsx": [
       "scr_3ac9f1a7d5",
@@ -973,9 +1389,6 @@
       "scr_5cfeb6ed17",
       "scr_d6b73927b0"
     ],
-    "src/admin/components/ConfirmDialog.tsx": [
-      "scr_57db55ea20"
-    ],
     "src/admin/features/equipment-inspection/AddLineDialog.tsx": [
       "scr_d6b73927b0"
     ],
@@ -985,6 +1398,8 @@
       "scr_167c2b49a3",
       "scr_70a0f64213",
       "scr_b6d82ef7f8",
+      "scr_a9726f16cb",
+      "scr_cd389b034d",
       "scr_814757bf46",
       "scr_9a9cda1987",
       "scr_fad5db77f2",
@@ -1008,6 +1423,8 @@
       "scr_167c2b49a3",
       "scr_70a0f64213",
       "scr_b6d82ef7f8",
+      "scr_a9726f16cb",
+      "scr_cd389b034d",
       "scr_814757bf46",
       "scr_9a9cda1987",
       "scr_fad5db77f2",
@@ -1273,11 +1690,16 @@
     ],
     "src/pages/ComingSoonPage.tsx": [
       "scr_70a0f64213",
+      "scr_a9726f16cb",
       "scr_d08d5a86a6"
     ],
     "src/admin/components/LedgerCategoryGrid.tsx": [
+      "scr_cd389b034d",
       "scr_814757bf46",
       "scr_9a9cda1987"
+    ],
+    "src/admin/data/confirmations.ts": [
+      "scr_cd389b034d"
     ],
     "src/app/layout/AppHeader.tsx": [
       "scr_f86ef92f99",

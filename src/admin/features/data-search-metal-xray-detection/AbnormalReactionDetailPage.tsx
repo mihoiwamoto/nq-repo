@@ -95,7 +95,7 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">点検時間</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">{abnormalItem.time}</p>
-                <p className="text-xs text-[#999999]">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">異常製品</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">{abnormalItem.passedProduct}</p>
-                <p className="text-xs text-[#999999]">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">通過数量</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">200</p>
-                <p className="text-xs text-[#999999]">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">異常数量</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">5</p>
-                <p className="text-xs text-[#999999]">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
+                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}</p>
               </div>
             </div>
           </div>
@@ -145,7 +145,7 @@ export function AbnormalReactionDetailPage() {
               <p className="text-base text-[#999999] leading-relaxed max-w-[60%]">
                 検査工程で異物が検出されました。金属探知機により異物混入が確認されたため、当該製品は廃棄処分としました。
               </p>
-              <p className="text-xs text-[#999999] text-right flex-shrink-0">
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right flex-shrink-0 font-normal">
                 {abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}
               </p>
             </div>
@@ -164,7 +164,7 @@ export function AbnormalReactionDetailPage() {
               <p className="text-base text-[#999999] leading-relaxed max-w-[60%]">
                 金属探知機の感度を再調整し、校正用テストピースで動作確認を実施しました。その後、製品の再処理ラインで検査を再開しています。
               </p>
-              <p className="text-xs text-[#999999] text-right flex-shrink-0">
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right flex-shrink-0 font-normal">
                 {abnormalItem.inspectorName}, {formatDate(record.date)} {abnormalItem.time}
               </p>
             </div>

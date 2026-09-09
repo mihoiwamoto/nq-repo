@@ -47,7 +47,7 @@ function DetailRow({
         <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
         <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
       </div>
-      {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">{timestamp}</p>}
+      {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>}
     </div>
   );
 }
@@ -70,7 +70,7 @@ function DetailNoteRow({
         <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
       </div>
       <p className="text-base text-[var(--semantic-text-primary)] whitespace-pre-wrap">{note}</p>
-      {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">{timestamp}</p>}
+      {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>}
     </div>
   );
 }
@@ -82,7 +82,7 @@ function DetailCheckRow({ label, value, timestamp }: { label: string; value: OkN
         <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
         <StatusBadge value={value} />
       </div>
-      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">{timestamp}</p>
+      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
     </div>
   );
 }

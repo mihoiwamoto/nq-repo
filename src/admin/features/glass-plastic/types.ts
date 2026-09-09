@@ -14,7 +14,12 @@ export const REPAIR_STATUS_COLORS: Record<RepairStatus, string> = {
   no_repair: "var(--semantic-text-secondary)",
 };
 
-export const REPAIR_STATUS_ORDER: RepairStatus[] = ["action_needed", "repairing", "repaired", "no_repair"];
+export const REPAIR_STATUS_NEXT_OPTIONS: Record<RepairStatus, RepairStatus[]> = {
+  action_needed: ["action_needed", "repairing", "no_repair"],
+  repairing: ["repairing", "repaired"],
+  no_repair: ["no_repair"],
+  repaired: ["repaired"],
+};
 
 export type RepairItem = {
   id: string;

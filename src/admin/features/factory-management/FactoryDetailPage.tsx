@@ -12,6 +12,7 @@ import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
 import iconXMark from "../../../assets/figma/icons/common/x-mark.svg";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -81,7 +82,8 @@ export function FactoryDetailPage() {
             onClick={() => navigate(`/admin/factory/${factory.id}/edit`)}
             className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
-            ✎ 編集
+            <img src={iconEdit} alt="編集" className="size-5" />
+            編集
           </button>
           <button
             type="button"

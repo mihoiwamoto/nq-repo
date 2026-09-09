@@ -7,6 +7,7 @@ type CleaningRecordContextValue = {
   lines: Line[];
   entries: Record<string, ScheduleEntry>;
   upsertEntry: (dateKey: string, lineIds: string[]) => void;
+  addLine: (line: Line) => void;
   updateLineDisplayPeriod: (lineId: string, displayFrom?: string, displayTo?: string) => void;
   removeLine: (lineId: string) => void;
 };
@@ -23,6 +24,9 @@ export function CleaningRecordProvider({ children }: { children: ReactNode }) {
       entries,
       upsertEntry: (dateKey, lineIds) => {
         setEntries((prev) => ({ ...prev, [dateKey]: { dateKey, lineIds } }));
+      },
+      addLine: (line) => {
+        setLines((prev) => [...prev, line]);
       },
       updateLineDisplayPeriod: (lineId, displayFrom, displayTo) => {
         setLines((prev) =>

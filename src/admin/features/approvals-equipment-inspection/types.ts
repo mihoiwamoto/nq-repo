@@ -1,4 +1,12 @@
 export type ApprovalStatus = "pending" | "approved" | "rejected";
+
+export type Comment = {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+};
+
 export type ResultIcon = "ok" | "ng" | "skip";
 export type ItemStatus = "ok" | "ng";
 
@@ -17,7 +25,7 @@ export type InspectionPointResult = {
 };
 
 export type InspectionSession = {
-  segment: "始業" | "終業";
+  segment: string;
   points: InspectionPointResult[];
   remarks: string;
 };
@@ -32,5 +40,5 @@ export type EquipmentApprovalRecord = {
   confirmer: string;
   approvalStatus: ApprovalStatus;
   sessions: InspectionSession[];
-  comment?: string;
+  comments?: Comment[];
 };

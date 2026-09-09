@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { LoadingOverlay } from "../../layout/LoadingOverlay";
 import { OfflineDialog } from "./OfflineDialog";
-import iconEye from "../../../assets/figma/icons/common/eye.svg";
-import iconEyeOff from "../../../assets/figma/icons/common/eye-off.svg";
+import { registerFirstLoginDevice } from "../../../data/deviceStore";
+import iconEye from "../../../assets/figma/icons/common/eye.svg?url";
+import iconEyeOff from "../../../assets/figma/icons/common/eye-off.svg?url";
 
 const DEMO_FACTORY_ID = "123456";
 const DEMO_PASSWORD = "Iwamoto1000@";
 const LOGIN_DELAY_MS = 600;
+const APP_DEVICE_REGISTERED_KEY = "nq_app_device_registered";
+const APP_DEVICE_FACTORY_ID = "f1";
 
 export function AppLoginPage() {
   const navigate = useNavigate();
@@ -25,6 +28,10 @@ export function AppLoginPage() {
       return;
     }
     if (factoryId === DEMO_FACTORY_ID && password === DEMO_PASSWORD) {
+      if (!localStorage.getItem(APP_DEVICE_REGISTERED_KEY)) {
+        registerFirstLoginDevice(APP_DEVICE_FACTORY_ID, "新規端末");
+        localStorage.setItem(APP_DEVICE_REGISTERED_KEY, "true");
+      }
       setIsLoggingIn(true);
       setTimeout(() => navigate("/app/ledger-list"), LOGIN_DELAY_MS);
       return;

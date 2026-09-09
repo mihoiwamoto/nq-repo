@@ -17,14 +17,14 @@ export function HelpAccordion({
         className="flex items-center justify-between gap-4 p-4 w-full text-left"
       >
         <div className="flex flex-1 items-center gap-4 min-w-0">
-          <span className="text-[var(--semantic-brand-primary)] text-base font-bold shrink-0">Q.</span>
+          <span className="text-[var(--semantic-text-primary)] text-base font-bold shrink-0">Q.</span>
           <span className="text-base text-[var(--semantic-text-primary)] truncate">{faq.question}</span>
         </div>
         <span className="text-[var(--semantic-brand-primary)] text-xl shrink-0">{isOpen ? "−" : "+"}</span>
       </button>
       {isOpen && (
         <div className="bg-[#f8f8f8] flex gap-4 items-start px-4 pt-4 pb-6">
-          <span className="text-[#808080] text-base font-bold shrink-0">A.</span>
+          <span className="text-[var(--semantic-brand-primary)] text-base font-bold shrink-0">A.</span>
           <p className="flex-1 text-base text-[var(--semantic-text-primary)] leading-relaxed whitespace-pre-line">
             {faq.answer}
           </p>

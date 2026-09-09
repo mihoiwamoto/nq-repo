@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assets/figma/logo-admin.png";
 
-const ACCOUNT_NAME = "管理者01";
+const ACCOUNT_NAME = "佐々木明子";
 
 const MENU_LINKS = [
   { label: "アカウント情報", to: "/admin/account" },
@@ -21,11 +21,12 @@ export function AdminHeader() {
         <Link to="/" className="size-10 rounded-[6.4px] bg-white overflow-hidden block">
           <img src={logo} alt="NQlipo" className="size-full object-cover" />
         </Link>
+        <span className="text-base font-semibold text-white">Design Spec</span>
       </div>
       <button
         type="button"
         onClick={() => setMenuOpen((v) => !v)}
-        className="h-10 px-2 rounded-lg bg-white flex items-center justify-center text-sm text-[var(--semantic-text-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] w-[120px]"
+        className="h-10 px-20 rounded-lg bg-white flex items-center justify-center text-base text-[var(--semantic-text-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
       >
         {ACCOUNT_NAME}
       </button>

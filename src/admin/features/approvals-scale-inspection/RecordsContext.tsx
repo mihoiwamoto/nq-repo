@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { scaleApprovalRecords } from "./mockData";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { RepairStatus, ScaleApprovalRecord } from "./types";
+import { CURRENT_ACCOUNT } from "../account/mockData";
 
 type RecordsContextValue = {
   records: ScaleApprovalRecord[];
@@ -24,8 +25,25 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
     setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, repairStatus: status } : r)));
   }
 
-  function addComment(id: string, comment: string) {
-    setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, comment } : r)));
+  function addComment(id: string, text: string) {
+    setRecords((prev) =>
+      prev.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              comments: [
+                ...(r.comments ?? []),
+                {
+                  id: `${id}-${Date.now()}`,
+                  author: CURRENT_ACCOUNT.name,
+                  timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                  text,
+                },
+              ],
+            }
+          : r
+      )
+    );
   }
 
   return (

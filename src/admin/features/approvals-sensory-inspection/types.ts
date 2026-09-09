@@ -1,11 +1,19 @@
 import type { ApprovalStatus } from "../../data/approvals";
 
+export type Comment = {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+};
+
 export const CRITERIA = ["味", "形", "色", "食感", "香り", "とろみ"] as const;
 export type Criterion = (typeof CRITERIA)[number];
 
 export type CriterionScore = {
   score: number;
   reason?: string;
+  timestamp?: string;
 };
 
 export function isAbnormalScore(score: number) {
@@ -31,5 +39,5 @@ export type SensoryApprovalRecord = {
   confirmer: string;
   approvalStatus: ApprovalStatus;
   scoreEntries: ScoreEntry[];
-  comment?: string;
+  comments?: Comment[];
 };

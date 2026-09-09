@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useStorageManagement } from "./StorageManagementContext";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 export function StorageDetailPage() {
   const { locationId } = useParams<{ locationId: string }>();
@@ -36,18 +37,22 @@ export function StorageDetailPage() {
             to={`/admin/storage/${locationId}/edit`}
             className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
+            <img src={iconEdit} alt="編集" className="size-5" />
             編集
           </Link>
         </div>
-        <div className="bg-white flex items-center px-4 py-6 rounded-lg w-full gap-4">
-          <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">保管場所</p>
-          <p className="text-xl text-[var(--semantic-text-primary)]">{location?.name}</p>
-        </div>
-        <div className="bg-white flex items-center px-4 py-6 rounded-lg w-full gap-4">
-          <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">工場</p>
-          <p className="text-xl text-[var(--semantic-text-primary)]">
-            {getFactoryName(location?.factoryId)}
-          </p>
+        <div className="bg-white rounded-lg w-full">
+          <div className="flex items-center px-6 py-6 gap-4">
+            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">保管場所</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{location?.name}</p>
+          </div>
+          <div className="h-px bg-[#e0e0e0] mx-6"></div>
+          <div className="flex items-center px-6 py-6 gap-4">
+            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">工場</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">
+              {getFactoryName(location?.factoryId)}
+            </p>
+          </div>
         </div>
       </div>
 

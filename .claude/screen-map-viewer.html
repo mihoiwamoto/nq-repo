@@ -19,7 +19,7 @@
     --direct-soft: rgba(229, 72, 77, 0.10);
     --impact: #f0932b;
     --impact-soft: rgba(240, 147, 43, 0.12);
-    --admin: #3b6ef5;
+    --admin: #009940;
     --app: #8b5cf6;
     --add: #1a7f4b;
     --add-bg: rgba(26, 127, 75, 0.10);
@@ -82,14 +82,18 @@
   }
   input[type="search"]:focus { outline: 2px solid var(--admin); outline-offset: -1px; }
 
-  .seg { display: flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
-  .seg button {
-    padding: 7px 13px; font: inherit; font-size: 12.5px;
-    background: var(--panel-2); color: var(--ink-2);
-    border: none; border-right: 1px solid var(--line); cursor: pointer;
+  /* 変更あり/すべて/Admin/App と Ver.タブは同じセグメント型デザインで統一する */
+  .seg, .ver-seg {
+    display: inline-flex; gap: 4px; background: #F5F5F4; padding: 4px;
+    border-radius: 14px; font: inherit; font-size: 12.5px; font-weight: 700;
   }
-  .seg button:last-child { border-right: none; }
-  .seg button[aria-pressed="true"] { background: var(--admin); color: #fff; }
+  .seg button, .ver-seg button {
+    padding: 7px 12px; border: none; border-radius: 10px; cursor: pointer;
+    font: inherit; font-weight: 700; color: #78716C; background: transparent;
+  }
+  .seg button[aria-pressed="true"], .ver-seg button[aria-pressed="true"] {
+    background: #FFFFFF; color: #009940;
+  }
   .ghost {
     padding: 7px 13px; font: inherit; font-size: 12.5px; cursor: pointer;
     background: var(--panel-2); color: var(--ink-2);
@@ -105,6 +109,12 @@
   }
   .category-title:first-child { margin-top: 0; }
 
+  .ledger-title {
+    font-size: 19px; font-weight: 700; margin: 34px 0 4px; color: #009940;
+    padding-bottom: 8px; border-bottom: 2px solid rgba(0, 153, 64, 0.28);
+  }
+  .ledger-title:first-child { margin-top: 0; }
+
   .group-title {
     font-size: 12px; font-weight: 620; letter-spacing: .04em;
     color: var(--ink-3); margin: 22px 0 10px;
@@ -115,6 +125,53 @@
   .section-badges { display: inline-flex; gap: 6px; font-weight: 620; }
   .section-badges .b-direct { color: var(--direct); }
   .section-badges .b-impact { color: var(--impact); }
+
+  /* ---------- フローマップ ---------- */
+  .flow-tile { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 22px; margin-bottom: 8px; }
+  .flow-tile.misc { opacity: .88; }
+
+  .flow-module-wrap {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 10px 10px 12px;
+  }
+  .module-title {
+    font-size: 11.5px; font-weight: 620; color: var(--ink-2); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .module-cat {
+    font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 4px; color: #fff;
+  }
+  .module-cat.admin { background: var(--admin); }
+  .module-cat.app { background: var(--app); }
+  .module-cat.common { background: var(--ink-3); }
+
+  .flow-module { position: relative; }
+  .flow-edges { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
+  .flow-edges .flow-edge { fill: none; stroke: var(--ink-3); stroke-width: 1.6; }
+  .flow-edges .flow-arrow-head { fill: var(--ink-3); }
+
+  .flow-node {
+    position: absolute; width: 96px; padding: 0; border: none; background: none;
+    font: inherit; color: inherit; text-align: left; cursor: pointer;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .flow-thumb {
+    width: 96px; height: 62px; border: 1px solid var(--line); border-radius: 7px;
+    overflow: hidden; background: var(--panel-2); position: relative;
+    display: flex; flex-direction: column; gap: 3px; padding: 6px;
+    transition: box-shadow .12s, border-color .12s;
+  }
+  .flow-thumb img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: top center;
+  }
+  .flow-node:hover .flow-thumb { border-color: var(--admin); box-shadow: 0 3px 10px rgba(0,0,0,.12); }
+  .flow-node.direct .flow-thumb { outline: 2px solid var(--direct); outline-offset: 1px; }
+  .flow-node.impact .flow-thumb { outline: 2px solid var(--impact); outline-offset: 1px; }
+  .flow-label {
+    font-size: 10.5px; line-height: 1.3; color: var(--ink-2);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
 
   .grid {
     display: grid;
@@ -220,7 +277,7 @@
     display: inline-block; padding: 1px 6px; border-radius: 4px;
     font-size: 10px; font-weight: 600; width: fit-content; margin-top: 2px;
   }
-  .chip.admin { background: rgba(59,110,245,.14); color: var(--admin); }
+  .chip.admin { background: rgba(0,153,64,.14); color: var(--admin); }
   .chip.app { background: rgba(139,92,246,.16); color: var(--app); }
   .chip.common { background: rgba(120,120,130,.16); color: var(--ink-2); }
 
@@ -328,13 +385,20 @@
   </div>
 
   <div class="controls">
-    <input type="search" id="q" placeholder="画面名・機能名・パスで検索…" />
     <div class="seg" id="filters">
       <button data-f="changed" aria-pressed="true">変更あり</button>
       <button data-f="all" aria-pressed="false">すべて</button>
       <button data-f="admin" aria-pressed="false">Admin</button>
       <button data-f="app" aria-pressed="false">App</button>
     </div>
+    <div class="ver-seg" id="verFilters">
+      <button data-v="1.0" aria-pressed="false">Ver.1.0</button>
+      <button data-v="1.5" aria-pressed="false">Ver.1.5</button>
+      <button data-v="2.0" aria-pressed="false">Ver.2.0</button>
+      <button data-v="3.0" aria-pressed="false">Ver.3.0</button>
+      <button data-v="4.0" aria-pressed="false">Ver.4.0</button>
+    </div>
+    <input type="search" id="q" placeholder="画面名・機能名・パスで検索…" />
     <button class="ghost" id="reload">再読み込み</button>
   </div>
 </header>
@@ -361,6 +425,66 @@
   let edits = { screens: {}, files: {} };
   let filter = "changed";
   let query = "";
+  let versionId = null; // "1.0" 等。null は絞り込みなし（全帳票）
+
+  // 帳票のバージョン別グルーピング。「使用水の点検」のような帳票がいつ追加されたか、
+  // という区分で機能フォルダをまとめている（画面遷移の形とは無関係の分け方）。
+  // 1バージョンに複数の帳票が入ることがあるので、帳票ごとに見出しを出せるよう配列にしている。
+  const VERSION_GROUPS = {
+    "1.0": [
+      {
+        label: "使用水の点検",
+        features: ["water-inspection", "data-search-water-inspection", "approvals-water-inspection"],
+      },
+    ],
+    "1.5": [
+      {
+        label: "ガラスプラスチック管理",
+        features: ["glass-plastic", "data-search-glass-plastic"],
+      },
+    ],
+    "2.0": [
+      {
+        label: "秤点検管理",
+        features: ["scale-inspection", "data-search-scale-inspection", "approvals-scale-inspection"],
+      },
+      {
+        label: "官能検査記録",
+        features: ["sensory-inspection", "data-search-sensory-inspection", "approvals-sensory-inspection"],
+      },
+    ],
+    "3.0": [
+      {
+        label: "金属・X線探知機",
+        features: [
+          "metal-detector-management", "xray-detector-management", "weight-checker-management",
+          "metal-xray-detection", "data-search-metal-xray-detection", "approvals-metal-xray-detection",
+        ],
+      },
+      {
+        label: "検体管理",
+        features: ["sample-management", "data-search-sample-management", "approvals-sample-management", "specimen-management"],
+      },
+    ],
+    "4.0": [
+      {
+        label: "機械器具点検",
+        features: ["equipment-inspection", "data-search-equipment", "approvals-equipment-inspection"],
+      },
+      {
+        label: "清掃記録",
+        features: ["cleaning-record", "data-search-cleaning-record", "approvals-cleaning-record"],
+      },
+      {
+        label: "添加物管理",
+        features: ["additive-management", "data-search-additive-management", "approvals-additive-management"],
+      },
+      {
+        label: "薬品管理",
+        features: ["chemical-management", "data-search-chemical-management", "approvals-chemical-management"],
+      },
+    ],
+  };
   let lastSignature = null;
   let shots = { screens: {} };
 
@@ -461,27 +585,298 @@
     return st ? (st.level === "direct" ? 0 : 1) : 2;
   }
 
+  /* ================= フローマップ（一覧→詳細→編集 のような画面遷移図） ================= */
+  //
+  // 「どのボタンを押すとどこへ行くか」を、各画面のルート（URL）の親子関係から機械的に求める。
+  // A の URL が B の URL に "/" 区切りで前方一致するなら A → B のつながりとみなす
+  // （<Link to> や navigate() を1つずつ追わなくても、ルート定義自体が遷移の骨格を表しているため）。
+  // 同じ「役割の並び」を持つ機能はまとめて1つのセクションにする。
+
+  const ROLE_LABEL = {
+    list: "一覧", detail: "詳細", edit: "編集", new: "新規",
+    confirm: "確認", complete: "完了",
+    "delete-confirm": "削除確認", "delete-complete": "削除完了",
+    approve: "承認", calendar: "カレンダー", settings: "設定", other: "その他",
+  };
+  const ROLE_ORDER = Object.keys(ROLE_LABEL);
+
+  function roleOf(s) {
+    const t = `${s.frameTitle || ""} ${s.displayName}`;
+    if (/削除.*完了|Delete.*Complete/i.test(t)) return "delete-complete";
+    if (/削除.*確認|Delete.*Confirm/i.test(t)) return "delete-confirm";
+    if (/完了|Complete/i.test(t)) return "complete";
+    if (/承認|レビュー|Review|Approve/i.test(t)) return "approve";
+    if (/確認|Confirm/i.test(t)) return "confirm";
+    if (/編集|Edit/i.test(t)) return "edit";
+    if (/新規|登録|New|Registration/i.test(t)) return "new";
+    if (/詳細|Detail/i.test(t)) return "detail";
+    if (/カレンダー|予定|スケジュール|Calendar|Schedule/i.test(t)) return "calendar";
+    if (/設定|Settings?/i.test(t)) return "settings";
+    if (/一覧|選択|List|Selection/i.test(t)) return "list";
+    return "other";
+  }
+
+  /** 同じ機能フォルダの画面から、ルートの親子関係で小さな遷移ツリーを作る */
+  function buildModule(items) {
+    const nodes = items.map((s) => ({
+      id: s.id,
+      screen: s,
+      role: roleOf(s),
+      route: (s.routes && s.routes[0]) || "",
+      children: [],
+      depth: 0,
+      row: 0,
+    }));
+    const segCount = (r) => r.split("/").filter(Boolean).length;
+    const withRoute = nodes.filter((n) => n.route);
+    withRoute.sort((a, b) => segCount(a.route) - segCount(b.route));
+
+    const roots = [];
+    for (const n of withRoute) {
+      let parent = null;
+      for (const cand of withRoute) {
+        if (cand === n || cand.route === n.route) continue;
+        if (n.route.startsWith(cand.route + "/")) {
+          if (!parent || cand.route.length > parent.route.length) parent = cand;
+        }
+      }
+      if (parent) parent.children.push(n);
+      else roots.push(n);
+    }
+    // ルートが無い画面（未紐付け）もフォールバックで独立ノードとして出す
+    for (const n of nodes) if (!n.route) roots.push(n);
+
+    // depth = 列（親からの距離）、row = 行（枝分かれの縦位置。tidy tree の簡易版）
+    let nextRow = 0;
+    const assignDepth = (n, d) => { n.depth = d; n.children.forEach((c) => assignDepth(c, d + 1)); };
+    const assignRow = (n) => {
+      if (!n.children.length) { n.row = nextRow++; return; }
+      n.children.forEach(assignRow);
+      n.row = (n.children[0].row + n.children[n.children.length - 1].row) / 2;
+    };
+    roots.forEach((r) => assignDepth(r, 0));
+    roots.forEach(assignRow);
+
+    return { nodes, roots };
+  }
+
+  // グルーピングは「確認/完了/削除完了/その他」のような末端の状態違いでは分けない。
+  // 同じ CRUD の骨格（一覧・詳細・編集・新規・承認・カレンダー・設定）を持つ機能をまとめる。
+  const CORE_ROLES = ["list", "detail", "edit", "new", "approve", "calendar", "settings"];
+
+  /** 役割の集合 → セクションの見出し（例: "一覧 → 詳細 → 編集"） */
+  function moduleSignature(nodes) {
+    const roles = new Set(nodes.map((n) => n.role));
+    const core = CORE_ROLES.filter((r) => roles.has(r));
+    return core.length ? core.join(",") : "other";
+  }
+  function signatureLabel(sig) {
+    return sig.split(",").map((r) => ROLE_LABEL[r] || r).join(" → ");
+  }
+
+  const FLOW_NODE_W = 96, FLOW_THUMB_H = 62, FLOW_LABEL_H = 30;
+  const FLOW_ROW_STEP = FLOW_THUMB_H + FLOW_LABEL_H + 14;
+  const FLOW_COL_STEP = FLOW_NODE_W + 40;
+  const FLOW_PAD = 16;
+
+  function flowNodeHtml(n) {
+    const s = n.screen;
+    const st = stateOf(s);
+    const lvl = st ? st.level : "";
+    const x = n.depth * FLOW_COL_STEP;
+    const y = (n.row - n._rowMin) * FLOW_ROW_STEP;
+    const title = s.frameTitle || s.displayName;
+    return `
+      <button class="flow-node ${lvl}" data-id="${s.id}" style="left:${x}px; top:${y}px;">
+        <div class="flow-thumb">${thumb(s.structure)}${flowShotHtml(s)}</div>
+        <div class="flow-label">${esc(title)}</div>
+      </button>`;
+  }
+
+  function flowShotHtml(s) {
+    const shot = shots.screens?.[s.id];
+    if (!shot || !shot.hasBefore) return "";
+    return `<img src=".shots/thumb/${s.id}.jpg" loading="lazy" alt="">`;
+  }
+
+  let flowModuleSeq = 0;
+  function flowModuleHtml(feature, items) {
+    const markerId = `flow-arrow-${flowModuleSeq++}`;
+    const { nodes, roots } = buildModule(items);
+    const rowMin = Math.min(...nodes.map((n) => n.row));
+    const rowMax = Math.max(...nodes.map((n) => n.row));
+    const depthMax = Math.max(...nodes.map((n) => n.depth));
+    nodes.forEach((n) => (n._rowMin = rowMin));
+
+    const w = depthMax * FLOW_COL_STEP + FLOW_NODE_W + FLOW_PAD * 2;
+    const h = (rowMax - rowMin) * FLOW_ROW_STEP + FLOW_THUMB_H + FLOW_LABEL_H + FLOW_PAD * 2;
+
+    const center = (n) => ({
+      rx: n.depth * FLOW_COL_STEP + FLOW_NODE_W,
+      ry: (n.row - rowMin) * FLOW_ROW_STEP + FLOW_THUMB_H / 2,
+      lx: n.depth * FLOW_COL_STEP,
+      ly: (n.row - rowMin) * FLOW_ROW_STEP + FLOW_THUMB_H / 2,
+    });
+
+    let edges = "";
+    for (const n of nodes) {
+      for (const c of n.children) {
+        const a = center(n), b = center(c);
+        edges += `<path class="flow-edge" d="M${a.rx},${a.ry} C${a.rx + 24},${a.ry} ${b.lx - 24},${b.ry} ${b.lx},${b.ry}" marker-end="url(#${markerId})" />`;
+      }
+    }
+
+    return `
+      <div class="flow-module" style="width:${w}px; height:${h}px;">
+        <svg class="flow-edges" width="${w}" height="${h}">
+          <defs>
+            <marker id="${markerId}" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path class="flow-arrow-head" d="M0,0 L8,4 L0,8 z" />
+            </marker>
+          </defs>
+          ${edges}
+        </svg>
+        ${nodes.map(flowNodeHtml).join("")}
+      </div>`;
+  }
+
+  /** すべて/Admin/App タブ: 機能フォルダごとに小さな遷移図を作り、
+   *  同じ「役割の並び」の機能同士をセクションにまとめて俯瞰できるようにする。 */
+  function renderFlowMap(list) {
+    // バージョンで絞り込んでいるときは、帳票（Verタブの中身）ごとに見出しを立てて
+    // その中でだけ遷移パターンのセクション分けをする。
+    if (versionId) {
+      const ledgers = VERSION_GROUPS[versionId];
+      let html = "";
+      for (const ledger of ledgers) {
+        const featSet = new Set(ledger.features);
+        const sub = list.filter((s) => featSet.has(s.feature));
+        if (!sub.length) continue;
+        html += `<div class="ledger-title">${esc(ledger.label)}</div>`;
+        html += renderFlowSections(sub, filter === "all");
+      }
+      return html || '<div class="empty">該当する画面がありません</div>';
+    }
+    return renderFlowSections(list, filter === "all");
+  }
+
+  /** 機能フォルダを遷移パターン（シグネチャ）でセクション分けして描画する */
+  function renderFlowSections(list, showCategory) {
+    const byFeature = new Map();
+    for (const s of list) {
+      const key = `${s.category}::${s.feature}`;
+      if (!byFeature.has(key)) byFeature.set(key, []);
+      byFeature.get(key).push(s);
+    }
+
+    // 機能ごとにモジュールを組み立て、シグネチャ（役割の並び）でグルーピングする
+    const bySignature = new Map(); // sig -> [{cat, feature, items}]
+    for (const [key, items] of byFeature) {
+      const [cat, feature] = key.split("::");
+      const nodes = items.map((s) => ({ role: roleOf(s) }));
+      const sig = moduleSignature(nodes);
+      if (!bySignature.has(sig)) bySignature.set(sig, []);
+      bySignature.get(sig).push({ cat, feature, items });
+    }
+
+    // 出現数が少ないシグネチャは「その他の画面」としてひとまとめにする
+    const MISC = "__misc__";
+    const misc = [];
+    for (const [sig, modules] of [...bySignature]) {
+      const totalNodes = modules.reduce((n, m) => n + m.items.length, 0);
+      if (modules.length < 2 && totalNodes < 3) {
+        misc.push(...modules);
+        bySignature.delete(sig);
+      }
+    }
+    if (misc.length) bySignature.set(MISC, misc);
+
+    const catOrder = { Admin: 0, App: 1, Common: 2 };
+
+    // シグネチャセクションを「代表的な役割の複雑さ」の昇順で並べる（単純な一覧→詳細が先、その他は最後）
+    const sigKeys = [...bySignature.keys()].sort((a, b) => {
+      if (a === MISC) return 1;
+      if (b === MISC) return -1;
+      return a.split(",").length - b.split(",").length || a.localeCompare(b);
+    });
+
+    let html = "";
+    for (const sig of sigKeys) {
+      let modules = bySignature.get(sig);
+      modules = modules.slice().sort((a, b) =>
+        (catOrder[a.cat] ?? 9) - (catOrder[b.cat] ?? 9) || a.feature.localeCompare(b.feature),
+      );
+
+      const label = sig === MISC ? "その他の画面" : signatureLabel(sig);
+      const totalScreens = modules.reduce((n, m) => n + m.items.length, 0);
+      const totalDirect = modules.reduce(
+        (n, m) => n + m.items.filter((s) => rank(s) === 0).length, 0);
+      const totalImpact = modules.reduce(
+        (n, m) => n + m.items.filter((s) => rank(s) === 1).length, 0);
+      const badges =
+        totalDirect || totalImpact
+          ? `<span class="section-badges">${
+              totalDirect ? `<span class="b-direct">● ${totalDirect}</span>` : ""
+            }${totalImpact ? `<span class="b-impact">● ${totalImpact}</span>` : ""}</span>`
+          : "";
+
+      html += `<div class="group-title">${esc(label)} <span class="n">— ${modules.length} 系統 / ${totalScreens} 画面</span> ${badges}</div>`;
+      html += `<div class="flow-tile ${sig === MISC ? "misc" : ""}">`;
+      for (const m of modules) {
+        const catTag = showCategory ? `<span class="module-cat ${m.cat.toLowerCase()}">${esc(m.cat)}</span>` : "";
+        html += `<div class="flow-module-wrap">
+          <div class="module-title">${catTag}${esc(featureLabel(m.feature))}</div>
+          ${flowModuleHtml(m.feature, m.items)}
+        </div>`;
+      }
+      html += `</div>`;
+    }
+
+    return html || '<div class="empty">該当する画面がありません</div>';
+  }
+
+  function matchesQuery(s, q) {
+    if (!q) return true;
+    return (
+      (s.frameTitle || "").toLowerCase().includes(q) ||
+      s.displayName.toLowerCase().includes(q) ||
+      s.feature.toLowerCase().includes(q) ||
+      s.filePath.toLowerCase().includes(q) ||
+      (s.routes || []).some((r) => r.toLowerCase().includes(q))
+    );
+  }
+
   function render() {
     const q = query.trim().toLowerCase();
+    const verFeatures = versionId
+      ? new Set(VERSION_GROUPS[versionId].flatMap((g) => g.features))
+      : null;
     const list = screens.filter((s) => {
       const st = stateOf(s);
       if (filter === "changed" && !st) return false;
       if (filter === "admin" && s.category !== "Admin") return false;
       if (filter === "app" && s.category !== "App") return false;
-      if (!q) return true;
-      return (
-        (s.frameTitle || "").toLowerCase().includes(q) ||
-        s.displayName.toLowerCase().includes(q) ||
-        s.feature.toLowerCase().includes(q) ||
-        s.filePath.toLowerCase().includes(q) ||
-        (s.routes || []).some((r) => r.toLowerCase().includes(q))
-      );
+      if (verFeatures && !verFeatures.has(s.feature)) return false;
+      return matchesQuery(s, q);
     });
 
+    const y = window.scrollY;
+    // 「変更あり」タブだけは今まで通りのカード一覧。それ以外（すべて/Admin/App）は
+    // 画面遷移フローマップで俯瞰できるようにする。
+    $("main").innerHTML = filter === "changed" ? renderGrid(list) : renderFlowMap(list);
+    window.scrollTo(0, y);
+
+    for (const el of document.querySelectorAll(".card, .flow-node")) {
+      el.addEventListener("click", () => openPanel(el.dataset.id));
+    }
+    updateSummary();
+  }
+
+  /* ---------------- カード一覧（変更ありタブ） ---------------- */
+  function renderGrid(list) {
     // 俯瞰しやすいように、機能（フォルダ）ごとにセクション分けする。
-    // すべて/変更あり タブは Admin/App にまたがるので、カテゴリの大見出しも挟む。
-    const showCategory = filter === "all" || filter === "changed";
-    const sectionKey = (s) => (showCategory ? `${s.category}::${s.feature}` : s.feature);
+    const showCategory = true; // 変更ありタブは Admin/App にまたがるので大見出しも挟む
+    const sectionKey = (s) => `${s.category}::${s.feature}`;
 
     const sections = new Map();
     for (const s of list) {
@@ -498,9 +893,9 @@
 
     const catOrder = { Admin: 0, App: 1, Common: 2 };
     const sortedKeys = [...sections.keys()].sort((ka, kb) => {
-      const [ca, fa] = showCategory ? ka.split("::") : [null, ka];
-      const [cb, fb] = showCategory ? kb.split("::") : [null, kb];
-      if (showCategory && ca !== cb) return (catOrder[ca] ?? 9) - (catOrder[cb] ?? 9);
+      const [ca, fa] = ka.split("::");
+      const [cb, fb] = kb.split("::");
+      if (ca !== cb) return (catOrder[ca] ?? 9) - (catOrder[cb] ?? 9);
       return fa.localeCompare(fb);
     });
 
@@ -508,9 +903,9 @@
     let lastCat = null;
     for (const key of sortedKeys) {
       const items = sections.get(key);
-      const [cat, feat] = showCategory ? key.split("::") : [items[0].category, key];
+      const [cat, feat] = key.split("::");
 
-      if (showCategory && cat !== lastCat) {
+      if (cat !== lastCat) {
         html += `<div class="category-title">${esc(cat)}</div>`;
         lastCat = cat;
       }
@@ -528,14 +923,7 @@
       html += `<div class="grid">${items.map(card).join("")}</div>`;
     }
 
-    const y = window.scrollY;
-    $("main").innerHTML = html || '<div class="empty">該当する画面がありません</div>';
-    window.scrollTo(0, y);
-
-    for (const el of document.querySelectorAll(".card")) {
-      el.addEventListener("click", () => openPanel(el.dataset.id));
-    }
-    updateSummary();
+    return html || '<div class="empty">該当する画面がありません</div>';
   }
 
   function card(s) {
@@ -706,6 +1094,16 @@
     for (const x of $("filters").querySelectorAll("button")) x.setAttribute("aria-pressed", "false");
     b.setAttribute("aria-pressed", "true");
     filter = b.dataset.f;
+    render();
+  });
+  $("verFilters").addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-v]");
+    if (!b) return;
+    const already = b.getAttribute("aria-pressed") === "true";
+    for (const x of $("verFilters").querySelectorAll("button")) x.setAttribute("aria-pressed", "false");
+    // 同じバージョンをもう一度押したら絞り込み解除（全帳票に戻す）
+    if (!already) b.setAttribute("aria-pressed", "true");
+    versionId = already ? null : b.dataset.v;
     render();
   });
   $("reload").addEventListener("click", () => { lastSignature = null; load(); });

@@ -54,15 +54,17 @@ export function StaffFormPage() {
     setAssignments((prev) => prev.filter((row) => row.key !== key));
   }
 
+  const validAssignments = assignments.filter((row) => row.factoryId && row.role);
+  const isOnlyOperator = validAssignments.length > 0 && validAssignments.every((row) => row.role === "operator");
+
   function handleSubmit() {
-    const validAssignments = assignments.filter((row) => row.factoryId && row.role);
     if (
       !name ||
       !employeeNumber ||
       !systemAuthority ||
       !companyId ||
       validAssignments.length === 0 ||
-      (!isEditing && !password)
+      (!isOnlyOperator && !password)
     ) {
       setError("必須項目を入力してください");
       return;
@@ -233,44 +235,42 @@ export function StaffFormPage() {
             </button>
           </div>
 
-          <div className="flex flex-col gap-1 items-start w-[480px]">
-            <div className="flex gap-2 items-center">
-              <p className="text-xl text-[var(--semantic-text-primary)]">メールアドレス</p>
-              <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
-            </div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="例）example@example.com"
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
-            />
-          </div>
+          {!isOnlyOperator && (
+            <>
+              <div className="flex flex-col gap-1 items-start w-[480px]">
+                <div className="flex gap-2 items-center">
+                  <p className="text-xl text-[var(--semantic-text-primary)]">メールアドレス</p>
+                  <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="example@example.com"
+                  autoComplete="off"
+                  className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
+                />
+              </div>
 
-          <div className="flex flex-col gap-1 items-start w-[480px]">
-            <div className="flex gap-2 items-center">
-              <p className="text-xl text-[var(--semantic-text-primary)]">パスワード</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">
-                {isEditing ? "※任意" : "※必須"}
-              </span>
-            </div>
-            <p className="text-sm text-[#808080]">
-              管理画面のログイン時使用するパスワードになります。
-              {isEditing && (
-                <>
-                  <br />
-                  変更しない場合は、空欄のままで構いません。
-                </>
-              )}
-            </p>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="例）Ex@mple123"
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
-            />
-          </div>
+              <div className="flex flex-col gap-1 items-start w-[480px]">
+                <div className="flex gap-2 items-center">
+                  <p className="text-xl text-[var(--semantic-text-primary)]">パスワード</p>
+                  <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+                </div>
+                <p className="text-sm text-[#808080]">
+                  管理画面のログイン時使用するパスワードになります。
+                </p>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="例）Ex@mple123"
+                  autoComplete="new-password"
+                  className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}

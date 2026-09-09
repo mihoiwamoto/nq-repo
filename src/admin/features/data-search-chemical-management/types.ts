@@ -2,6 +2,13 @@ import type { ApprovalStatus } from "../../data/approvals";
 
 export type ChemicalTransactionType = "入庫" | "出庫";
 
+export interface Comment {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+}
+
 export type ChemicalRecord = {
   id: string;
   date: string;
@@ -16,4 +23,5 @@ export type ChemicalRecord = {
   confirmer: string;
   approvalStatus: ApprovalStatus;
   comment?: string;
+  comments?: Comment[];
 };

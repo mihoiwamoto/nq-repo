@@ -3,15 +3,16 @@ import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
-import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { getDateStripeClasses } from "../../utils/tableStripe";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
-import iconCalendar from "../../../assets/figma/icons/common/calendar.svg";
+import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadElementAsPdf } from "../../utils/pdf";
 
 function formatDateShort(date: string) {
@@ -76,6 +77,7 @@ export function DataListPage() {
     if (onlyAbnormal && r.cleaned) return false;
     return true;
   });
+  const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
@@ -154,7 +156,7 @@ export function DataListPage() {
             {filterOpen ? (
               <span
                 aria-hidden
-                className="inline-block size-4 shrink-0"
+                className="inline-block size-5 shrink-0"
                 style={{
                   WebkitMaskImage: `url("${iconMinus}")`,
                   maskImage: `url("${iconMinus}")`,
@@ -170,45 +172,18 @@ export function DataListPage() {
             )}
           </button>
           {filterOpen && (
-            <div className="flex gap-6 items-end justify-between w-full">
+            <div className="flex gap-6 items-center justify-end w-full">
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex gap-4 items-center">
-                  <div className="relative w-[200px]">
-                    <div className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base w-full flex items-center">
-                      {!dateFilter && (
-                        <span className="text-base text-[var(--semantic-text-secondary)]">
-                          日付を選択
-                        </span>
-                      )}
-                      {dateFilter && (
-                        <span className="text-base text-[var(--semantic-text-primary)]">
-                          {dateFilter.replaceAll("-", "/")}
-                        </span>
-                      )}
-                      <img
-                        src={iconCalendar}
-                        alt=""
-                        className="w-5 h-5 ml-auto"
-                      />
-                    </div>
-                    <input
-                      type="date"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
+                  <DateFilterInput value={dateFilter} onChange={setDateFilter} />
+                  <div className="w-[200px]">
+                    <Pulldown
+                      value={lineFilter}
+                      onChange={setLineFilter}
+                      options={lineOptions.map((label) => ({ value: label, label }))}
+                      placeholder="持ち場/ライン名"
                     />
                   </div>
-                  <Pulldown
-                    value={lineFilter}
-                    onChange={setLineFilter}
-                    options={lineOptions.map((label) => ({ value: label, label }))}
-                    placeholder="持ち場/ライン名"
-                  />
-                  <Pulldown value="" onChange={() => {}} options={[]} placeholder="点検箇所" disabled />
                 </div>
                 <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
                   <input
@@ -224,14 +199,15 @@ export function DataListPage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="bg-white border border-[#808080] h-10 w-16 rounded-lg text-sm text-[var(--semantic-text-secondary)]"
+                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
                 >
                   リセット
                 </button>
                 <button
                   type="button"
-                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-sm text-white"
+                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
                 >
+                  <img src={iconSearch} alt="" className="size-5" />
                   検索
                 </button>
               </div>
@@ -372,12 +348,12 @@ export function DataListPage() {
           <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
             <div className="flex flex-col min-w-[1000px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-                {["操作", "ステータス", "実施日", "持ち場名/ライン名", "清掃済み", "備考", "実施者", "確認者"].map(
+                {["操作", "実施日", "持ち場名/ライン名", "清掃済み", "備考", "実施者", "確認者"].map(
                   (h, i) => (
                     <div
                       key={h}
                       className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${
-                        i === 5 ? "flex-1 min-w-[200px]" : i === 3 ? "w-[240px]" : "w-[104px]"
+                        i === 4 ? "flex-1 min-w-[200px]" : i === 2 ? "w-[240px]" : "w-[104px]"
                       }`}
                     >
                       {h}
@@ -393,7 +369,7 @@ export function DataListPage() {
                 filtered.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
                   >
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
                       <Link
@@ -402,9 +378,6 @@ export function DataListPage() {
                       >
                         詳細
                       </Link>
-                    </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
-                      <ApprovalStatusBadge status={record.approvalStatus} />
                     </div>
                     <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       {formatDateShort(record.date)}

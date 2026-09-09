@@ -100,10 +100,10 @@ export function ScoreDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(entry.date)}</p>
           </div>
           {CRITERIA.map((criterion) => {
-            const { score, reason } = entry.scores[criterion];
+            const { score, reason, timestamp } = entry.scores[criterion];
             const abnormal = isAbnormalScore(score);
             return (
-              <div key={criterion} className="flex flex-col gap-2 items-start w-full">
+              <div key={criterion} className="flex flex-col gap-1 items-start w-full">
                 <div className="border-t border-[#d0d0d0] w-full" />
                 <div className="flex items-center justify-between w-full">
                   <p className="text-xl text-[var(--semantic-text-primary)]">{criterion}</p>
@@ -111,6 +111,11 @@ export function ScoreDetailPage() {
                 </div>
                 {abnormal && reason && (
                   <p className="text-base text-[var(--semantic-text-secondary)] px-2">原因：{reason}</p>
+                )}
+                {timestamp && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                    {entry.inspectorName} {timestamp}
+                  </p>
                 )}
               </div>
             );

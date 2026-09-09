@@ -22,7 +22,7 @@ export const waterApprovalRecords: WaterApprovalRecord[] = [
     abnormalDetectionLight: "off",
     implementer: "田中太郎",
     confirmer: "佐藤花子",
-    approvalStatus: "pending",
+    approvalStatus: "rejected",
   },
   {
     id: "war2",

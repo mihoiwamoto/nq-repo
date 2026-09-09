@@ -5,9 +5,12 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { getFactoryName } from "../../../data/factories";
 import { useScaleInspection } from "./ScaleInspectionContext";
-import { SCALE_REPAIR_STATUS_COLORS, SCALE_REPAIR_STATUS_LABELS, type ScaleRepairStatus } from "./types";
-
-const REPAIR_STATUS_OPTIONS: ScaleRepairStatus[] = ["action_needed", "repairing", "done"];
+import {
+  SCALE_REPAIR_STATUS_COLORS,
+  SCALE_REPAIR_STATUS_LABELS,
+  SCALE_REPAIR_STATUS_NEXT_OPTIONS,
+  type ScaleRepairStatus,
+} from "./types";
 
 export function ScaleManagementListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -182,7 +185,7 @@ export function ScaleManagementListPage() {
                       <Pulldown
                         value={scale.repairStatus}
                         onChange={(value) => setScaleRepairStatus(scale.id, value as ScaleRepairStatus)}
-                        options={REPAIR_STATUS_OPTIONS.map((opt) => ({
+                        options={SCALE_REPAIR_STATUS_NEXT_OPTIONS[scale.repairStatus].map((opt) => ({
                           value: opt,
                           label: SCALE_REPAIR_STATUS_LABELS[opt],
                         }))}

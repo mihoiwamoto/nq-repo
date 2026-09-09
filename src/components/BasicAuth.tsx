@@ -9,6 +9,9 @@ const DEFAULT_PASSWORD = 'nq_8888@'
 
 export function BasicAuth({ children }: BasicAuthProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (import.meta.env.DEV) {
+      return true
+    }
     return sessionStorage.getItem('auth') === 'true'
   })
   const [username, setUsername] = useState('')

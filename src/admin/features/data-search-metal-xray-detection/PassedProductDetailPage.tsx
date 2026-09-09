@@ -83,7 +83,7 @@ export function PassedProductDetailPage() {
                 <p className="text-2xl font-bold text-[#333] w-48 whitespace-nowrap">通過製品/カテゴリ</p>
                 <p className="text-2xl font-bold text-[#333] whitespace-nowrap ml-auto">マンゴープリン　ストレート　1kg</p>
               </div>
-              <p className="text-sm text-[#808080] text-right">田中太郎 2026/08/28 08:40</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/28 08:40</p>
             </div>
 
             {/* ウェイトチェッカーセクション */}
@@ -97,7 +97,7 @@ export function PassedProductDetailPage() {
                 <p className="text-2xl font-bold text-[#333] w-48">点検時間</p>
                 <p className="text-2xl font-bold text-[#333]">08:40</p>
               </div>
-              <p className="text-sm text-[#808080] text-right">田中太郎 2026/08/28 08:40</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/28 08:40</p>
             </div>
 
             <div className="px-4 py-4 border-b border-[#d0d0d0] mx-4">
@@ -105,7 +105,7 @@ export function PassedProductDetailPage() {
                 <p className="text-2xl font-bold text-[#333] w-48">重量下限値（g）</p>
                 <p className="text-2xl font-bold text-[#333]">1</p>
               </div>
-              <p className="text-sm text-[#808080] text-right">田中太郎 2026/08/28 08:40</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/28 08:40</p>
             </div>
 
             {/* 動作確認 */}
@@ -116,13 +116,13 @@ export function PassedProductDetailPage() {
                 <p className="text-2xl font-bold text-[#333] w-80">分銅を乗せての校正点検</p>
                 <StatusTag status="正常" />
               </div>
-              <p className="text-sm text-[#808080] text-right mb-4">田中太郎 2026/08/28 08:40</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal mb-4">田中太郎 2026/08/28 08:40</p>
 
               <div className="flex items-center justify-between mb-2">
                 <p className="text-2xl font-bold text-[#333] w-80">通過させる製品のパッケージ（印字）との照合</p>
                 <StatusTag status="正常" />
               </div>
-              <p className="text-sm text-[#808080] text-right mb-4">田中太郎 2026/08/28 08:40</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal mb-4">田中太郎 2026/08/28 08:40</p>
             </div>
 
             {/* シーリングセクション */}
@@ -136,7 +136,7 @@ export function PassedProductDetailPage() {
                 <p className="text-2xl font-bold text-[#333] w-48">点検時間</p>
                 <p className="text-2xl font-bold text-[#333]">08:40</p>
               </div>
-              <p className="text-sm text-[#808080] text-right">田中太郎 2026/08/28 08:40</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/28 08:40</p>
             </div>
 
             <div className="px-4 py-4 border-b border-[#d0d0d0] mx-4">
@@ -144,7 +144,7 @@ export function PassedProductDetailPage() {
                 <p className="text-2xl font-bold text-[#333] w-48">動作確認</p>
                 <StatusTag status="正常" />
               </div>
-              <p className="text-sm text-[#808080] text-right">田中太郎 2026/08/28 08:40</p>
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">田中太郎 2026/08/28 08:40</p>
             </div>
 
             <div className="border-t border-[#d0d0d0] mx-4" />

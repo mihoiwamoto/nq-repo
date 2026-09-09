@@ -1,3 +1,10 @@
+export type Comment = {
+  id: string;
+  author: string;
+  timestamp: string;
+  text: string;
+};
+
 export type CleaningItem = {
   name: string;
   category: string;
@@ -20,6 +27,7 @@ export type CleaningApprovalRecord = {
   implementer: string;
   confirmer: string;
   locations?: CleaningLocation[];
+  comments?: Comment[];
 };
 
 export const cleaningApprovalRecords: CleaningApprovalRecord[] = [

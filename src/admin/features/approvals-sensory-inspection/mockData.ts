@@ -1,14 +1,26 @@
 import type { SensoryApprovalRecord } from "./types";
 
-function fullScores(base: Record<string, number>) {
-  return {
-    味: { score: base.味 },
-    形: { score: base.形 },
-    色: { score: base.色 },
-    食感: { score: base.食感 },
-    香り: { score: base.香り },
-    とろみ: { score: base.とろみ },
-  };
+const CRITERIA_ORDER = ["味", "形", "色", "食感", "香り", "とろみ"] as const;
+
+function criterionTimestamps(startTime: string) {
+  const [datePart, timePart] = startTime.split(" ");
+  const [h, m] = timePart.split(":").map(Number);
+  return CRITERIA_ORDER.map((_, i) => {
+    const totalMinutes = h * 60 + m + i * 5;
+    const hh = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+    const mm = String(totalMinutes % 60).padStart(2, "0");
+    return `${datePart} ${hh}:${mm}`;
+  });
+}
+
+function fullScores(base: Record<string, number>, startTime: string) {
+  const timestamps = criterionTimestamps(startTime);
+  return Object.fromEntries(
+    CRITERIA_ORDER.map((criterion, i) => [
+      criterion,
+      { score: base[criterion], timestamp: timestamps[i] },
+    ])
+  ) as Record<(typeof CRITERIA_ORDER)[number], { score: number; timestamp: string }>;
 }
 
 export const sensoryApprovalRecords: SensoryApprovalRecord[] = [
@@ -27,7 +39,7 @@ export const sensoryApprovalRecords: SensoryApprovalRecord[] = [
         confirmerName: "山本真理",
         date: "2025-04-01",
         hasComparisonProduct: false,
-        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 5, 香り: 5, とろみ: 5 }),
+        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 5, 香り: 5, とろみ: 5 }, "2025/04/01 09:10"),
       },
       {
         id: "ase2",
@@ -36,7 +48,7 @@ export const sensoryApprovalRecords: SensoryApprovalRecord[] = [
         date: "2025-04-01",
         hasComparisonProduct: true,
         comparisonManufactureDate: "2025-03-22",
-        scores: fullScores({ 味: 4, 形: 4, 色: 5, 食感: 4, 香り: 5, とろみ: 4 }),
+        scores: fullScores({ 味: 4, 形: 4, 色: 5, 食感: 4, 香り: 5, とろみ: 4 }, "2025/04/01 09:40"),
       },
     ],
   },
@@ -56,12 +68,12 @@ export const sensoryApprovalRecords: SensoryApprovalRecord[] = [
         date: "2025-04-01",
         hasComparisonProduct: false,
         scores: {
-          味: { score: 4 },
-          形: { score: 4 },
-          色: { score: 3 },
-          食感: { score: 5 },
-          香り: { score: 3 },
-          とろみ: { score: 2, reason: "冷やし固まりが弱い" },
+          味: { score: 4, timestamp: "2025/04/01 10:10" },
+          形: { score: 4, timestamp: "2025/04/01 10:15" },
+          色: { score: 3, timestamp: "2025/04/01 10:20" },
+          食感: { score: 5, timestamp: "2025/04/01 10:25" },
+          香り: { score: 3, timestamp: "2025/04/01 10:30" },
+          とろみ: { score: 2, reason: "冷やし固まりが弱い", timestamp: "2025/04/01 10:35" },
         },
       },
     ],
@@ -81,7 +93,7 @@ export const sensoryApprovalRecords: SensoryApprovalRecord[] = [
         confirmerName: "加藤由美",
         date: "2025-04-01",
         hasComparisonProduct: false,
-        scores: fullScores({ 味: 5, 形: 4, 色: 5, 食感: 5, 香り: 4, とろみ: 5 }),
+        scores: fullScores({ 味: 5, 形: 4, 色: 5, 食感: 5, 香り: 4, とろみ: 5 }, "2025/04/01 08:50"),
       },
     ],
   },

@@ -2,15 +2,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { cleaningApprovalRecords } from "./mockData";
+import { getDateStripeClasses } from "../../utils/tableStripe";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
+import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
   return `${y.slice(2)}.${m}.${d}`;
 }
 
+function truncateRemarks(text: string) {
+  return text.length >= 26 ? `${text.slice(0, 25)}…` : text;
+}
+
 function CleanedIcon({ cleaned }: { cleaned: boolean }) {
-  if (!cleaned) return null;
+  if (!cleaned) {
+    return <span className="text-sm text-[var(--semantic-text-primary)]">ー</span>;
+  }
   return (
     <span className="size-6 flex items-center justify-center text-[var(--semantic-brand-primary)]">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,9 +32,22 @@ function CleanedIcon({ cleaned }: { cleaned: boolean }) {
 
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
+  const rowStripeClasses = getDateStripeClasses(cleaningApprovalRecords, (r) => r.date);
+  const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
+  const request = approvalRequests.find((r) => r.ledgerSlug === "cleaning-record");
+
+  const handleApprove = () => {
+    requestApproval(() => {
+      if (request) updateApprovalRequestStatus(request.id, "approved");
+      navigate("/admin/approvals", { state: { statusChanged: "approved" } });
+    });
+  };
 
   return (
     <div>
+      {showConfirmDialog && (
+        <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
+      )}
       <PageTitleBar title="データ一覧" showBack />
       <Breadcrumb
         items={[
@@ -58,7 +81,7 @@ export function ApprovalRecordsListPage() {
                 {cleaningApprovalRecords.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
                   >
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
                       <Link
@@ -69,7 +92,7 @@ export function ApprovalRecordsListPage() {
                       </Link>
                     </div>
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
-                      <ApprovalStatusBadge status="pending" />
+                      <ApprovalStatusBadge status="approved" />
                     </div>
                     <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       {formatDateShort(record.date)}
@@ -80,8 +103,11 @@ export function ApprovalRecordsListPage() {
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
                       <CleanedIcon cleaned={record.cleaned} />
                     </div>
-                    <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left">
-                      {record.remarks}
+                    <div
+                      className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left"
+                      title={record.remarks}
+                    >
+                      {truncateRemarks(record.remarks)}
                     </div>
                     <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.implementer}
@@ -97,7 +123,7 @@ export function ApprovalRecordsListPage() {
         </div>
         <button
           type="button"
-          onClick={() => navigate("/admin/approvals")}
+          onClick={handleApprove}
           className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する

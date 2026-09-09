@@ -13,7 +13,7 @@ export const additiveApprovalRecords: AdditiveApprovalRecord[] = [
     remarks: "月次定期発注による補充入庫",
     implementer: "田中裕子",
     confirmer: "山本真理",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
   },
   {
     id: "a2",
@@ -27,7 +27,7 @@ export const additiveApprovalRecords: AdditiveApprovalRecord[] = [
     remarks: "",
     implementer: "田中裕子",
     confirmer: "山本真理",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
   },
   {
     id: "a3",
@@ -41,7 +41,7 @@ export const additiveApprovalRecords: AdditiveApprovalRecord[] = [
     remarks: "緊急発注分の追加入庫",
     implementer: "田中裕子",
     confirmer: "山本真理",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
   },
   {
     id: "a4",
@@ -55,7 +55,7 @@ export const additiveApprovalRecords: AdditiveApprovalRecord[] = [
     remarks: "",
     implementer: "田中裕子",
     confirmer: "山本真理",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
   },
   {
     id: "a5",
@@ -69,6 +69,6 @@ export const additiveApprovalRecords: AdditiveApprovalRecord[] = [
     remarks: "豆腐ライン使用分として出庫",
     implementer: "田中裕子",
     confirmer: "山本真理",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
   },
 ];

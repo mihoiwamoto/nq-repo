@@ -2,7 +2,14 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Comments } from "../../components/Comments";
+import { CommentInputBox } from "../../components/CommentInputBox";
+import { APPROVAL_STATUS_COLOR } from "../../components/ApprovalStatusBadge";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
+import { RejectReasonDialog } from "../../components/RejectReasonDialog";
+import { Toast } from "../../components/Toast";
 import { useRecords } from "./RecordsContext";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import { CRITERIA, isAbnormalScore } from "./types";
 import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
@@ -24,8 +31,20 @@ export function RecordDetailPage() {
   const { records, setApprovalStatus, addComment } = useRecords();
 
   const record = records.find((r) => r.id === recordId);
-  const [comment, setComment] = useState(record?.comment ?? "");
+  const [comment, setComment] = useState("");
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const {
+    showConfirmDialog,
+    showRejectDialog,
+    showToast,
+    closeToast,
+    requestApproval,
+    confirmApproval,
+    cancelApproval,
+    requestRejection,
+    confirmRejection,
+    cancelRejection,
+  } = useApprovalConfirm();
 
   if (!record) {
     return (
@@ -35,12 +54,32 @@ export function RecordDetailPage() {
     );
   }
 
+  const isStatusLocked = record.approvalStatus !== "pending";
+
   const isRecordAbnormal = record.scoreEntries.some((entry) =>
     CRITERIA.some((c) => isAbnormalScore(entry.scores[c].score))
   );
 
+  const handleStatusChange = (value: ApprovalStatus) => {
+    if (value === "approved") {
+      requestApproval(() => setApprovalStatus(record.id, value));
+    } else if (value === "rejected") {
+      requestRejection(() => setApprovalStatus(record.id, value));
+    } else {
+      setApprovalStatus(record.id, value);
+    }
+    setStatusMenuOpen(false);
+  };
+
   return (
     <div>
+      {showConfirmDialog && (
+        <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
+      )}
+      {showRejectDialog && (
+        <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
+      )}
+      {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="点数一覧" showBack />
       <Breadcrumb
         items={[
@@ -57,25 +96,29 @@ export function RecordDetailPage() {
           <div className="relative">
             <button
               type="button"
-              onClick={() => setStatusMenuOpen((v) => !v)}
-              className="bg-[#808080] border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px] flex items-center justify-between gap-2"
+              onClick={() => !isStatusLocked && setStatusMenuOpen((v) => !v)}
+              disabled={isStatusLocked}
+              className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px] flex items-center justify-between gap-2 disabled:cursor-not-allowed"
+              style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
             >
               {STATUS_OPTIONS.find((opt) => opt.value === record.approvalStatus)?.label}
-              <span
-                aria-hidden
-                className={`inline-block size-4 shrink-0 transition-transform ${statusMenuOpen ? "rotate-180" : ""}`}
-                style={{
-                  WebkitMaskImage: `url("${iconArrowDown}")`,
-                  maskImage: `url("${iconArrowDown}")`,
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  backgroundColor: "currentColor",
-                }}
-              />
+              {!isStatusLocked && (
+                <span
+                  aria-hidden
+                  className={`inline-block size-4 shrink-0 transition-transform ${statusMenuOpen ? "rotate-180" : ""}`}
+                  style={{
+                    WebkitMaskImage: `url("${iconArrowDown}")`,
+                    maskImage: `url("${iconArrowDown}")`,
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    backgroundColor: "currentColor",
+                  }}
+                />
+              )}
             </button>
-            {statusMenuOpen && (
+            {!isStatusLocked && statusMenuOpen && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setStatusMenuOpen(false)} />
                 <div className="absolute right-0 top-[calc(100%+8px)] z-50 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col p-2 w-[240px]">
@@ -83,10 +126,7 @@ export function RecordDetailPage() {
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => {
-                        setApprovalStatus(record.id, opt.value);
-                        setStatusMenuOpen(false);
-                      }}
+                      onClick={() => handleStatusChange(opt.value)}
                       className={`h-[42px] px-2 rounded-lg text-base text-left w-full ${
                         opt.value === record.approvalStatus
                           ? "bg-[var(--semantic-brand-primary)] text-white"
@@ -196,30 +236,16 @@ export function RecordDetailPage() {
 
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-          <div className="flex flex-col gap-2 items-start w-full">
-            <div className="flex gap-2 items-start w-full">
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value.slice(0, 255))}
-                placeholder="コメントを入力"
-                rows={3}
-                className="flex-1 bg-white border border-[#d0d0d0] px-2 py-2 rounded-lg text-base font-light text-[var(--semantic-text-primary)] placeholder:text-[#808080] resize-none"
-              />
-              <button
-                type="button"
-                onClick={() => addComment(record.id, comment)}
-                disabled={!comment.trim()}
-                className={`size-12 rounded-lg flex items-center justify-center text-white text-lg shrink-0 ${
-                  comment.trim() ? "bg-[#094]" : "bg-[#d0d0d0]"
-                }`}
-              >
-                ➤
-              </button>
-            </div>
-            <span className="text-sm text-[#333] text-right w-full">
-              {comment.length}/255
-            </span>
-          </div>
+          <Comments comments={record.comments || []} />
+          <CommentInputBox
+            value={comment}
+            onChange={setComment}
+            onSubmit={() => {
+              addComment(record.id, comment);
+              setComment("");
+            }}
+            maxLength={255}
+          />
         </div>
       </div>
     </div>
