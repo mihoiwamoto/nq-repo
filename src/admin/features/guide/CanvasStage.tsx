@@ -113,7 +113,7 @@ export function CanvasStage({
     <div
       ref={stageRef}
       className={`flex-1 min-h-0 overflow-auto bg-[#e4e2dd] relative select-none ${
-        tool === "pan" ? "cursor-grab active:cursor-grabbing" : tool === "comment" ? "cursor-crosshair" : ""
+        tool === "comment" ? "cursor-crosshair" : ""
       }`}
       onPointerDown={(e) => {
         // 背景（iframe 以外）をドラッグしたときは常にキャンバスを動かす
@@ -197,17 +197,8 @@ export function CanvasStage({
             title={title}
             onLoad={onFrameLoad}
             className="block border-0 bg-white"
-            style={{ width: size.width, height: size.height, pointerEvents: tool === "pan" ? "none" : "auto" }}
+            style={{ width: size.width, height: size.height }}
           />
-          {tool === "pan" && (
-            <div
-              className="absolute inset-0 cursor-grab active:cursor-grabbing"
-              onPointerDown={startDrag}
-              onPointerMove={moveDrag}
-              onPointerUp={endDrag}
-              onPointerCancel={endDrag}
-            />
-          )}
           {editedRects.map((r, i) => (
             <div
               key={i}

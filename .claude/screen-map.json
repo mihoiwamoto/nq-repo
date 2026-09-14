@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-14T05:40:19.995Z",
-  "screenCount": 297,
+  "generatedAt": "2026-09-14T09:06:07.806Z",
+  "screenCount": 298,
   "screens": [
     {
       "id": "scr_5021db3ab2",
@@ -11178,6 +11178,127 @@
       ]
     },
     {
+      "id": "scr_c2b629e75f",
+      "displayName": "Feedback Management",
+      "frameTitle": "フィードバック管理",
+      "filePath": "src/admin/features/feedback/FeedbackManagementPage.tsx",
+      "category": "Admin",
+      "feature": "feedback",
+      "routes": [
+        "/admin/guide/feedback"
+      ],
+      "lineCount": 274,
+      "structure": [
+        "button",
+        "field",
+        "card",
+        "button",
+        "card",
+        "table",
+        "list",
+        "title",
+        "button"
+      ],
+      "sections": [
+        {
+          "name": "KIND_OPTIONS",
+          "startLine": 40,
+          "endLine": 41,
+          "kind": "code"
+        },
+        {
+          "name": "FeedbackManagementPage",
+          "startLine": 42,
+          "endLine": 50,
+          "kind": "code"
+        },
+        {
+          "name": "screenOptions",
+          "startLine": 51,
+          "endLine": 61,
+          "kind": "code"
+        },
+        {
+          "name": "visible",
+          "startLine": 62,
+          "endLine": 104,
+          "kind": "code"
+        },
+        {
+          "name": "件数",
+          "startLine": 105,
+          "endLine": 111,
+          "kind": "comment"
+        },
+        {
+          "name": "絞り込み",
+          "startLine": 112,
+          "endLine": 139,
+          "kind": "comment"
+        },
+        {
+          "name": "一覧",
+          "startLine": 140,
+          "endLine": 152,
+          "kind": "comment"
+        },
+        {
+          "name": "状態",
+          "startLine": 153,
+          "endLine": 153,
+          "kind": "label"
+        },
+        {
+          "name": "種類",
+          "startLine": 154,
+          "endLine": 154,
+          "kind": "label"
+        },
+        {
+          "name": "画面 / 場所",
+          "startLine": 155,
+          "endLine": 155,
+          "kind": "label"
+        },
+        {
+          "name": "内容",
+          "startLine": 156,
+          "endLine": 156,
+          "kind": "label"
+        },
+        {
+          "name": "記入者 / 日時",
+          "startLine": 157,
+          "endLine": 157,
+          "kind": "label"
+        },
+        {
+          "name": "操作",
+          "startLine": 158,
+          "endLine": 184,
+          "kind": "label"
+        },
+        {
+          "name": "CountCard",
+          "startLine": 185,
+          "endLine": 195,
+          "kind": "code"
+        },
+        {
+          "name": "EmptyState",
+          "startLine": 196,
+          "endLine": 204,
+          "kind": "code"
+        },
+        {
+          "name": "Row",
+          "startLine": 205,
+          "endLine": 274,
+          "kind": "code"
+        }
+      ]
+    },
+    {
       "id": "scr_52939d3c5d",
       "displayName": "Factory Selection",
       "frameTitle": "工場選択",
@@ -11532,14 +11653,14 @@
     {
       "id": "scr_86b329ab08",
       "displayName": "Screen Canvas",
-      "frameTitle": "画面説明",
+      "frameTitle": "変更履歴",
       "filePath": "src/admin/features/guide/ScreenCanvasPage.tsx",
       "category": "Admin",
       "feature": "guide",
       "routes": [
         "/admin/guide/screens"
       ],
-      "lineCount": 1160,
+      "lineCount": 1135,
       "structure": [
         "button",
         "list"
@@ -11547,338 +11668,338 @@
       "sections": [
         {
           "name": "deviceFor",
-          "startLine": 74,
-          "endLine": 78,
+          "startLine": 71,
+          "endLine": 75,
           "kind": "code"
         },
         {
           "name": "screensForDevice",
-          "startLine": 79,
-          "endLine": 92,
+          "startLine": 76,
+          "endLine": 89,
           "kind": "code"
         },
         {
           "name": "waitForFrameReady",
-          "startLine": 93,
-          "endLine": 97,
+          "startLine": 90,
+          "endLine": 94,
           "kind": "code"
         },
         {
           "name": "tick",
-          "startLine": 98,
-          "endLine": 110,
+          "startLine": 95,
+          "endLine": 107,
           "kind": "code"
         },
         {
           "name": "RailButton",
-          "startLine": 111,
-          "endLine": 143,
+          "startLine": 108,
+          "endLine": 140,
           "kind": "code"
         },
         {
           "name": "PanelHeader",
-          "startLine": 144,
-          "endLine": 159,
+          "startLine": 141,
+          "endLine": 156,
           "kind": "code"
         },
         {
           "name": "ToolButton",
-          "startLine": 160,
-          "endLine": 175,
+          "startLine": 157,
+          "endLine": 172,
           "kind": "code"
         },
         {
           "name": "ScreenCanvasPage",
-          "startLine": 176,
-          "endLine": 181,
+          "startLine": 173,
+          "endLine": 178,
           "kind": "code"
         },
         {
-          "name": "画面説明キャンバスはキャンバス内では開けません。",
-          "startLine": 182,
-          "endLine": 188,
+          "name": "変更履歴キャンバスはキャンバス内では開けません。",
+          "startLine": 179,
+          "endLine": 185,
           "kind": "label"
         },
         {
           "name": "ScreenCanvas",
-          "startLine": 189,
-          "endLine": 199,
+          "startLine": 186,
+          "endLine": 196,
           "kind": "code"
         },
         {
           "name": "screen",
-          "startLine": 200,
-          "endLine": 229,
+          "startLine": 197,
+          "endLine": 226,
           "kind": "code"
         },
         {
           "name": "cleanupRef",
-          "startLine": 230,
-          "endLine": 233,
+          "startLine": 227,
+          "endLine": 230,
           "kind": "code"
         },
         {
           "name": "commitRef",
-          "startLine": 234,
-          "endLine": 237,
+          "startLine": 231,
+          "endLine": 234,
           "kind": "code"
         },
         {
           "name": "endElementDragRef",
-          "startLine": 238,
-          "endLine": 255,
+          "startLine": 235,
+          "endLine": 252,
           "kind": "code"
         },
         {
           "name": "startCommentRef",
-          "startLine": 256,
-          "endLine": 265,
+          "startLine": 253,
+          "endLine": 262,
           "kind": "code"
         },
         {
           "name": "openCommentCount",
-          "startLine": 266,
-          "endLine": 268,
+          "startLine": 263,
+          "endLine": 265,
           "kind": "code"
         },
         {
           "name": "otherCommentGroups",
-          "startLine": 269,
-          "endLine": 277,
+          "startLine": 266,
+          "endLine": 274,
           "kind": "code"
         },
         {
           "name": "latest",
-          "startLine": 278,
-          "endLine": 283,
+          "startLine": 275,
+          "endLine": 280,
           "kind": "code"
         },
         {
           "name": "startComment",
-          "startLine": 284,
-          "endLine": 311,
+          "startLine": 281,
+          "endLine": 308,
           "kind": "code"
         },
         {
           "name": "changeAuthor",
-          "startLine": 312,
-          "endLine": 325,
+          "startLine": 309,
+          "endLine": 322,
           "kind": "code"
         },
         {
           "name": "showProps",
-          "startLine": 326,
-          "endLine": 355,
+          "startLine": 323,
+          "endLine": 352,
           "kind": "code"
         },
         {
           "name": "bump",
-          "startLine": 356,
-          "endLine": 365,
+          "startLine": 353,
+          "endLine": 362,
           "kind": "code"
         },
         {
           "name": "fitZoom",
-          "startLine": 366,
-          "endLine": 380,
+          "startLine": 363,
+          "endLine": 377,
           "kind": "code"
         },
         {
           "name": "zoomBy",
-          "startLine": 381,
-          "endLine": 399,
+          "startLine": 378,
+          "endLine": 396,
           "kind": "code"
         },
         {
           "name": "commitElementDrop",
-          "startLine": 400,
-          "endLine": 429,
+          "startLine": 397,
+          "endLine": 426,
           "kind": "code"
         },
         {
           "name": "undo",
-          "startLine": 430,
-          "endLine": 437,
+          "startLine": 427,
+          "endLine": 434,
           "kind": "code"
         },
         {
           "name": "redo",
-          "startLine": 438,
-          "endLine": 445,
+          "startLine": 435,
+          "endLine": 442,
           "kind": "code"
         },
         {
           "name": "resetEdits",
-          "startLine": 446,
-          "endLine": 480,
+          "startLine": 443,
+          "endLine": 477,
           "kind": "code"
         },
         {
           "name": "handleFrameLoad",
-          "startLine": 481,
-          "endLine": 490,
+          "startLine": 478,
+          "endLine": 487,
           "kind": "code"
         },
         {
           "name": "isEditing",
-          "startLine": 491,
-          "endLine": 499,
+          "startLine": 488,
+          "endLine": 496,
           "kind": "code"
         },
         {
           "name": "updateElementDrag",
-          "startLine": 500,
-          "endLine": 506,
+          "startLine": 497,
+          "endLine": 503,
           "kind": "code"
         },
         {
           "name": "beginElementDrag",
-          "startLine": 507,
-          "endLine": 518,
+          "startLine": 504,
+          "endLine": 515,
           "kind": "code"
         },
         {
           "name": "endElementDrag",
-          "startLine": 519,
-          "endLine": 533,
+          "startLine": 516,
+          "endLine": 530,
           "kind": "code"
         },
         {
           "name": "onMove",
-          "startLine": 534,
-          "endLine": 546,
+          "startLine": 531,
+          "endLine": 543,
           "kind": "code"
         },
         {
           "name": "onUp",
-          "startLine": 547,
-          "endLine": 552,
+          "startLine": 544,
+          "endLine": 549,
           "kind": "code"
         },
         {
           "name": "onDown",
-          "startLine": 553,
-          "endLine": 567,
+          "startLine": 550,
+          "endLine": 563,
           "kind": "code"
         },
         {
           "name": "onClick",
-          "startLine": 568,
-          "endLine": 596,
+          "startLine": 564,
+          "endLine": 592,
           "kind": "code"
         },
         {
           "name": "onDblClick",
-          "startLine": 597,
-          "endLine": 603,
+          "startLine": 593,
+          "endLine": 599,
           "kind": "code"
         },
         {
           "name": "onLeave",
-          "startLine": 604,
-          "endLine": 604,
+          "startLine": 600,
+          "endLine": 600,
           "kind": "code"
         },
         {
           "name": "onScroll",
-          "startLine": 605,
-          "endLine": 610,
+          "startLine": 601,
+          "endLine": 606,
           "kind": "code"
         },
         {
           "name": "onKeyDown",
-          "startLine": 611,
-          "endLine": 616,
+          "startLine": 607,
+          "endLine": 612,
           "kind": "code"
         },
         {
           "name": "observer",
-          "startLine": 617,
-          "endLine": 658,
+          "startLine": 613,
+          "endLine": 654,
           "kind": "code"
         },
         {
           "name": "timer",
-          "startLine": 659,
-          "endLine": 688,
+          "startLine": 655,
+          "endLine": 684,
           "kind": "code"
         },
         {
           "name": "target",
-          "startLine": 689,
-          "endLine": 700,
+          "startLine": 685,
+          "endLine": 696,
           "kind": "code"
         },
         {
           "name": "beginInlineEdit",
-          "startLine": 701,
-          "endLine": 710,
+          "startLine": 697,
+          "endLine": 706,
           "kind": "code"
         },
         {
           "name": "onKey",
-          "startLine": 711,
-          "endLine": 720,
+          "startLine": 707,
+          "endLine": 716,
           "kind": "code"
         },
         {
           "name": "onBlur",
-          "startLine": 721,
-          "endLine": 763,
+          "startLine": 717,
+          "endLine": 759,
           "kind": "code"
         },
         {
           "name": "reloadFrame",
-          "startLine": 764,
-          "endLine": 772,
+          "startLine": 760,
+          "endLine": 768,
           "kind": "code"
         },
         {
           "name": "withSelected",
-          "startLine": 773,
-          "endLine": 836,
+          "startLine": 769,
+          "endLine": 832,
           "kind": "code"
         },
         {
           "name": "onUp",
-          "startLine": 837,
-          "endLine": 844,
+          "startLine": 833,
+          "endLine": 840,
           "kind": "code"
         },
         {
           "name": "onKey",
-          "startLine": 845,
-          "endLine": 900,
+          "startLine": 841,
+          "endLine": 888,
           "kind": "code"
         },
         {
           "name": "visibleScreens",
-          "startLine": 901,
-          "endLine": 931,
+          "startLine": 889,
+          "endLine": 919,
           "kind": "code"
         },
         {
           "name": "pins",
-          "startLine": 932,
-          "endLine": 999,
+          "startLine": 920,
+          "endLine": 987,
           "kind": "code"
         },
         {
           "name": "左レール",
-          "startLine": 1000,
-          "endLine": 1043,
+          "startLine": 988,
+          "endLine": 1028,
           "kind": "comment"
         },
         {
           "name": "中央",
-          "startLine": 1044,
-          "endLine": 1082,
+          "startLine": 1029,
+          "endLine": 1061,
           "kind": "comment"
         },
         {
           "name": "編集箇所",
-          "startLine": 1083,
-          "endLine": 1160,
+          "startLine": 1062,
+          "endLine": 1135,
           "kind": "label"
         }
       ]

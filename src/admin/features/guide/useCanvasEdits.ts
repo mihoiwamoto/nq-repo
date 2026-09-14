@@ -104,6 +104,14 @@ export function useCanvasEdits(screenId: string | undefined) {
   );
   const reset = useCallback(() => update(() => ({ ops: [], cursor: 0 })), [update]);
 
+  /** 「もうコードに反映した」印を付け外しする（プロンプトから外して変更済みに畳む） */
+  const setDone = useCallback(
+    (id: string, done: boolean) => {
+      update((prev) => ({ ...prev, ops: prev.ops.map((op) => (op.id === id ? { ...op, done } : op)) }));
+    },
+    [update]
+  );
+
   /** 別画面の編集もまとめて件数を出す（画面一覧のバッジ用） */
   const countsByScreen = useMemo(() => {
     const out: Record<string, number> = {};
@@ -121,6 +129,7 @@ export function useCanvasEdits(screenId: string | undefined) {
     undo,
     redo,
     reset,
+    setDone,
     countsByScreen,
   };
 }

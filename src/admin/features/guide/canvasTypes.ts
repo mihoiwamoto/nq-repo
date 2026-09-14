@@ -10,7 +10,7 @@ export const DEVICE_SIZES: Record<DeviceMode, { label: string; width: number; he
  * 選択（要素を選んで編集・並び替え） / 移動（キャンバスをドラッグ） /
  * 操作（実際にアプリを触る） / コメント（画面にピンを立てる）
  */
-export type ToolMode = "select" | "pan" | "interact" | "comment";
+export type ToolMode = "select" | "comment";
 
 type OpBase = {
   id: string;
@@ -18,6 +18,11 @@ type OpBase = {
   screenId: string;
   /** 「PageTitleBar › h1」のような、人が読める対象の名前 */
   target: string;
+  /**
+   * もうコードに反映した変更。プロンプトには載せず、「変更済み」に畳む。
+   * キャンバス上の見た目はそのまま（取り消しは undo の役目）。
+   */
+  done?: boolean;
 };
 
 export type EditOp = OpBase &
@@ -58,8 +63,8 @@ export type EditOp = OpBase &
  */
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
-/** これから記録する操作（id/at/screenId は記録側で付ける） */
-export type NewEditOp = DistributiveOmit<EditOp, "id" | "at" | "screenId">;
+/** これから記録する操作（id/at/screenId/done は記録側で付ける） */
+export type NewEditOp = DistributiveOmit<EditOp, "id" | "at" | "screenId" | "done">;
 
 export type Rect = { x: number; y: number; width: number; height: number };
 

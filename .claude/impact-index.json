@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T05:40:19.995Z",
+  "generatedAt": "2026-09-14T09:06:07.806Z",
   "impact": {
     "src/admin/components/PageTitleBar.tsx": [
       "scr_5021db3ab2",
@@ -129,6 +129,7 @@
       "scr_4b65c55eaf",
       "scr_cc35f2d1db",
       "scr_89809592fd",
+      "scr_c2b629e75f",
       "scr_52939d3c5d",
       "scr_e1e3a21fd6",
       "scr_a4919a37f6",
@@ -729,6 +730,7 @@
       "scr_6aefb7424d",
       "scr_4d1086a689",
       "scr_cc35f2d1db",
+      "scr_c2b629e75f",
       "scr_167c2b49a3",
       "scr_7065bb8d17",
       "scr_a144de9603",
@@ -1570,6 +1572,17 @@
       "scr_cc35f2d1db",
       "scr_89809592fd"
     ],
+    "src/components/feedback/feedbackStore.ts": [
+      "scr_c2b629e75f"
+    ],
+    "src/admin/features/guide/comments.ts": [
+      "scr_c2b629e75f",
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/googleAccount.ts": [
+      "scr_c2b629e75f",
+      "scr_86b329ab08"
+    ],
     "src/admin/features/glass-plastic/GlassPlasticContext.tsx": [
       "scr_a4919a37f6",
       "scr_197b052ecd",
@@ -1623,12 +1636,6 @@
       "scr_86b329ab08"
     ],
     "src/admin/features/guide/CommentPanel.tsx": [
-      "scr_86b329ab08"
-    ],
-    "src/admin/features/guide/comments.ts": [
-      "scr_86b329ab08"
-    ],
-    "src/admin/features/guide/googleAccount.ts": [
       "scr_86b329ab08"
     ],
     "src/admin/features/guide/CanvasIcons.tsx": [

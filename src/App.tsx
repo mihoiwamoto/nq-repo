@@ -255,6 +255,7 @@ import { LogListPage } from "./admin/features/log-management/LogListPage";
 import { HelpPage } from "./admin/features/help/HelpPage";
 import { HelpFaqDetailPage } from "./admin/features/help/HelpFaqDetailPage";
 import { ScreenCanvasPage } from "./admin/features/guide/ScreenCanvasPage";
+import { FeedbackManagementPage } from "./admin/features/feedback/FeedbackManagementPage";
 import { AccountPage } from "./admin/features/account/AccountPage";
 import { PasswordChangePage } from "./admin/features/account/PasswordChangePage";
 import { PasswordChangeCompletePage } from "./admin/features/account/PasswordChangeCompletePage";
@@ -362,6 +363,7 @@ import { railNav } from "./app/navigation";
 import { HomePage } from "./pages/HomePage";
 import { ComingSoonPage } from "./pages/ComingSoonPage";
 import { PageDescriptionButton } from "./components/PageDescriptionButton";
+import { FeedbackWidget } from "./components/feedback/FeedbackWidget";
 
 const adminPlaceholderRoutes = flattenNavPaths([...adminPrimaryNav, ...adminSecondaryNav]).filter(
   (item) =>
@@ -375,6 +377,7 @@ const adminPlaceholderRoutes = flattenNavPaths([...adminPrimaryNav, ...adminSeco
     item.path !== "/admin/logs" &&
     item.path !== "/admin/help" &&
     item.path !== "/admin/guide/screens" &&
+    item.path !== "/admin/guide/feedback" &&
     item.path !== "/admin/devices" &&
     item.path !== "/admin/storage"
 );
@@ -1062,6 +1065,7 @@ function App() {
         <Route path="help" element={<HelpPage />} />
         <Route path="help/:faqId" element={<HelpFaqDetailPage />} />
         <Route path="guide/screens" element={<ScreenCanvasPage />} />
+        <Route path="guide/feedback" element={<FeedbackManagementPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="account/password" element={<PasswordChangePage />} />
         <Route path="account/password/complete" element={<PasswordChangeCompletePage />} />
@@ -1349,6 +1353,7 @@ function App() {
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     <PageDescriptionButton />
+    <FeedbackWidget />
     </>
   );
 }

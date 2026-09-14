@@ -98,7 +98,12 @@ export function ScreenListPanel({
   const [editedOnly, setEditedOnly] = useState(false);
   // 帳票が追加されたバージョンで絞る（もう一度押すと解除）。ダッシュボードの Ver. メニューと同じ
   const [versionFilter, setVersionFilter] = useState<string | null>(null);
-  const [openKeys, setOpenKeys] = useState<Set<string>>(() => new Set());
+  /**
+   * ユーザーが手で開閉したグループ（true=開く / false=閉じる）。
+   * ここに無いグループは既定値（絞り込み中=開く、通常=閉じる、選択中の画面の帳票=開く）に従う。
+   * 以前は「絞り込み中は常に開く」としていたため、Ver. チップや検索中にアコーディオンが閉じられなかった。
+   */
+  const [overrides, setOverrides] = useState<Record<string, boolean>>({});
 
   const filtered = useMemo(() => {
     // 空白（半角・全角）区切りで複数語。すべての語がどこかに含まれる画面だけ残す（AND 検索）
@@ -121,18 +126,31 @@ export function ScreenListPanel({
   }, [screens, activeId]);
   useEffect(() => {
     if (!activeGroupKey) return;
-    setOpenKeys((prev) => (prev.has(activeGroupKey) ? prev : new Set(prev).add(activeGroupKey)));
+    // 選択が別の帳票に移ったら、その帳票を手で閉じていた記録は消して既定（開く）に戻す
+    setOverrides((prev) => {
+      if (!(activeGroupKey in prev)) return prev;
+      const next = { ...prev };
+      delete next[activeGroupKey];
+      return next;
+    });
   }, [activeGroupKey]);
 
   const searching = keyword.trim() !== "" || editedOnly || versionFilter !== null;
 
+  // 検索語・絞り込みを変えたら手動の開閉はリセット（新しい結果は既定の状態で見せる）
+  useEffect(() => {
+    setOverrides({});
+  }, [keyword, editedOnly, versionFilter]);
+
+  function isOpen(key: string): boolean {
+    const manual = overrides[key];
+    if (manual !== undefined) return manual;
+    return searching || key === activeGroupKey;
+  }
+
   function toggle(key: string) {
-    setOpenKeys((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+    const next = !isOpen(key);
+    setOverrides((prev) => ({ ...prev, [key]: next }));
   }
 
   return (
@@ -190,7 +208,7 @@ export function ScreenListPanel({
       <div className="flex-1 overflow-y-auto py-1">
         {groups.length === 0 && <p className="p-4 text-sm font-normal text-[var(--semantic-text-secondary)]">該当する画面がありません</p>}
         {groups.map((gb, i) => {
-          const open = searching || openKeys.has(gb.group.key);
+          const open = isOpen(gb.group.key);
           const isActiveGroup = gb.group.key === activeGroupKey;
           const firstOther = gb.group.kind === "other" && (i === 0 || groups[i - 1].group.kind === "ledger");
           const firstLedger = gb.group.kind === "ledger" && i === 0;

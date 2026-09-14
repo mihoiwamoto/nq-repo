@@ -207,16 +207,16 @@ export function CommentPanel({
                 {group.items.length}
               </span>
             </button>
+            {/* カード全体を押すとその画面へ飛ぶ。✓ と ゴミ箱 はここからそのまま操作できる */}
             {group.items.map(({ comment, n }) => (
-              <button
+              <div
                 key={comment.id}
-                type="button"
                 onClick={() => onJump(group.screen, comment.id)}
-                className={`w-full rounded-lg border border-[#e5e5e5] bg-white p-2 text-left hover:border-[var(--semantic-brand-primary)] ${
+                className={`rounded-lg border border-[#e5e5e5] bg-white p-2 cursor-pointer hover:border-[var(--semantic-brand-primary)] ${
                   comment.resolved ? "opacity-60" : ""
                 }`}
               >
-                <span className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5">
                   <span
                     className={`shrink-0 size-4 rounded-full rounded-bl-none text-[9px] font-bold text-white flex items-center justify-center ${
                       comment.resolved ? "bg-[#b0b0b0]" : "bg-[var(--semantic-brand-danger)]"
@@ -225,17 +225,66 @@ export function CommentPanel({
                     {n}
                   </span>
                   <span className="flex-1 min-w-0 truncate text-[11px] font-normal text-[var(--semantic-text-secondary)]">{comment.target}</span>
-                </span>
-                <span className="block mt-1 text-xs font-normal leading-snug text-[var(--semantic-text-primary)] line-clamp-2">{comment.body}</span>
-                <span className="block mt-1 text-[10px] font-normal text-[var(--semantic-text-secondary)]">
+                  <CommentActions
+                    resolved={comment.resolved}
+                    onToggleResolved={() => onToggleResolved(comment)}
+                    onRemove={() => onRemove(comment.id)}
+                  />
+                </div>
+                <p className="mt-1 text-xs font-normal leading-snug text-[var(--semantic-text-primary)] line-clamp-2">{comment.body}</p>
+                <p className="mt-1 text-[10px] font-normal text-[var(--semantic-text-secondary)]">
                   {comment.author || "名前なし"} ・ {formatCommentTime(comment.createdAt)}
-                </span>
-              </button>
+                </p>
+              </div>
             ))}
           </section>
         ))}
       </div>
     </div>
+  );
+}
+
+/**
+ * カード右上の「解決にする」「削除」。
+ * この画面のコメントと、他の画面のコメントの両方で同じものを使う。
+ * どちらのカードもクリックで別の動き（選択 / 画面移動）をするので、押したことを親に伝えない。
+ */
+function CommentActions({
+  resolved,
+  onToggleResolved,
+  onRemove,
+}: {
+  resolved: boolean;
+  onToggleResolved: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <>
+      <button
+        type="button"
+        title={resolved ? "未解決に戻す" : "解決にする"}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleResolved();
+        }}
+        className={`shrink-0 size-6 rounded-md flex items-center justify-center ${
+          resolved ? "bg-[var(--semantic-brand-primary)] text-white" : "text-[var(--semantic-text-secondary)] hover:bg-[#ececec]"
+        }`}
+      >
+        <IconCheck width={14} height={14} />
+      </button>
+      <button
+        type="button"
+        title="削除"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (window.confirm("このコメントを削除しますか？")) onRemove();
+        }}
+        className="shrink-0 size-6 rounded-md flex items-center justify-center text-[var(--semantic-text-secondary)] hover:bg-[#ececec] hover:text-[var(--semantic-brand-danger)]"
+      >
+        <IconTrash width={14} height={14} />
+      </button>
+    </>
   );
 }
 
@@ -402,30 +451,7 @@ function CommentCard({
         <span className="flex-1 min-w-0 text-[11px] font-normal text-[var(--semantic-text-secondary)] truncate" title={comment.target}>
           {comment.target}
         </span>
-        <button
-          type="button"
-          title={comment.resolved ? "未解決に戻す" : "解決にする"}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleResolved();
-          }}
-          className={`shrink-0 size-6 rounded-md flex items-center justify-center ${
-            comment.resolved ? "bg-[var(--semantic-brand-primary)] text-white" : "text-[var(--semantic-text-secondary)] hover:bg-[#ececec]"
-          }`}
-        >
-          <IconCheck width={14} height={14} />
-        </button>
-        <button
-          type="button"
-          title="削除"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (window.confirm("このコメントを削除しますか？")) onRemove();
-          }}
-          className="shrink-0 size-6 rounded-md flex items-center justify-center text-[var(--semantic-text-secondary)] hover:bg-[#ececec] hover:text-[var(--semantic-brand-danger)]"
-        >
-          <IconTrash width={14} height={14} />
-        </button>
+        <CommentActions resolved={comment.resolved} onToggleResolved={onToggleResolved} onRemove={onRemove} />
       </div>
 
       {editing ? (

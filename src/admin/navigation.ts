@@ -12,6 +12,7 @@ import iconLog from "../assets/figma/icons/nav/log.svg";
 import iconDevice from "../assets/figma/icons/nav/device.svg";
 import iconGuide from "../assets/figma/icons/nav/guide.svg";
 import iconScreenGuide from "../assets/figma/icons/nav/screen-guide.svg";
+import iconFeedback from "../assets/figma/icons/nav/feedback.svg";
 import iconHelp from "../assets/figma/icons/nav/help.svg";
 import type { PrototypeRoleId } from "../data/roleStore";
 import { approvalRequests } from "./data/approvals";
@@ -52,7 +53,8 @@ export const primaryNav: AdminNavItem[] = [
     icon: iconGuide,
     path: "/admin/guide",
     children: [
-      { label: "画面説明", icon: iconScreenGuide, path: "/admin/guide/screens" },
+      { label: "変更履歴", icon: iconScreenGuide, path: "/admin/guide/screens" },
+      { label: "フィードバック管理", icon: iconFeedback, path: "/admin/guide/feedback" },
       { label: "ヘルプ", icon: iconHelp, path: "/admin/help" },
     ],
   },

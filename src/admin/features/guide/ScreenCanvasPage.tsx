@@ -32,12 +32,10 @@ import { useGoogleAccount } from "./googleAccount";
 import {
   IconCursor,
   IconFit,
-  IconHand,
   IconMonitor,
   IconPanelLeft,
   IconClose,
   IconComment,
-  IconPlay,
   IconRedo,
   IconReload,
   IconScreens,
@@ -177,8 +175,8 @@ export function ScreenCanvasPage() {
   if (window.self !== window.top) {
     return (
       <div className="w-full h-full flex flex-col">
-        <PageTitleBar title="画面説明" />
-        <p className="p-6 text-[var(--semantic-text-secondary)]">画面説明キャンバスはキャンバス内では開けません。</p>
+        <PageTitleBar title="変更履歴" />
+        <p className="p-6 text-[var(--semantic-text-secondary)]">変更履歴キャンバスはキャンバス内では開けません。</p>
       </div>
     );
   }
@@ -550,7 +548,6 @@ function ScreenCanvas() {
       endElementDrag(true);
     };
     const onDown = (e: MouseEvent) => {
-      if (toolRef.current === "pan" || toolRef.current === "interact") return;
       if (toolRef.current === "select" && isEditing(e.target)) return;
       // コメントモードでは、下のボタンやリンクが反応しないように止める
       e.preventDefault();
@@ -863,14 +860,6 @@ function ScreenCanvas() {
         case "V":
           setTool("select");
           break;
-        case "h":
-        case "H":
-          setTool("pan");
-          break;
-        case "p":
-        case "P":
-          setTool("interact");
-          break;
         case "c":
         case "C":
           setTool("comment");
@@ -982,13 +971,13 @@ function ScreenCanvas() {
         }}
       />
     ) : panel === "prompt" ? (
-      <PromptPanel screen={screen} ops={edits.ops} cursor={edits.cursor} onReset={resetEdits} />
+      <PromptPanel screen={screen} ops={edits.ops} cursor={edits.cursor} onToggleDone={edits.setDone} onReset={resetEdits} />
     ) : null;
 
   return (
     <div className="w-full h-full flex flex-col min-h-0">
       <PageTitleBar
-        title="画面説明"
+        title="変更履歴"
         action={
           <span className="text-sm font-normal text-[var(--semantic-text-secondary)]">
             NQ の画面を読み込んで、見た目をその場で編集・プロンプト化できます
@@ -1043,12 +1032,6 @@ function ScreenCanvas() {
             <ToolButton active={tool === "select"} title="選択 (V)" onClick={() => setTool("select")}>
               <IconCursor />
             </ToolButton>
-            <ToolButton active={tool === "pan"} title="キャンバスを移動 (H)" onClick={() => setTool("pan")}>
-              <IconHand />
-            </ToolButton>
-            <ToolButton active={tool === "interact"} title="アプリを操作 (P): ボタンやリンクが実際に動きます" onClick={() => setTool("interact")}>
-              <IconPlay />
-            </ToolButton>
             <ToolButton
               active={tool === "comment"}
               title="コメント (C): 画面をクリックするとその場所にピンを立てられます"
@@ -1096,11 +1079,7 @@ function ScreenCanvas() {
                 : notice ??
                   (tool === "select"
                     ? "要素をクリックで選択・ダブルクリックで文字を編集"
-                    : tool === "interact"
-                      ? "アプリを操作中（画面遷移も追従します）"
-                      : tool === "comment"
-                        ? "コメントしたい場所をクリックしてピンを立てる"
-                        : "ドラッグでキャンバスを移動")}
+                    : "コメントしたい場所をクリックしてピンを立てる")}
             </span>
             <span className="w-px h-5 bg-[#e5e5e5] mx-1" />
             {(Object.keys(DEVICE_SIZES) as DeviceMode[]).map((d) => (

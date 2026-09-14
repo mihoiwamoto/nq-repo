@@ -17,7 +17,7 @@ export function describeOp(op: EditOp): string {
       return `${label}を ${op.computedBefore || "(未指定)"} → ${op.after} に変更`;
     }
     case "text":
-      return `テキストを ${quote(op.before)} → ${quote(op.after)} に変更`;
+      return `テキスト変更 ${quote(op.before)} → ${quote(op.after)}`;
     case "attr":
       return `${op.name} を ${op.before === null ? "(なし)" : quote(op.before)} → ${
         op.after === null ? "(なし)" : quote(op.after)
@@ -35,7 +35,11 @@ export function describeOp(op: EditOp): string {
   }
 }
 
-export function buildPrompt(screen: ScreenEntry, ops: EditOp[]): string {
+/**
+ * @param emptyNote 変更が 1 件も無いときに出す文言。
+ *   「変更はあるが 1 件も選ばれていない」ときに呼び分けるために差し替えられる。
+ */
+export function buildPrompt(screen: ScreenEntry, ops: EditOp[], emptyNote?: string): string {
   const lines: string[] = [];
   lines.push("# NQ 画面の見た目変更をコードに反映してください");
   lines.push("");
@@ -44,7 +48,7 @@ export function buildPrompt(screen: ScreenEntry, ops: EditOp[]): string {
   lines.push(`URL: ${screen.route}`);
   lines.push("");
   if (ops.length === 0) {
-    lines.push("（まだ変更はありません。キャンバス上で要素を選んで編集すると、ここに手順が並びます）");
+    lines.push(emptyNote ?? "（まだ変更はありません。キャンバス上で要素を選んで編集すると、ここに手順が並びます）");
     return lines.join("\n");
   }
   lines.push("画面説明キャンバスで以下の変更を仮に加えました。同じ見た目になるようにこのファイル（必要なら共通コンポーネント）を修正してください。");
