@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { AppHeader } from "../../layout/AppHeader";
 import { SampleProgressPanel } from "./SampleProgressPanel";
 import { ACTORS } from "../cleaning-record/mockData";
@@ -17,6 +18,8 @@ import checkboxOnIcon from "@images/Icon/ckeckbox_on.svg";
 import checkboxOffIcon from "@images/Icon/ckeckbox.svg";
 import searchIcon from "@images/Icon/search.svg";
 import burnIcon from "@images/Icon/burn.svg";
+import iconCheckWhite from "../../../assets/figma/icons/common/checkmark-custom.svg";
+import { StatusChip } from "../../components/StatusChip";
 
 function DestructionLabel() {
   return (
@@ -201,7 +204,7 @@ export function SampleListPage() {
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-10 items-center">
-        <div className="flex flex-col gap-6 items-start w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex flex-col gap-6 items-start w-full max-w-full">
           <div className="bg-white flex h-10 items-center rounded-lg w-full shrink-0">
             {(["today", "storage"] as const).map((key) => (
               <button
@@ -255,15 +258,31 @@ export function SampleListPage() {
                       key={entry.id}
                       to={`/app/ledger-list/sample-management/samples/${entry.id}`}
                       state={{ inspectorName }}
-                      className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex h-20 items-center justify-between p-4 rounded-lg w-full"
+                      className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center justify-between p-4 rounded-lg w-full"
                     >
-                      <p className="text-lg text-[var(--semantic-text-primary)]">{entry.productName}</p>
-                      <span
-                        className="flex h-8 w-20 items-center justify-center rounded-lg text-sm text-white shrink-0"
-                        style={{ backgroundColor: SAMPLE_STATUS_COLORS[entry.status] }}
-                      >
-                        {SAMPLE_STATUS_LABELS[entry.status]}
-                      </span>
+                      {/* 製造日・ロットNo. は管理画面で「記載する」とした製品だけに出る任意項目 */}
+                      <div className="flex-1 flex flex-col gap-2 items-start justify-center min-w-0">
+                        <p className="text-lg text-[var(--semantic-text-primary)]">{entry.productName}</p>
+                        {(entry.manufactureDate || entry.lotNumber) && (
+                          <div className="flex gap-6 items-center">
+                            {entry.manufactureDate && (
+                              <div className="flex gap-2 items-center">
+                                <span className="text-base text-[var(--semantic-text-secondary)]">製造日</span>
+                                <span className="text-base text-[var(--semantic-text-primary)]">
+                                  {entry.manufactureDate.replaceAll("-", "/")}
+                                </span>
+                              </div>
+                            )}
+                            {entry.lotNumber && (
+                              <div className="flex gap-2 items-center">
+                                <span className="text-base text-[var(--semantic-text-secondary)]">ロットNo.</span>
+                                <span className="text-base text-[var(--semantic-text-primary)]">{entry.lotNumber}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <StatusChip color={SAMPLE_STATUS_COLORS[entry.status]}>{SAMPLE_STATUS_LABELS[entry.status]}</StatusChip>
                     </Link>
                   ))
                 )}
@@ -391,7 +410,7 @@ export function SampleListPage() {
         {!bulkSelectionMode && (
           <Link
             to="/app/ledger-list"
-            className="bg-white border border-[var(--semantic-text-primary)] flex h-16 items-center justify-center px-4 py-2 rounded-lg w-90 max-w-full"
+            className="bg-white border border-[var(--semantic-text-primary)] flex items-center justify-center px-4 py-6 rounded-lg w-90 max-w-full"
           >
             <span className="text-xl text-[var(--semantic-text-primary)]">帳票一覧に戻る</span>
           </Link>
@@ -423,7 +442,7 @@ export function SampleListPage() {
       {filterDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFilterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full max-w-[480px] mx-40 max-h-[90vh] overflow-y-auto overflow-x-hidden mx-16">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <h2 className="text-2xl text-black text-center w-full">絞り込み条件</h2>
             <div className="flex flex-col gap-6 items-start w-full">
               <div className="flex flex-col gap-2 items-start w-full">
@@ -459,43 +478,17 @@ export function SampleListPage() {
                 </div>
                 {filterDraft.period !== "unspecified" && (
                   <div className="flex gap-2 items-center w-full">
-                    <div className="flex-1 relative">
-                      <input
-                        type="date"
-                        value={filterDraft.dateFrom}
-                        onChange={(e) =>
-                          setFilterDraft((prev) => ({ ...prev, dateFrom: e.target.value }))
-                        }
-                        className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full"
-                        style={{
-                          colorScheme: "light",
-                        }}
-                      />
-                      {!filterDraft.dateFrom && (
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-[var(--semantic-text-secondary)] pointer-events-none">
-                          日付を選択
-                        </span>
-                      )}
-                    </div>
+                    <DateFilterInput
+                      value={filterDraft.dateFrom}
+                      onChange={(value) => setFilterDraft((prev) => ({ ...prev, dateFrom: value }))}
+                      className="flex-1"
+                    />
                     <span className="text-lg text-[var(--semantic-text-primary)]">〜</span>
-                    <div className="flex-1 relative">
-                      <input
-                        type="date"
-                        value={filterDraft.dateTo}
-                        onChange={(e) =>
-                          setFilterDraft((prev) => ({ ...prev, dateTo: e.target.value }))
-                        }
-                        className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full"
-                        style={{
-                          colorScheme: "light",
-                        }}
-                      />
-                      {!filterDraft.dateTo && (
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base text-[var(--semantic-text-secondary)] pointer-events-none">
-                          日付を選択
-                        </span>
-                      )}
-                    </div>
+                    <DateFilterInput
+                      value={filterDraft.dateTo}
+                      onChange={(value) => setFilterDraft((prev) => ({ ...prev, dateTo: value }))}
+                      className="flex-1"
+                    />
                   </div>
                 )}
               </div>
@@ -534,7 +527,7 @@ export function SampleListPage() {
       {bulkDiscardDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setBulkDiscardDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full max-w-[480px] mx-40 max-h-[90vh] overflow-y-auto overflow-x-hidden mx-16">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="flex flex-col gap-6 items-center w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">検体一括破棄</h2>
               <p className="text-base text-[var(--semantic-text-primary)] w-full">
@@ -574,12 +567,7 @@ export function SampleListPage() {
                 <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                   破棄日 <span className="text-[var(--semantic-brand-danger)]">※</span>
                 </p>
-                <input
-                  type="date"
-                  value={bulkDiscardDate}
-                  onChange={(e) => setBulkDiscardDate(e.target.value)}
-                  className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-                />
+                <DateFilterInput value={bulkDiscardDate} onChange={setBulkDiscardDate} />
               </div>
 
               <div className="flex flex-col gap-2 items-start w-full">
@@ -642,10 +630,10 @@ export function SampleListPage() {
       {bulkDiscardCompleteDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={handleBulkCompleteClose} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-full max-w-[480px]">
             <div className="flex flex-col gap-4 items-center w-full">
               <div className="w-16 h-16 rounded-full bg-[var(--semantic-status-success)] flex items-center justify-center">
-                <span className="text-white text-4xl">✓</span>
+                <img src={iconCheckWhite} alt="" aria-hidden="true" className="size-10" />
               </div>
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center">廃棄が完了しました</h2>
             </div>

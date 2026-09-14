@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-08T06:37:49.745Z",
+  "generatedAt": "2026-09-14T05:40:19.995Z",
   "impact": {
     "src/admin/components/PageTitleBar.tsx": [
       "scr_5021db3ab2",
@@ -136,6 +136,7 @@
       "scr_e5e5136bf0",
       "scr_4e0163dd72",
       "scr_0054dd6007",
+      "scr_86b329ab08",
       "scr_6e5603f704",
       "scr_cfccc7b313",
       "scr_167c2b49a3",
@@ -353,12 +354,100 @@
     ],
     "src/admin/features/staff-management/types.ts": [
       "scr_5021db3ab2",
+      "scr_ed3572a6d2",
+      "scr_3f2541b7dd",
+      "scr_3d2b9148f0",
+      "scr_101c67baca",
+      "scr_c62e3ee104",
+      "scr_02aab90406",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_5637171708",
+      "scr_fe44a0b9de",
+      "scr_e3158fe806",
+      "scr_a3e87c217e",
+      "scr_02222d8f75",
+      "scr_7d3efc8d7e",
+      "scr_95bc7c8d23",
+      "scr_529ad83de7",
+      "scr_e39ef00c65",
+      "scr_1da520d73d",
+      "scr_fba36e73bd",
+      "scr_9ca06ad4ab",
+      "scr_d3a681894d",
+      "scr_84efdf0eb8",
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b",
+      "scr_de85f41c3b",
+      "scr_f19f179735",
+      "scr_750d95a0dc",
+      "scr_86a3ccf128",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f",
+      "scr_a9445bec31",
+      "scr_5558274cc7",
+      "scr_498aceef58",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73",
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8",
       "scr_423dab72e8",
       "scr_3677bb3ef3",
       "scr_7e8f1d5f88"
     ],
-    "src/admin/features/account/mockData.ts": [
+    "src/data/roleStore.ts": [
       "scr_5021db3ab2"
+    ],
+    "src/data/useCurrentRole.ts": [
+      "scr_5021db3ab2"
+    ],
+    "src/admin/features/account/mockData.ts": [
+      "scr_5021db3ab2",
+      "scr_ed3572a6d2",
+      "scr_3f2541b7dd",
+      "scr_3d2b9148f0",
+      "scr_101c67baca",
+      "scr_c62e3ee104",
+      "scr_02aab90406",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_5637171708",
+      "scr_fe44a0b9de",
+      "scr_e3158fe806",
+      "scr_a3e87c217e",
+      "scr_02222d8f75",
+      "scr_7d3efc8d7e",
+      "scr_95bc7c8d23",
+      "scr_529ad83de7",
+      "scr_e39ef00c65",
+      "scr_1da520d73d",
+      "scr_fba36e73bd",
+      "scr_9ca06ad4ab",
+      "scr_d3a681894d",
+      "scr_84efdf0eb8",
+      "scr_c3729c5aa1",
+      "scr_47e6f13b8b",
+      "scr_de85f41c3b",
+      "scr_f19f179735",
+      "scr_750d95a0dc",
+      "scr_86a3ccf128",
+      "scr_f77ae947e2",
+      "scr_70d8e456f9",
+      "scr_6bdb0bf6a6",
+      "scr_4d6750083f",
+      "scr_a9445bec31",
+      "scr_5558274cc7",
+      "scr_498aceef58",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73",
+      "scr_8e3cfae6c3",
+      "scr_c60574c5f8"
     ],
     "src/admin/components/Breadcrumb.tsx": [
       "scr_7541f004f2",
@@ -560,11 +649,13 @@
       "scr_63c54def87",
       "scr_5cda0559bd",
       "scr_e93f9ee911",
+      "scr_46cd0b573e",
       "scr_273eae79c7",
       "scr_81ea3b3788",
       "scr_6b8da82019",
       "scr_3e132b95cc",
       "scr_cf4d02fc62",
+      "scr_27ec389dc9",
       "scr_7d96e7d52e",
       "scr_87da53a211",
       "scr_8e7e777b26",
@@ -601,7 +692,6 @@
       "scr_e4d985130d",
       "scr_945b450edc",
       "scr_fe44a0b9de",
-      "scr_a3e87c217e",
       "scr_02222d8f75",
       "scr_7d3efc8d7e",
       "scr_95bc7c8d23",
@@ -673,6 +763,7 @@
       "scr_945b450edc",
       "scr_5637171708",
       "scr_fe44a0b9de",
+      "scr_a3e87c217e",
       "scr_02222d8f75",
       "scr_7d3efc8d7e",
       "scr_95bc7c8d23",
@@ -684,7 +775,6 @@
     "src/admin/components/DateFilterInput.tsx": [
       "scr_ed3572a6d2",
       "scr_3d2b9148f0",
-      "scr_a3e87c217e",
       "scr_fba36e73bd",
       "scr_a4ed50a5b3",
       "scr_1f83b02d30",
@@ -843,6 +933,62 @@
       "scr_ed3572a6d2",
       "scr_3f2541b7dd"
     ],
+    "src/admin/components/Comments.tsx": [
+      "scr_3f2541b7dd",
+      "scr_101c67baca",
+      "scr_c62e3ee104",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_fe44a0b9de",
+      "scr_02222d8f75",
+      "scr_95bc7c8d23",
+      "scr_e39ef00c65",
+      "scr_9ca06ad4ab",
+      "scr_d3a681894d",
+      "scr_c3729c5aa1",
+      "scr_de85f41c3b",
+      "scr_750d95a0dc",
+      "scr_f77ae947e2",
+      "scr_6bdb0bf6a6",
+      "scr_a9445bec31",
+      "scr_498aceef58",
+      "scr_391b40400a",
+      "scr_8e3cfae6c3",
+      "scr_1a654cc183",
+      "scr_da887741fb",
+      "scr_8ee734cfe0",
+      "scr_0cc4dfd849",
+      "scr_1d34f6f6c6",
+      "scr_34762c0c5e",
+      "scr_3c95e7470d",
+      "scr_7498c12401",
+      "scr_db140db5c2",
+      "scr_53a183ee93",
+      "scr_a66d9ce0ed",
+      "scr_811d66d7ff"
+    ],
+    "src/admin/components/CommentInputBox.tsx": [
+      "scr_3f2541b7dd",
+      "scr_101c67baca",
+      "scr_c62e3ee104",
+      "scr_e4d985130d",
+      "scr_945b450edc",
+      "scr_fe44a0b9de",
+      "scr_02222d8f75",
+      "scr_95bc7c8d23",
+      "scr_e39ef00c65",
+      "scr_9ca06ad4ab",
+      "scr_d3a681894d",
+      "scr_c3729c5aa1",
+      "scr_de85f41c3b",
+      "scr_750d95a0dc",
+      "scr_f77ae947e2",
+      "scr_6bdb0bf6a6",
+      "scr_a9445bec31",
+      "scr_498aceef58",
+      "scr_391b40400a",
+      "scr_8e3cfae6c3"
+    ],
     "src/admin/components/RejectReasonDialog.tsx": [
       "scr_3f2541b7dd",
       "scr_101c67baca",
@@ -869,6 +1015,9 @@
     ],
     "src/admin/features/approvals-cleaning-record/mockData.ts": [
       "scr_582809ee81",
+      "scr_c62e3ee104"
+    ],
+    "src/admin/features/approvals-cleaning-record/RecordsContext.tsx": [
       "scr_c62e3ee104"
     ],
     "src/admin/features/approvals-equipment-inspection/RecordsContext.tsx": [
@@ -1030,28 +1179,6 @@
       "scr_592c4ade84",
       "scr_e95ee519cb",
       "scr_96bf20307f"
-    ],
-    "src/admin/components/Comments.tsx": [
-      "scr_d3a681894d",
-      "scr_c3729c5aa1",
-      "scr_de85f41c3b",
-      "scr_750d95a0dc",
-      "scr_f77ae947e2",
-      "scr_6bdb0bf6a6",
-      "scr_a9445bec31",
-      "scr_498aceef58",
-      "scr_391b40400a",
-      "scr_8e3cfae6c3",
-      "scr_1a654cc183",
-      "scr_da887741fb",
-      "scr_8ee734cfe0",
-      "scr_0cc4dfd849",
-      "scr_34762c0c5e",
-      "scr_3c95e7470d",
-      "scr_db140db5c2",
-      "scr_53a183ee93",
-      "scr_a66d9ce0ed",
-      "scr_811d66d7ff"
     ],
     "src/admin/components/ConfirmStatusBadge.tsx": [
       "scr_d3a681894d",
@@ -1468,6 +1595,48 @@
     "src/admin/features/glass-plastic/FloorPlanEditor.tsx": [
       "scr_4e0163dd72"
     ],
+    "src/admin/features/guide/screenCatalog.ts": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/canvasTypes.ts": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/domInspector.ts": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/useCanvasEdits.ts": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/CanvasStage.tsx": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/dropTarget.ts": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/ScreenListPanel.tsx": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/PropertyPanel.tsx": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/PromptPanel.tsx": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/CommentPanel.tsx": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/comments.ts": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/googleAccount.ts": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/CanvasIcons.tsx": [
+      "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/promptBuilder.ts": [
+      "scr_86b329ab08"
+    ],
     "src/admin/features/help/HelpAccordion.tsx": [
       "scr_6e5603f704",
       "scr_cfccc7b313"
@@ -1709,7 +1878,9 @@
       "scr_47e17a19c2",
       "scr_bb9e23b161",
       "scr_2c2d7d9066",
+      "scr_12826fb9e6",
       "scr_cf8516ef42",
+      "scr_4a00e7ebb5",
       "scr_99a356091b",
       "scr_81fcb67ecb",
       "scr_565bd5038b",
@@ -1790,14 +1961,155 @@
       "scr_47e17a19c2",
       "scr_6d30383da0"
     ],
+    "src/app/components/StatusChip.tsx": [
+      "scr_b4e560d060",
+      "scr_99a356091b",
+      "scr_d86ceddcf1",
+      "scr_8ae46ae1a3",
+      "scr_6ac89cb9d2",
+      "scr_9631ea409e",
+      "scr_d910bef482",
+      "scr_744c58e987",
+      "scr_7d1e4982ef",
+      "scr_0524c06ed4",
+      "scr_c7001fbf87",
+      "scr_feb7ceb18e"
+    ],
+    "src/app/components/PulldownSelect.tsx": [
+      "scr_b594cf8041",
+      "scr_cf8516ef42",
+      "scr_12fb95b0c6",
+      "scr_f502fc0ba2",
+      "scr_6642faa075"
+    ],
+    "src/app/utils/amount.ts": [
+      "scr_b594cf8041",
+      "scr_cf8516ef42"
+    ],
+    "src/app/components/DateFilterInput.tsx": [
+      "scr_47e17a19c2",
+      "scr_4a00e7ebb5",
+      "scr_f16501be69",
+      "scr_8dfe5dae21",
+      "scr_986fb7abe0",
+      "scr_2c4ed7b17c",
+      "scr_1a82f38b1a",
+      "scr_e17a4c24cd",
+      "scr_f502fc0ba2",
+      "scr_7d1e4982ef",
+      "scr_a4871013f8",
+      "scr_9c59f0cde0",
+      "scr_6642faa075",
+      "scr_33478ffcbd",
+      "scr_9aa9e11924",
+      "scr_0471bfe913",
+      "scr_930c62fdb5",
+      "scr_c628b879d9"
+    ],
+    "src/app/utils/date.ts": [
+      "scr_47e17a19c2",
+      "scr_cf8516ef42",
+      "scr_4a00e7ebb5",
+      "scr_d86ceddcf1",
+      "scr_f16501be69",
+      "scr_8dfe5dae21",
+      "scr_8ae46ae1a3",
+      "scr_986fb7abe0",
+      "scr_2c4ed7b17c",
+      "scr_1a82f38b1a",
+      "scr_12fb95b0c6",
+      "scr_e17a4c24cd",
+      "scr_6d30383da0",
+      "scr_f502fc0ba2",
+      "scr_9c59f0cde0",
+      "scr_5995b9057c",
+      "scr_6642faa075",
+      "scr_9aa9e11924",
+      "scr_0471bfe913",
+      "scr_930c62fdb5",
+      "scr_c628b879d9"
+    ],
+    "src/app/utils/progressRecordFill.ts": [
+      "scr_47e17a19c2",
+      "scr_4a00e7ebb5",
+      "scr_f16501be69",
+      "scr_8dfe5dae21",
+      "scr_986fb7abe0",
+      "scr_2c4ed7b17c",
+      "scr_1a82f38b1a",
+      "scr_e17a4c24cd",
+      "scr_f502fc0ba2",
+      "scr_9c59f0cde0",
+      "scr_6642faa075",
+      "scr_9aa9e11924",
+      "scr_0471bfe913"
+    ],
+    "src/app/features/progress/mockData.ts": [
+      "scr_47e17a19c2",
+      "scr_4a00e7ebb5",
+      "scr_f16501be69",
+      "scr_8dfe5dae21",
+      "scr_986fb7abe0",
+      "scr_2c4ed7b17c",
+      "scr_1a82f38b1a",
+      "scr_e17a4c24cd",
+      "scr_6d30383da0",
+      "scr_744c58e987",
+      "scr_f502fc0ba2",
+      "scr_9c59f0cde0",
+      "scr_6642faa075",
+      "scr_9aa9e11924",
+      "scr_0471bfe913"
+    ],
+    "src/app/components/ProgressSubmitComplete.tsx": [
+      "scr_bb9e23b161",
+      "scr_81fcb67ecb",
+      "scr_80b3020484",
+      "scr_4bf41bb1ea",
+      "scr_40e8aa20e5",
+      "scr_e17a4c24cd",
+      "scr_c3b6d60578",
+      "scr_595e4ac181",
+      "scr_41c489219f",
+      "scr_06839b791b",
+      "scr_12da231b94"
+    ],
+    "src/app/layout/ProgressFlowContext.tsx": [
+      "scr_bb9e23b161",
+      "scr_81fcb67ecb",
+      "scr_80b3020484",
+      "scr_4bf41bb1ea",
+      "scr_40e8aa20e5",
+      "scr_c3b6d60578",
+      "scr_595e4ac181",
+      "scr_41c489219f",
+      "scr_06839b791b",
+      "scr_12da231b94"
+    ],
+    "src/app/navigation.ts": [
+      "scr_bb9e23b161",
+      "scr_81fcb67ecb",
+      "scr_80b3020484",
+      "scr_4bf41bb1ea",
+      "scr_40e8aa20e5",
+      "scr_c3b6d60578",
+      "scr_595e4ac181",
+      "scr_41c489219f",
+      "scr_06839b791b",
+      "scr_12da231b94"
+    ],
     "src/app/features/chemical-management/ChemicalManagementContext.tsx": [
       "scr_2c2d7d9066",
+      "scr_12826fb9e6",
       "scr_cf8516ef42",
+      "scr_4a00e7ebb5",
       "scr_99a356091b"
     ],
     "src/app/features/chemical-management/mockData.ts": [
       "scr_2c2d7d9066",
+      "scr_12826fb9e6",
       "scr_cf8516ef42",
+      "scr_4a00e7ebb5",
       "scr_99a356091b"
     ],
     "src/app/features/cleaning-record/CleaningRecordContext.tsx": [
@@ -1818,11 +2130,30 @@
       "scr_7d1e4982ef",
       "scr_62d78cb654",
       "scr_9c59f0cde0",
+      "scr_5995b9057c",
       "scr_6642faa075",
       "scr_cd84bf4d0a"
     ],
     "src/app/features/cleaning-record/LineProgressPanel.tsx": [
       "scr_d86ceddcf1"
+    ],
+    "src/app/components/RecordTimestamp.tsx": [
+      "scr_f16501be69",
+      "scr_8dfe5dae21",
+      "scr_c2ccacfb8b",
+      "scr_986fb7abe0",
+      "scr_6d30383da0",
+      "scr_f502fc0ba2",
+      "scr_62d78cb654",
+      "scr_05cc5e6dc6",
+      "scr_5995b9057c",
+      "scr_edb157c37a",
+      "scr_6642faa075",
+      "scr_7875de59fd",
+      "scr_9aa9e11924",
+      "scr_0471bfe913",
+      "scr_930c62fdb5",
+      "scr_c628b879d9"
     ],
     "src/app/layout/AnnouncementBarContext.tsx": [
       "scr_0673b13dec",
@@ -1846,12 +2177,24 @@
       "scr_06f31aaec1",
       "scr_6d30383da0"
     ],
+    "src/app/utils/recordTimestamps.ts": [
+      "scr_8dfe5dae21",
+      "scr_12fb95b0c6",
+      "scr_6d30383da0",
+      "scr_f502fc0ba2",
+      "scr_9c59f0cde0",
+      "scr_5995b9057c",
+      "scr_6642faa075",
+      "scr_9aa9e11924",
+      "scr_0471bfe913",
+      "scr_930c62fdb5",
+      "scr_c628b879d9"
+    ],
     "src/app/features/equipment-inspection/LineProgressPanel.tsx": [
       "scr_8ae46ae1a3"
     ],
     "src/app/features/equipment-inspection/calendarUtils.ts": [
       "scr_fad5db77f2",
-      "scr_8f0b16515d",
       "scr_33478ffcbd"
     ],
     "src/app/features/sensory-inspection/ScheduleContext.tsx": [
@@ -1888,7 +2231,12 @@
       "scr_12fb95b0c6",
       "scr_f191c4aa3d",
       "scr_9631ea409e",
+      "scr_e17a4c24cd",
       "scr_6d30383da0"
+    ],
+    "src/app/features/metal-xray-detection/MachineDetailPage.tsx": [
+      "scr_2c4ed7b17c",
+      "scr_e17a4c24cd"
     ],
     "src/app/features/metal-xray-detection/AnomalyDialog.tsx": [
       "scr_12fb95b0c6"
@@ -1898,6 +2246,15 @@
     ],
     "src/app/features/metal-xray-detection/MachineProgressPanel.tsx": [
       "scr_9631ea409e"
+    ],
+    "src/app/components/CommentInput.tsx": [
+      "scr_6d30383da0"
+    ],
+    "src/app/components/CompleteDialog.tsx": [
+      "scr_6d30383da0"
+    ],
+    "src/app/components/DrumRollPicker.tsx": [
+      "scr_6d30383da0"
     ],
     "src/app/data/pendingReviews.ts": [
       "scr_6d30383da0",
@@ -1930,12 +2287,11 @@
       "scr_7d1e4982ef",
       "scr_a4871013f8"
     ],
-    "src/app/features/progress/mockData.ts": [
+    "src/app/features/sample-management/SampleProductInfo.tsx": [
       "scr_6d30383da0",
-      "scr_744c58e987"
-    ],
-    "src/app/features/sample-management/CustomSelect.tsx": [
-      "scr_f502fc0ba2"
+      "scr_f6482d7476",
+      "scr_f502fc0ba2",
+      "scr_a4871013f8"
     ],
     "src/app/features/sample-management/SampleProgressPanel.tsx": [
       "scr_7d1e4982ef"
@@ -1960,14 +2316,12 @@
     "src/app/features/sensory-inspection/ProductProgressPanel.tsx": [
       "scr_c7001fbf87"
     ],
-    "src/app/components/CustomSelect.tsx": [
-      "scr_6642faa075"
-    ],
     "src/app/layout/TextSizeContext.tsx": [
       "scr_cd8358e5c0"
     ],
     "src/app/features/water-inspection/WaterInspectionContext.tsx": [
       "scr_9aa9e11924",
+      "scr_0471bfe913",
       "scr_4da9c5a21f",
       "scr_e0366063f1",
       "scr_feb7ceb18e",

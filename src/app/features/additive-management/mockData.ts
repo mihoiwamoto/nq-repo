@@ -1,3 +1,4 @@
+
 export type AdditiveStatus = "not_inspected" | "in_progress" | "inspected";
 
 export type Additive = {
@@ -92,6 +93,39 @@ export const initialRecords: AdditiveRecord[] = [
     currentStock: "3,500ml",
     remarks: "製造ライン補充",
     actor: "山田太郎",
+  },
+  {
+    id: "r3",
+    additiveId: "a2",
+    date: "2025/04/01",
+    storageLocation: "小型物置",
+    category: "入庫",
+    quantity: "500ml",
+    currentStock: "3,500ml",
+    remarks: "定期発注による補充入庫",
+    actor: "佐藤健一",
+  },
+  {
+    id: "r4",
+    additiveId: "a3",
+    date: "2025/04/01",
+    storageLocation: "小型物置",
+    category: "入庫",
+    quantity: "1,000g",
+    currentStock: "3,000g",
+    remarks: "月次定期発注による補充入庫",
+    actor: "田中裕子",
+  },
+  {
+    id: "r5",
+    additiveId: "a3",
+    date: "2025/04/01",
+    storageLocation: "小型物置",
+    category: "出庫",
+    quantity: "500g",
+    currentStock: "2,500g",
+    remarks: "豆腐ライン充填工程で使用",
+    actor: "中村美咲",
   },
 ];
 

@@ -254,6 +254,7 @@ import { StaffCompletePage } from "./admin/features/staff-management/StaffComple
 import { LogListPage } from "./admin/features/log-management/LogListPage";
 import { HelpPage } from "./admin/features/help/HelpPage";
 import { HelpFaqDetailPage } from "./admin/features/help/HelpFaqDetailPage";
+import { ScreenCanvasPage } from "./admin/features/guide/ScreenCanvasPage";
 import { AccountPage } from "./admin/features/account/AccountPage";
 import { PasswordChangePage } from "./admin/features/account/PasswordChangePage";
 import { PasswordChangeCompletePage } from "./admin/features/account/PasswordChangeCompletePage";
@@ -269,7 +270,11 @@ import { StorageListPage } from "./admin/features/storage-management/StorageList
 import { StorageDetailPage } from "./admin/features/storage-management/StorageDetailPage";
 import { StorageFormPage } from "./admin/features/storage-management/StorageFormPage";
 import { StorageCompletePage } from "./admin/features/storage-management/StorageCompletePage";
-import { primaryNav as adminPrimaryNav, secondaryNav as adminSecondaryNav } from "./admin/navigation";
+import {
+  primaryNav as adminPrimaryNav,
+  secondaryNav as adminSecondaryNav,
+  flattenNavPaths,
+} from "./admin/navigation";
 import { AppLayout } from "./app/layout/AppLayout";
 import { LedgerListPage } from "./app/pages/LedgerListPage";
 import { AppLedgerDetailPage } from "./app/pages/AppLedgerDetailPage";
@@ -345,6 +350,8 @@ import { SubmitCompletePage as AppAdditiveSubmitCompletePage } from "./app/featu
 import { RecordDetailPage as AppAdditiveRecordDetailPage } from "./app/features/additive-management/RecordDetailPage";
 import { AdditiveManagementProviderOutlet as AppAdditiveManagementProviderOutlet } from "./app/features/additive-management/AdditiveManagementContext";
 import { ChemicalSelectionPage as AppChemicalSelectionPage } from "./app/features/chemical-management/ChemicalSelectionPage";
+import { ChemicalRecordsListPage as AppChemicalRecordsListPage } from "./app/features/chemical-management/ChemicalRecordsListPage";
+import { ChemicalRecordDetailPage as AppChemicalRecordDetailPage } from "./app/features/chemical-management/ChemicalRecordDetailPage";
 import { ChemicalRecordingPage as AppChemicalRecordingPage } from "./app/features/chemical-management/ChemicalRecordingPage";
 import { ChemicalConfirmPage as AppChemicalConfirmPage } from "./app/features/chemical-management/ChemicalConfirmPage";
 import { ChemicalSubmitCompletePage as AppChemicalSubmitCompletePage } from "./app/features/chemical-management/ChemicalSubmitCompletePage";
@@ -356,7 +363,7 @@ import { HomePage } from "./pages/HomePage";
 import { ComingSoonPage } from "./pages/ComingSoonPage";
 import { PageDescriptionButton } from "./components/PageDescriptionButton";
 
-const adminPlaceholderRoutes = [...adminPrimaryNav, ...adminSecondaryNav].filter(
+const adminPlaceholderRoutes = flattenNavPaths([...adminPrimaryNav, ...adminSecondaryNav]).filter(
   (item) =>
     item.path !== "/admin/home" &&
     item.path !== "/admin/ledger-management" &&
@@ -367,6 +374,7 @@ const adminPlaceholderRoutes = [...adminPrimaryNav, ...adminSecondaryNav].filter
     item.path !== "/admin/staff" &&
     item.path !== "/admin/logs" &&
     item.path !== "/admin/help" &&
+    item.path !== "/admin/guide/screens" &&
     item.path !== "/admin/devices" &&
     item.path !== "/admin/storage"
 );
@@ -1053,6 +1061,7 @@ function App() {
         <Route path="logs" element={<LogListPage />} />
         <Route path="help" element={<HelpPage />} />
         <Route path="help/:faqId" element={<HelpFaqDetailPage />} />
+        <Route path="guide/screens" element={<ScreenCanvasPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="account/password" element={<PasswordChangePage />} />
         <Route path="account/password/complete" element={<PasswordChangeCompletePage />} />
@@ -1088,6 +1097,11 @@ function App() {
         <Route path="ledger-list" element={<LedgerListPage />} />
         <Route element={<AppEquipmentInspectionProviderOutlet />}>
           <Route path="ledger-list/equipment-inspection" element={<AppEquipmentLineSelectionPage />} />
+          {/* 見送り時に「明日に見送る：いいえ」を選んだ翌日の状態（毎週の点検予定が無くなる） */}
+          <Route
+            path="ledger-list/equipment-inspection/next-day"
+            element={<AppEquipmentLineSelectionPage nextDay />}
+          />
           <Route path="ledger-list/equipment-inspection/lines/:lineId" element={<AppLineInspectionPage />} />
           <Route
             path="ledger-list/equipment-inspection/lines/:lineId/confirm"
@@ -1115,6 +1129,11 @@ function App() {
         </Route>
         <Route element={<AppCleaningRecordProviderOutlet />}>
           <Route path="ledger-list/cleaning-record" element={<AppCleaningLineSelectionPage />} />
+          {/* 見送り時に「明日に見送る：いいえ」を選んだ翌日の状態（毎週の清掃予定が無くなる） */}
+          <Route
+            path="ledger-list/cleaning-record/next-day"
+            element={<AppCleaningLineSelectionPage nextDay />}
+          />
           <Route
             path="ledger-list/cleaning-record/lines/:lineId"
             element={<AppCleaningRecordingPage />}
@@ -1291,7 +1310,15 @@ function App() {
           <Route path="ledger-list/chemical-management" element={<AppChemicalSelectionPage />} />
           <Route
             path="ledger-list/chemical-management/:chemicalId"
+            element={<AppChemicalRecordsListPage />}
+          />
+          <Route
+            path="ledger-list/chemical-management/:chemicalId/new"
             element={<AppChemicalRecordingPage />}
+          />
+          <Route
+            path="ledger-list/chemical-management/:chemicalId/records/:recordId"
+            element={<AppChemicalRecordDetailPage />}
           />
           <Route
             path="ledger-list/chemical-management/:chemicalId/confirm"

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { AppHeader } from "../../layout/AppHeader";
+import { SampleProductInfo } from "./SampleProductInfo";
 import { DISCARD_REASON_LABELS, SAMPLE_TYPE_LABELS, STORED_SAMPLES, type DiscardReason } from "./mockData";
 import trashIcon from "@images/Icon/trash.svg";
 import burnIcon from "@images/Icon/burn.svg";
+import iconCheckWhite from "../../../assets/figma/icons/common/checkmark-custom.svg";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -61,22 +64,13 @@ export function StoredSampleDetailPage() {
     <>
       <AppHeader title="検体管理" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col items-center gap-4">
-        <div className="flex flex-col gap-4 items-end w-full max-w-full max-w-[480px] mx-40">
-          <div className="bg-white flex gap-2 items-center p-4 rounded-lg w-full">
-            <div className="flex-1 flex flex-col gap-2 items-start min-w-0">
-              <div className="flex gap-2 items-center">
-                <span className="text-base text-[var(--semantic-text-secondary)]">製品名</span>
-                <span className="text-base text-[var(--semantic-text-primary)]">{sample.productName}</span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <span className="text-base text-[var(--semantic-text-secondary)]">賞味期限</span>
-                <span className="text-base text-[var(--semantic-text-primary)]">
-                  {sample.expiryDate.replaceAll("-", "/")}
-                </span>
-              </div>
-            </div>
-            {sample.destructionTarget && <DestructionLabel />}
-          </div>
+        <div className="flex flex-col gap-4 items-end w-full max-w-full">
+          <SampleProductInfo
+            productName={sample.productName}
+            expiryDate={sample.expiryDate}
+            lotNumber={sample.lotNumber}
+            trailing={sample.destructionTarget ? <DestructionLabel /> : null}
+          />
 
           <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
             <Row label="実施者" value={sample.inspectorName} />
@@ -96,7 +90,7 @@ export function StoredSampleDetailPage() {
             <div className="flex flex-col gap-2 items-start w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                {sample.remarks || "特記事項はありません"}
+                {sample.remarks}
               </p>
             </div>
           </div>
@@ -125,38 +119,22 @@ export function StoredSampleDetailPage() {
       {discardDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setDiscardDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px]">
             <div className="flex flex-col gap-6 items-center w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">検体破棄</h2>
 
-              <div className="bg-white flex gap-2 items-center p-4 rounded-lg w-full">
-                <div className="flex-1 flex flex-col gap-2 items-start min-w-0">
-                  <div className="flex gap-2 items-center">
-                    <span className="text-base text-[var(--semantic-text-secondary)]">製品名</span>
-                    <span className="text-base text-[var(--semantic-text-primary)]">
-                      {sample.productName}
-                    </span>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <span className="text-base text-[var(--semantic-text-secondary)]">賞味期限</span>
-                    <span className="text-base text-[var(--semantic-text-primary)]">
-                      {sample.expiryDate.replaceAll("-", "/")}
-                    </span>
-                  </div>
-                </div>
-                {sample.destructionTarget && <DestructionLabel />}
-              </div>
+              <SampleProductInfo
+                productName={sample.productName}
+                expiryDate={sample.expiryDate}
+                lotNumber={sample.lotNumber}
+                trailing={sample.destructionTarget ? <DestructionLabel /> : null}
+              />
 
               <div className="flex items-center justify-between w-full">
                 <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                   破棄日 <span className="text-[var(--semantic-brand-danger)]">※</span>
                 </p>
-                <input
-                  type="date"
-                  value={discardDate}
-                  onChange={(e) => setDiscardDate(e.target.value)}
-                  className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-                />
+                <DateFilterInput value={discardDate} onChange={setDiscardDate} />
               </div>
 
               <div className="flex flex-col gap-2 items-start w-full">
@@ -219,10 +197,10 @@ export function StoredSampleDetailPage() {
       {discardCompleteDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => handleCompleteClose()} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-full max-w-[480px]">
             <div className="flex flex-col gap-4 items-center w-full">
               <div className="w-16 h-16 rounded-full bg-[var(--semantic-status-success)] flex items-center justify-center">
-                <span className="text-white text-4xl">✓</span>
+                <img src={iconCheckWhite} alt="" aria-hidden="true" className="size-10" />
               </div>
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center">廃棄が完了しました</h2>
             </div>

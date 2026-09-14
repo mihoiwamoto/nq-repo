@@ -2,6 +2,14 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import iconXMark from "../../../assets/figma/icons/common/cancel-custom.svg";
 import iconCheck from "../../../assets/figma/icons/common/checkmark-custom.svg";
+import iconCheckGreen from "../../../assets/figma/icons/common/checkmark.svg";
+import iconCheckbox from "@images/Icon/ckeckbox.svg";
+import iconCheckboxOn from "@images/Icon/ckeckbox_on.svg";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { recordTimestamp, todayString } from "../../utils/date";
+import { stampValue } from "../../utils/recordTimestamps";
+import { fillRecordMap, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { AppHeader } from "../../layout/AppHeader";
 import { useInspection } from "./InspectionContext";
 import {
@@ -11,6 +19,7 @@ import {
   inspectionPoints,
   initialRecords,
   initialRemarks,
+  skippedRemarks,
   type ActionOption,
   type CauseOption,
   type InspectionItemRecord,
@@ -19,17 +28,17 @@ import {
 
 const INSPECTOR_NAME = "佐藤健一";
 
-type Tab = "start" | "end";
+/** 確認待ちの差し戻しから編集に来たときの戻り先（金属/X線探知機の差し戻し編集と同じ仕組み） */
+type EditReturn = { to: string; state?: unknown };
 
-function formatTimestamp(date: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(
-    date.getHours()
-  )}:${pad(date.getMinutes())}`;
-}
+type Tab = "start" | "end";
 
 function keyFor(location: string, item: string) {
   return `${location}|${item}`;
+}
+
+function orderedRecordKeys() {
+  return inspectionPoints.flatMap((point) => point.items.map((item) => keyFor(point.location, item)));
 }
 
 function isTabComplete(records: Record<string, InspectionItemRecord>) {
@@ -51,10 +60,10 @@ function PillButton({
     <button
       type="button"
       onClick={onClick}
-      className={`h-12 px-4 rounded-lg text-base ${
+      className={`h-[48px] w-[136px] shrink-0 flex items-center justify-center px-[12px] rounded-[8px] text-[16px] font-[600] leading-[1.25] text-center ${
         selected
-          ? "bg-white border border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
-          : "bg-white text-[var(--semantic-text-primary)]"
+          ? "bg-[var(--semantic-background-surface)] border border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
+          : "bg-[var(--semantic-background-surface)] text-[var(--semantic-text-primary)]"
       }`}
     >
       {children}
@@ -67,16 +76,43 @@ export function LineInspectionPage() {
   const { lines } = useInspection();
   const navigate = useNavigate();
   const location = useLocation();
-  const stateData = location.state as { inspectorName?: string; fromProgress?: boolean } | null;
+  const stateData = location.state as
+    | { inspectorName?: string; fromProgress?: boolean; editReturn?: EditReturn }
+    | null;
   const inspectorName = stateData?.inspectorName ?? INSPECTOR_NAME;
   const fromProgress = stateData?.fromProgress ?? false;
+  // 確認待ちの差し戻しから「点検内容を修正する」で来たときの戻り先。
+  // このときは提出フローではなく、編集を保存して元の詳細画面に戻すだけにする。
+  const editReturn = stateData?.editReturn;
+  const line = lines.find((l) => l.id === lineId);
+  // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
+  const progressFill = useProgressRecordFill();
+  const lineFill: RecordFill =
+    line?.status === "not_inspected" || line?.status === "skipped"
+      ? "none"
+      : line?.status === "in_progress"
+        ? "partial"
+        : "full";
+  // 差し戻しの編集は「提出済みの記録を直す」ので、記録は入り切った状態で開く
+  const fill = progressFill ?? (editReturn ? "full" : lineFill);
+  const hasStarted = fill !== "none";
+  // 見送りのラインは点検自体を行っていないので、記録は空・備考に見送り理由だけを表示する
+  const isSkipped = progressFill === null && line?.status === "skipped";
+
   const [tab, setTab] = useState<Tab>("start");
-  const [date, setDate] = useState("2025-04-01");
-  const [records, setRecords] = useState<Record<Tab, Record<string, InspectionItemRecord>>>({
-    start: initialRecords,
-    end: {},
-  });
-  const [remarks, setRemarks] = useState<Record<Tab, string>>({ start: initialRemarks, end: "" });
+  const [date, setDate] = useState(() => (hasStarted ? line?.inspectionDate || todayString() : todayString()));
+  // 点検が終わっている記録（点検済み・確認完了）は始業だけでなく終業も入り切っている状態にする。
+  // 終業の専用モックは無いので始業と同じ記録を流用する。
+  const isFinished = fill === "full" && !isSkipped;
+  const [records, setRecords] = useState<Record<Tab, Record<string, InspectionItemRecord>>>(() => ({
+    start: isSkipped ? {} : fillRecordMap(initialRecords, fill, orderedRecordKeys()),
+    end: isFinished ? fillRecordMap(initialRecords, fill, orderedRecordKeys()) : {},
+  }));
+  const [remarks, setRemarks] = useState<Record<Tab, string>>(() => ({
+    start: isSkipped ? skippedRemarks : hasStarted ? initialRemarks : "",
+    // 終業は備考なしの状態をそのまま見せる（空欄）
+    end: "",
+  }));
   const [skipDialogOpen, setSkipDialogOpen] = useState(false);
   const [skipReason, setSkipReason] = useState("");
   const [deferToTomorrow, setDeferToTomorrow] = useState<boolean | null>(null);
@@ -85,10 +121,14 @@ export function LineInspectionPage() {
   const [ngTarget, setNgTarget] = useState<{ location: string; item: string } | null>(null);
   const [ngStatus, setNgStatus] = useState<ItemStatus>("ng");
   const [ngCause, setNgCause] = useState<CauseOption | null>(null);
+  const [ngCauseDetail, setNgCauseDetail] = useState("");
   const [ngActionType, setNgActionType] = useState<ActionOption | null>(null);
   const [ngActionDetail, setNgActionDetail] = useState("");
 
-  const line = lines.find((l) => l.id === lineId);
+  // 原因 / 対応 それぞれで「その他」を選んだときだけ、その直下に記入欄を出す
+  const isOtherCause = ngCause === "その他";
+  const isOtherAction = ngActionType === "その他";
+
   const lineName = line?.name ?? "豆乳ライン";
   const isDaily = (line?.frequency ?? "daily") === "daily";
   const tabRecords = records[tab];
@@ -98,7 +138,12 @@ export function LineInspectionPage() {
     location: string,
     item: string,
     status: ItemStatus,
-    detail?: { cause: CauseOption; actionType: ActionOption; actionDetail: string }
+    detail?: {
+      cause: CauseOption;
+      causeDetail: string;
+      actionType: ActionOption;
+      actionDetail: string;
+    }
   ) {
     const key = keyFor(location, item);
     setRecords((prev) => ({
@@ -107,11 +152,13 @@ export function LineInspectionPage() {
         ...prev[tab],
         [key]: {
           cause: detail?.cause ?? null,
+          causeDetail: detail?.causeDetail ?? "",
           actionType: detail?.actionType ?? null,
           actionDetail: detail?.actionDetail ?? "",
           status,
-          timestamp: formatTimestamp(new Date()),
-          inspector: inspectorName,
+          // 状態を消して未記録に戻したときは入力時刻も消す（表示ごと消える）
+          timestamp: stampValue(status) ?? "",
+          inspector: status ? inspectorName : "",
         },
       },
     }));
@@ -127,6 +174,7 @@ export function LineInspectionPage() {
           ? {
               status: null,
               cause: null,
+              causeDetail: "",
               actionType: null,
               actionDetail: "",
               timestamp: "",
@@ -135,9 +183,10 @@ export function LineInspectionPage() {
           : {
               status: "ok",
               cause: null,
+              causeDetail: "",
               actionType: null,
               actionDetail: "",
-              timestamp: formatTimestamp(new Date()),
+              timestamp: recordTimestamp(),
               inspector: inspectorName,
             };
       }
@@ -150,6 +199,7 @@ export function LineInspectionPage() {
     setNgTarget({ location, item });
     setNgStatus("ng");
     setNgCause(existing?.cause ?? null);
+    setNgCauseDetail(existing?.causeDetail ?? "");
     setNgActionType(existing?.actionType ?? null);
     setNgActionDetail(existing?.actionDetail ?? "");
   }
@@ -164,8 +214,9 @@ export function LineInspectionPage() {
       if (!ngCause || !ngActionType) return;
       setStatus(ngTarget.location, ngTarget.item, "ng", {
         cause: ngCause,
+        causeDetail: isOtherCause ? ngCauseDetail : "",
         actionType: ngActionType,
-        actionDetail: ngActionDetail,
+        actionDetail: isOtherAction ? ngActionDetail : "",
       });
     } else {
       setStatus(ngTarget.location, ngTarget.item, "ok");
@@ -237,19 +288,14 @@ export function LineInspectionPage() {
             <p className="text-[18px] text-[var(--semantic-text-primary)] flex items-center gap-[4px] font-[600]">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-[var(--semantic-background-surface,white)] h-[48px] px-[16px] rounded-lg text-[16px] text-[var(--semantic-text-primary)] font-[600] w-[200px] appearance-none cursor-pointer"
-            />
+            <DateFilterInput value={date} onChange={setDate} />
           </div>
 
           <div className="bg-white flex flex-col gap-[4px] items-start px-[16px] py-[8px] rounded-lg w-full">
             <p className="text-[16px] text-[var(--semantic-text-primary)] font-[600]">【確認項目】</p>
             {confirmationItems.map((text) => (
               <div key={text} className="flex gap-[4px] items-center w-full">
-                <img src={iconCheck} alt="確認項目" className="size-[16px] shrink-0" />
+                <img src={iconCheckGreen} alt="確認項目" className="size-[16px] shrink-0" />
                 <p className="text-[14px] text-[var(--semantic-text-primary)] font-[300]">{text}</p>
               </div>
             ))}
@@ -269,17 +315,19 @@ export function LineInspectionPage() {
                     <button
                       type="button"
                       onClick={() => toggleAllOk(point.location, point.items)}
-                      className="bg-white border border-[#d0d0d0] h-[48px] w-[160px] rounded-lg flex items-center justify-center gap-[4px] text-[16px] text-[var(--semantic-text-primary)] font-[600]"
+                      aria-pressed={allOk}
+                      className={`bg-white h-[48px] w-[160px] rounded-lg flex items-center justify-center gap-[4px] text-[16px] text-[var(--semantic-text-primary)] font-[600] border transition-all duration-200 ${
+                        allOk
+                          ? "all-ok-glow"
+                          : "border-[#d0d0d0]"
+                      }`}
                     >
-                      <span
-                        className={
-                          allOk
-                            ? "text-[var(--semantic-brand-primary)]"
-                            : "text-[var(--semantic-text-secondary)]"
-                        }
-                      >
-                        {allOk ? "☑" : "☐"}
-                      </span>
+                      <img
+                        src={allOk ? iconCheckboxOn : iconCheckbox}
+                        alt=""
+                        aria-hidden="true"
+                        className="size-[24px] shrink-0"
+                      />
                       全て異常なし
                     </button>
                   </div>
@@ -298,25 +346,34 @@ export function LineInspectionPage() {
                                 className={`h-[48px] w-[80px] flex items-center justify-center text-white text-[24px] ${
                                   status === "ng" ? "bg-[#f85c5c]" : "bg-[#d0d0d0]"
                                 }`}
+                                aria-label="異常あり"
                               >
-                                ✕
+                                <img src={iconXMark} alt="" aria-hidden="true" className="size-5" />
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setStatus(point.location, item, "ok")}
+                                aria-label="異常なし"
                                 className={`h-[48px] w-[80px] flex items-center justify-center text-white text-[24px] ${
                                   status === "ok" ? "bg-[#19c95f]" : "bg-[#d0d0d0]"
                                 }`}
                               >
-                                ✓
+                                <img src={iconCheck} alt="" aria-hidden="true" className="size-5" />
                               </button>
                             </div>
                           </div>
                           {status === "ng" && (record?.cause || record?.actionType) && (
                             <div className="flex flex-col gap-[8px] items-start px-[8px] w-full">
-                              <div className="flex items-start gap-[4px] w-full">
-                                <p className="text-[16px] text-[var(--semantic-text-secondary)] font-[600] whitespace-nowrap">原因：</p>
-                                <p className="text-[16px] text-[var(--semantic-text-secondary)] font-[600]">{record?.cause}</p>
+                              <div className="flex flex-col items-start gap-[4px] w-full">
+                                <div className="flex items-start gap-[4px] w-full">
+                                  <p className="text-[16px] text-[var(--semantic-text-secondary)] font-[600] whitespace-nowrap">原因：</p>
+                                  <p className="text-[16px] text-[var(--semantic-text-secondary)] font-[600]">{record?.cause}</p>
+                                </div>
+                                {record?.causeDetail && (
+                                  <p className="text-[16px] text-[var(--semantic-text-secondary)] font-[500]">
+                                    {record.causeDetail}
+                                  </p>
+                                )}
                               </div>
                               <div className="flex flex-col items-start gap-[4px] w-full">
                                 <p className="text-[16px] text-[var(--semantic-text-secondary)] font-[600]">対応：{record?.actionType}</p>
@@ -328,11 +385,10 @@ export function LineInspectionPage() {
                               </div>
                             </div>
                           )}
-                          {record?.timestamp && (
-                            <p className="text-[14px] text-[var(--semantic-text-secondary)] text-right w-full">
-                              {record.inspector} {record.timestamp}
-                            </p>
-                          )}
+                          <RecordTimestamp
+                            inspector={record?.inspector}
+                            timestamp={record?.timestamp}
+                          />
                         </div>
                       );
                     })}
@@ -359,6 +415,30 @@ export function LineInspectionPage() {
           </div>
         </div>
 
+        {editReturn ? (
+          /* 差し戻しの編集モード。提出はせず、「編集を保存」で確認待ち詳細の元のステップに戻る */
+          <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-[24px] py-[16px] flex items-center justify-center gap-[24px]">
+            <button
+              type="button"
+              onClick={() => navigate(editReturn.to, { state: editReturn.state })}
+              className="bg-white border border-[#333] h-[64px] w-[240px] rounded-lg text-[20px] text-[var(--semantic-text-primary)] px-[16px] font-[600]"
+            >
+              戻る
+            </button>
+            <button
+              type="button"
+              disabled={!bothTabsComplete}
+              onClick={() => navigate(editReturn.to, { state: editReturn.state })}
+              className={`h-[64px] w-[240px] rounded-lg text-[20px] px-[16px] font-[600] ${
+                bothTabsComplete
+                  ? "bg-[var(--semantic-brand-primary)] text-white"
+                  : "bg-[#d0d0d0] text-white"
+              }`}
+            >
+              編集を保存
+            </button>
+          </div>
+        ) : (
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-[24px] py-[16px] flex items-center justify-between">
           <button
             type="button"
@@ -389,89 +469,117 @@ export function LineInspectionPage() {
             </button>
           </div>
         </div>
+        )}
       </div>
 
       {ngTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeNgDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full max-w-[1000px] mx-40 max-h-[90vh] overflow-y-auto overflow-x-hidden mx-16">
-            <div className="flex flex-col gap-6 items-start w-full">
-              <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-[8px] flex flex-col gap-[40px] items-center px-[24px] py-[40px] w-full max-w-[640px] mx-[16px] max-h-[90vh] overflow-y-auto overflow-x-hidden">
+            <div className="flex flex-col gap-[24px] items-center w-full">
+              <h2 className="text-[24px] leading-[1.4] font-[600] text-[var(--semantic-text-primary)] text-center w-full">
                 点検箇所
               </h2>
-              <div className="flex items-center justify-between w-full gap-4">
-                <p className="text-xl text-[var(--semantic-text-primary)] flex items-center gap-1">
-                  {ngTarget.item} <span className="text-[var(--semantic-brand-danger)]">※</span>
-                </p>
-                <div className="flex items-center rounded-lg overflow-hidden shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setNgStatus("ng")}
-                    className={`h-12 w-20 flex items-center justify-center text-white ${
-                      ngStatus === "ng" ? "bg-[#f85c5c]" : "bg-[#d0d0d0]"
-                    }`}
-                  >
-                    <img src={iconXMark} alt="異常あり" className="size-5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setNgStatus("ok")}
-                    className={`h-12 w-20 flex items-center justify-center text-white ${
-                      ngStatus === "ok" ? "bg-[#19c95f]" : "bg-[#d0d0d0]"
-                    }`}
-                  >
-                    <img src={iconCheck} alt="正常" className="size-5" />
-                  </button>
+              <div className="flex flex-col gap-[24px] items-start w-full">
+                <div className="flex items-center gap-[16px] w-full">
+                  <p className="flex-1 min-w-0 flex items-center gap-[4px] text-[20px] leading-[1.4] font-[600] text-[var(--semantic-text-primary)]">
+                    {ngTarget.item}{" "}
+                    <span className="text-[18px] leading-none text-[var(--semantic-brand-danger)]">
+                      ※
+                    </span>
+                  </p>
+                  <div className="flex items-center shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setNgStatus("ng")}
+                      aria-label="異常あり"
+                      className={`h-[48px] w-[80px] flex items-center justify-center rounded-l-[8px] ${
+                        ngStatus === "ng"
+                          ? "bg-[var(--semantic-status-error)]"
+                          : "bg-[#d0d0d0]"
+                      }`}
+                    >
+                      <img src={iconXMark} alt="" aria-hidden="true" className="size-[24px]" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNgStatus("ok")}
+                      aria-label="異常なし"
+                      className={`h-[48px] w-[80px] flex items-center justify-center rounded-r-[8px] ${
+                        ngStatus === "ok" ? "bg-[#19c95f]" : "bg-[#d0d0d0]"
+                      }`}
+                    >
+                      <img src={iconCheck} alt="" aria-hidden="true" className="size-[24px]" />
+                    </button>
+                  </div>
                 </div>
+                {ngStatus === "ng" && (
+                  <>
+                    <div className="flex flex-col gap-[8px] items-start w-full">
+                      <p className="flex items-center gap-[4px] text-[18px] leading-none font-[600] text-[var(--semantic-text-primary)]">
+                        原因 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                      </p>
+                      <div className="flex flex-wrap gap-[16px] w-full">
+                        {CAUSE_OPTIONS.map((option) => (
+                          <PillButton
+                            key={option}
+                            selected={ngCause === option}
+                            onClick={() => setNgCause(option)}
+                          >
+                            {option}
+                          </PillButton>
+                        ))}
+                      </div>
+                      {isOtherCause && (
+                        <textarea
+                          value={ngCauseDetail}
+                          onChange={(e) => setNgCauseDetail(e.target.value)}
+                          placeholder="原因を記入してください。"
+                          className="bg-[var(--semantic-background-surface)] h-[82px] p-[8px] rounded-[8px] text-[14px] leading-[1.6] text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
+                        />
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-[8px] items-start w-full">
+                      <p className="flex items-center gap-[4px] text-[18px] leading-none font-[600] text-[var(--semantic-text-primary)]">
+                        対応 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                      </p>
+                      <div className="flex flex-wrap gap-[16px] w-full">
+                        {ACTION_OPTIONS.map((option) => (
+                          <PillButton
+                            key={option}
+                            selected={ngActionType === option}
+                            onClick={() => setNgActionType(option)}
+                          >
+                            {option === "修理（外部委託）" ? (
+                              <>
+                                修理
+                                <br />
+                                （外部委託）
+                              </>
+                            ) : (
+                              option
+                            )}
+                          </PillButton>
+                        ))}
+                      </div>
+                      {isOtherAction && (
+                        <textarea
+                          value={ngActionDetail}
+                          onChange={(e) => setNgActionDetail(e.target.value)}
+                          placeholder="対応を記入してください。"
+                          className="bg-[var(--semantic-background-surface)] h-[82px] p-[8px] rounded-[8px] text-[14px] leading-[1.6] text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-              {ngStatus === "ng" && (
-                <>
-                  <div className="flex flex-col gap-2 items-start w-full">
-                    <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-                      原因 <span className="text-[var(--semantic-brand-danger)]">※</span>
-                    </p>
-                    <div className="flex flex-wrap gap-4 w-full">
-                      {CAUSE_OPTIONS.map((option) => (
-                        <PillButton
-                          key={option}
-                          selected={ngCause === option}
-                          onClick={() => setNgCause(option)}
-                        >
-                          {option}
-                        </PillButton>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2 items-start w-full">
-                    <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-                      対応 <span className="text-[var(--semantic-brand-danger)]">※</span>
-                    </p>
-                    <div className="flex flex-wrap gap-4 w-full">
-                      {ACTION_OPTIONS.map((option) => (
-                        <PillButton
-                          key={option}
-                          selected={ngActionType === option}
-                          onClick={() => setNgActionType(option)}
-                        >
-                          {option}
-                        </PillButton>
-                      ))}
-                    </div>
-                    <textarea
-                      value={ngActionDetail}
-                      onChange={(e) => setNgActionDetail(e.target.value)}
-                      placeholder="対応を記入してください。"
-                      className="bg-white min-h-20 p-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
-                    />
-                  </div>
-                </>
-              )}
             </div>
-            <div className="flex gap-6 items-center justify-center w-full">
+            <div className="flex gap-[40px] items-center justify-center w-full">
               <button
                 type="button"
                 onClick={closeNgDialog}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+                className="bg-[var(--semantic-background-surface)] border border-[var(--semantic-text-primary)] h-[64px] w-[240px] rounded-[8px] text-[20px] leading-none font-[600] text-[var(--semantic-text-primary)]"
               >
                 キャンセル
               </button>
@@ -479,7 +587,7 @@ export function LineInspectionPage() {
                 type="button"
                 disabled={ngStatus === "ng" && (!ngCause || !ngActionType)}
                 onClick={confirmNgDialog}
-                className={`h-16 w-60 rounded-lg text-xl text-white ${
+                className={`h-[64px] w-[240px] rounded-[8px] text-[20px] leading-none font-[600] text-white ${
                   ngStatus === "ok" || (ngCause && ngActionType)
                     ? "bg-[var(--semantic-brand-primary)]"
                     : "bg-[#d0d0d0]"
@@ -495,12 +603,12 @@ export function LineInspectionPage() {
       {saveDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSaveDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 途中保存しました
               </h2>
-              <p className="text-base text-[var(--semantic-text-primary)]">
+              <p className="text-base text-[var(--semantic-text-primary)] whitespace-nowrap">
                 入力内容を途中保存しました。続きは後から入力できます。
               </p>
             </div>
@@ -518,7 +626,7 @@ export function LineInspectionPage() {
       {skipDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeSkipDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 点検を見送りますか？

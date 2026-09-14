@@ -39,7 +39,7 @@ export function LedgerListPage() {
     <>
       <AppHeader title="帳票一覧" />
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="flex flex-wrap content-start items-start gap-x-8 gap-y-6">
+        <div className="grid grid-cols-4 justify-items-start content-start items-start gap-x-8 gap-y-6">
           {ledgerCategories.map((category) =>
             ACTOR_PICKER_SLUGS.includes(category.slug) ? (
               <button

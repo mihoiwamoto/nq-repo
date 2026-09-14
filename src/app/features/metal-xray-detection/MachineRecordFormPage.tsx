@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { recordTimestamp } from "../../utils/date";
+import { isUnrecorded } from "../../utils/recordTimestamps";
 import { AppHeader } from "../../layout/AppHeader";
 import { AnomalyDialog } from "./AnomalyDialog";
+import { PulldownSelect } from "../../components/PulldownSelect";
 import { ProductSelectionDialog } from "./ProductSelectionDialog";
 import iconXMark from "../../../assets/figma/icons/common/cancel.svg";
 import iconCheck from "../../../assets/figma/icons/common/checkmark.svg";
-import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
 import {
   ABNORMAL_ACTIONS,
   ABNORMAL_CAUSES,
@@ -27,18 +29,19 @@ import {
   type ExecutionPhase,
   type TestPieceRow,
 } from "./mockData";
+import iconCancelDark from "@images/Icon/cancel.svg";
 
 function currentTimeString(inspectorName?: string) {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const year = now.getFullYear();
-  const month = pad(now.getMonth() + 1);
-  const day = pad(now.getDate());
-  const hours = pad(now.getHours());
-  const minutes = pad(now.getMinutes());
-  const timeString = `${year}/${month}/${day} ${hours}:${minutes}`;
   const name = inspectorName || "山田太郎";
-  return `${name} ${timeString}`;
+  return `${name} ${recordTimestamp()}`;
+}
+
+/**
+ * 「実施者 + 入力時刻」の文字列。
+ * 入力を消して未記録に戻したときは空文字を返し、時刻表示ごと消す。
+ */
+function timeStringFor(value: unknown, inspectorName?: string) {
+  return isUnrecorded(value) ? "" : currentTimeString(inspectorName);
 }
 
 function currentTimeOnly() {
@@ -92,51 +95,7 @@ function OkNgToggle({ value, onChange, onNgClick, inspectorName, inspectionDate,
           <img src={iconCheck} alt="正常" className="size-5 brightness-0 invert" />
         </button>
       </div>
-      {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)]">{timestamp}</p>}
-    </div>
-  );
-}
-
-function PulldownSelect({
-  value,
-  onChange,
-  options,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="relative shrink-0">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="bg-white flex gap-2 h-12 items-center px-4 rounded-lg shrink-0 w-60 text-base text-[var(--semantic-text-primary)]"
-      >
-        <span className="flex-1 text-left truncate">{value}</span>
-        <img src={iconArrowDown} alt="" className="size-4 shrink-0" />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full bg-white rounded-lg shadow-[0px_0px_3px_rgba(51,51,51,0.24)] p-2 z-50 w-60">
-            {options.map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => {
-                  onChange(option);
-                  setOpen(false);
-                }}
-                className="w-full text-left px-2 h-[42px] rounded-lg text-base text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      {timestamp && <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{timestamp}</p>}
     </div>
   );
 }
@@ -281,14 +240,14 @@ function DetectorGroup({
               value={time}
               onChange={(v) => {
                 onTimeChange(v);
-                onTimeTimestampChange(currentTimeString(inspectorName));
+                onTimeTimestampChange(timeStringFor(v, inspectorName));
               }}
             />
           </div>
         </div>
         {timeTimestamp && (
           <div className="flex items-center justify-end w-full">
-            <p className="text-sm text-[var(--semantic-text-secondary)]">{timeTimestamp}</p>
+            <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{timeTimestamp}</p>
           </div>
         )}
         <div className="border-t border-[#d0d0d0] w-full" />
@@ -322,7 +281,7 @@ function DetectorGroup({
                     </div>
                     {checkTimestamps[item.key] && (
                       <div className="flex items-center justify-end w-full">
-                        <p className="text-sm text-[var(--semantic-text-secondary)]">{checkTimestamps[item.key]}</p>
+                        <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{checkTimestamps[item.key]}</p>
                       </div>
                     )}
                   </>
@@ -414,14 +373,14 @@ function TestPieceDetectorGroup({
               value={time}
               onChange={(v) => {
                 onTimeChange(v);
-                onTimeTimestampChange(currentTimeString(inspectorName));
+                onTimeTimestampChange(timeStringFor(v, inspectorName));
               }}
             />
           </div>
         </div>
         {timeTimestamp && (
           <div className="flex items-center justify-end w-full">
-            <p className="text-sm text-[var(--semantic-text-secondary)]">{timeTimestamp}</p>
+            <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{timeTimestamp}</p>
           </div>
         )}
         <div className="border-t border-[#d0d0d0] w-full" />
@@ -435,7 +394,7 @@ function TestPieceDetectorGroup({
             value={settingNumber}
             onChange={(e) => {
               onSettingNumberChange(e.target.value);
-              onSettingNumberTimestampChange(currentTimeString(inspectorName));
+              onSettingNumberTimestampChange(timeStringFor(e.target.value, inspectorName));
             }}
             placeholder="例：1"
             className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -443,7 +402,7 @@ function TestPieceDetectorGroup({
         </div>
         {settingNumberTimestamp && (
           <div className="flex items-center justify-end w-full">
-            <p className="text-sm text-[var(--semantic-text-secondary)]">{settingNumberTimestamp}</p>
+            <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{settingNumberTimestamp}</p>
           </div>
         )}
         <div className="border-t border-[#d0d0d0] w-full" />
@@ -459,7 +418,7 @@ function TestPieceDetectorGroup({
                 value={values[piece.key] ?? ""}
                 onChange={(e) => {
                   onValueChange(piece.key, e.target.value);
-                  onValueTimestampChange(piece.key, currentTimeString(inspectorName));
+                  onValueTimestampChange(piece.key, timeStringFor(e.target.value, inspectorName));
                 }}
                 placeholder={`例：${piece.example}`}
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -467,7 +426,7 @@ function TestPieceDetectorGroup({
             </div>
             {valueTimestamps[piece.key] && (
               <div className="flex items-center justify-end w-full">
-                <p className="text-sm text-[var(--semantic-text-secondary)]">{valueTimestamps[piece.key]}</p>
+                <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{valueTimestamps[piece.key]}</p>
               </div>
             )}
             <div className="flex items-center justify-between w-full">
@@ -591,13 +550,10 @@ export function MachineRecordFormPage() {
     type: "pass",
   });
 
-  const [isInspectionIssueOpen, setIsInspectionIssueOpen] = useState(false);
-  const [productToRemove, setProductToRemove] = useState<{ type: "pass" | "abnormal" | "test-piece"; index: number } | null>(null);
-
   if (!machine) return null;
 
   useEffect(() => {
-    if (isInspectionIssueOpen || anomalyDialog?.isOpen) {
+    if (anomalyDialog?.isOpen) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.documentElement.style.overflow = "hidden";
       document.documentElement.style.paddingRight = `${scrollbarWidth}px`;
@@ -609,7 +565,7 @@ export function MachineRecordFormPage() {
       document.documentElement.style.overflow = "";
       document.documentElement.style.paddingRight = "";
     };
-  }, [isInspectionIssueOpen, anomalyDialog?.isOpen]);
+  }, [anomalyDialog?.isOpen]);
 
   useEffect(() => {
     if (state?.fromProgress) {
@@ -704,7 +660,7 @@ export function MachineRecordFormPage() {
       <>
         <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-5 items-center">
-          <div className="flex flex-col gap-5 items-start w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex flex-col gap-5 items-start w-full max-w-full">
             <div className="bg-white flex flex-col gap-3 items-start p-4 rounded-lg w-full">
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">点検内容</p>
@@ -735,7 +691,7 @@ export function MachineRecordFormPage() {
               </div>
               {passExecutionPhaseTimestamp && (
                 <div className="flex items-center justify-end w-full">
-                  <p className="text-sm text-[var(--semantic-text-secondary)]">
+                  <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">
                     {inspectorName && `${inspectorName} `}{passExecutionPhaseTimestamp}
                   </p>
                 </div>
@@ -774,16 +730,11 @@ export function MachineRecordFormPage() {
                       />
                       <button
                         type="button"
-                        onClick={() => {
-                          console.log("=== DELETE PASS PRODUCT ===");
-                          console.log("Delete button clicked, index:", index);
-                          setProductToRemove({ type: "pass", index });
-                          setIsInspectionIssueOpen(true);
-                          console.log("Dialog should open now");
-                        }}
+                        onClick={() => setPassProducts((prev) => prev.filter((_, i) => i !== index))}
                         className="text-[var(--semantic-text-secondary)] text-xl px-2"
+                        aria-label="削除"
                       >
-                        ✕
+                        <img src={iconCancelDark} alt="" aria-hidden="true" className="size-5" />
                       </button>
                     </div>
                   ))}
@@ -800,7 +751,7 @@ export function MachineRecordFormPage() {
                     value={passQuantity}
                     onChange={(e) => {
                       setPassQuantity(e.target.value);
-                      setPassedQuantityTimestamp(currentTimeString(inspectorName));
+                      setPassedQuantityTimestamp(timeStringFor(e.target.value, inspectorName));
                     }}
                     placeholder="例：100"
                     className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -808,7 +759,7 @@ export function MachineRecordFormPage() {
                 </div>
                 {passedQuantityTimestamp && (
                   <div className="flex items-center justify-end w-full">
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">{passedQuantityTimestamp}</p>
+                    <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{passedQuantityTimestamp}</p>
                   </div>
                 )}
               </>
@@ -845,14 +796,14 @@ export function MachineRecordFormPage() {
                       value={weightCheckerTime}
                       onChange={(v) => {
                         setWeightCheckerTime(v);
-                        setWeightCheckerTimestamp(currentTimeString(inspectorName));
+                        setWeightCheckerTimestamp(timeStringFor(v, inspectorName));
                       }}
                     />
                   </div>
                 </div>
                 {weightCheckerTimestamp && (
                   <div className="flex items-center justify-end w-full">
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">{weightCheckerTimestamp}</p>
+                    <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{weightCheckerTimestamp}</p>
                   </div>
                 )}
                 <div className="border-t border-[#d0d0d0] w-full" />
@@ -866,7 +817,7 @@ export function MachineRecordFormPage() {
                     value={weightLowerLimit}
                     onChange={(e) => {
                       setWeightLowerLimit(e.target.value);
-                      setWeightLowerLimitTimestamp(currentTimeString(inspectorName));
+                      setWeightLowerLimitTimestamp(timeStringFor(e.target.value, inspectorName));
                     }}
                     placeholder="例：100"
                     className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -874,7 +825,7 @@ export function MachineRecordFormPage() {
                 </div>
                 {weightLowerLimitTimestamp && (
                   <div className="flex items-center justify-end w-full">
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">{weightLowerLimitTimestamp}</p>
+                    <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{weightLowerLimitTimestamp}</p>
                   </div>
                 )}
 
@@ -907,7 +858,7 @@ export function MachineRecordFormPage() {
                       )}
                       {weightCalibrationCheck === "ng" && weightCalibrationTimestamp && (
                         <div className="flex items-center justify-end w-full">
-                          <p className="text-sm text-[var(--semantic-text-secondary)]">{weightCalibrationTimestamp}</p>
+                          <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{weightCalibrationTimestamp}</p>
                         </div>
                       )}
                       <div className="flex items-center justify-between w-full">
@@ -935,7 +886,7 @@ export function MachineRecordFormPage() {
                       )}
                       {weightPackageMatchCheck === "ng" && weightPackageMatchTimestamp && (
                         <div className="flex items-center justify-end w-full">
-                          <p className="text-sm text-[var(--semantic-text-secondary)]">{weightPackageMatchTimestamp}</p>
+                          <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{weightPackageMatchTimestamp}</p>
                         </div>
                       )}
                     </div>
@@ -969,14 +920,14 @@ export function MachineRecordFormPage() {
                       value={sealingTime}
                       onChange={(v) => {
                         setSealingTime(v);
-                        setSealingTimeTimestamp(currentTimeString(inspectorName));
+                        setSealingTimeTimestamp(timeStringFor(v, inspectorName));
                       }}
                     />
                   </div>
                 </div>
                 {sealingTimeTimestamp && (
                   <div className="flex items-center justify-end w-full">
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">{sealingTimeTimestamp}</p>
+                    <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{sealingTimeTimestamp}</p>
                   </div>
                 )}
                 <div className="border-t border-[#d0d0d0] w-full" />
@@ -1003,7 +954,7 @@ export function MachineRecordFormPage() {
                 )}
                 {sealingCheck === "ng" && sealingTimestamp && (
                   <div className="flex items-center justify-end w-full">
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">{sealingTimestamp}</p>
+                    <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{sealingTimestamp}</p>
                   </div>
                 )}
               </div>
@@ -1128,7 +1079,7 @@ export function MachineRecordFormPage() {
       <>
         <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-5 items-center">
-          <div className="flex flex-col gap-5 items-start w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex flex-col gap-5 items-start w-full max-w-full">
             <div className="bg-white flex flex-col gap-3 items-start p-4 rounded-lg w-full">
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">点検内容</p>
@@ -1188,13 +1139,11 @@ export function MachineRecordFormPage() {
                       />
                       <button
                         type="button"
-                        onClick={() => {
-                          setProductToRemove({ type: "test-piece", index });
-                          setIsInspectionIssueOpen(true);
-                        }}
+                        onClick={() => setPassedProducts((prev) => prev.filter((_, i) => i !== index))}
                         className="text-[var(--semantic-text-secondary)] text-xl px-2"
+                        aria-label="削除"
                       >
-                        ✕
+                        <img src={iconCancelDark} alt="" aria-hidden="true" className="size-5" />
                       </button>
                     </div>
                   ))}
@@ -1265,7 +1214,7 @@ export function MachineRecordFormPage() {
                     value={passedQuantity}
                     onChange={(e) => {
                       setPassedQuantity(e.target.value);
-                      setPassedQuantityTimestamp(currentTimeString(inspectorName));
+                      setPassedQuantityTimestamp(timeStringFor(e.target.value, inspectorName));
                     }}
                     placeholder="例：100"
                     className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[160px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -1273,7 +1222,7 @@ export function MachineRecordFormPage() {
                 </div>
                 {passedQuantityTimestamp && (
                   <div className="flex items-center justify-end w-full">
-                    <p className="text-sm text-[var(--semantic-text-secondary)]">{passedQuantityTimestamp}</p>
+                    <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{passedQuantityTimestamp}</p>
                   </div>
                 )}
               </>
@@ -1422,7 +1371,7 @@ export function MachineRecordFormPage() {
       <>
         <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-5 items-center">
-          <div className="flex flex-col gap-5 items-start w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex flex-col gap-5 items-start w-full max-w-full">
             <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">点検内容</p>
               <p className="text-base text-[var(--semantic-text-primary)]">{content}</p>
@@ -1437,7 +1386,7 @@ export function MachineRecordFormPage() {
                 value={abnormalTime}
                 onChange={(e) => {
                   setAbnormalTime(e.target.value);
-                  setAbnormalTimeTimestamp(currentTimeString(inspectorName));
+                  setAbnormalTimeTimestamp(timeStringFor(e.target.value, inspectorName));
                 }}
                 placeholder="例：10:30"
                 className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -1445,7 +1394,7 @@ export function MachineRecordFormPage() {
             </div>
             {abnormalTimeTimestamp && (
               <div className="flex items-center justify-end w-full">
-                <p className="text-sm text-[var(--semantic-text-secondary)]">{abnormalTimeTimestamp}</p>
+                <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{abnormalTimeTimestamp}</p>
               </div>
             )}
             <div className="border-t border-[#d0d0d0] w-full" />
@@ -1484,13 +1433,11 @@ export function MachineRecordFormPage() {
                       />
                       <button
                         type="button"
-                        onClick={() => {
-                          setProductToRemove({ type: "abnormal", index });
-                          setIsInspectionIssueOpen(true);
-                        }}
+                        onClick={() => setAbnormalProducts((prev) => prev.filter((_, i) => i !== index))}
                         className="text-[var(--semantic-text-secondary)] text-xl px-2"
+                        aria-label="削除"
                       >
-                        ✕
+                        <img src={iconCancelDark} alt="" aria-hidden="true" className="size-5" />
                       </button>
                     </div>
                   ))}
@@ -1508,7 +1455,7 @@ export function MachineRecordFormPage() {
                 value={abnormalPassedQuantity}
                 onChange={(e) => {
                   setAbnormalPassedQuantity(e.target.value);
-                  setAbnormalPassedQuantityTimestamp(currentTimeString(inspectorName));
+                  setAbnormalPassedQuantityTimestamp(timeStringFor(e.target.value, inspectorName));
                 }}
                 placeholder="例：100"
                 className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -1516,7 +1463,7 @@ export function MachineRecordFormPage() {
             </div>
             {abnormalPassedQuantityTimestamp && (
               <div className="flex items-center justify-end w-full">
-                <p className="text-sm text-[var(--semantic-text-secondary)]">{abnormalPassedQuantityTimestamp}</p>
+                <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{abnormalPassedQuantityTimestamp}</p>
               </div>
             )}
             <div className="border-t border-[#d0d0d0] w-full" />
@@ -1530,7 +1477,7 @@ export function MachineRecordFormPage() {
                 value={abnormalQuantity}
                 onChange={(e) => {
                   setAbnormalQuantity(e.target.value);
-                  setAbnormalQuantityTimestamp(currentTimeString(inspectorName));
+                  setAbnormalQuantityTimestamp(timeStringFor(e.target.value, inspectorName));
                 }}
                 placeholder="例：1"
                 className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
@@ -1538,7 +1485,7 @@ export function MachineRecordFormPage() {
             </div>
             {abnormalQuantityTimestamp && (
               <div className="flex items-center justify-end w-full">
-                <p className="text-sm text-[var(--semantic-text-secondary)]">{abnormalQuantityTimestamp}</p>
+                <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{abnormalQuantityTimestamp}</p>
               </div>
             )}
             <div className="border-t border-[#d0d0d0] w-full" />
@@ -1567,14 +1514,14 @@ export function MachineRecordFormPage() {
                 value={abnormalCauseNote}
                 onChange={(e) => {
                   setAbnormalCauseNote(e.target.value);
-                  setAbnormalCauseNoteTimestamp(currentTimeString(inspectorName));
+                  setAbnormalCauseNoteTimestamp(timeStringFor(e.target.value, inspectorName));
                 }}
                 placeholder="原因を記入してください。"
                 className="bg-white min-h-20 p-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
               />
               {abnormalCauseNoteTimestamp && (
                 <div className="flex items-center justify-end w-full">
-                  <p className="text-sm text-[var(--semantic-text-secondary)]">{abnormalCauseNoteTimestamp}</p>
+                  <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{abnormalCauseNoteTimestamp}</p>
                 </div>
               )}
             </div>
@@ -1604,14 +1551,14 @@ export function MachineRecordFormPage() {
                 value={abnormalActionNote}
                 onChange={(e) => {
                   setAbnormalActionNote(e.target.value);
-                  setAbnormalActionNoteTimestamp(currentTimeString(inspectorName));
+                  setAbnormalActionNoteTimestamp(timeStringFor(e.target.value, inspectorName));
                 }}
                 placeholder="対応を記入してください。"
                 className="bg-white min-h-20 p-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
               />
               {abnormalActionNoteTimestamp && (
                 <div className="flex items-center justify-end w-full">
-                  <p className="text-sm text-[var(--semantic-text-secondary)]">{abnormalActionNoteTimestamp}</p>
+                  <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">{abnormalActionNoteTimestamp}</p>
                 </div>
               )}
             </div>
@@ -1691,7 +1638,7 @@ export function MachineRecordFormPage() {
     <>
       <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-5 items-center">
-        <div className="flex flex-col gap-5 items-start w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex flex-col gap-5 items-start w-full max-w-full">
           <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">点検内容</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{content}</p>
@@ -1876,104 +1823,6 @@ export function MachineRecordFormPage() {
             setAnomalyDialog(null);
           }}
         />
-      )}
-
-      {console.log("=== DIALOG STATE ===", { isInspectionIssueOpen })}
-      {isInspectionIssueOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
-          <div className="bg-[#F1EFEA] rounded-lg w-[640px] flex flex-col gap-0 shadow-lg max-h-[90vh]">
-            <h2 className="text-[24px] font-bold text-[#333] px-6 py-6 text-center">
-              点検箇所
-            </h2>
-
-            <div className="flex flex-col gap-6 max-h-[calc(100vh-200px)] overflow-y-scroll overflow-x-hidden pr-4">
-              <div className="px-6 py-6 flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-1 items-center">
-                  <label className="text-[18px] font-bold text-[#333]">
-                    シーリング
-                  </label>
-                  <span className="text-[#f34949] text-sm">※</span>
-                </div>
-                <div className="flex gap-0">
-                  <button
-                    type="button"
-                    onClick={() => {}}
-                    className="h-12 w-20 rounded-l-lg flex items-center justify-center transition-colors bg-[#f85c5c] text-white"
-                  >
-                    <img src={iconXMark} alt="異常あり" className="size-6" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {}}
-                    className="h-12 w-20 rounded-r-lg flex items-center justify-center transition-colors bg-[#d0d0d0] text-[#999]"
-                  >
-                    <img src={iconCheck} alt="正常" className="size-6" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-1 items-center">
-                  <label className="text-[18px] font-bold text-[#333]">
-                    原因
-                  </label>
-                  <span className="text-[#f34949] text-sm">※</span>
-                </div>
-                <textarea
-                  placeholder="原因を記入してください。"
-                  className="bg-white w-full h-[80px] p-3 rounded-lg text-[14px] resize-none text-[#333] placeholder:text-[#999] focus:outline-none border border-[#d0d0d0] focus:border-[#009944]"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-1 items-center">
-                  <label className="text-[18px] font-bold text-[#333]">
-                    対応
-                  </label>
-                  <span className="text-[#f34949] text-sm">※</span>
-                </div>
-                <textarea
-                  placeholder="対応を記入してください。"
-                  className="bg-white w-full h-[80px] p-3 rounded-lg text-[14px] resize-none text-[#333] placeholder:text-[#999] focus:outline-none border border-[#d0d0d0] focus:border-[#009944]"
-                />
-              </div>
-              </div>
-            </div>
-
-            <div className="flex gap-10 px-6 py-6 justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsInspectionIssueOpen(false);
-                  setProductToRemove(null);
-                }}
-                className="w-56 py-4 rounded-lg border border-[#333] text-[#333] text-[16px] font-bold bg-white hover:bg-[#f5f5f5] transition-colors"
-              >
-                キャンセル
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (productToRemove) {
-                    if (productToRemove.type === "pass") {
-                      setPassProducts((prev) => prev.filter((_, i) => i !== productToRemove.index));
-                    } else if (productToRemove.type === "test-piece") {
-                      setPassedProducts((prev) => prev.filter((_, i) => i !== productToRemove.index));
-                    } else if (productToRemove.type === "abnormal") {
-                      setAbnormalProducts((prev) => prev.filter((_, i) => i !== productToRemove.index));
-                    }
-                  }
-                  setIsInspectionIssueOpen(false);
-                  setProductToRemove(null);
-                }}
-                className="w-56 py-4 rounded-lg bg-[#009944] text-white text-[16px] font-bold hover:opacity-90 transition-opacity"
-              >
-                完了
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </>
   );

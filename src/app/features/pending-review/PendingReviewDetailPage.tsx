@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
 import iconXMark from "../../../assets/figma/icons/common/cancel-custom.svg";
@@ -9,6 +9,13 @@ import iconReduce from "../../../assets/figma/icons/common/reduction.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import { CommentInput } from "../../components/CommentInput";
+import { CompleteDialog } from "../../components/CompleteDialog";
+import { DrumRollPicker } from "../../components/DrumRollPicker";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
+import { commentTimestamp } from "../../utils/date";
+import { seedTimestamp } from "../../utils/recordTimestamps";
 import { PENDING_REVIEWS } from "../../data/pendingReviews";
 import {
   FREQUENCY_LABELS,
@@ -16,6 +23,7 @@ import {
   initialRecords,
   initialRemarks,
   lines,
+  LINE_REJECTION_COMMENTS,
   type InspectionItemRecord,
 } from "../equipment-inspection/mockData";
 import { recordsByPoint, type CheckItem } from "../water-inspection/mockData";
@@ -45,9 +53,11 @@ import {
   SCALE_REPAIR_STATUS_COLORS,
   SCALE_REPAIR_STATUS_LABELS,
   SCALE_REPAIR_STATUS_NEXT_OPTIONS,
+  type Scale,
   type ScaleRepairStatus,
 } from "../scale-inspection/mockData";
 import { SAMPLE_REVIEW_DETAILS, SAMPLE_TYPE_LABELS } from "../sample-management/mockData";
+import { SampleProductInfo } from "../sample-management/SampleProductInfo";
 import {
   CRITERIA,
   pendingReviewProduct,
@@ -152,13 +162,15 @@ function MetalXrayChecklistGroup({
                   <div className="flex items-center justify-between gap-4 w-full">
                     <p className="text-base text-[var(--semantic-text-primary)]">{item.label}</p>
                     <span
-                      className="h-6 shrink-0 px-2 rounded-lg text-xs text-white inline-flex items-center justify-center"
+                      className="h-6 w-16 shrink-0 rounded-lg text-xs text-white inline-flex items-center justify-center"
                       style={{ backgroundColor: RESULT_COLORS[checks[item.key] === "ok" ? "OK" : "NG"] }}
                     >
                       {RESULT_LABELS[checks[item.key] === "ok" ? "OK" : "NG"]}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+                  {timestamp && (
+                    <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -231,7 +243,10 @@ function ScaleRepairStatusDropdown({
   onChange: (value: ScaleRepairStatus) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const options = SCALE_REPAIR_STATUS_NEXT_OPTIONS[value];
+  const options = SCALE_REPAIR_STATUS_NEXT_OPTIONS[value].map((status) => ({
+    value: status,
+    label: SCALE_REPAIR_STATUS_LABELS[status],
+  }));
   return (
     <div className="relative shrink-0">
       <button
@@ -243,26 +258,16 @@ function ScaleRepairStatusDropdown({
         {SCALE_REPAIR_STATUS_LABELS[value]}
         <img src={iconArrowDown} alt="" className="size-3 shrink-0 [filter:brightness(0)_invert(1)]" />
       </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-[0px_2px_3px_rgba(51,51,51,0.24)] overflow-hidden z-20 w-32">
-            {options.map((status) => (
-              <button
-                key={status}
-                type="button"
-                onClick={() => {
-                  onChange(status);
-                  setOpen(false);
-                }}
-                className="w-full text-left px-3 py-2 text-sm text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
-              >
-                {SCALE_REPAIR_STATUS_LABELS[status]}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
+      <DrumRollPicker
+        open={open}
+        value={value}
+        options={options}
+        onConfirm={(status) => {
+          onChange(status);
+          setOpen(false);
+        }}
+        onCancel={() => setOpen(false)}
+      />
     </div>
   );
 }
@@ -272,7 +277,7 @@ function GlassPlasticMap({ floorName }: { floorName: string }) {
   const [mapExpanded, setMapExpanded] = useState(false);
   return (
     <div
-      className={`relative bg-[#d0d0d0] border border-[var(--semantic-brand-primary)] rounded-lg overflow-auto w-full max-w-full max-w-[480px] mx-40 ${
+      className={`relative bg-[#d0d0d0] border border-[var(--semantic-brand-primary)] rounded-lg overflow-auto w-full max-w-full ${
         mapExpanded ? "h-[640px]" : "h-[340px] flex items-center justify-center"
       }`}
     >
@@ -290,18 +295,18 @@ function GlassPlasticMap({ floorName }: { floorName: string }) {
         style={{ transform: `scale(${mapScale})` }}
         className={`transition-transform ${mapExpanded ? "" : "max-h-[300px]"}`}
       />
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_3px_rgba(51,51,51,0.24)]">
+      <div className="absolute right-4 bottom-4 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_3px_rgba(51,51,51,0.24)]">
         <button
           type="button"
           onClick={() => setMapScale((s) => Math.min(s + 0.2, 2))}
-          className="bg-[var(--semantic-brand-primary)] w-10 h-10 flex items-center justify-center text-xl text-white border-b border-[#d0d0d0]"
+          className="bg-white w-10 h-10 flex items-center justify-center text-xl border-b border-[#d0d0d0]"
         >
           <img src={iconPlus} alt="拡大" className="size-6" />
         </button>
         <button
           type="button"
           onClick={() => setMapScale((s) => Math.max(s - 0.2, 0.6))}
-          className="bg-[var(--semantic-brand-primary)] w-10 h-10 flex items-center justify-center text-xl text-white"
+          className="bg-white w-10 h-10 flex items-center justify-center text-xl"
         >
           <img src={iconMinus} alt="縮小" className="size-6" />
         </button>
@@ -311,34 +316,7 @@ function GlassPlasticMap({ floorName }: { floorName: string }) {
 }
 
 function ScaleDash() {
-  return <span className="inline-block w-3 h-px bg-[#333] mx-auto" />;
-}
-
-function ScaleActionCheckBadge({ value }: { value: "ok" | "ng" | null }) {
-  if (value === "ok") {
-    return (
-      <span className="size-6 flex items-center justify-center text-[var(--semantic-status-success)] text-lg mx-auto">
-        <img src={iconCheck} alt="正常" className="size-4" />
-      </span>
-    );
-  }
-  if (value === "ng") {
-    return (
-      <span className="size-6 rounded flex items-center justify-center bg-[#f85c5c] text-white text-sm mx-auto">
-        <img src={iconXMark} alt="異常あり" className="size-3" />
-      </span>
-    );
-  }
-  return null;
-}
-
-function ScaleCheckBadge({ checked }: { checked: boolean }) {
-  if (!checked) return null;
-  return (
-    <span className="size-6 flex items-center justify-center text-[var(--semantic-status-success)] text-lg mx-auto">
-      <img src={iconCheck} alt="確認" className="size-4" />
-    </span>
-  );
+  return <span className="inline-block w-[10px] h-0.5 rounded-full bg-[#333] shrink-0" />;
 }
 
 function ScaleStatusTag({ label, color }: { label: string; color: string }) {
@@ -349,6 +327,93 @@ function ScaleStatusTag({ label, color }: { label: string; color: string }) {
     >
       {label}
     </span>
+  );
+}
+
+/**
+ * 秤 1 台分の記録カード。確認待ちの一覧画面（秤ごとに縦に積む）で使う。
+ * 動作確認が「異常あり」のときは、そこで点検が止まるので以降の項目は「−」。
+ */
+function ScaleRecordCard({
+  scale,
+  inspectorName,
+  recordDate,
+}: {
+  scale: Scale;
+  inspectorName: string;
+  recordDate: string;
+}) {
+  const record = scale.record;
+  const isNg = record?.actionCheck === "ng";
+  // 記録済みのデータなので、実施日から「誰がいつ入れたか」を組み立てて各項目に出す。
+  // 入力の無い項目（異常ありで止まった秤の水平点検など）には出さない。
+  const stamp = (recorded: unknown) => (recorded ? seedTimestamp(recordDate) : undefined);
+  const inspector = record?.inspector ?? inspectorName;
+
+  return (
+    <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full">
+      <div className="flex items-center justify-between w-full">
+        <p className="text-base text-[var(--semantic-text-primary)]">秤No.(ラベル名)</p>
+        <p className="text-base text-[var(--semantic-text-primary)]">{scale.label}</p>
+      </div>
+      <div className="border-t border-[#d0d0d0] w-full" />
+      <div className="flex items-center justify-between w-full">
+        <p className="text-base text-[var(--semantic-text-primary)]">シリアルナンバー</p>
+        <p className="text-base text-[var(--semantic-text-primary)]">{scale.serialNumber}</p>
+      </div>
+      <div className="border-t border-[#d0d0d0] w-full" />
+      <div className="flex flex-col gap-1 w-full">
+        <div className="flex items-center justify-between w-full">
+          <p className="text-base text-[var(--semantic-text-primary)]">動作確認</p>
+          {isNg ? (
+            <ScaleStatusTag label="異常あり" color="#f85c5c" />
+          ) : (
+            <ScaleStatusTag label="正常" color="#19c95f" />
+          )}
+        </div>
+        <RecordTimestamp inspector={inspector} timestamp={stamp(record?.actionCheck)} />
+      </div>
+      <div className="border-t border-[#d0d0d0] w-full" />
+      <div className="flex flex-col gap-1 w-full">
+        <div className="flex items-center justify-between w-full">
+          <p className="text-base text-[var(--semantic-text-primary)]">水平点検</p>
+          {isNg ? <ScaleDash /> : <ScaleStatusTag label="正常" color="#19c95f" />}
+        </div>
+        {!isNg && (
+          <RecordTimestamp inspector={inspector} timestamp={stamp(record?.levelCheck)} />
+        )}
+      </div>
+      <div className="border-t border-[#d0d0d0] w-full" />
+      <div className="flex flex-col gap-1 w-full">
+        <div className="flex items-center justify-between w-full">
+          <p className="text-base text-[var(--semantic-text-primary)]">汚れ</p>
+          {isNg ? <ScaleDash /> : <ScaleStatusTag label="正常" color="#19c95f" />}
+        </div>
+        {!isNg && <RecordTimestamp inspector={inspector} timestamp={stamp(record?.dirtCheck)} />}
+      </div>
+      <div className="border-t border-[#d0d0d0] w-full" />
+      <div className="flex flex-col gap-1 w-full">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex flex-col gap-2 items-start">
+            <p className="text-base text-[var(--semantic-text-primary)]">秤の表示値(g)</p>
+            <p className="text-sm text-[#808080]">使用分銅(g)：{scale.referenceWeight}</p>
+          </div>
+          {isNg ? (
+            <ScaleDash />
+          ) : (
+            <p className="text-base text-[var(--semantic-text-primary)]">{record?.displayValue}</p>
+          )}
+        </div>
+        {!isNg && (
+          <RecordTimestamp inspector={inspector} timestamp={stamp(record?.displayValue)} />
+        )}
+      </div>
+      <div className="border-t border-[#d0d0d0] w-full" />
+      <div className="flex flex-col gap-2 items-start w-full">
+        <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+        <p className="text-base text-[var(--semantic-text-primary)]">{record?.remarks}</p>
+      </div>
+    </div>
   );
 }
 
@@ -366,31 +431,6 @@ function sensoryAverage(rows: ScoreRow[], criterion: (typeof CRITERIA)[number]) 
 function sensoryOverallResult(rows: ScoreRow[]): "pass" | "fail" {
   const hasFailingScore = rows.some((row) => CRITERIA.some((c) => row.scores[c].score <= 2));
   return hasFailingScore ? "fail" : "pass";
-}
-
-const SCALE_TABLE_COLUMNS = [
-  { key: "op", label: "操作", width: 80 },
-  { key: "label", label: "秤No.(ラベル名)", width: 204 },
-  { key: "serial", label: "シリアルナンバー", width: 128 },
-  { key: "action", label: "動作\n確認", width: 60 },
-  { key: "level", label: "水平\n点検", width: 60 },
-  { key: "dirt", label: "汚れ", width: 60 },
-  { key: "display", label: "秤の\n表示値(g)", width: 80 },
-] as const;
-
-function CompleteCheckmark() {
-  return (
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-[var(--semantic-brand-primary)]">
-      <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="6" />
-      <path
-        d="M24 41L34 51L56 29"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
 }
 
 const TAB_LABEL = { start: "始業", end: "終業" } as const;
@@ -429,16 +469,30 @@ function WaterStatusTag({ status }: { status: CheckItem["status"] }) {
   );
 }
 
-function WaterConfirmRow({ label, value }: { label: string; value: string }) {
+function WaterConfirmRow({
+  label,
+  value,
+  timestamp,
+  noBorder,
+}: {
+  label: string;
+  value: string;
+  timestamp?: string;
+  /** トグル行と一組にするとき、区切り線は親側で引くので消す */
+  noBorder?: boolean;
+}) {
   return (
-    <div className="flex items-center justify-between w-full py-3 border-b border-[#d0d0d0]">
-      <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
-      <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
+    <div className={`flex flex-col gap-1 w-full py-3 ${noBorder ? "" : "border-b border-[#d0d0d0]"}`}>
+      <div className="flex items-center justify-between w-full">
+        <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
+        <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
+      </div>
+      <RecordTimestamp timestamp={value ? timestamp : undefined} />
     </div>
   );
 }
 
-function WaterCheckRow({ item }: { item: CheckItem }) {
+function WaterCheckRow({ item, timestamp }: { item: CheckItem; timestamp?: string }) {
   return (
     <div className="flex flex-col gap-2 w-full py-3 border-b border-[#d0d0d0]">
       <div className="flex items-center justify-between w-full">
@@ -451,6 +505,7 @@ function WaterCheckRow({ item }: { item: CheckItem }) {
           <p>対応：{item.action}</p>
         </div>
       )}
+      <RecordTimestamp timestamp={item.status ? timestamp : undefined} />
     </div>
   );
 }
@@ -458,7 +513,7 @@ function WaterCheckRow({ item }: { item: CheckItem }) {
 function WaterToggleRow({ label, checked }: { label: string; checked: boolean }) {
   if (!checked) return null;
   return (
-    <div className="flex justify-end w-full pb-3 -mt-1">
+    <div className="flex justify-end w-full pb-3">
       <span className="flex items-center gap-1 text-base text-[var(--semantic-status-success)]">
         <svg viewBox="0 0 24 24" className="size-6" fill="none">
           <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.6" />
@@ -476,9 +531,59 @@ function WaterToggleRow({ label, checked }: { label: string; checked: boolean })
   );
 }
 
+/**
+ * 差し戻し詳細の本文エリア。中身を最後まで読んだ（＝下までスクロールした）ことを親に伝える。
+ * 中身が 1 画面に収まってスクロールできないときは、最初から読み終わった扱いにする。
+ */
+function ScrollEndArea({
+  className,
+  onReachEnd,
+  children,
+}: {
+  className?: string;
+  onReachEnd: () => void;
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // 画像の読み込みなどで高さが変わることがあるので、毎レンダーで測り直す
+  useEffect(() => {
+    const el = ref.current;
+    if (el && el.scrollHeight - el.clientHeight <= 8) onReachEnd();
+  });
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      onScroll={(e) => {
+        const el = e.currentTarget;
+        if (el.scrollHeight - el.scrollTop - el.clientHeight <= 8) onReachEnd();
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+type PendingReviewStep =
+  | "confirmer"
+  | "detail"
+  | "repair"
+  | "record"
+  | "scaleDetail"
+  | "scoreDetail"
+  | "machineRecordDetail"
+  | "confirmation";
+
 export function PendingReviewDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  // 「点検内容を修正する」→ 編集画面 → 「編集を保存」で戻ってきたときに、直前の表示ステップを復元する
+  const location = useLocation();
+  const returnState = location.state as
+    | { step?: PendingReviewStep; confirmerId?: string; actorId?: string }
+    | null;
   const review = PENDING_REVIEWS.find((r) => r.id === id);
   const isCleaningLedger = review?.ledgerSlug === "cleaning-record";
   const isGlassPlasticLedger = review?.ledgerSlug === "glass-plastic";
@@ -504,20 +609,13 @@ export function PendingReviewDetailPage() {
       ? 255
       : 200;
 
-  const [step, setStep] = useState<
-    | "confirmer"
-    | "detail"
-    | "repair"
-    | "record"
-    | "scaleDetail"
-    | "scoreDetail"
-    | "machineRecordDetail"
-    | "confirmation"
-    | "complete"
-  >("confirmer");
-  const [confirmerId, setConfirmerId] = useState(CONFIRMERS[0].id);
+  const [step, setStep] = useState<PendingReviewStep>(returnState?.step ?? "confirmer");
+  const [confirmerId, setConfirmerId] = useState(
+    returnState?.confirmerId && CONFIRMERS.some((c) => c.id === returnState.confirmerId)
+      ? returnState.confirmerId
+      : CONFIRMERS[0].id,
+  );
   const [selectedAdditiveRecordId, setSelectedAdditiveRecordId] = useState<string | null>(null);
-  const [selectedScaleId, setSelectedScaleId] = useState<string | null>(null);
   const [scaleComment, setScaleComment] = useState("");
   const [selectedScoreRowId, setSelectedScoreRowId] = useState<string | null>(null);
   const [selectedMachineRecordId, setSelectedMachineRecordId] = useState<string | null>(null);
@@ -529,13 +627,26 @@ export function PendingReviewDetailPage() {
     { id: string; authorName: string; timestamp: string; body: string }[]
   >([]);
   const [metalXrayResponseComplete, setMetalXrayResponseComplete] = useState(false);
+  // 機械器具点検の差し戻し対応（実施者が自分の記録を直す画面）で使う状態
+  const [equipmentActorId, setEquipmentActorId] = useState(
+    returnState?.actorId && ACTORS.some((a) => a.id === returnState.actorId)
+      ? returnState.actorId
+      : ACTORS[0].id,
+  );
+  const [equipmentNewComment, setEquipmentNewComment] = useState("");
+  const [equipmentExtraComments, setEquipmentExtraComments] = useState<
+    { id: string; authorName: string; timestamp: string; body: string }[]
+  >([]);
+  const [equipmentResponseComplete, setEquipmentResponseComplete] = useState(false);
+  // Figma「下までスクロールしていない時」= 差し戻し内容を最後まで読むまで完了ボタンは押せない
+  const [equipmentScrolledToEnd, setEquipmentScrolledToEnd] = useState(false);
   const [comment, setComment] = useState("");
   const [outcome, setOutcome] = useState<"approved" | "rejected">("approved");
+  const [showComplete, setShowComplete] = useState(false);
   const [sampleNewComment, setSampleNewComment] = useState("");
   const [sampleExtraComments, setSampleExtraComments] = useState<
     { id: string; authorName: string; timestamp: string; body: string }[]
   >([]);
-  const [sampleResponseComplete, setSampleResponseComplete] = useState(false);
   const [sampleShowCompleteDialog, setSampleShowCompleteDialog] = useState(false);
   const [repairStatuses, setRepairStatuses] = useState<Record<string, RepairStatus>>(() => {
     const initial: Record<string, RepairStatus> = {};
@@ -589,6 +700,8 @@ export function PendingReviewDetailPage() {
   const machine = review.machineId ? MACHINES.find((m) => m.id === review.machineId) : undefined;
 
   const isEquipment = review.ledgerSlug === "equipment-inspection" && !!line;
+  // 差し戻しは確認者ではなく実施者が対応するので、入口のダイアログも実施者選択になる
+  const isEquipmentRejected = isEquipment && review.status === "差し戻し";
   const isCleaning = isCleaningLedger && !!line;
   const isWater = review.ledgerSlug === "water-inspection" && !!waterRecord;
   const isGlassPlastic = isGlassPlasticLedger && !!floor;
@@ -636,14 +749,7 @@ export function PendingReviewDetailPage() {
 
   function handleApprove() {
     setOutcome("approved");
-    setStep("complete");
-  }
-
-  function handleReject() {
-    if (!comment.trim()) return;
-    confirmedReview.status = "差し戻し";
-    setOutcome("rejected");
-    setStep("complete");
+    setShowComplete(true);
   }
 
   if (isSample && sampleDetail) {
@@ -664,48 +770,17 @@ export function PendingReviewDetailPage() {
       setSampleNewComment("");
     }
 
-    if (sampleResponseComplete) {
-      return (
-        <>
-          <AppHeader title="検体管理" />
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-            <CompleteCheckmark />
-            <p className="text-2xl text-[var(--semantic-brand-primary)]">対応が完了しました</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">ご確認ありがとうございます。</p>
-            <button
-              type="button"
-              onClick={() => navigate("/app/pending-review")}
-              className="bg-white border border-[var(--semantic-brand-primary)] h-12 px-6 rounded-lg text-base text-[var(--semantic-brand-primary)]"
-            >
-              確認待ちに戻る
-            </button>
-          </div>
-        </>
-      );
-    }
-
     return (
       <>
         <AppHeader title="検体管理" />
         <div className="flex-1 overflow-y-auto overflow-x-hidden pt-6 px-4 pb-4 flex flex-col gap-4 items-center">
-          <div className="bg-white flex gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
-            <div className="flex-1 flex flex-col gap-2 items-start min-w-0">
-              <div className="flex gap-2 items-center">
-                <span className="text-base text-[var(--semantic-text-secondary)]">製品名</span>
-                <span className="text-base text-[var(--semantic-text-primary)]">
-                  {sampleDetail.productName}
-                </span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <span className="text-base text-[var(--semantic-text-secondary)]">賞味期限</span>
-                <span className="text-base text-[var(--semantic-text-primary)]">
-                  {sampleDetail.expiryDate.replaceAll("-", "/")}
-                </span>
-              </div>
-            </div>
-          </div>
+          <SampleProductInfo
+            productName={sampleDetail.productName}
+            expiryDate={sampleDetail.expiryDate}
+            lotNumber={sampleDetail.lotNumber}
+          />
 
-          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
               <p className="text-base text-[var(--semantic-text-primary)]">
@@ -728,63 +803,35 @@ export function PendingReviewDetailPage() {
                   <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
                   <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-                  {sampleDetail.inspectorName} {sampleDetail.timestamp}
-                </p>
+                {/* 実施日は記録のヘッダ情報なのでタイムスタンプは付けない（記録画面・確認画面と同じ扱い） */}
+                {value && label !== "実施日" && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                    {sampleDetail.inspectorName} {sampleDetail.timestamp}
+                  </p>
+                )}
                 <div className="border-t border-[#d0d0d0] w-full" />
               </div>
             ))}
             <div className="flex flex-col gap-2 items-start w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                {sampleDetail.remarks || "特記事項はありません"}
+                {sampleDetail.remarks}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40 mt-8">
+          <div className="flex flex-col gap-2 items-start w-full max-w-full mt-8">
             <div className="flex items-center justify-between w-full">
               <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
             </div>
 
-            <div className="flex flex-col gap-3 items-start w-full">
-              {allSampleComments.map((c) => (
-                <div key={c.id} className="bg-white rounded-lg p-4 flex flex-col gap-2 items-start w-full">
-                  <div className="flex flex-col gap-1 items-start">
-                    <span className="text-base text-[var(--semantic-brand-primary)] font-semibold">
-                      {c.authorName}
-                    </span>
-                    <span className="text-xs text-[var(--semantic-text-secondary)]">{c.timestamp}</span>
-                  </div>
-                  <p className="text-base text-[var(--semantic-text-primary)]">{c.body}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-1 items-end w-full">
-              <div className="flex gap-2 items-center w-full">
-                <textarea
-                  value={sampleNewComment}
-                  onChange={(e) => setSampleNewComment(e.target.value.slice(0, 255))}
-                  placeholder="コメントを入力"
-                  rows={1}
-                  className="flex-1 bg-white border border-[#d0d0d0] px-4 py-3 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] resize-none h-12 flex items-center"
-                />
-                <button
-                  type="button"
-                  onClick={handleSendSampleComment}
-                  disabled={!sampleNewComment.trim()}
-                  className={`size-12 rounded-lg flex items-center justify-center text-white text-lg shrink-0 ${
-                    sampleNewComment.trim() ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
-                  }`}
-                >
-                  ➤
-                </button>
-              </div>
-              <span className="text-xs text-[var(--semantic-text-secondary)]">
-                {sampleNewComment.length}/255
-              </span>
-            </div>
+            <CommentInput
+              value={sampleNewComment}
+              onChange={setSampleNewComment}
+              maxLength={255}
+              comments={allSampleComments}
+              onSend={handleSendSampleComment}
+            />
           </div>
         </div>
 
@@ -805,43 +852,23 @@ export function PendingReviewDetailPage() {
           </button>
         </div>
 
-        {/* Complete Dialog */}
         {sampleShowCompleteDialog && (
-          <>
-            <div className="fixed inset-0 bg-black/50 z-40" />
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-[#f1efea] rounded-lg shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
-                <div className="flex flex-col gap-6 items-center w-full">
-                  <div className="flex flex-col gap-4 items-center w-full">
-                    <svg className="size-20" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M66.6667 40.0003C66.6667 25.2727 54.7276 13.3337 40 13.3337C25.2724 13.3337 13.3334 25.2727 13.3334 40.0003C13.3334 54.7279 25.2724 66.667 40 66.667C54.7276 66.667 66.6667 54.7279 66.6667 40.0003ZM73.3334 40.0003C73.3334 58.4098 58.4095 73.3337 40 73.3337C21.5905 73.3337 6.66669 58.4098 6.66669 40.0003C6.66669 21.5908 21.5905 6.66699 40 6.66699C58.4095 6.66699 73.3334 21.5908 73.3334 40.0003Z" fill="var(--semantic-brand-primary)"/>
-                      <path d="M52.4935 30.527C53.7952 29.2255 55.9053 29.2253 57.207 30.527C58.5084 31.8286 58.5084 33.9388 57.207 35.2405L38.3886 54.0589L38.1445 54.2802C37.5516 54.7655 36.8049 55.0322 36.0319 55.0322C35.2587 55.0319 34.5121 54.766 33.9192 54.2802L33.6751 54.0589L24.4596 44.8401C23.1581 43.5383 23.1579 41.4283 24.4596 40.1266C25.7613 38.8251 27.8715 38.8251 29.1732 40.1266L36.0319 46.9853L52.4935 30.527Z" fill="var(--semantic-brand-primary)"/>
-                    </svg>
-                    <h2 className="text-2xl text-[var(--semantic-brand-primary)] text-center font-semibold">
-                      提出が完了しました
-                    </h2>
-                  </div>
-                  <p className="text-base text-[var(--semantic-text-primary)] text-center">
-                    ご確認ありがとうございます。
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => navigate("/app/pending-review")}
-                  className="bg-white border border-[var(--semantic-brand-primary)] h-16 px-4 rounded-lg text-xl text-[var(--semantic-brand-primary)] font-semibold w-60"
-                >
-                  確認待ちに戻る
-                </button>
-              </div>
-            </div>
-          </>
+          <CompleteDialog
+            title="提出が完了しました"
+            message="ご確認ありがとうございます。"
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
         )}
       </>
     );
   }
 
   if (step === "confirmer") {
+    // 差し戻しは「記録を直す実施者」が入るので、確認者ではなく実施者を選んでもらう
+    const pickerPeople = isEquipmentRejected ? ACTORS : CONFIRMERS;
+    const pickerSelectedId = isEquipmentRejected ? equipmentActorId : confirmerId;
+    const selectPickerPerson = isEquipmentRejected ? setEquipmentActorId : setConfirmerId;
     return (
       <>
         <AppHeader title="確認待ち" />
@@ -849,15 +876,17 @@ export function PendingReviewDetailPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={() => navigate("/app/pending-review")} />
             <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-              <h2 className="text-2xl text-[var(--semantic-text-primary)]">確認者を選んでください</h2>
+              <h2 className="text-2xl text-[var(--semantic-text-primary)]">
+                {isEquipmentRejected ? "実施者を選んでください" : "確認者を選んでください"}
+              </h2>
               <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
-                {CONFIRMERS.map((c) => (
+                {pickerPeople.map((c) => (
                   <button
                     key={c.id}
                     type="button"
-                    onClick={() => setConfirmerId(c.id)}
+                    onClick={() => selectPickerPerson(c.id)}
                     className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
-                      confirmerId === c.id
+                      pickerSelectedId === c.id
                         ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
                         : "bg-white border-2 border-transparent"
                     }`}
@@ -898,20 +927,13 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title="検体管理" />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="bg-white flex gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
-            <div className="flex-1 flex flex-col gap-2 items-start min-w-0">
-              <div className="flex gap-2 items-center">
-                <span className="text-base text-[var(--semantic-text-secondary)]">製品名</span>
-                <span className="text-base text-[var(--semantic-text-primary)]">{sampleDetail.productName}</span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <span className="text-base text-[var(--semantic-text-secondary)]">賞味期限</span>
-                <span className="text-base text-[var(--semantic-text-primary)]">{sampleDetail.expiryDate.replaceAll("-", "/")}</span>
-              </div>
-            </div>
-          </div>
+          <SampleProductInfo
+            productName={sampleDetail.productName}
+            expiryDate={sampleDetail.expiryDate}
+            lotNumber={sampleDetail.lotNumber}
+          />
 
-          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
               <p className="text-base text-[var(--semantic-text-primary)]">{sampleDetail.inspectorName}</p>
@@ -932,34 +954,31 @@ export function PendingReviewDetailPage() {
                   <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
                   <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-                  {sampleDetail.inspectorName} {sampleDetail.timestamp}
-                </p>
+                {/* 実施日は記録のヘッダ情報なのでタイムスタンプは付けない（記録画面・確認画面と同じ扱い） */}
+                {value && label !== "実施日" && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                    {sampleDetail.inspectorName} {sampleDetail.timestamp}
+                  </p>
+                )}
                 <div className="border-t border-[#d0d0d0] w-full" />
               </div>
             ))}
             <div className="flex flex-col gap-2 items-start w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                {sampleDetail.remarks || "特記事項はありません"}
+                {sampleDetail.remarks}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex flex-col gap-2 items-start w-full max-w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-            <div className="flex gap-2 items-start w-full">
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value.slice(0, commentMaxLength))}
-                placeholder="コメントを入力"
-                rows={3}
-                className="flex-1 bg-white border border-[#d0d0d0] px-4 py-3 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] resize-none"
-              />
-            </div>
-            <span className="text-xs text-[var(--semantic-text-secondary)]">
-              {comment.length}/{commentMaxLength}
-            </span>
+            <CommentInput
+              value={comment}
+              onChange={setComment}
+              maxLength={commentMaxLength}
+              authorName={confirmer.name}
+            />
           </div>
         </div>
 
@@ -975,7 +994,7 @@ export function PendingReviewDetailPage() {
             type="button"
             onClick={() => {
               setOutcome("approved");
-              setStep("complete");
+              setShowComplete(true);
             }}
             className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
           >
@@ -989,26 +1008,8 @@ export function PendingReviewDetailPage() {
   if (isGlassPlastic && floor) {
     const floorName = floor.name;
     const inspector = glassPlasticRecords["出入口|時計1"]?.inspector ?? "高橋和子";
-
-    if (step === "complete") {
-      return (
-        <>
-          <AppHeader title={`ガラス・プラスチック管理_${floorName}`} />
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-            <CompleteCheckmark />
-            <p className="text-2xl text-[var(--semantic-brand-primary)]">確認が完了しました</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">ご確認ありがとうございます。</p>
-            <button
-              type="button"
-              onClick={() => navigate("/app/progress")}
-              className="bg-white border border-[var(--semantic-brand-primary)] h-12 px-6 rounded-lg text-base text-[var(--semantic-brand-primary)]"
-            >
-              進捗一覧に戻る
-            </button>
-          </div>
-        </>
-      );
-    }
+    // 記録済みのデータなので、実施日から「誰がいつ入れたか」を組み立てて各項目に出す
+    const glassPlasticDate = "2025/03/24";
 
     if (step === "repair") {
       const abnormalByRoom = glassPlasticRooms
@@ -1025,13 +1026,13 @@ export function PendingReviewDetailPage() {
           <AppHeader title={`ガラス・プラスチック管理_${floorName}`} />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
             <GlassPlasticMap floorName={floorName} />
-            <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40">
+            <div className="flex flex-col gap-2 items-start w-full max-w-full">
               <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
               <p className="text-sm text-[var(--semantic-text-secondary)]">
                 異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
               </p>
             </div>
-            <div className="bg-white rounded-lg p-4 flex flex-col gap-6 items-start w-full max-w-full max-w-[480px] mx-40">
+            <div className="bg-white rounded-lg p-4 flex flex-col gap-6 items-start w-full max-w-full">
               {abnormalByRoom.map(({ room, items }) => (
                 <div key={room.id} className="flex flex-col gap-4 items-start w-full">
                   <p className="text-xl text-[var(--semantic-brand-primary)]">{room.name}</p>
@@ -1084,13 +1085,22 @@ export function PendingReviewDetailPage() {
               type="button"
               onClick={() => {
                 setOutcome("approved");
-                setStep("complete");
+                setShowComplete(true);
               }}
               className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
             >
               確認
             </button>
           </div>
+
+          {showComplete && (
+            <CompleteDialog
+              title="確認が完了しました"
+              message="ご確認ありがとうございます。"
+              buttonLabel="確認待ちに戻る"
+              onButtonClick={() => navigate("/app/pending-review")}
+            />
+          )}
         </>
       );
     }
@@ -1100,7 +1110,7 @@ export function PendingReviewDetailPage() {
         <AppHeader title={`ガラス・プラスチック管理_${floorName}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
           <GlassPlasticMap floorName={floorName} />
-          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
               <p className="text-base text-[var(--semantic-text-primary)]">{inspector}</p>
@@ -1111,11 +1121,11 @@ export function PendingReviewDetailPage() {
             </div>
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
-              <p className="text-base text-[var(--semantic-text-primary)]">2025/03/24</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{glassPlasticDate}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg p-4 flex flex-col gap-10 items-start w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white rounded-lg p-4 flex flex-col gap-10 items-start w-full max-w-full">
             {glassPlasticRooms.map((room) => (
               <div key={room.id} className="flex flex-col gap-4 items-start w-full">
                 <p className="text-xl text-[var(--semantic-brand-primary)]">{room.name}</p>
@@ -1154,6 +1164,10 @@ export function PendingReviewDetailPage() {
                             </p>
                           </div>
                         )}
+                        <RecordTimestamp
+                          inspector={record?.inspector ?? inspector}
+                          timestamp={record?.timestamp || seedTimestamp(glassPlasticDate)}
+                        />
                       </div>
                     );
                   })}
@@ -1185,31 +1199,47 @@ export function PendingReviewDetailPage() {
   if (isWater && waterRecord) {
     const handleWaterConfirm = () => {
       setOutcome("approved");
-      setStep("complete");
+      setShowComplete(true);
     };
+    // 記録に入っている実施者・実施日・点検時間から「誰がいつ入れたか」を組み立てる。
+    // 実施者・点検場所・実施日は記録のヘッダ情報なので付けない。
+    const waterTimestamp = `${waterRecord.inspector} ${waterRecord.date} ${waterRecord.time}`;
 
     return (
       <>
         <AppHeader title={`使用水の点検_${waterRecord.location}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full">
             <WaterConfirmRow label="実施者" value={waterRecord.inspector} />
             <WaterConfirmRow label="点検場所" value={waterRecord.location} />
             <WaterConfirmRow label="実施日" value={waterRecord.date} />
             {waterRecord.checks.map((item) => (
-              <WaterCheckRow key={item.label} item={item} />
+              <WaterCheckRow key={item.label} item={item} timestamp={waterTimestamp} />
             ))}
-            <WaterConfirmRow label="ph値" value={waterRecord.phValue} />
+            <WaterConfirmRow label="ph値" value={waterRecord.phValue} timestamp={waterTimestamp} />
+            {/* 値 → トグル → タイムスタンプ → 区切り線 の順に並べ、記録詳細画面(PointDetailPage)と同じ見た目にする */}
             <div className="flex flex-col w-full">
-              <WaterConfirmRow label="残留塩素濃度(mg/ℓ)" value={waterRecord.residualChlorine} />
+              <WaterConfirmRow label="残留塩素濃度(mg/ℓ)" value={waterRecord.residualChlorine} noBorder />
               <WaterToggleRow label="塩素補充" checked={waterRecord.chlorineToggle.checked} />
+              {(waterRecord.residualChlorine || waterRecord.chlorineToggle.checked) && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">
+                  {waterTimestamp}
+                </p>
+              )}
+              <div className="border-t border-[#d0d0d0]" />
             </div>
             <div className="flex flex-col w-full">
-              <WaterConfirmRow label="UV殺菌灯稼働時間(h)" value={waterRecord.uvOperatingHours} />
+              <WaterConfirmRow label="UV殺菌灯稼働時間(h)" value={waterRecord.uvOperatingHours} noBorder />
               <WaterToggleRow label="UV殺菌灯交換" checked={waterRecord.uvToggle.checked} />
+              {(waterRecord.uvOperatingHours || waterRecord.uvToggle.checked) && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">
+                  {waterTimestamp}
+                </p>
+              )}
+              <div className="border-t border-[#d0d0d0]" />
             </div>
-            <WaterConfirmRow label="UV表示灯" value={waterRecord.uvIndicatorLight} />
-            <WaterConfirmRow label="異常検出灯" value={waterRecord.errorIndicatorLight} />
+            <WaterConfirmRow label="UV表示灯" value={waterRecord.uvIndicatorLight} timestamp={waterTimestamp} />
+            <WaterConfirmRow label="異常検出灯" value={waterRecord.errorIndicatorLight} timestamp={waterTimestamp} />
           </div>
         </div>
 
@@ -1230,39 +1260,13 @@ export function PendingReviewDetailPage() {
           </button>
         </div>
 
-        {step === "complete" && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" />
-            <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-16 w-full max-w-full max-w-[480px] mx-40 mx-16 min-h-[620px]">
-              <div className="flex flex-col gap-6 items-center w-full">
-                <div className="flex flex-col gap-4 items-center w-full">
-                  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-[var(--semantic-brand-primary)]">
-                    <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" />
-                    <path
-                      d="M24 41L34 51L56 29"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <h2 className="text-2xl text-[var(--semantic-brand-primary)] text-center w-full">
-                    確認が完了しました
-                  </h2>
-                </div>
-                <p className="text-base text-[var(--semantic-text-primary)] text-center w-full">
-                  ご確認ありがとうございます。
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => navigate("/app/progress")}
-                className="bg-white border border-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-brand-primary)]"
-              >
-                進捗一覧に戻る
-              </button>
-            </div>
-          </div>
+        {showComplete && (
+          <CompleteDialog
+            title="確認が完了しました"
+            message="ご確認ありがとうございます。"
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
         )}
       </>
     );
@@ -1276,38 +1280,12 @@ export function PendingReviewDetailPage() {
       (record) => record.id === selectedAdditiveRecordId
     );
 
-    if (step === "complete") {
-      return (
-        <>
-          <AppHeader title={`添加物管理_${additive.name}`} />
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-            <CompleteCheckmark />
-            <p className="text-2xl text-[var(--semantic-brand-primary)]">
-              {outcome === "rejected" ? "差し戻しが完了しました" : "提出が完了しました"}
-            </p>
-            <p className="text-base text-[var(--semantic-text-primary)]">
-              {outcome === "rejected"
-                ? "実施者に差し戻し内容が通知されます。"
-                : "ご確認ありがとうございます。"}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate("/app/pending-review")}
-              className="bg-white border border-[var(--semantic-brand-primary)] h-12 px-6 rounded-lg text-base text-[var(--semantic-brand-primary)]"
-            >
-              確認待ちに戻る
-            </button>
-          </div>
-        </>
-      );
-    }
-
     if (step === "record" && selectedAdditiveRecord) {
       return (
         <>
           <AppHeader title={`添加物管理_${additive.name}`} />
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-            <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
+            <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
                 <p className="text-base text-[var(--semantic-text-primary)]">
@@ -1332,48 +1310,61 @@ export function PendingReviewDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">区分</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {selectedAdditiveRecord.category}
-                </p>
+            <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
+              {/* 記録画面で項目ごとに付いた「実施者 + 入力時刻」をそのまま出す */}
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between w-full">
+                  <p className="text-base text-[var(--semantic-text-primary)]">区分</p>
+                  <p className="text-base text-[var(--semantic-text-primary)]">
+                    {selectedAdditiveRecord.category}
+                  </p>
+                </div>
+                <RecordTimestamp
+                  inspector={selectedAdditiveRecord.actor}
+                  timestamp={selectedAdditiveRecord.timestamps?.category}
+                />
               </div>
               <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">数量</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {selectedAdditiveRecord.quantity}
-                </p>
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between w-full">
+                  <p className="text-base text-[var(--semantic-text-primary)]">数量</p>
+                  <p className="text-base text-[var(--semantic-text-primary)]">
+                    {selectedAdditiveRecord.quantity}
+                  </p>
+                </div>
+                <RecordTimestamp
+                  inspector={selectedAdditiveRecord.actor}
+                  timestamp={selectedAdditiveRecord.timestamps?.quantity}
+                />
               </div>
               <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">現在庫数</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {selectedAdditiveRecord.currentStock}
-                </p>
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between w-full">
+                  <p className="text-base text-[var(--semantic-text-primary)]">現在庫数</p>
+                  <p className="text-base text-[var(--semantic-text-primary)]">
+                    {selectedAdditiveRecord.currentStock}
+                  </p>
+                </div>
+                <RecordTimestamp
+                  inspector={selectedAdditiveRecord.actor}
+                  timestamp={selectedAdditiveRecord.timestamps?.currentStock}
+                />
               </div>
               <div className="border-t border-[#d0d0d0] w-full" />
               <div className="flex flex-col gap-2 items-start w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-                <p className="text-base text-[var(--semantic-text-secondary)]">
+                <p className="text-base font-normal leading-[1.6] text-[var(--semantic-text-primary)]">
                   {selectedAdditiveRecord.remarks}
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-2 items-center w-full max-w-full max-w-[480px] mx-40">
-              <input
-                type="text"
-                value={comment}
-                onChange={(e) => setComment(e.target.value.slice(0, commentMaxLength))}
-                placeholder="コメントを入力"
-                className="flex-1 bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
-              />
-              <span className="text-xs text-[var(--semantic-text-secondary)] shrink-0">
-                {comment.length}/{commentMaxLength}
-              </span>
-            </div>
+            <CommentInput
+              value={comment}
+              onChange={setComment}
+              maxLength={commentMaxLength}
+              authorName={confirmer.name}
+            />
           </div>
 
           <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
@@ -1393,14 +1384,14 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title={`添加物管理_${additive.name}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="flex items-center justify-between w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex items-center justify-between w-full max-w-full">
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
             <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
           </div>
 
-          <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full">
             <table className="border-collapse w-full">
               <thead>
                 <tr className="bg-[var(--semantic-brand-primary)]">
@@ -1453,50 +1444,37 @@ export function PendingReviewDetailPage() {
               </tbody>
             </table>
           </div>
-
-          <div className="flex gap-2 items-center w-full max-w-full max-w-[480px] mx-40">
-            <input
-              type="text"
-              value={comment}
-              onChange={(e) => setComment(e.target.value.slice(0, commentMaxLength))}
-              placeholder="コメントを入力"
-              className="flex-1 bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
-            />
-            <span className="text-xs text-[var(--semantic-text-secondary)] shrink-0">
-              {comment.length}/{commentMaxLength}
-            </span>
-          </div>
         </div>
 
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
             onClick={() => setStep("confirmer")}
-            className="bg-white border border-[#333] flex items-center justify-center h-16 w-40 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+            className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
             戻る
           </button>
           <button
             type="button"
-            disabled={!comment.trim()}
-            onClick={handleReject}
-            title={!comment.trim() ? "差し戻す理由をコメントに入力してください" : undefined}
-            className={`h-16 w-40 rounded-lg text-xl border ${
-              comment.trim()
-                ? "bg-white border-[var(--semantic-brand-danger)] text-[var(--semantic-brand-danger)]"
-                : "bg-[#d0d0d0] border-[#d0d0d0] text-white"
-            }`}
-          >
-            差し戻し
-          </button>
-          <button
-            type="button"
             onClick={handleApprove}
-            className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-40 rounded-lg text-xl text-white"
+            className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
           >
             提出
           </button>
         </div>
+
+        {showComplete && (
+          <CompleteDialog
+            title={outcome === "rejected" ? "差し戻しが完了しました" : "提出が完了しました"}
+            message={
+              outcome === "rejected"
+                ? "実施者に差し戻し内容が通知されます。"
+                : "ご確認ありがとうございます。"
+            }
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
+        )}
       </>
     );
   }
@@ -1505,190 +1483,19 @@ export function PendingReviewDetailPage() {
     const postName = review.name;
     const scales = pendingReviewScales;
     const ngScales = scales.filter((s) => s.record?.actionCheck === "ng");
-    const selectedScale = scales.find((s) => s.id === selectedScaleId);
 
     function handleScaleNext() {
       if (ngScales.length > 0) {
         setStep("repair");
       } else {
         setOutcome("approved");
-        setStep("complete");
+        setShowComplete(true);
       }
     }
 
     function handleScaleSubmit() {
       setOutcome("approved");
-      setStep("complete");
-    }
-
-    if (step === "complete") {
-      return (
-        <>
-          <AppHeader title="秤点検記録" />
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-            <CompleteCheckmark />
-            <p className="text-2xl text-[var(--semantic-brand-primary)]">確認が完了しました</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">ご確認ありがとうございます。</p>
-            <button
-              type="button"
-              onClick={() => navigate("/app/pending-review")}
-              className="bg-white border border-[var(--semantic-brand-primary)] h-12 px-6 rounded-lg text-base text-[var(--semantic-brand-primary)]"
-            >
-              確認待ちに戻る
-            </button>
-          </div>
-        </>
-      );
-    }
-
-    if (step === "scaleDetail" && selectedScale) {
-      return (
-        <>
-          <AppHeader title="秤点検記録" />
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-            <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {scalePendingReviewPost.date.replaceAll("-", "/")}
-                </p>
-              </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {scalePendingReviewPost.inspectorName}
-                </p>
-              </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">持ち場</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">{postName}</p>
-              </div>
-            </div>
-
-            <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">秤No.(ラベル名)</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">{selectedScale.label}</p>
-              </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">シリアルナンバー</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {selectedScale.serialNumber}
-                </p>
-              </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
-              {selectedScale.record?.actionCheck === "ng" ? (
-                <>
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">動作確認</p>
-                    <ScaleStatusTag label="異常あり" color="#f85c5c" />
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">水平点検</p>
-                    <ScaleDash />
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">汚れ</p>
-                    <ScaleDash />
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex flex-col gap-2 items-start">
-                      <p className="text-base text-[var(--semantic-text-primary)]">秤の表示値(g)</p>
-                      <p className="text-sm text-[#808080]">
-                        使用分銅(g)：{selectedScale.referenceWeight}
-                      </p>
-                    </div>
-                    <ScaleDash />
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex flex-col gap-2 items-start w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-                    <p className="text-base text-[var(--semantic-text-primary)]">
-                      {selectedScale.record?.remarks}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">動作確認</p>
-                    <ScaleStatusTag label="正常" color="#19c95f" />
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">水平点検</p>
-                    <ScaleStatusTag label="正常" color="#19c95f" />
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">汚れ</p>
-                    <ScaleStatusTag label="正常" color="#19c95f" />
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex flex-col gap-2 items-start">
-                      <p className="text-base text-[var(--semantic-text-primary)]">秤の表示値(g)</p>
-                      <p className="text-sm text-[#808080]">
-                        使用分銅(g)：{selectedScale.referenceWeight}
-                      </p>
-                    </div>
-                    <p className="text-base text-[var(--semantic-text-primary)]">
-                      {selectedScale.record?.displayValue}
-                    </p>
-                  </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex flex-col gap-2 items-start w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-                    <p className="text-base text-[var(--semantic-text-primary)]">
-                      {selectedScale.record?.remarks}
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40">
-              <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-              <div className="flex gap-2 items-center w-full">
-                <input
-                  type="text"
-                  value={scaleComment}
-                  onChange={(e) => setScaleComment(e.target.value.slice(0, commentMaxLength))}
-                  placeholder="コメントを入力"
-                  className="flex-1 bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
-                />
-                <button
-                  type="button"
-                  onClick={() => setScaleComment("")}
-                  className="bg-[var(--semantic-brand-primary)] size-12 rounded-lg flex items-center justify-center text-white shrink-0"
-                  aria-label="コメントを送信"
-                >
-                  ➤
-                </button>
-              </div>
-              <span className="text-xs text-[var(--semantic-text-secondary)] self-end">
-                {scaleComment.length}/{commentMaxLength}
-              </span>
-            </div>
-          </div>
-
-          <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
-            <button
-              type="button"
-              onClick={() => setStep("detail")}
-              className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
-            >
-              戻る
-            </button>
-          </div>
-        </>
-      );
+      setShowComplete(true);
     }
 
     if (step === "repair") {
@@ -1696,13 +1503,13 @@ export function PendingReviewDetailPage() {
         <>
           <AppHeader title="秤点検記録" />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-            <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40">
+            <div className="flex flex-col gap-2 items-start w-full max-w-full">
               <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
               <p className="text-sm text-[var(--semantic-text-secondary)]">
                 異常があった秤は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
               </p>
             </div>
-            <div className="bg-white rounded-lg p-4 flex flex-col gap-6 items-start w-full max-w-full max-w-[480px] mx-40">
+            <div className="bg-white rounded-lg p-4 flex flex-col gap-6 items-start w-full max-w-full">
               {ngScales.map((scale) => (
                 <div key={scale.id} className="flex flex-col gap-1 items-start w-full">
                   <div className="flex items-center justify-between w-full gap-4">
@@ -1740,6 +1547,15 @@ export function PendingReviewDetailPage() {
               提出
             </button>
           </div>
+
+          {showComplete && (
+            <CompleteDialog
+              title="確認が完了しました"
+              message="ご確認ありがとうございます。"
+              buttonLabel="確認待ちに戻る"
+              onButtonClick={() => navigate("/app/pending-review")}
+            />
+          )}
         </>
       );
     }
@@ -1748,7 +1564,7 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title="秤点検記録" />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full">
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
               <p className="text-base text-[var(--semantic-text-primary)]">
@@ -1769,64 +1585,23 @@ export function PendingReviewDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full max-w-[480px] mx-40">
-            <table className="border-collapse w-full">
-              <thead>
-                <tr className="bg-[var(--semantic-brand-primary)]">
-                  {SCALE_TABLE_COLUMNS.map((col) => (
-                    <th
-                      key={col.key}
-                      style={{ minWidth: col.width }}
-                      className="text-white text-sm font-semibold px-2 py-2 whitespace-pre-line"
-                    >
-                      {col.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {scales.map((scale, index) => (
-                  <tr key={scale.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
-                    <td className="px-2 py-2 text-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedScaleId(scale.id);
-                          setStep("scaleDetail");
-                        }}
-                        className="bg-[var(--semantic-brand-primary)] h-8 w-14 rounded-lg text-xs text-white"
-                      >
-                        詳細
-                      </button>
-                    </td>
-                    <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">{scale.label}</td>
-                    <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
-                      {scale.serialNumber}
-                    </td>
-                    <td className="px-2 py-2 text-center">
-                      <ScaleActionCheckBadge value={scale.record?.actionCheck ?? null} />
-                    </td>
-                    <td className="px-2 py-2 text-center">
-                      {scale.record?.actionCheck === "ng" ? (
-                        <ScaleDash />
-                      ) : (
-                        <ScaleCheckBadge checked={scale.record?.levelCheck ?? false} />
-                      )}
-                    </td>
-                    <td className="px-2 py-2 text-center">
-                      {scale.record?.actionCheck === "ng" ? (
-                        <ScaleDash />
-                      ) : (
-                        <ScaleCheckBadge checked={scale.record?.dirtCheck ?? false} />
-                      )}
-                    </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
-                      {scale.record?.actionCheck === "ng" ? <ScaleDash /> : scale.record?.displayValue}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {scales.map((scale) => (
+            <ScaleRecordCard
+              key={scale.id}
+              scale={scale}
+              inspectorName={scalePendingReviewPost.inspectorName}
+              recordDate={scalePendingReviewPost.date}
+            />
+          ))}
+
+          <div className="flex flex-col gap-2 items-start w-full max-w-full">
+            <p className="text-lg text-[var(--semantic-text-primary)]">コメント</p>
+            <CommentInput
+              value={scaleComment}
+              onChange={setScaleComment}
+              maxLength={commentMaxLength}
+              authorName={confirmer.name}
+            />
           </div>
         </div>
 
@@ -1846,6 +1621,15 @@ export function PendingReviewDetailPage() {
             次へ
           </button>
         </div>
+
+        {showComplete && (
+          <CompleteDialog
+            title="確認が完了しました"
+            message="ご確認ありがとうございます。"
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
+        )}
       </>
     );
   }
@@ -1862,41 +1646,18 @@ export function PendingReviewDetailPage() {
       } else {
         setOutcome("approved");
       }
-      setStep("complete");
-    }
-
-    if (step === "complete") {
-      return (
-        <>
-          <AppHeader title="官能検査記録" />
-          <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-            <CompleteCheckmark />
-            <p className="text-2xl text-[var(--semantic-brand-primary)]">
-              {outcome === "rejected" ? "差し戻しが完了しました" : "確認が完了しました"}
-            </p>
-            <p className="text-base text-[var(--semantic-text-primary)]">
-              {outcome === "rejected"
-                ? "実施者に差し戻し内容が通知されます。"
-                : "ご確認ありがとうございます。"}
-            </p>
-            <button
-              type="button"
-              onClick={() => navigate("/app/pending-review")}
-              className="bg-white border border-[var(--semantic-brand-primary)] h-12 px-6 rounded-lg text-base text-[var(--semantic-brand-primary)]"
-            >
-              確認待ちに戻る
-            </button>
-          </div>
-        </>
-      );
+      setShowComplete(true);
     }
 
     if (step === "scoreDetail" && selectedRow) {
+      // 記録済みのデータなので、実施日から「誰がいつ入れたか」を組み立てて各項目に出す。
+      // 実施者・実施日は記録のヘッダ情報なので付けない。
+      const rowTimestamp = seedTimestamp(selectedRow.date);
       return (
         <>
           <AppHeader title="官能検査記録" />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-            <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+            <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full">
               <div className="flex gap-2 items-center">
                 <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
                 <span className="text-base text-[var(--semantic-text-primary)]">
@@ -1911,7 +1672,7 @@ export function PendingReviewDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+            <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full">
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
                 <p className="text-base text-[var(--semantic-text-primary)]">
@@ -1926,27 +1687,42 @@ export function PendingReviewDetailPage() {
                 </p>
               </div>
               <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">製造日</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {selectedRow.manufactureDate.replaceAll("-", "/")}
-                </p>
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between w-full">
+                  <p className="text-base text-[var(--semantic-text-primary)]">製造日</p>
+                  <p className="text-base text-[var(--semantic-text-primary)]">
+                    {selectedRow.manufactureDate.replaceAll("-", "/")}
+                  </p>
+                </div>
+                <RecordTimestamp
+                  inspector={selectedRow.inspectorName}
+                  timestamp={selectedRow.manufactureDate ? rowTimestamp : undefined}
+                />
               </div>
               <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">比較商品</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
-                  {selectedRow.comparison === "present" ? "比較商品あり" : "比較商品なし"}
-                </p>
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between w-full">
+                  <p className="text-base text-[var(--semantic-text-primary)]">比較商品</p>
+                  <p className="text-base text-[var(--semantic-text-primary)]">
+                    {selectedRow.comparison === "present" ? "比較商品あり" : "比較商品なし"}
+                  </p>
+                </div>
+                <RecordTimestamp inspector={selectedRow.inspectorName} timestamp={rowTimestamp} />
               </div>
               {selectedRow.comparison === "present" && (
                 <>
                   <div className="border-t border-[#d0d0d0] w-full" />
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-base text-[var(--semantic-text-primary)]">比較商品製造日</p>
-                    <p className="text-base text-[var(--semantic-text-primary)]">
-                      {selectedRow.comparisonManufactureDate.replaceAll("-", "/")}
-                    </p>
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-base text-[var(--semantic-text-primary)]">比較商品製造日</p>
+                      <p className="text-base text-[var(--semantic-text-primary)]">
+                        {selectedRow.comparisonManufactureDate.replaceAll("-", "/")}
+                      </p>
+                    </div>
+                    <RecordTimestamp
+                      inspector={selectedRow.inspectorName}
+                      timestamp={selectedRow.comparisonManufactureDate ? rowTimestamp : undefined}
+                    />
                   </div>
                 </>
               )}
@@ -1965,6 +1741,10 @@ export function PendingReviewDetailPage() {
                     {score.score <= 2 && (
                       <p className="text-base text-[#808080] px-2">理由：{score.reason}</p>
                     )}
+                    <RecordTimestamp
+                      inspector={selectedRow.inspectorName}
+                      timestamp={score ? rowTimestamp : undefined}
+                    />
                   </div>
                 );
               })}
@@ -1988,14 +1768,14 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title="官能検査記録" />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
             <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
             <p className="text-sm text-[var(--semantic-text-primary)]">
               実施予定者に足りていない時はコメント欄に記載してください。
             </p>
           </div>
 
-          <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full">
             <div className="flex gap-2 items-center">
               <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
               <span className="text-base text-[var(--semantic-text-primary)]">
@@ -2010,7 +1790,7 @@ export function PendingReviewDetailPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 items-end w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex flex-col gap-4 items-end w-full max-w-full">
             <div className="bg-white rounded-lg overflow-x-auto w-full">
               <table className="border-collapse w-full">
                 <thead>
@@ -2084,28 +1864,14 @@ export function PendingReviewDetailPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40">
+          <div className="flex flex-col gap-2 items-start w-full max-w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
-            <div className="flex gap-2 items-center w-full">
-              <input
-                type="text"
-                value={comment}
-                onChange={(e) => setComment(e.target.value.slice(0, commentMaxLength))}
-                placeholder="コメントを入力"
-                className="flex-1 bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
-              />
-              <button
-                type="button"
-                onClick={() => setComment("")}
-                className="bg-[var(--semantic-brand-primary)] size-12 rounded-lg flex items-center justify-center text-white shrink-0"
-                aria-label="コメントを送信"
-              >
-                ➤
-              </button>
-            </div>
-            <span className="text-xs text-[var(--semantic-text-secondary)] self-end">
-              {comment.length}/{commentMaxLength}
-            </span>
+            <CommentInput
+              value={comment}
+              onChange={setComment}
+              maxLength={commentMaxLength}
+              authorName={confirmer.name}
+            />
           </div>
         </div>
 
@@ -2125,6 +1891,19 @@ export function PendingReviewDetailPage() {
             提出
           </button>
         </div>
+
+        {showComplete && (
+          <CompleteDialog
+            title={outcome === "rejected" ? "差し戻しが完了しました" : "確認が完了しました"}
+            message={
+              outcome === "rejected"
+                ? "実施者に差し戻し内容が通知されます。"
+                : "ご確認ありがとうございます。"
+            }
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
+        )}
       </>
     );
   }
@@ -2136,7 +1915,7 @@ export function PendingReviewDetailPage() {
 
     function handleMetalXraySubmit() {
       setOutcome("approved");
-      setStep("complete");
+      setShowComplete(true);
     }
 
     if (step === "machineRecordDetail" && selectedMachineRecord) {
@@ -2149,14 +1928,14 @@ export function PendingReviewDetailPage() {
         <>
           <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-            <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+            <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full max-w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 {inspectionDate ? inspectionDate.replaceAll("-", "/") : ""}
               </p>
             </div>
 
-            <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+            <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
                 <p className="text-base text-[var(--semantic-text-primary)]">{record.inspectorName}</p>
@@ -2172,9 +1951,11 @@ export function PendingReviewDetailPage() {
                   <p className="text-base text-[var(--semantic-text-primary)]">点検時間</p>
                   <p className="text-base text-[var(--semantic-text-primary)]">{record.time}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-                  {recordTimestamp}
-                </p>
+                {record.time && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                    {recordTimestamp}
+                  </p>
+                )}
               </div>
 
               {record.content === "動作確認" && record.detail ? (
@@ -2209,7 +1990,7 @@ export function PendingReviewDetailPage() {
                   <div className="flex items-center justify-between w-full">
                     <p className="text-base text-[var(--semantic-text-primary)]">結果</p>
                     <span
-                      className="h-6 px-2 rounded-lg text-xs text-white inline-flex items-center justify-center"
+                      className="h-6 w-16 rounded-lg text-xs text-white inline-flex items-center justify-center"
                       style={{ backgroundColor: RESULT_COLORS[record.result] }}
                     >
                       {RESULT_LABELS[record.result]}
@@ -2222,7 +2003,7 @@ export function PendingReviewDetailPage() {
               <div className="flex flex-col gap-2 items-start w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
                 <p className="text-base text-[var(--semantic-text-secondary)]">
-                  {record.remarks || "特記事項はありません"}
+                  {record.remarks}
                 </p>
               </div>
             </div>
@@ -2244,7 +2025,6 @@ export function PendingReviewDetailPage() {
     if (review.status === "差し戻し") {
       const rejectionComments = MACHINE_REJECTION_COMMENTS[machine.id] ?? [];
       const allMetalXrayComments = [...rejectionComments, ...metalXrayExtraComments];
-      const canCompleteMetalXrayResponse = metalXrayExtraComments.length > 0;
 
       const handleSendMetalXrayComment = () => {
         if (!metalXrayNewComment.trim()) return;
@@ -2268,8 +2048,12 @@ export function PendingReviewDetailPage() {
       const confirmMetalXrayActorPicker = () => {
         const actor = ACTORS.find((a) => a.id === selectedMetalXrayActorId) ?? ACTORS[0];
         setMetalXrayActorPickerOpen(false);
+        // 点検の編集画面へ。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
         navigate(`/app/ledger-list/metal-xray-detection/machines/${machine.id}`, {
-          state: { inspectorName: actor.name },
+          state: {
+            inspectorName: actor.name,
+            editReturn: { to: location.pathname, state: { step, confirmerId } },
+          },
         });
       };
 
@@ -2331,7 +2115,7 @@ export function PendingReviewDetailPage() {
                       </td>
                       <td className="px-2 py-2 text-center text-sm">
                         <span
-                          className="h-6 px-2 rounded-lg text-xs text-white inline-flex items-center justify-center"
+                          className="h-6 w-16 rounded-lg text-xs text-white inline-flex items-center justify-center"
                           style={{ backgroundColor: RESULT_COLORS[record.result] }}
                         >
                           {RESULT_LABELS[record.result]}
@@ -2353,50 +2137,25 @@ export function PendingReviewDetailPage() {
             </div>
 
             <div className="flex flex-col gap-2 items-start w-full mt-12">
-              <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
-
-              <div className="flex flex-col gap-6 items-start w-full">
-                <div className="bg-white flex flex-col gap-6 items-end px-4 py-6 rounded-lg w-full">
-                  <div className="flex flex-col gap-4 items-start w-full">
-                    {allMetalXrayComments.map((c) => (
-                      <div key={c.id} className="flex flex-col gap-4 items-start w-full">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[#808080]">
-                            {c.authorName}
-                          </span>
-                          <span className="text-sm text-[#808080]">{c.timestamp}</span>
-                        </div>
-                        <p className="text-base font-light text-[var(--semantic-text-primary)] leading-relaxed">{c.body}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2 items-start w-full">
-                  <div className="flex gap-2 items-start w-full">
-                    <textarea
-                      value={metalXrayNewComment}
-                      onChange={(e) => setMetalXrayNewComment(e.target.value.slice(0, 255))}
-                      placeholder="コメントを入力"
-                      rows={3}
-                      className="flex-1 bg-white border border-[#d0d0d0] px-2 py-2 rounded-lg text-base font-light text-[var(--semantic-text-primary)] placeholder:text-[#808080] resize-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleSendMetalXrayComment}
-                      disabled={!metalXrayNewComment.trim()}
-                      className={`size-12 rounded-lg flex items-center justify-center text-white text-lg shrink-0 ${
-                        metalXrayNewComment.trim() ? "bg-[#094]" : "bg-[#d0d0d0]"
-                      }`}
-                    >
-                      ➤
-                    </button>
-                  </div>
-                  <span className="text-sm text-[#333] text-right w-full">
-                    {metalXrayNewComment.length}/255
-                  </span>
-                </div>
+              <div className="flex h-11 items-center justify-between w-full">
+                <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
+                <button
+                  type="button"
+                  onClick={openMetalXrayActorPicker}
+                  className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
+                >
+                  <img src={iconEdit} alt="" className="size-5" />
+                  点検内容を修正する
+                </button>
               </div>
+
+              <CommentInput
+                value={metalXrayNewComment}
+                onChange={setMetalXrayNewComment}
+                maxLength={255}
+                comments={allMetalXrayComments}
+                onSend={handleSendMetalXrayComment}
+              />
             </div>
           </div>
 
@@ -2408,13 +2167,11 @@ export function PendingReviewDetailPage() {
             >
               戻る
             </button>
+            {/* コメントや点検内容の修正をしていなくても押せる（差し戻し内容の確認だけで完了できる） */}
             <button
               type="button"
-              disabled={!canCompleteMetalXrayResponse}
               onClick={() => setMetalXrayResponseComplete(true)}
-              className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
-                canCompleteMetalXrayResponse ? "bg-[var(--semantic-brand-primary)]" : "bg-[#808080] opacity-50"
-              }`}
+              className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
             >
               差し戻し対応完了
             </button>
@@ -2423,18 +2180,19 @@ export function PendingReviewDetailPage() {
           {metalXrayActorPickerOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div className="absolute inset-0 bg-black/50" onClick={() => setMetalXrayActorPickerOpen(false)} />
-              <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-16 w-full max-w-full max-w-[480px] mx-40 mx-16 min-h-[620px]">
+              {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
+              <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
                 <h2 className="text-2xl text-[var(--semantic-text-primary)]">実施者を選んでください</h2>
-                <div className="flex flex-wrap gap-4 items-start w-full">
+                <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
                   {ACTORS.map((actor) => (
                     <button
                       key={actor.id}
                       type="button"
                       onClick={() => setSelectedMetalXrayActorId(actor.id)}
-                      className={`flex-1 min-w-[160px] h-16 rounded-lg flex flex-col items-center justify-center gap-1 ${
+                      className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
                         selectedMetalXrayActorId === actor.id
-                          ? "bg-white border border-[var(--semantic-brand-primary)]"
-                          : "bg-white"
+                          ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
+                          : "bg-white border-2 border-transparent"
                       }`}
                     >
                       <span className="text-base text-[var(--semantic-text-primary)]">{actor.name}</span>
@@ -2442,18 +2200,18 @@ export function PendingReviewDetailPage() {
                     </button>
                   ))}
                 </div>
-                <div className="flex gap-6 items-center justify-center w-full mt-auto">
+                <div className="flex gap-10 items-center justify-center w-full">
                   <button
                     type="button"
                     onClick={() => setMetalXrayActorPickerOpen(false)}
-                    className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-40 rounded-lg text-base text-[var(--semantic-text-primary)]"
+                    className="bg-white border-2 border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
                   >
                     閉じる
                   </button>
                   <button
                     type="button"
                     onClick={confirmMetalXrayActorPicker}
-                    className="bg-[var(--semantic-brand-primary)] h-12 w-40 rounded-lg text-base text-white"
+                    className="bg-[#094] h-16 w-60 rounded-lg text-xl text-white font-semibold hover:bg-[#076a38]"
                   >
                     次へ
                   </button>
@@ -2463,29 +2221,12 @@ export function PendingReviewDetailPage() {
           )}
 
           {metalXrayResponseComplete && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              <div className="absolute inset-0 bg-black/50" />
-              <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-16 w-full max-w-full max-w-[480px] mx-40 mx-16 min-h-[620px]">
-                <div className="flex flex-col gap-6 items-center w-full">
-                  <div className="flex flex-col gap-4 items-center w-full">
-                    <CompleteCheckmark />
-                    <h2 className="text-2xl text-[var(--semantic-brand-primary)] text-center w-full">
-                      差し戻し対応が完了しました
-                    </h2>
-                  </div>
-                  <p className="text-base text-[var(--semantic-text-primary)] text-center w-full">
-                    ご確認ありがとうございます。
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => navigate("/app/pending-review")}
-                  className="bg-white border border-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-brand-primary)]"
-                >
-                  確認待ちに戻る
-                </button>
-              </div>
-            </div>
+            <CompleteDialog
+              title="差し戻し対応が完了しました"
+              message="ご確認ありがとうございます。"
+              buttonLabel="確認待ちに戻る"
+              onButtonClick={() => navigate("/app/pending-review")}
+            />
           )}
         </>
       );
@@ -2495,14 +2236,14 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full max-w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-base text-[var(--semantic-text-primary)]">
               {inspectionDate ? inspectionDate.replaceAll("-", "/") : ""}
             </p>
           </div>
 
-          <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full">
             <table className="border-collapse w-full">
               <thead>
                 <tr className="bg-[var(--semantic-brand-primary)]">
@@ -2549,7 +2290,7 @@ export function PendingReviewDetailPage() {
                     </td>
                     <td className="px-2 py-2 text-center text-sm">
                       <span
-                        className="h-6 px-2 rounded-lg text-xs text-white inline-flex items-center justify-center"
+                        className="h-6 w-16 rounded-lg text-xs text-white inline-flex items-center justify-center"
                         style={{ backgroundColor: RESULT_COLORS[record.result] }}
                       >
                         {RESULT_LABELS[record.result]}
@@ -2570,64 +2311,31 @@ export function PendingReviewDetailPage() {
             </table>
           </div>
 
-          <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40 mt-12">
+          <div className="flex flex-col gap-2 items-start w-full max-w-full mt-12">
             <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
 
-            <div className="flex flex-col gap-6 items-start w-full">
-              {(MACHINE_REJECTION_COMMENTS[machine.id]?.length > 0 || metalXrayExtraComments.length > 0) && (
-                <div className="bg-white flex flex-col gap-6 items-end px-4 py-6 rounded-lg w-full">
-                  <div className="flex flex-col gap-4 items-start w-full">
-                    {[...(MACHINE_REJECTION_COMMENTS[machine.id] ?? []), ...metalXrayExtraComments].map((c) => (
-                      <div key={c.id} className="flex flex-col gap-4 items-start w-full">
-                        <div className="flex flex-col items-start gap-1">
-                          <span className="text-lg font-semibold text-[#094]">
-                            {c.authorName}
-                          </span>
-                          <span className="text-sm text-[#808080]">{c.timestamp}</span>
-                        </div>
-                        <p className="text-base font-light text-[var(--semantic-text-primary)] leading-relaxed">{c.body}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-2 items-start w-full">
-                <div className="flex gap-2 items-stretch w-full">
-                  <textarea
-                    value={metalXrayComment}
-                    onChange={(e) => setMetalXrayComment(e.target.value.slice(0, commentMaxLength))}
-                    placeholder="コメントを入力"
-                    className="flex-1 h-12 bg-white border border-[#d0d0d0] px-2 py-2 rounded-lg text-base font-light text-[var(--semantic-text-primary)] placeholder:text-[#808080] resize-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!metalXrayComment.trim()) return;
-                      setMetalXrayExtraComments((prev) => [
-                        ...prev,
-                        {
-                          id: `local-${prev.length}`,
-                          authorName: confirmer.name,
-                          timestamp: "25.04.02 10:20",
-                          body: metalXrayComment.trim(),
-                        },
-                      ]);
-                      setMetalXrayComment("");
-                    }}
-                    disabled={!metalXrayComment.trim()}
-                    className={`size-12 rounded-lg flex items-center justify-center text-white text-lg shrink-0 ${
-                      metalXrayComment.trim() ? "bg-[#094]" : "bg-[#d0d0d0]"
-                    }`}
-                  >
-                    ➤
-                  </button>
-                </div>
-                <span className="text-sm text-[#333] text-right w-full">
-                  {metalXrayComment.length}/{commentMaxLength}
-                </span>
-              </div>
-            </div>
+            <CommentInput
+              value={metalXrayComment}
+              onChange={setMetalXrayComment}
+              maxLength={commentMaxLength}
+              comments={[
+                ...(MACHINE_REJECTION_COMMENTS[machine.id] ?? []),
+                ...metalXrayExtraComments,
+              ]}
+              onSend={() => {
+                if (!metalXrayComment.trim()) return;
+                setMetalXrayExtraComments((prev) => [
+                  ...prev,
+                  {
+                    id: `local-${prev.length}`,
+                    authorName: confirmer.name,
+                    timestamp: commentTimestamp(),
+                    body: metalXrayComment.trim(),
+                  },
+                ]);
+                setMetalXrayComment("");
+              }}
+            />
           </div>
         </div>
 
@@ -2648,58 +2356,195 @@ export function PendingReviewDetailPage() {
           </button>
         </div>
 
-        {step === "complete" && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" />
-            <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-16 w-full max-w-full max-w-[480px] mx-40 mx-16 min-h-[620px]">
-              <div className="flex flex-col gap-6 items-center w-full">
-                <div className="flex flex-col gap-4 items-center w-full">
-                  <CompleteCheckmark />
-                  <h2 className="text-2xl text-[var(--semantic-brand-primary)] text-center w-full">
-                    提出が完了しました
-                  </h2>
-                </div>
-                <p className="text-base text-[var(--semantic-text-primary)] text-center w-full">
-                  ご確認ありがとうございます。
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => navigate("/app/pending-review")}
-                className="bg-white border border-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-brand-primary)]"
-              >
-                確認待ちに戻る
-              </button>
-            </div>
-          </div>
+        {showComplete && (
+          <CompleteDialog
+            title="提出が完了しました"
+            message="ご確認ありがとうございます。"
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
         )}
       </>
     );
   }
 
-  if (step === "complete") {
+  // 機械器具点検の差し戻し（Figma: 確認待ち_差し戻し_機械器具点検_詳細）。
+  // 実施者が差し戻し理由を読み、必要なら点検内容を直してから「差し戻し対応完了」を押す。
+  if (isEquipmentRejected && line) {
+    const actor = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
+    const rejectionComments = LINE_REJECTION_COMMENTS[line.id] ?? [];
+    const allEquipmentComments = [...rejectionComments, ...equipmentExtraComments];
+
+    const handleSendEquipmentComment = () => {
+      if (!equipmentNewComment.trim()) return;
+      setEquipmentExtraComments((prev) => [
+        ...prev,
+        {
+          id: `local-${prev.length}`,
+          authorName: actor.name,
+          timestamp: commentTimestamp(),
+          body: equipmentNewComment.trim(),
+        },
+      ]);
+      setEquipmentNewComment("");
+    };
+
+    // 点検の編集画面へ。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
+    const goToEdit = () => {
+      navigate(`/app/ledger-list/equipment-inspection/lines/${line.id}`, {
+        state: {
+          inspectorName: actor.name,
+          editReturn: { to: location.pathname, state: { step, actorId: equipmentActorId } },
+        },
+      });
+    };
+
     return (
       <>
-        <AppHeader title={`${isCleaning ? "清掃記録" : "機械器具点検"}_${lineLabel}`} />
-        <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-[var(--semantic-brand-primary)]">
-            <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" />
-            <path d="M24 41L34 51L56 29" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <p className="text-2xl text-[var(--semantic-brand-primary)]">
-            {outcome === "rejected" ? "差し戻しが完了しました" : "提出が完了しました"}
-          </p>
-          <p className="text-base text-[var(--semantic-text-primary)]">
-            {outcome === "rejected" ? "実施者に差し戻し内容が通知されます。" : "ご確認ありがとうございます。"}
-          </p>
+        <AppHeader title="機械器具点検" />
+        {/* 差し戻し内容を最後まで読むまで完了ボタンは押せない（Figma「下までスクロールしていない時」＝非活性） */}
+        <ScrollEndArea
+          className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
+          onReachEnd={() => setEquipmentScrolledToEnd(true)}
+        >
+          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+            <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
+            <p className="text-sm text-[var(--semantic-text-primary)]">
+              承認者から差し戻し理由のコメントがあります。
+            </p>
+          </div>
+
+          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{actor.name}</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">持ち場/ライン</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{lineLabel}</p>
+            </div>
+          </div>
+
+          {(["start", "end"] as const).map((tab) => (
+            <div
+              key={tab}
+              className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full"
+            >
+              <div className="flex items-center justify-between w-full">
+                <p className="text-base text-[var(--semantic-text-primary)]">実施区分</p>
+                <p className="text-base text-[var(--semantic-text-primary)]">{TAB_LABEL[tab]}</p>
+              </div>
+              <div className="border-t border-[#d0d0d0] w-full" />
+
+              {inspectionPoints.map((point) => (
+                <div key={point.id} className="flex flex-col gap-3 items-start w-full">
+                  <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-2 rounded-lg w-full">
+                    <p className="text-base text-white">点検箇所</p>
+                    <p className="text-base text-white">{point.location}</p>
+                  </div>
+                  <div className="flex flex-col gap-3 items-start px-2 w-full">
+                    <p className="text-base text-[var(--semantic-brand-primary)]">点検項目</p>
+                    {point.items.map((item) => {
+                      const record = initialRecords[keyFor(point.location, item)];
+                      return (
+                        <div key={item} className="flex flex-col gap-2 items-start w-full">
+                          <div className="flex items-center justify-between w-full gap-4">
+                            <p className="text-base text-[var(--semantic-text-primary)]">{item}</p>
+                            <StatusTag status={record?.status ?? null} />
+                          </div>
+                          {record?.status === "ng" && (
+                            <div className="flex flex-col gap-1 items-start px-2 w-full">
+                              <p className="text-base text-[var(--semantic-text-secondary)]">
+                                原因：{record.cause}
+                              </p>
+                              <p className="text-base text-[var(--semantic-text-secondary)]">
+                                対応：{record.actionType}
+                                {record.actionDetail && (
+                                  <>
+                                    <br />
+                                    {record.actionDetail}
+                                  </>
+                                )}
+                              </p>
+                            </div>
+                          )}
+                          {record?.timestamp && (
+                            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                              {record.inspector} {record.timestamp}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="border-t border-[#d0d0d0] w-full" />
+                </div>
+              ))}
+
+              <div className="flex flex-col gap-2 items-start px-2 w-full">
+                <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+                <p className="text-base text-[var(--semantic-text-secondary)]">
+                  {tab === "start" ? initialRemarks : ""}
+                </p>
+              </div>
+            </div>
+          ))}
+
+          <div className="flex flex-col gap-2 items-start w-full max-w-full mt-12">
+            <div className="flex h-11 items-center justify-between w-full">
+              <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
+              <button
+                type="button"
+                onClick={goToEdit}
+                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
+              >
+                <img src={iconEdit} alt="" className="size-5" />
+                点検内容を修正する
+              </button>
+            </div>
+
+            <CommentInput
+              value={equipmentNewComment}
+              onChange={setEquipmentNewComment}
+              maxLength={255}
+              comments={allEquipmentComments}
+              onSend={handleSendEquipmentComment}
+            />
+          </div>
+        </ScrollEndArea>
+
+        <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => navigate("/app/pending-review")}
-            className="bg-white border border-[var(--semantic-brand-primary)] h-12 px-6 rounded-lg text-base text-[var(--semantic-brand-primary)]"
+            onClick={() => setStep("confirmer")}
+            className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
-            確認待ちに戻る
+            戻る
+          </button>
+          <button
+            type="button"
+            disabled={!equipmentScrolledToEnd}
+            onClick={() => setEquipmentResponseComplete(true)}
+            className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+              equipmentScrolledToEnd ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+            }`}
+          >
+            差し戻し対応完了
           </button>
         </div>
+
+        {equipmentResponseComplete && (
+          <CompleteDialog
+            title="差し戻し対応が完了しました"
+            message="ご確認ありがとうございます。"
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
+        )}
       </>
     );
   }
@@ -2708,7 +2553,7 @@ export function PendingReviewDetailPage() {
     <>
       <AppHeader title={`${isCleaning ? "清掃記録" : "機械器具点検"}_${lineLabel}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
@@ -2733,7 +2578,7 @@ export function PendingReviewDetailPage() {
           ? cleaningPoints.map((point) => (
               <div
                 key={point.id}
-                className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40"
+                className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full"
               >
                 <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-2 rounded-lg w-full">
                   <p className="text-base text-white">清掃箇所</p>
@@ -2765,7 +2610,7 @@ export function PendingReviewDetailPage() {
           : (["start", "end"] as const).map((tab) => (
               <div
                 key={tab}
-                className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40"
+                className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full"
               >
                 <div className="flex items-center justify-between w-full">
                   <p className="text-base text-[var(--semantic-text-primary)]">実施区分</p>
@@ -2821,16 +2666,14 @@ export function PendingReviewDetailPage() {
                 <div className="flex flex-col gap-2 items-start px-2 w-full">
                   <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
                   <p className="text-base text-[var(--semantic-text-secondary)]">
-                    {tab === "start"
-                      ? initialRemarks
-                      : "点検内容に関する補足を入力できます（任意）"}
+                    {tab === "start" ? initialRemarks : ""}
                   </p>
                 </div>
               </div>
             ))}
 
         {isCleaning && (
-          <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full max-w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
             <p className="text-base text-[var(--semantic-text-secondary)]">
               {cleaningInitialRemarks}
@@ -2838,49 +2681,43 @@ export function PendingReviewDetailPage() {
           </div>
         )}
 
-        <div className="flex gap-2 items-center w-full max-w-full max-w-[480px] mx-40">
-          <input
-            type="text"
-            value={comment}
-            onChange={(e) => setComment(e.target.value.slice(0, commentMaxLength))}
-            placeholder="コメントを入力"
-            className="flex-1 bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
-          />
-          <span className="text-xs text-[var(--semantic-text-secondary)] shrink-0">
-            {comment.length}/{commentMaxLength}
-          </span>
-        </div>
+        <CommentInput
+          value={comment}
+          onChange={setComment}
+          maxLength={commentMaxLength}
+          authorName={confirmer.name}
+        />
       </div>
 
       <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
         <button
           type="button"
           onClick={() => setStep("confirmer")}
-          className="bg-white border border-[#333] flex items-center justify-center h-16 w-40 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+          className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
         >
           戻る
         </button>
         <button
           type="button"
-          disabled={!comment.trim()}
-          onClick={handleReject}
-          title={!comment.trim() ? "差し戻す理由をコメントに入力してください" : undefined}
-          className={`h-16 w-40 rounded-lg text-xl border ${
-            comment.trim()
-              ? "bg-white border-[var(--semantic-brand-danger)] text-[var(--semantic-brand-danger)]"
-              : "bg-[#d0d0d0] border-[#d0d0d0] text-white"
-          }`}
-        >
-          差し戻し
-        </button>
-        <button
-          type="button"
           onClick={handleApprove}
-          className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-40 rounded-lg text-xl text-white"
+          className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
         >
           提出
         </button>
       </div>
+
+      {showComplete && (
+        <CompleteDialog
+          title={outcome === "rejected" ? "差し戻しが完了しました" : "提出が完了しました"}
+          message={
+            outcome === "rejected"
+              ? "実施者に差し戻し内容が通知されます。"
+              : "ご確認ありがとうございます。"
+          }
+          buttonLabel="確認待ちに戻る"
+          onButtonClick={() => navigate("/app/pending-review")}
+        />
+      )}
     </>
   );
 }

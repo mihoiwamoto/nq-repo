@@ -16,8 +16,8 @@ import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 
 const STATUS_OPTIONS: { value: ConfirmStatus; label: string }[] = [
-  { value: "unconfirmed", label: "確認待ち" },
-  { value: "confirmed", label: "確認済み" },
+  { value: "unconfirmed", label: "点検済み" },
+  { value: "confirmed", label: "承認待ち" },
 ];
 
 const MONTH_LABELS = [

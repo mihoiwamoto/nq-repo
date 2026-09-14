@@ -38,6 +38,10 @@ function StatusTag({ result }: { result: WaterCheckResult }) {
   );
 }
 
+function hasValue(value: unknown) {
+  return value !== undefined && value !== null && value !== "";
+}
+
 function Timestamp({ implementer, timestamp }: { implementer: string; timestamp: string }) {
   return (
     <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
@@ -69,7 +73,7 @@ function CheckRow({
           <p>対応：{result.action || "記録なし"}</p>
         </div>
       )}
-      <Timestamp implementer={implementer} timestamp={timestamp} />
+      {timestamp && <Timestamp implementer={implementer} timestamp={timestamp} />}
     </div>
   );
 }
@@ -214,7 +218,9 @@ export function RecordDetailPage() {
               <p className="text-xl text-[var(--semantic-text-primary)]">ph値</p>
               <p className="text-xl text-[var(--semantic-text-primary)]">{record.ph}</p>
             </div>
-            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            {hasValue(record.ph) && (
+              <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -229,7 +235,9 @@ export function RecordDetailPage() {
                 塩素補充
               </span>
             )}
-            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            {hasValue(record.chlorine) && (
+              <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -244,7 +252,9 @@ export function RecordDetailPage() {
                 UV殺菌灯交換
               </span>
             )}
-            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            {hasValue(record.uvOperatingHours) && (
+              <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -261,7 +271,9 @@ export function RecordDetailPage() {
                 {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
               </p>
             </div>
-            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            {hasValue(record.uvIndicatorLight) && (
+              <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -278,7 +290,9 @@ export function RecordDetailPage() {
                 {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
               </p>
             </div>
-            <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            {hasValue(record.abnormalDetectionLight) && (
+              <Timestamp implementer={record.implementer} timestamp={`${formatDate(record.date)} ${record.time}`} />
+            )}
           </div>
         </div>
 

@@ -10,6 +10,12 @@ export type SampleEntry = {
   expiryDate: string;
   inspectorName?: string;
   inspectionDate?: string;
+  /**
+   * 製造日・ロットNo. は管理画面で「記載する」と設定した製品だけに入る任意項目。
+   * 未設定の製品は値を持たず、一覧カードにもその行を出さない。
+   */
+  manufactureDate?: string;
+  lotNumber?: string;
 };
 
 export const SAMPLE_STATUS_LABELS: Record<SampleStatus, string> = {
@@ -31,6 +37,8 @@ export const SAMPLE_ENTRIES: SampleEntry[] = [
     expiryDate: "2026-08-15",
     inspectorName: "佐藤健一",
     inspectionDate: "2026-08-25",
+    manufactureDate: "2026-08-22",
+    lotNumber: "SSDLODDLDA",
   },
   {
     id: "s2",
@@ -40,6 +48,8 @@ export const SAMPLE_ENTRIES: SampleEntry[] = [
     expiryDate: "2026-08-10",
     inspectorName: "高橋和子",
     inspectionDate: "2026-08-25",
+    manufactureDate: "2026-08-01",
+    lotNumber: "SSDLODDLDB",
   },
   {
     id: "s3",
@@ -49,6 +59,8 @@ export const SAMPLE_ENTRIES: SampleEntry[] = [
     expiryDate: "2026-08-20",
     inspectorName: "渡辺真由",
     inspectionDate: "2026-08-24",
+    // ロットNo. だけ「記載する」設定にしている製品
+    lotNumber: "BASKNDXX",
   },
   {
     id: "s4",
@@ -79,7 +91,12 @@ export type SampleConfirmState = {
   unit: string;
   storageLocation: string;
   remarks: string;
-  timestamp: string;
+  /**
+   * 項目ごとの入力時刻（"YYYY/MM/DD HH:mm"）。キーは "manufactureDate" /
+   * "sampleType" / "quantity" / "unit" / "storageLocation"。
+   * 記録画面で付けた時刻を確認画面まで持ち越すために持たせる。
+   */
+  timestamps?: Record<string, string>;
 };
 
 export type StoredSample = {
@@ -87,6 +104,8 @@ export type StoredSample = {
   productName: string;
   manufactureDate: string;
   expiryDate: string;
+  /** 管理画面で「記載する」と設定した製品だけに入る任意項目 */
+  lotNumber?: string;
   destructionTarget: boolean;
   inspectorName: string;
   inspectionDate: string;
@@ -103,6 +122,7 @@ export const STORED_SAMPLES: StoredSample[] = [
     productName: "仕出しだし巻き玉子 冷凍",
     manufactureDate: "2026-02-28",
     expiryDate: "2026-03-31",
+    lotNumber: "SSDLODDLDA",
     destructionTarget: false,
     inspectorName: "高橋和子",
     inspectionDate: "2026-02-28",
@@ -117,6 +137,7 @@ export const STORED_SAMPLES: StoredSample[] = [
     productName: "厚焼き玉子（本）　500g",
     manufactureDate: "2026-02-10",
     expiryDate: "2026-03-13",
+    lotNumber: "SSDLODDLDB",
     destructionTarget: true,
     inspectorName: "佐藤健一",
     inspectionDate: "2026-02-10",
@@ -145,6 +166,7 @@ export const STORED_SAMPLES: StoredSample[] = [
     productName: "黄身入りソーセージ　1kg",
     manufactureDate: "2026-01-20",
     expiryDate: "2026-04-20",
+    lotNumber: "KMSSG1KG",
     destructionTarget: false,
     inspectorName: "小林誠司",
     inspectionDate: "2026-01-20",
@@ -173,6 +195,8 @@ export type SampleReviewComment = {
 export type SampleReviewDetail = {
   productName: string;
   expiryDate: string;
+  /** 管理画面で「記載する」と設定した製品だけに入る任意項目 */
+  lotNumber?: string;
   inspectorName: string;
   inspectionDate: string;
   manufactureDate: string;
@@ -189,6 +213,7 @@ export const SAMPLE_REVIEW_DETAILS: Record<string, SampleReviewDetail> = {
   s1: {
     productName: "仕出しだし巻き玉子 冷凍",
     expiryDate: "2026-08-15",
+    lotNumber: "SSDLODDLDA",
     inspectorName: "佐藤健一",
     inspectionDate: "2026-08-25",
     manufactureDate: "2026-08-22",
@@ -203,6 +228,7 @@ export const SAMPLE_REVIEW_DETAILS: Record<string, SampleReviewDetail> = {
   s2: {
     productName: "厚焼き玉子（本）　500g",
     expiryDate: "2026-08-10",
+    lotNumber: "SSDLODDLDB",
     inspectorName: "高橋和子",
     inspectionDate: "2026-08-25",
     manufactureDate: "2026-08-01",
@@ -217,6 +243,7 @@ export const SAMPLE_REVIEW_DETAILS: Record<string, SampleReviewDetail> = {
   s3: {
     productName: "スクランブルエッグ（冷凍）　350g",
     expiryDate: "2026-08-20",
+    lotNumber: "BASKNDXX",
     inspectorName: "渡辺真由",
     inspectionDate: "2026-08-24",
     manufactureDate: "2026-08-15",

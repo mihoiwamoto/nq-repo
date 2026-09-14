@@ -5,6 +5,7 @@ import { POINT_STATUS_COLORS, POINT_STATUS_LABELS } from "./mockData";
 import { useWaterInspection } from "./WaterInspectionContext";
 import { ProgressPanel } from "./ProgressPanel";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
+import { StatusChip } from "../../components/StatusChip";
 
 export function PointSelectionPage() {
   const { points } = useWaterInspection();
@@ -44,7 +45,7 @@ export function PointSelectionPage() {
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-10 items-center">
-        <div className="flex flex-col gap-6 items-start w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex flex-col gap-6 items-start w-full max-w-full">
           {points.map((point) => (
             <Link
               key={point.id}
@@ -52,19 +53,14 @@ export function PointSelectionPage() {
               className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center px-4 py-3 rounded-lg w-full"
             >
               <p className="flex-1 text-lg text-[var(--semantic-text-primary)]">{point.name}</p>
-              <span
-                className="flex h-8 w-20 items-center justify-center rounded-lg text-sm text-white shrink-0"
-                style={{ backgroundColor: POINT_STATUS_COLORS[point.status] }}
-              >
-                {POINT_STATUS_LABELS[point.status]}
-              </span>
+              <StatusChip color={POINT_STATUS_COLORS[point.status]}>{POINT_STATUS_LABELS[point.status]}</StatusChip>
             </Link>
           ))}
         </div>
 
         <Link
           to="/app/ledger-list"
-          className="bg-white border border-[var(--semantic-text-primary)] flex h-16 items-center justify-center px-4 py-2 rounded-lg w-90 max-w-full"
+          className="bg-white border border-[var(--semantic-text-primary)] flex items-center justify-center px-4 py-6 rounded-lg w-90 max-w-full"
         >
           <span className="text-xl text-[var(--semantic-text-primary)]">帳票一覧に戻る</span>
         </Link>

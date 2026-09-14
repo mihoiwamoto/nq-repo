@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import iconXMark from "../../../assets/figma/icons/common/cancel-custom.svg";
-import iconCheck from "../../../assets/figma/icons/common/checkmark-custom.svg";
+import iconCheck from "../../../assets/figma/icons/common/checkmark-success.svg";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { todayString } from "../../utils/date";
+import { seedTimestamp, seedTimestamps } from "../../utils/recordTimestamps";
+import {
+  fillSlice,
+  useProgressConfirmed,
+  useProgressRecordFill,
+  type RecordFill,
+} from "../../utils/progressRecordFill";
 import { AppHeader } from "../../layout/AppHeader";
 import { ACTORS } from "../cleaning-record/mockData";
 import { useScaleInspection } from "./ScaleInspectionContext";
-import { spareScales, type ActionCheck } from "./mockData";
+import {
+  pendingReviewScales,
+  scalesByPost as registeredScalesByPost,
+  spareScales,
+  type ActionCheck,
+} from "./mockData";
 
 function Dash() {
   return <span className="inline-block w-3 h-px bg-[#333] mx-auto" />;
@@ -21,8 +35,8 @@ function ActionCheckBadge({ value }: { value: ActionCheck }) {
   }
   if (value === "ng") {
     return (
-      <span className="w-full h-full flex items-center justify-center bg-[#f85c5c] text-white text-lg">
-        <img src={iconXMark} alt="異常あり" className="size-4" />
+      <span className="size-6 flex items-center justify-center mx-auto">
+        <img src={iconXMark} alt="異常あり" className="size-6" />
       </span>
     );
   }
@@ -54,12 +68,70 @@ export function ScaleListPage() {
   const { postId } = useParams<{ postId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { posts, scalesByPost, addScaleWithId } = useScaleInspection();
+  const { posts, scalesByPost, addScaleWithId, seedPostRecords } = useScaleInspection();
 
   const post = posts.find((p) => p.id === postId);
+  // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
+  const progressFill = useProgressRecordFill();
+  const postFill: RecordFill = post?.status === "inspected" ? "full" : "none";
+  const fill = progressFill ?? postFill;
+  // 確認完了は確認まで通った記録なので、どの秤も欠けのない（すべて正常な）記録で埋める
+  const confirmed = useProgressConfirmed();
   const scales = postId ? scalesByPost[postId] ?? [] : [];
-  const [date, setDate] = useState("2025-03-24");
+
   const inspectorName = (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
+
+  // 記録は context に入れる。ここで表示用に作るだけだと、詳細画面・確認画面が空のままになる。
+  // 流し込みは「持ち場 + 記録の入り具合」ごとに 1 回だけ（同じ状態で開き直したときは
+  // 入力を消さないよう context 側で無視される）。
+  useEffect(() => {
+    if (!postId) return;
+    // 未点検で空にしたあとに別のステータスで開き直しても記録を作れるよう、
+    // 空のときは登録されている秤を土台にする
+    const live = scalesByPost[postId] ?? [];
+    const baseScales = live.length > 0 ? live : registeredScalesByPost[postId] ?? [];
+    const completeRecord =
+      pendingReviewScales.find((s) => s.record?.actionCheck === "ok")?.record ??
+      pendingReviewScales[0]?.record ??
+      null;
+    // 点検中は前半の秤だけ記録が入った「記録途中」の状態にする
+    const recordedIds = new Set(fillSlice(baseScales, fill).map((scale) => scale.id));
+    seedPostRecords(
+      postId,
+      Object.fromEntries(
+        baseScales.map((scale) => {
+          if (!recordedIds.has(scale.id)) return [scale.id, null];
+          const reviewed = confirmed
+            ? completeRecord
+            : (pendingReviewScales.find((s) => s.id === scale.id) ?? pendingReviewScales[0])?.record ?? null;
+          // モックの記録には入力時刻が入っていないので、実施日から組み立てて付けておく。
+          // これが無いと確認画面・詳細画面で「記録はあるのにタイムスタンプだけ出ない」状態になる。
+          // 値の入っている項目にだけ付くので、未入力の項目はタイムスタンプも出ない。
+          const stamped = reviewed && {
+            ...reviewed,
+            inspector: reviewed.inspector ?? inspectorName,
+            timestamps:
+              reviewed.timestamps ??
+              seedTimestamps(
+                {
+                  actionCheck: reviewed.actionCheck,
+                  levelCheck: reviewed.levelCheck,
+                  dirtCheck: reviewed.dirtCheck,
+                  displayValue: reviewed.displayValue,
+                },
+                seedTimestamp(post?.date)
+              ),
+          };
+          return [scale.id, stamped];
+        })
+      ),
+      `${fill}:${confirmed}`,
+      // 未点検はまだ 1 台も点検していないので、秤の行そのものを出さない
+      { clearScales: fill === "none" }
+    );
+  }, [postId, fill, confirmed, scalesByPost, seedPostRecords, post?.date, inspectorName]);
+
+  const [date, setDate] = useState(() => (fill !== "none" ? post?.date || todayString() : todayString()));
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addTab, setAddTab] = useState<"other" | "spare">("other");
@@ -94,24 +166,21 @@ export function ScaleListPage() {
     const newId = `${postId}-${scales.length + 1}`;
     addScaleWithId(postId, newId, selectedSource);
     setAddDialogOpen(false);
-    navigate(`/app/ledger-list/scale-inspection/posts/${postId}/scales/${newId}`);
+    navigate(`/app/ledger-list/scale-inspection/posts/${postId}/scales/${newId}`, {
+      state: { inspectorName },
+    });
   }
 
   return (
     <>
       <AppHeader title={`秤点検記録_${post?.name ?? ""}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-5 items-center">
-        <div className="flex flex-col gap-4 items-start w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex flex-col gap-4 items-start w-full max-w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={date} onChange={setDate} />
           </div>
 
           <div className="bg-white rounded-lg overflow-x-auto w-full">
@@ -131,17 +200,21 @@ export function ScaleListPage() {
               </thead>
               <tbody>
                 {scales.length === 0 ? (
-                  <tr>
-                    <td colSpan={COLUMNS.length} className="text-center text-[var(--semantic-text-secondary)] py-8">
-                      点検する秤が登録されていません
-                    </td>
-                  </tr>
+                  // 未点検は「表が空欄」の状態にしたいので、案内文も出さない
+                  fill === "none" ? null : (
+                    <tr>
+                      <td colSpan={COLUMNS.length} className="text-center text-[var(--semantic-text-secondary)] py-8">
+                        点検する秤が登録されていません
+                      </td>
+                    </tr>
+                  )
                 ) : (
                   scales.map((scale, index) => (
                     <tr key={scale.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
                       <td className="px-2 py-2 text-center">
                         <Link
                           to={`/app/ledger-list/scale-inspection/posts/${postId}/scales/${scale.id}`}
+                          state={{ inspectorName }}
                           className="bg-[var(--semantic-brand-primary)] inline-flex h-8 w-14 items-center justify-center rounded-lg text-xs text-white"
                         >
                           詳細
@@ -151,27 +224,31 @@ export function ScaleListPage() {
                       <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
                         {scale.serialNumber}
                       </td>
-                      <td className={`text-center ${
-                        !scale.skipped && scale.record?.actionCheck === "ng" ? "p-0" : "px-2 py-2"
-                      }`}>
+                      <td
+                        className={`px-2 py-2 text-center ${
+                          !scale.skipped && scale.record?.actionCheck === "ng"
+                            ? "bg-[var(--semantic-status-error)]"
+                            : ""
+                        }`}
+                      >
                         {scale.skipped ? <Dash /> : <ActionCheckBadge value={scale.record?.actionCheck ?? null} />}
                       </td>
                       <td className="px-2 py-2 text-center">
-                        {scale.skipped || scale.record?.actionCheck === "ng" ? (
+                        {scale.skipped ? (
                           <Dash />
                         ) : (
                           <CheckBadge checked={scale.record?.levelCheck ?? false} />
                         )}
                       </td>
                       <td className="px-2 py-2 text-center">
-                        {scale.skipped || scale.record?.actionCheck === "ng" ? (
+                        {scale.skipped ? (
                           <Dash />
                         ) : (
                           <CheckBadge checked={scale.record?.dirtCheck ?? false} />
                         )}
                       </td>
                       <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
-                        {scale.skipped || scale.record?.actionCheck === "ng" ? <Dash /> : scale.record?.displayValue ?? ""}
+                        {scale.skipped ? <Dash /> : scale.record?.displayValue ?? ""}
                       </td>
                     </tr>
                   ))
@@ -217,7 +294,7 @@ export function ScaleListPage() {
       {addDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeAddDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full max-w-[480px] mx-40 mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full mx-40 mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">秤を選択してください</h2>
               <div className="flex flex-col gap-4 items-start w-full">

@@ -47,7 +47,7 @@ const TEST_PIECE_DATA = {
 
 function StatusTag({ status }: { status: string }) {
   return (
-    <span className="bg-[#19c95f] flex items-center justify-center h-7 px-6 rounded-lg text-sm text-white">
+    <span className="bg-[#19c95f] flex items-center justify-center h-7 w-[88px] rounded-lg text-sm text-white">
       {status}
     </span>
   );
@@ -89,9 +89,11 @@ function TestPieceSection({
               <p className="text-xl text-[#333]">点検時間</p>
               <p className="text-xl text-[#333]">{item.time}</p>
             </div>
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-              {inspectorName} 2026/08/27 08:25
-            </p>
+            {item.time && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                {inspectorName} 2026/08/27 08:25
+              </p>
+            )}
             {itemIndex === 0 && item.pieces.length > 0 && (
               <div className="border-t border-[#d0d0d0]" />
             )}

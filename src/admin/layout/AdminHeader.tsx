@@ -23,41 +23,43 @@ export function AdminHeader() {
         </Link>
         <span className="text-base font-semibold text-white">Design Spec</span>
       </div>
-      <button
-        type="button"
-        onClick={() => setMenuOpen((v) => !v)}
-        className="h-10 px-20 rounded-lg bg-white flex items-center justify-center text-base text-[var(--semantic-text-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
-      >
-        {ACCOUNT_NAME}
-      </button>
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => setMenuOpen((v) => !v)}
+          className="h-10 px-20 rounded-lg bg-white flex items-center justify-center text-base text-[var(--semantic-text-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
+        >
+          {ACCOUNT_NAME}
+        </button>
 
-      {menuOpen && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-          <div className="absolute right-6 top-[calc(100%+8px)] z-50 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-start py-2 w-64">
-            {MENU_LINKS.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setMenuOpen(false)}
-                className="w-full px-6 py-3 text-lg text-[var(--semantic-brand-primary)] hover:bg-[var(--semantic-background-page)]"
+        {menuOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+            <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-start py-2">
+              {MENU_LINKS.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full px-6 py-3 text-lg text-[var(--semantic-brand-primary)] hover:bg-[var(--semantic-background-page)]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  setLogoutDialogOpen(true);
+                }}
+                className="w-full px-6 py-3 text-lg text-left text-[var(--semantic-brand-primary)] hover:bg-[var(--semantic-background-page)]"
               >
-                {item.label}
-              </Link>
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                setLogoutDialogOpen(true);
-              }}
-              className="w-full px-6 py-3 text-lg text-left text-[var(--semantic-brand-primary)] hover:bg-[var(--semantic-background-page)]"
-            >
-              ログアウト
-            </button>
-          </div>
-        </>
-      )}
+                ログアウト
+              </button>
+            </div>
+          </>
+        )}
+      </div>
 
       {logoutDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">

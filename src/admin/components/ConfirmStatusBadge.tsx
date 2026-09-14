@@ -1,8 +1,8 @@
 export type ConfirmStatus = "unconfirmed" | "confirmed";
 
 const CONFIRM_STATUS_LABEL: Record<ConfirmStatus, string> = {
-  unconfirmed: "確認待ち",
-  confirmed: "確認済み",
+  unconfirmed: "点検済み",
+  confirmed: "承認待ち",
 };
 
 export const CONFIRM_STATUS_COLOR: Record<ConfirmStatus, string> = {

@@ -55,7 +55,7 @@ export const MACHINES: Machine[] = [
   {
     id: "m1",
     name: "金探1号機（500g以下の場合）",
-    status: "inspected",
+    status: "not_inspected",
     metalDetectorModel: "GM-500S",
     xrayDetectorModel: "XR-500S",
     weightCheckerModel: "WC-500S",
@@ -347,10 +347,23 @@ export const MACHINE_RECORDS: Record<string, MachineRecord[]> = {
   ],
 };
 
+/**
+ * その探知機の記録。m3 / m4 には専用のモックが無いので m2 の記録を流用する
+ * （記録が引けないと点検済み・確認完了の画面が空になってしまうため）。
+ */
+export function recordsForMachine(machineId: string | undefined): MachineRecord[] {
+  return MACHINE_RECORDS[machineId ?? ""] ?? MACHINE_RECORDS.m2 ?? [];
+}
+
 export const MACHINE_INSPECTION_DATES: Record<string, string> = {
   m1: "2025-03-24",
   m2: "2025-03-24",
 };
+
+/** 記録と同じく、m3 / m4 は m2 の実施日を流用する */
+export function inspectionDateForMachine(machineId: string | undefined): string | undefined {
+  return MACHINE_INSPECTION_DATES[machineId ?? ""] ?? MACHINE_INSPECTION_DATES.m2;
+}
 
 export type MachineRejectionComment = {
   id: string;

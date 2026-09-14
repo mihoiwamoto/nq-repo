@@ -15,6 +15,8 @@ export type SampleRecord = {
   date: string;
   productName: string;
   expirationDate: string;
+  /** 管理画面で「記載する」と設定した製品だけに入る任意項目 */
+  lotNumber?: string;
   manufactureDate: string;
   sampleType: string;
   sampleQuantity: string;

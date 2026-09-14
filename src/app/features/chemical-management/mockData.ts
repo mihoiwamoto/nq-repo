@@ -1,3 +1,4 @@
+
 export type ChemicalStatus = "not_inspected" | "in_progress" | "inspected";
 
 export type Chemical = {
@@ -70,14 +71,21 @@ export const chemicals: Chemical[] = [
   },
 ];
 
+export type StockCategory = "入庫" | "出庫";
+
 export type ChemicalRecord = {
   id: string;
   chemicalId: string;
   date: string;
   managementNumber: string;
   storageLocation: string;
+  category: StockCategory | "";
+  /** この記録を付ける前の在庫数（画面ラベルは「元在庫数」） */
+  previousStock: string;
   usedQuantity: string;
+  currentStock: string;
   purposeOfUse: string;
+  remarks: string;
   actor: string;
 };
 
@@ -88,8 +96,12 @@ export const initialRecords: ChemicalRecord[] = [
     date: "2025/04/01",
     managementNumber: "CHM-001",
     storageLocation: "薬品庫A",
+    category: "出庫",
+    previousStock: "5,000ml",
     usedQuantity: "100ml",
+    currentStock: "4,900ml",
     purposeOfUse: "製造ラインA用途",
+    remarks: "製造ラインA用途",
     actor: "田中裕子",
   },
   {
@@ -98,9 +110,71 @@ export const initialRecords: ChemicalRecord[] = [
     date: "2025/04/02",
     managementNumber: "CHM-001",
     storageLocation: "薬品庫A",
+    category: "出庫",
+    previousStock: "4,900ml",
     usedQuantity: "50ml",
+    currentStock: "4,850ml",
     purposeOfUse: "清掃用途",
+    remarks: "清掃用途",
     actor: "山田太郎",
+  },
+  // 点検中（c2）: 記録済みのデータあり
+  {
+    id: "r3",
+    chemicalId: "c2",
+    date: "2025/04/01",
+    managementNumber: "CHM-002",
+    storageLocation: "薬品庫B",
+    category: "入庫",
+    previousStock: "3,000ml",
+    usedQuantity: "500ml",
+    currentStock: "3,500ml",
+    purposeOfUse: "定期補充",
+    remarks: "定期補充",
+    actor: "佐藤健一",
+  },
+  {
+    id: "r4",
+    chemicalId: "c2",
+    date: "2025/04/02",
+    managementNumber: "CHM-002",
+    storageLocation: "薬品庫B",
+    category: "出庫",
+    previousStock: "3,500ml",
+    usedQuantity: "500ml",
+    currentStock: "3,000ml",
+    purposeOfUse: "豆腐凝固用",
+    remarks: "豆腐凝固用",
+    actor: "佐藤健一",
+  },
+  // 点検済み（c3）: 記録済みのデータあり
+  {
+    id: "r5",
+    chemicalId: "c3",
+    date: "2025/04/01",
+    managementNumber: "CHM-003",
+    storageLocation: "薬品庫A",
+    category: "入庫",
+    previousStock: "1,500g",
+    usedQuantity: "1,000g",
+    currentStock: "2,500g",
+    purposeOfUse: "定期補充",
+    remarks: "定期補充",
+    actor: "中村美咲",
+  },
+  {
+    id: "r6",
+    chemicalId: "c3",
+    date: "2025/04/02",
+    managementNumber: "CHM-003",
+    storageLocation: "薬品庫A",
+    category: "出庫",
+    previousStock: "2,500g",
+    usedQuantity: "500g",
+    currentStock: "2,000g",
+    purposeOfUse: "製造ラインB用途",
+    remarks: "製造ラインB用途",
+    actor: "中村美咲",
   },
 ];
 

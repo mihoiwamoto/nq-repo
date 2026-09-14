@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { AppHeader } from "../../layout/AppHeader";
 import { HELP_CATEGORIES, HELP_FAQS } from "../../../admin/features/help/mockData";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import iconSearch from "../../../assets/figma/icons/common/search.svg";
 
 export function HelpPage() {
   const [keywordInput, setKeywordInput] = useState("");
@@ -134,7 +135,8 @@ export function HelpPage() {
               onClick={handleSearch}
               className="bg-[var(--semantic-brand-primary)] drop-shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-base text-white shrink-0"
             >
-              🔍 検索
+              <img src={iconSearch} alt="" className="size-5" />
+              検索
             </button>
           </div>
         </div>
@@ -177,7 +179,7 @@ export function HelpPage() {
                       className="flex items-center justify-between gap-2 p-4 w-full text-left"
                     >
                       <span className="flex-1 flex items-start gap-2 min-w-0">
-                        <span className="text-[var(--semantic-brand-primary)] text-lg font-bold shrink-0">
+                        <span className="text-[var(--semantic-text-primary)] text-lg font-bold shrink-0">
                           Q.
                         </span>
                         <span className="text-lg text-[var(--semantic-text-primary)]">{faq.question}</span>
@@ -188,7 +190,7 @@ export function HelpPage() {
                     </button>
                     {isOpen && (
                       <div className="bg-[#f8f8f8] flex gap-2 items-start px-4 pt-2 pb-6">
-                        <span className="text-[var(--semantic-text-secondary)] text-lg font-bold shrink-0">
+                        <span className="text-[var(--semantic-brand-primary)] text-lg font-bold shrink-0">
                           A.
                         </span>
                         <p className="flex-1 text-base text-[var(--semantic-text-primary)] leading-relaxed whitespace-pre-line">

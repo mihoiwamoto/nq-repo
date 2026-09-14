@@ -80,7 +80,7 @@ export function RecordDetailPage() {
               <div className="flex flex-col gap-2 items-start w-full">
                 <p className="text-xl text-[var(--semantic-text-primary)]">備考</p>
                 <p className="text-base text-[var(--semantic-text-secondary)] font-normal">
-                  {record.remarks || "特記事項はありません"}
+                  {record.remarks}
                 </p>
               </div>
             </>
@@ -100,9 +100,11 @@ export function RecordDetailPage() {
                           <p className="text-xl text-[var(--semantic-text-primary)]">{item.name}</p>
                           <CleanedTag cleaned={item.cleaned} />
                         </div>
-                        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-                          {item.inspector} {item.timestamp}
-                        </p>
+                        {item.cleaned && (
+                          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                            {item.inspector} {item.timestamp}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -115,7 +117,7 @@ export function RecordDetailPage() {
               <div className="flex flex-col gap-2 items-start w-full">
                 <p className="text-xl text-[var(--semantic-text-primary)]">備考</p>
                 <p className="text-base text-[var(--semantic-text-primary)] font-normal text-left">
-                  {record.detailRemarks || record.remarks || "特記事項はありません"}
+                  {record.detailRemarks || record.remarks}
                 </p>
               </div>
             </>

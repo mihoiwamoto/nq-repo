@@ -35,7 +35,7 @@ export function MachineReviewPage() {
     <>
       <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="flex justify-end w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex justify-end w-full max-w-full">
           {!locked && (
             <Link
               to={`/app/ledger-list/metal-xray-detection/machines/${machineId}`}
@@ -47,14 +47,14 @@ export function MachineReviewPage() {
           )}
         </div>
 
-        <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full max-w-full">
           <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
           <p className="text-base text-[var(--semantic-text-primary)]">
             {inspectionDate ? inspectionDate.replaceAll("-", "/") : ""}
           </p>
         </div>
 
-        <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full">
           <table className="border-collapse w-full">
             <thead>
               <tr className="bg-[var(--semantic-brand-primary)]">
@@ -94,7 +94,7 @@ export function MachineReviewPage() {
                   </td>
                   <td className="px-2 py-2 text-center text-sm">
                     <span
-                      className="h-6 px-2 rounded-lg text-xs text-white inline-flex items-center justify-center"
+                      className="h-6 w-16 rounded-lg text-xs text-white inline-flex items-center justify-center"
                       style={{ backgroundColor: RESULT_COLORS[record.result] }}
                     >
                       {RESULT_LABELS[record.result]}

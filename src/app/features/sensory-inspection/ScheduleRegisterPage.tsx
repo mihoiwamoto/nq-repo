@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { DateFilterInput } from "../../components/DateFilterInput";
 import { AppHeader } from "../../layout/AppHeader";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
@@ -12,6 +13,8 @@ import {
   type ScheduledProduct,
 } from "./mockData";
 import { formatDateLabel } from "../equipment-inspection/calendarUtils";
+import iconCheckbox from "@images/Icon/ckeckbox.svg";
+import iconCheckboxOn from "@images/Icon/ckeckbox_on.svg";
 
 type ResultKind = "registered" | "saved" | "deleted" | null;
 
@@ -171,7 +174,7 @@ export function ScheduleRegisterPage() {
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-white flex flex-col items-start rounded-lg w-full max-w-full max-w-[480px] mx-40 overflow-hidden">
+        <div className="bg-white flex flex-col items-start rounded-lg w-full max-w-full overflow-hidden">
           <div className="flex items-center justify-between w-full px-4 py-4 bg-[var(--semantic-background-page)]">
             <p className="text-base text-[var(--semantic-text-primary)] flex items-center gap-1">
               日付 <span className="text-[var(--semantic-brand-danger)]">※</span>
@@ -247,11 +250,9 @@ export function ScheduleRegisterPage() {
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-base text-[var(--semantic-text-secondary)] shrink-0">比較商品製造日</p>
                     {viewMode === "edit" ? (
-                      <input
-                        type="date"
+                      <DateFilterInput
                         value={item.comparisonManufactureDate}
-                        onChange={(e) => setComparisonDate(item.productId, e.target.value)}
-                        className="bg-white border border-[#d0d0d0] h-10 px-3 rounded-lg text-sm text-[var(--semantic-text-primary)]"
+                        onChange={(value) => setComparisonDate(item.productId, value)}
                       />
                     ) : (
                       <span className="text-base text-[var(--semantic-text-primary)]">
@@ -321,9 +322,12 @@ export function ScheduleRegisterPage() {
                       onClick={() => togglePickerProduct(p.id)}
                       className="flex items-center gap-2 px-4 py-3 w-full border-b border-[#d0d0d0] last:border-b-0 text-left"
                     >
-                      <span className={checked ? "text-[var(--semantic-brand-primary)]" : "text-[var(--semantic-text-secondary)]"}>
-                        {checked ? "☑" : "☐"}
-                      </span>
+                      <img
+                        src={checked ? iconCheckboxOn : iconCheckbox}
+                        alt=""
+                        aria-hidden="true"
+                        className="size-6 shrink-0"
+                      />
                       <span className="text-base text-[var(--semantic-text-primary)] flex-1">{p.name}</span>
                       <CriteriaTags />
                     </button>

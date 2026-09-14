@@ -1,14 +1,28 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { useSensoryInspection } from "./SensoryInspectionContext";
 import { CRITERIA, products, type SensoryRecord } from "./mockData";
 
-function ConfirmRow({ label, value }: { label: string; value: string }) {
+function ConfirmRow({
+  label,
+  value,
+  inspector,
+  timestamp,
+}: {
+  label: string;
+  value: string;
+  inspector?: string;
+  timestamp?: string;
+}) {
   return (
-    <div className="flex items-center justify-between w-full">
-      <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
-      <p className="text-base text-[var(--semantic-text-primary)] text-right">{value}</p>
+    <div className="flex flex-col gap-1 w-full">
+      <div className="flex items-center justify-between w-full">
+        <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
+        <p className="text-base text-[var(--semantic-text-primary)] text-right">{value}</p>
+      </div>
+      <RecordTimestamp inspector={inspector} timestamp={timestamp} />
     </div>
   );
 }
@@ -36,6 +50,8 @@ export function ConfirmPage() {
   const state = location.state as { inspectorName?: string; record?: SensoryRecord } | null;
   const record = state?.record;
   const inspectorName = state?.inspectorName ?? "";
+  // 記録画面で項目ごとに付いた入力時刻。直接URLを開いたときは空
+  const timestamps = record?.timestamps ?? {};
 
   if (!product || !record || !productId) {
     return (
@@ -60,14 +76,14 @@ export function ConfirmPage() {
     <>
       <AppHeader title="官能検査記録" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
         </div>
 
-        <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <div className="flex gap-2 items-center">
             <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
             <span className="text-base text-[var(--semantic-text-primary)]">{product.name}</span>
@@ -80,20 +96,32 @@ export function ConfirmPage() {
           </div>
         </div>
 
-        <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full">
           <ConfirmRow label="実施者" value={inspectorName} />
           <HLine />
           <ConfirmRow label="実施日" value={record.date.replaceAll("-", "/")} />
           <HLine />
-          <ConfirmRow label="製造日" value={record.manufactureDate.replaceAll("-", "/")} />
+          <ConfirmRow
+            label="製造日"
+            value={record.manufactureDate.replaceAll("-", "/")}
+            inspector={inspectorName}
+            timestamp={timestamps.manufactureDate}
+          />
           <HLine />
-          <ConfirmRow label="比較商品" value={record.comparison === "present" ? "比較商品あり" : "比較商品なし"} />
+          <ConfirmRow
+            label="比較商品"
+            value={record.comparison === "present" ? "比較商品あり" : "比較商品なし"}
+            inspector={inspectorName}
+            timestamp={timestamps.comparison}
+          />
           {record.comparison === "present" && (
             <>
               <HLine />
               <ConfirmRow
                 label="比較商品製造日"
                 value={record.comparisonManufactureDate.replaceAll("-", "/")}
+                inspector={inspectorName}
+                timestamp={timestamps.comparisonManufactureDate}
               />
             </>
           )}
@@ -110,6 +138,7 @@ export function ConfirmPage() {
                 {score.score <= 2 && (
                   <p className="text-base text-[#808080] px-2">理由：{score.reason}</p>
                 )}
+                <RecordTimestamp inspector={inspectorName} timestamp={timestamps[criterion]} />
               </div>
             );
           })}

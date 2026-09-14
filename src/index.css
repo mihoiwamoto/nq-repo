@@ -78,3 +78,74 @@ textarea::placeholder {
   height: 100%;
   display: flex;
 }
+
+/* 「全て異常なし」等の一括チェックボタン: ON のとき緑に光る */
+.all-ok-glow {
+  border-color: #009944;
+  background-color: #f0faf3;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.65),
+    0 0 14px 4px rgba(25, 201, 95, 0.95);
+  animation: all-ok-pulse 0.45s ease-out;
+}
+
+@keyframes all-ok-pulse {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(255, 255, 255, 0.65),
+      0 0 0 0 rgba(25, 201, 95, 0.95);
+  }
+  60% {
+    box-shadow:
+      0 0 0 5px rgba(255, 255, 255, 0.75),
+      0 0 22px 10px rgba(25, 201, 95, 1);
+  }
+  100% {
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.65),
+      0 0 14px 4px rgba(25, 201, 95, 0.95);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .all-ok-glow {
+    animation: none;
+  }
+}
+
+/* 管理画面サイドメニュー: 項目が画面の高さを超えたときだけスクロールさせる。
+   Mac のオーバーレイ式スクロールバーと同じく、ホバー中・スクロール中以外はバーを隠す。
+   （独自の ::-webkit-scrollbar 指定を入れると Chrome が常時表示に切り替わるため、
+   つまみの色を透明にして「出ていない」状態を作っている） */
+.admin-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.2s;
+}
+
+.admin-sidebar-scroll:hover,
+.admin-sidebar-scroll[data-scrolling] {
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 3px;
+}
+
+.admin-sidebar-scroll:hover::-webkit-scrollbar-thumb,
+.admin-sidebar-scroll[data-scrolling]::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+}

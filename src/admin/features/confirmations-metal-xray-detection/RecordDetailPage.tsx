@@ -36,7 +36,9 @@ function CheckRow({ item, isLast }: { item: CheckItem; isLast: boolean }) {
           <p>対応：{item.response}</p>
         </div>
       )}
-      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{item.timestamp}</p>
+      {item.timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{item.timestamp}</p>
+      )}
       {!isLast && <div className="h-px bg-[#d0d0d0] w-full" />}
     </div>
   );
@@ -146,7 +148,7 @@ export function RecordDetailPage() {
 
           <div className="flex flex-col gap-2 px-4 py-6">
             <p className="text-xl font-semibold text-[#333]">備考</p>
-            <p className="text-base text-[#333]">{record.remarks || "特記事項なし"}</p>
+            <p className="text-base text-[#333]">{record.remarks}</p>
           </div>
         </div>
 

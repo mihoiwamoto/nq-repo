@@ -50,6 +50,7 @@ const COLUMNS: { label: string; width: string; marginLeft?: string; justify?: st
   { label: "操作", width: "w-[104px]" },
   { label: "実施日", width: "w-[96px]" },
   { label: "製品名", width: "w-[200px]" },
+  { label: "ロットNo.", width: "w-[120px]", marginLeft: "ml-4" },
   { label: "賞味期限", width: "w-[96px]", marginLeft: "ml-4" },
   { label: "製造日", width: "w-[96px]", marginLeft: "ml-4" },
   { label: "検体種別", width: "w-[88px]", marginLeft: "ml-4" },
@@ -111,6 +112,7 @@ export function DataListPage() {
     const header = [
       "実施日",
       "製品名",
+      "ロットNo.",
       "賞味期限",
       "製造日",
       "検体種別",
@@ -126,6 +128,7 @@ export function DataListPage() {
     const rows = filtered.map((r) => [
       r.date,
       r.productName,
+      r.lotNumber ?? "",
       r.expirationDate,
       r.manufactureDate,
       r.sampleType,
@@ -381,7 +384,7 @@ export function DataListPage() {
           </div>
 
           <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1528px]">
+            <div className="flex flex-col min-w-[1664px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
                   <div
@@ -415,6 +418,10 @@ export function DataListPage() {
                     </div>
                     <div className="w-[200px] shrink-0 flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left whitespace-nowrap overflow-hidden text-ellipsis" title={record.productName}>
                       {record.productName}
+                    </div>
+                    {/* ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目 */}
+                    <div className="w-[120px] ml-4 shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                      {record.lotNumber ? record.lotNumber : <HyphenIcon />}
                     </div>
                     <div className="w-[96px] ml-4 shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       <DateDisplay date={record.expirationDate} />

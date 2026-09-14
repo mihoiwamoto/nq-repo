@@ -15,6 +15,7 @@ import {
   type SystemAuthority,
 } from "./types";
 import { useStaffManagement } from "./StaffManagementContext";
+import iconCancelDark from "@images/Icon/cancel.svg";
 
 type AssignmentRow = StaffFactoryAssignment & { key: number };
 
@@ -206,8 +207,9 @@ export function StaffFormPage() {
                       type="button"
                       onClick={() => removeAssignmentRow(row.key)}
                       className="bg-white border border-[#d0d0d0] rounded-full size-8 flex items-center justify-center text-[var(--semantic-text-secondary)] mt-6"
+                      aria-label="削除"
                     >
-                      ✕
+                      <img src={iconCancelDark} alt="" aria-hidden="true" className="size-4" />
                     </button>
                   )}
                 </div>

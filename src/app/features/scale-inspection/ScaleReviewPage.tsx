@@ -61,7 +61,7 @@ export function ScaleReviewPage() {
     <>
       <AppHeader title="秤点検記録" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="flex justify-end w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex justify-end w-full max-w-full">
           {!locked && (
             <Link
               to={`/app/ledger-list/scale-inspection/posts/${postId}`}
@@ -73,7 +73,7 @@ export function ScaleReviewPage() {
           )}
         </div>
 
-        <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-base text-[var(--semantic-text-primary)]">
@@ -92,7 +92,7 @@ export function ScaleReviewPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full">
           <table className="border-collapse w-full">
             <thead>
               <tr className="bg-[var(--semantic-brand-primary)]">
@@ -127,21 +127,21 @@ export function ScaleReviewPage() {
                     {scale.skipped ? <Dash /> : <ActionCheckBadge value={scale.record?.actionCheck ?? null} />}
                   </td>
                   <td className="px-2 py-2 text-center">
-                    {scale.skipped || scale.record === null || scale.record?.actionCheck === "ng" ? (
+                    {scale.skipped || scale.record === null ? (
                       <Dash />
                     ) : (
                       <CheckBadge checked={scale.record?.levelCheck ?? false} />
                     )}
                   </td>
                   <td className="px-2 py-2 text-center">
-                    {scale.skipped || scale.record === null || scale.record?.actionCheck === "ng" ? (
+                    {scale.skipped || scale.record === null ? (
                       <Dash />
                     ) : (
                       <CheckBadge checked={scale.record?.dirtCheck ?? false} />
                     )}
                   </td>
                   <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
-                    {scale.skipped || scale.record === null || scale.record?.actionCheck === "ng"
+                    {scale.skipped || scale.record === null
                       ? <Dash />
                       : scale.record?.displayValue ?? ""}
                   </td>

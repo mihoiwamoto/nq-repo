@@ -5,6 +5,7 @@ import { useSensoryInspection } from "./SensoryInspectionContext";
 import { ProductProgressPanel } from "./ProductProgressPanel";
 import { ACTORS, CRITERIA, CRITERION_TAG_COLORS, PRODUCT_STATUS_COLORS, PRODUCT_STATUS_LABELS } from "./mockData";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
+import { StatusChip } from "../../components/StatusChip";
 
 export function ProductSelectionPage() {
   const navigate = useNavigate();
@@ -55,7 +56,7 @@ export function ProductSelectionPage() {
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-6 items-center">
-        <div className="flex flex-col gap-4 items-end w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex flex-col gap-4 items-end w-full max-w-full">
           <div className="flex gap-4 items-start w-full">
             <input
               type="text"
@@ -98,20 +99,16 @@ export function ProductSelectionPage() {
                     ))}
                   </div>
                 </div>
-                <span
-                  className="h-8 w-20 rounded-lg flex items-center justify-center text-sm text-white shrink-0"
-                  style={{ backgroundColor: PRODUCT_STATUS_COLORS[product.status] }}
-                >
-                  {PRODUCT_STATUS_LABELS[product.status]}
-                </span>
+                <StatusChip color={PRODUCT_STATUS_COLORS[product.status]}>{PRODUCT_STATUS_LABELS[product.status]}</StatusChip>
               </button>
             ))}
           </div>
         </div>
 
+        {/* 上の余白は親の gap(24px) + mt-4 = 40px */}
         <Link
           to="/app/ledger-list"
-          className="bg-white border border-[var(--semantic-text-primary)] flex h-16 items-center justify-center px-4 py-2 rounded-lg w-90 max-w-full"
+          className="bg-white border border-[var(--semantic-text-primary)] flex items-center justify-center mt-4 px-4 py-6 rounded-lg w-90 max-w-full"
         >
           <span className="text-xl text-[var(--semantic-text-primary)]">帳票一覧に戻る</span>
         </Link>

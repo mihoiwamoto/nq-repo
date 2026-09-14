@@ -32,7 +32,7 @@ function formatDate(date: string) {
 }
 
 const StatusTag = ({ status = "正常" }: { status?: string }) => (
-  <span className="bg-[#19c95f] flex items-center justify-center h-7 px-6 rounded-lg text-sm text-white shrink-0">
+  <span className="bg-[#19c95f] flex items-center justify-center h-7 w-[88px] rounded-lg text-sm text-white shrink-0">
     {status}
   </span>
 );
@@ -249,7 +249,9 @@ function TestPieceMachineSection({
                 <p className="text-xl text-[var(--semantic-text-primary)]">点検時間</p>
                 <p className="text-xl text-[var(--semantic-text-primary)]">{item.time}</p>
               </div>
-              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+              {item.time && (
+                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+              )}
               {itemIndex === 0 && item.pieces.length > 0 && <div className="border-t border-[#d0d0d0]" />}
 
               {item.pieces.map((piece, pieceIndex) => {
@@ -260,7 +262,7 @@ function TestPieceMachineSection({
                       <p className="text-xl text-[var(--semantic-text-primary)]">{piece.name}</p>
                       {isStatus ? <StatusTag status={piece.status} /> : <p className="text-xl text-[var(--semantic-text-primary)]">{piece.value}</p>}
                     </div>
-                    {pieceIndex < item.pieces.length - 1 && (
+                    {pieceIndex < item.pieces.length - 1 && (isStatus ? piece.status : piece.value) && (
                       <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
                     )}
                   </div>
@@ -319,7 +321,9 @@ function TestPieceDetail({
           <p className="text-xl text-[var(--semantic-text-primary)]">通過製品/カテゴリ</p>
           <p className="text-xl text-[var(--semantic-text-primary)]">{item.passedProduct}</p>
         </div>
-        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+        {item.passedProduct && (
+          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+        )}
       </div>
       <div className="px-4">
         <div className="border-t border-[#d0d0d0]" />
@@ -352,7 +356,7 @@ function TestPieceDetail({
       <div className="flex flex-col gap-2 px-4 py-6">
         <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">備考</p>
         <p className="text-base text-[var(--semantic-text-primary)]">
-          {item.remarks || "テストピースの検査を実施しました。全ての検査項目において正常に検知確認されました。機械の動作に異常はありません。"}
+          {item.remarks}
         </p>
       </div>
     </div>
@@ -392,7 +396,9 @@ function PassedProductDetail({
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] w-48 whitespace-nowrap">通過製品/カテゴリ</p>
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] whitespace-nowrap ml-auto">{item.passedProduct}</p>
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          {item.passedProduct && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          )}
         </div>
 
         <div className="flex items-center justify-between px-4 py-4 border-b border-[#d0d0d0] mx-4">
@@ -410,7 +416,9 @@ function PassedProductDetail({
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] w-48">点検時間</p>
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{item.time}</p>
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          )}
         </div>
 
         <div className="px-4 py-4 border-b border-[#d0d0d0] mx-4">
@@ -418,7 +426,9 @@ function PassedProductDetail({
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] w-48">重量下限値（g）</p>
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">1</p>
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          )}
         </div>
 
         <div className="px-4 py-4 border-b border-[#d0d0d0] mx-4">
@@ -428,13 +438,17 @@ function PassedProductDetail({
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] w-80">分銅を乗せての校正点検</p>
             <StatusTag status="正常" />
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal mb-4">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal mb-4">{timestamp}</p>
+          )}
 
           <div className="flex items-center justify-between mb-2">
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] w-80">通過させる製品のパッケージ（印字）との照合</p>
             <StatusTag status="正常" />
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal mb-4">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal mb-4">{timestamp}</p>
+          )}
         </div>
 
         <div className="border-t border-[#d0d0d0] mx-4" />
@@ -447,7 +461,9 @@ function PassedProductDetail({
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] w-48">点検時間</p>
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{item.time}</p>
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          )}
         </div>
 
         <div className="px-4 py-4 border-b border-[#d0d0d0] mx-4">
@@ -455,7 +471,9 @@ function PassedProductDetail({
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)] w-48">動作確認</p>
             <StatusTag status="正常" />
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+          )}
         </div>
 
         <div className="border-t border-[#d0d0d0] mx-4" />
@@ -463,7 +481,7 @@ function PassedProductDetail({
         <div className="flex flex-col px-4 py-4 mx-4">
           <p className="text-2xl font-bold text-[var(--semantic-text-primary)] mb-2 w-48">備考</p>
           <p className="text-base text-[var(--semantic-text-primary)]">
-            {item.remarks || "本日の通過検査を完了しました。全ての装置が正常に動作しており、検査品質も良好です。問題ありません。"}
+            {item.remarks}
           </p>
         </div>
       </div>
@@ -495,7 +513,9 @@ function AbnormalReactionDetail({ item, record }: { item: InspectionRecord; reco
           <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">点検時間</p>
           <div className="text-right">
             <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">{item.time}</p>
-            <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{timestamp}</p>
+            {item.time && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{timestamp}</p>
+            )}
           </div>
         </div>
       </div>
@@ -505,7 +525,9 @@ function AbnormalReactionDetail({ item, record }: { item: InspectionRecord; reco
           <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">異常製品</p>
           <div className="text-right">
             <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">{item.passedProduct}</p>
-            <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{timestamp}</p>
+            {item.passedProduct && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{timestamp}</p>
+            )}
           </div>
         </div>
       </div>
@@ -521,7 +543,9 @@ function AbnormalReactionDetail({ item, record }: { item: InspectionRecord; reco
           <p className="text-base text-[var(--semantic-text-secondary)] leading-relaxed max-w-[60%]">
             検査工程で異物が検出されました。金属探知機により異物混入が確認されたため、当該製品は廃棄処分としました。
           </p>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right flex-shrink-0 font-normal">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right flex-shrink-0 font-normal">{timestamp}</p>
+          )}
         </div>
         <div className="border-b border-[#d0d0d0]" />
       </div>
@@ -537,7 +561,9 @@ function AbnormalReactionDetail({ item, record }: { item: InspectionRecord; reco
           <p className="text-base text-[var(--semantic-text-secondary)] leading-relaxed max-w-[60%]">
             金属探知機の感度を再調整し、校正用テストピースで動作確認を実施しました。その後、製品の再処理ラインで検査を再開しています。
           </p>
-          <p className="text-sm text-[var(--semantic-text-secondary)] text-right flex-shrink-0 font-normal">{timestamp}</p>
+          {item.time && (
+            <p className="text-sm text-[var(--semantic-text-secondary)] text-right flex-shrink-0 font-normal">{timestamp}</p>
+          )}
         </div>
         <div className="border-b border-[#d0d0d0]" />
       </div>
@@ -545,7 +571,7 @@ function AbnormalReactionDetail({ item, record }: { item: InspectionRecord; reco
       <div className="flex flex-col px-4 pt-0 pb-6">
         <p className="text-[20px] text-[var(--semantic-text-primary)]">備考</p>
         <p className="text-base text-[var(--semantic-text-primary)] leading-relaxed mt-2">
-          {item.remarks || "異常検知後、直ちに製造ラインを一時停止し、該当ロットの製品を隔離しました。金属探知機の校正テストを実施し、正常に復帰したことを確認後、製造を再開しています。"}
+          {item.remarks}
         </p>
       </div>
     </div>

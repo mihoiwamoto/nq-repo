@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import iconXMark from "../../../assets/figma/icons/common/cancel-custom.svg";
+import iconXMarkGreen from "../../../assets/figma/icons/common/cancel-green.svg";
 import iconSearch from "@images/Icon/search.svg";
 import { AppHeader } from "../../layout/AppHeader";
 import { ledgerCategories } from "../../../data/ledgers";
+import { StatusChip } from "../../components/StatusChip";
 import {
   ACTORS,
   PROGRESS_ENTRIES,
@@ -38,14 +39,37 @@ function groupByLedger(entries: ProgressEntry[]) {
   return Array.from(map.entries());
 }
 
+function destinationPathFor(entry: ProgressEntry) {
+  const base = "/app/ledger-list";
+  switch (entry.ledgerSlug) {
+    case "equipment-inspection":
+      return entry.lineId ? `${base}/equipment-inspection/lines/${entry.lineId}` : null;
+    case "water-inspection":
+      return entry.pointId ? `${base}/water-inspection/points/${entry.pointId}/new` : null;
+    case "glass-plastic":
+      return entry.floorId ? `${base}/glass-plastic/floors/${entry.floorId}` : null;
+    case "cleaning-record":
+      return entry.lineId ? `${base}/cleaning-record/lines/${entry.lineId}` : null;
+    case "chemical-management":
+      return entry.productId ? `${base}/chemical-management/${entry.productId}` : null;
+    case "additive-management":
+      return entry.productId ? `${base}/additive-management/products/${entry.productId}` : null;
+    case "scale-inspection":
+      return entry.postId ? `${base}/scale-inspection/posts/${entry.postId}` : null;
+    case "sample-management":
+      return entry.productId ? `${base}/sample-management/samples/${entry.productId}` : null;
+    case "sensory-inspection":
+      return entry.productId ? `${base}/sensory-inspection/products/${entry.productId}` : null;
+    case "metal-xray-detection":
+      return entry.machineId ? `${base}/metal-xray-detection/machines/${entry.machineId}` : null;
+    default:
+      return null;
+  }
+}
+
 function StatusBadge({ entry }: { entry: ProgressEntry }) {
   return (
-    <span
-      className="h-8 w-20 rounded-lg flex items-center justify-center text-sm text-white shrink-0"
-      style={{ backgroundColor: PROGRESS_STATUS_COLORS[entry.status] }}
-    >
-      {PROGRESS_STATUS_LABELS[entry.status]}
-    </span>
+    <StatusChip color={PROGRESS_STATUS_COLORS[entry.status]}>{PROGRESS_STATUS_LABELS[entry.status]}</StatusChip>
   );
 }
 
@@ -130,49 +154,16 @@ export function ProgressListPage() {
     const actor = ACTORS.find((a) => a.id === selectedActorId) ?? ACTORS[0];
     const entry = actorPickerEntry;
     setActorPickerEntry(null);
-    if (entry.ledgerSlug === "equipment-inspection" && entry.lineId) {
-      navigate(`/app/ledger-list/equipment-inspection/lines/${entry.lineId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "water-inspection" && entry.pointId) {
-      navigate(`/app/ledger-list/water-inspection/points/${entry.pointId}/new`, {
-        state: { fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "glass-plastic" && entry.floorId) {
-      navigate(`/app/ledger-list/glass-plastic/floors/${entry.floorId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "cleaning-record" && entry.lineId) {
-      navigate(`/app/ledger-list/cleaning-record/lines/${entry.lineId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "chemical-management" && entry.productId) {
-      navigate(`/app/ledger-list/chemical-management/products/${entry.productId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "additive-management" && entry.productId) {
-      navigate(`/app/ledger-list/additive-management/products/${entry.productId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "scale-inspection" && entry.postId) {
-      navigate(`/app/ledger-list/scale-inspection/posts/${entry.postId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "sample-management" && entry.productId) {
-      navigate(`/app/ledger-list/sample-management/samples/${entry.productId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "sensory-inspection" && entry.productId) {
-      navigate(`/app/ledger-list/sensory-inspection/products/${entry.productId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else if (entry.ledgerSlug === "metal-xray-detection" && entry.machineId) {
-      navigate(`/app/ledger-list/metal-xray-detection/machines/${entry.machineId}`, {
-        state: { inspectorName: actor.name, fromProgress: true },
-      });
-    } else {
+    const path = destinationPathFor(entry);
+    if (!path) {
       setUnsupportedNotice(true);
+      return;
     }
+    // progressStatus を渡すことで、遷移先が「未点検=記録なし / 点検中=記録途中 /
+    // 点検済み・確認完了=点検済みの記録」を進捗一覧と揃えて表示できる
+    navigate(path, {
+      state: { inspectorName: actor.name, fromProgress: true, progressStatus: entry.status },
+    });
   }
 
   return (
@@ -204,7 +195,7 @@ export function ProgressListPage() {
         <button
           type="button"
           onClick={openFilterDialog}
-          className="bg-white flex gap-2 items-center justify-center p-4 rounded-lg shrink-0 text-base text-[var(--semantic-brand-primary)]"
+          className="bg-white flex gap-2 items-center justify-center p-4 rounded-lg shrink-0 text-lg text-[var(--semantic-brand-primary)]"
         >
           絞り込み検索
           <img src={iconSearch} alt="検索" className="size-5" style={{ filter: "invert(24%) sepia(78%) saturate(2186%) hue-rotate(86deg)" }} />
@@ -212,7 +203,7 @@ export function ProgressListPage() {
 
         {appliedFilters.size > 0 && (
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm text-[var(--semantic-text-secondary)] shrink-0">絞り込み条件</span>
+            <span className="text-base text-[var(--semantic-text-secondary)] shrink-0">絞り込み条件</span>
             {Array.from(appliedFilters).map((slug) => {
               const ledger = ledgerFor(slug);
               if (!ledger) return null;
@@ -222,13 +213,13 @@ export function ProgressListPage() {
                   className="bg-white border border-[#d0d0d0] h-10 rounded-lg flex items-center gap-2 px-3"
                 >
                   <img src={ledger.appIcon} alt="" className="size-5 shrink-0" />
-                  <span className="text-sm text-[var(--semantic-text-primary)]">{ledger.appLabel}</span>
+                  <span className="text-base text-[var(--semantic-text-primary)]">{ledger.appLabel}</span>
                   <button
                     type="button"
                     onClick={() => removeFilter(slug)}
-                    className="text-[var(--semantic-text-secondary)] text-sm"
+                    className="text-[var(--semantic-brand-primary)] text-sm"
                   >
-                    <img src={iconXMark} alt="削除" className="size-4" />
+                    <img src={iconXMarkGreen} alt="削除" className="size-4" />
                   </button>
                 </span>
               );
@@ -237,13 +228,13 @@ export function ProgressListPage() {
         )}
 
         {grouped.length === 0 ? (
-          <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6">
+          <p className="text-lg text-[var(--semantic-text-secondary)] text-center py-6">
             該当する点検はありません
           </p>
         ) : (
           grouped.map(([date, entries]) => (
             <div key={date} className="flex flex-col gap-4 items-start w-full">
-              <p className="text-xl text-[var(--semantic-text-primary)] border-b border-[#d0d0d0] w-full py-4">
+              <p className="text-2xl text-[var(--semantic-text-primary)] border-b border-[#d0d0d0] w-full py-4">
                 {date}
               </p>
 
@@ -257,25 +248,25 @@ export function ProgressListPage() {
                     return (
                       <div key={slug} className="flex flex-col gap-0 items-start w-full">
                         <div className="flex w-full justify-end">
-                          <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-end gap-1 px-3 py-2 rounded-t-lg w-1/3">
-                            <span className="text-white text-sm shrink-0">確認完了</span>
+                          <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-end gap-2 pl-6 pr-3 py-2 rounded-t-lg w-fit max-w-full">
+                            <span className="text-white text-lg shrink-0">確認完了</span>
                             <div className="bg-white h-3 rounded-full overflow-hidden w-[88px] shrink-0">
                               <div
                                 className="bg-[var(--semantic-brand-primary)] h-full border border-white rounded-lg"
                                 style={{ width: `${Math.min(pct, 100)}%` }}
                               />
                             </div>
-                            <span className="text-white text-lg font-semibold shrink-0">
+                            <span className="text-white text-xl font-semibold shrink-0">
                               {confirmedCount}/{groupEntries.length}
                             </span>
                           </div>
                         </div>
                         <div className={`flex items-center justify-between w-full gap-2 bg-white px-4 py-3 ${collapsed ? "rounded-tl-lg rounded-bl-lg rounded-br-lg" : "rounded-tl-lg"}`}>
-                          <span className="flex items-center gap-2 text-lg text-[var(--semantic-brand-primary)] font-semibold">
+                          <span className="flex items-center gap-2 text-xl text-[var(--semantic-brand-primary)] font-semibold">
                             {ledger && <img src={ledger.appIcon} alt="" className="size-6 shrink-0" />}
                             {ledger?.appLabel ?? slug}
                             {slug === "metal-xray-detection" && (
-                              <span className="text-sm text-[var(--semantic-text-secondary)] ml-2">金属探知機1号機</span>
+                              <span className="text-base text-[var(--semantic-text-secondary)] ml-2">金属探知機1号機</span>
                             )}
                           </span>
                           <button
@@ -295,7 +286,7 @@ export function ProgressListPage() {
                                   onClick={() => handleEntryClick(entry)}
                                   className="flex items-center justify-between p-4 w-full text-left hover:bg-gray-50"
                                 >
-                                  <span className="text-sm text-[var(--semantic-text-primary)]">
+                                  <span className="text-lg text-[var(--semantic-text-primary)]">
                                     {entry.name}
                                   </span>
                                   <StatusBadge entry={entry} />
@@ -320,10 +311,10 @@ export function ProgressListPage() {
                         className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center justify-between p-4 w-full text-left"
                       >
                         <span className="flex flex-col gap-2 min-w-0">
-                          <span className="text-lg text-[var(--semantic-text-primary)]">{entry.name}</span>
+                          <span className="text-xl text-[var(--semantic-text-primary)]">{entry.name}</span>
                           <span className="flex gap-1 items-center">
                             {ledger && <img src={ledger.appIcon} alt="" className="size-5 shrink-0" />}
-                            <span className="text-sm text-[var(--semantic-brand-primary)]">
+                            <span className="text-base text-[var(--semantic-brand-primary)]">
                               {ledger?.appLabel ?? entry.ledgerSlug}
                             </span>
                           </span>
@@ -340,9 +331,9 @@ export function ProgressListPage() {
       {filterDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFilterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-8 w-[640px] h-[738px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[754px]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">絞り込み条件</h2>
-            <div className="grid grid-cols-3 gap-4 w-full overflow-y-auto overflow-x-hidden">
+            <div className="grid grid-cols-3 gap-6 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
               {FILTER_LEDGERS.map((ledger) => {
                 const selected = pickerSelected.has(ledger.slug);
                 return (
@@ -350,32 +341,32 @@ export function ProgressListPage() {
                     key={ledger.slug}
                     type="button"
                     onClick={() => toggleFilterLedger(ledger.slug)}
-                    className={`flex flex-col items-center justify-center gap-2 h-28 rounded-lg ${
+                    className={`flex flex-col items-center justify-center gap-2 h-28 rounded-lg shadow-[0px_2px_3px_rgba(51,51,51,0.24)] border-2 ${
                       selected
-                        ? "bg-white border border-[var(--semantic-brand-primary)]"
-                        : "bg-white"
+                        ? "bg-white border-[var(--semantic-brand-primary)]"
+                        : "bg-white border-transparent"
                     }`}
                   >
-                    <img src={ledger.appIcon} alt="" className="size-8" />
-                    <span className="text-sm text-[var(--semantic-text-primary)] text-center px-1">
+                    <img src={ledger.appIcon} alt="" className="size-10" />
+                    <span className="text-base text-[var(--semantic-text-primary)] text-center px-1">
                       {ledger.appLabel}
                     </span>
                   </button>
                 );
               })}
             </div>
-            <div className="flex gap-4 items-center justify-center w-full">
+            <div className="flex gap-10 items-center justify-center w-full">
               <button
                 type="button"
                 onClick={() => setFilterDialogOpen(false)}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-40 rounded-lg text-base text-[var(--semantic-text-primary)]"
+                className="bg-white border-2 border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-lg text-[var(--semantic-text-primary)] font-semibold"
               >
                 閉じる
               </button>
               <button
                 type="button"
                 onClick={applyFilters}
-                className="bg-[var(--semantic-brand-primary)] h-12 w-40 rounded-lg text-base text-white"
+                className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-lg text-white font-semibold"
               >
                 絞り込み
               </button>
@@ -429,8 +420,8 @@ export function ProgressListPage() {
       {unsupportedNotice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setUnsupportedNotice(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-8 w-[640px] h-[738px]">
-            <p className="text-base text-[var(--semantic-text-primary)] text-center">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-8 w-[480px] max-w-[90vw]">
+            <p className="text-lg text-[var(--semantic-text-primary)] text-center">
               この帳票の点検機能は未対応です。
             </p>
             <button

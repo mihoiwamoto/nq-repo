@@ -11,8 +11,8 @@ import { useRecords } from "./RecordsContext";
 import type { ConfirmStatus } from "./types";
 
 const STATUS_OPTIONS: { value: ConfirmStatus; label: string }[] = [
-  { value: "unconfirmed", label: "確認待ち" },
-  { value: "confirmed", label: "確認済み" },
+  { value: "unconfirmed", label: "点検済み" },
+  { value: "confirmed", label: "承認待ち" },
 ];
 
 function formatDate(date: string | undefined) {
@@ -75,6 +75,13 @@ export function RecordDetailPage() {
             <p className="text-sm text-[var(--semantic-text-secondary)]">賞味期限</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{formatDate(record.expirationDate)}</p>
           </div>
+          {/* ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目 */}
+          {record.lotNumber && (
+            <div className="flex flex-col gap-2 items-start">
+              <p className="text-sm text-[var(--semantic-text-secondary)]">ロットNo.</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{record.lotNumber}</p>
+            </div>
+          )}
         </div>
 
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
@@ -92,7 +99,7 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">実施日</p>
             <div className="flex flex-col items-end gap-1">
               <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.date)}</p>
-              {record.timestamp && (
+              {record.date && record.timestamp && (
                 <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{record.timestamp}</p>
               )}
             </div>
@@ -102,7 +109,7 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">製造日</p>
             <div className="flex flex-col items-end gap-1">
               <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.manufactureDate)}</p>
-              {record.timestamp && (
+              {record.manufactureDate && record.timestamp && (
                 <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{record.timestamp}</p>
               )}
             </div>
@@ -112,7 +119,7 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">検体種別</p>
             <div className="flex flex-col items-end gap-1">
               <p className="text-xl text-[var(--semantic-text-primary)]">{record.sampleType}</p>
-              {record.timestamp && (
+              {record.sampleType && record.timestamp && (
                 <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{record.timestamp}</p>
               )}
             </div>
@@ -122,7 +129,7 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">検体数量</p>
             <div className="flex flex-col items-end gap-1">
               <p className="text-xl text-[var(--semantic-text-primary)]">{record.sampleQuantity}</p>
-              {record.timestamp && (
+              {record.sampleQuantity && record.timestamp && (
                 <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{record.timestamp}</p>
               )}
             </div>
@@ -132,7 +139,7 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">単位</p>
             <div className="flex flex-col items-end gap-1">
               <p className="text-xl text-[var(--semantic-text-primary)]">{record.unit}</p>
-              {record.timestamp && (
+              {record.unit && record.timestamp && (
                 <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{record.timestamp}</p>
               )}
             </div>
@@ -142,7 +149,7 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">保管場所</p>
             <div className="flex flex-col items-end gap-1">
               <p className="text-xl text-[var(--semantic-text-primary)]">{record.storageLocation}</p>
-              {record.timestamp && (
+              {record.storageLocation && record.timestamp && (
                 <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{record.timestamp}</p>
               )}
             </div>

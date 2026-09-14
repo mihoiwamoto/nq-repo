@@ -52,9 +52,11 @@ function InspectionItemRow({ item }: { item: InspectionItemResult }) {
           )}
         </div>
       )}
-      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-        {item.inspector} {item.timestamp}
-      </p>
+      {item.timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+          {item.inspector} {item.timestamp}
+        </p>
+      )}
     </div>
   );
 }

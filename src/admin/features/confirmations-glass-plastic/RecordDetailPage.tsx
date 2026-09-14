@@ -12,8 +12,8 @@ import { useRecords } from "./RecordsContext";
 import { GLASS_PLASTIC_STATUS_COLORS, GLASS_PLASTIC_STATUS_LABELS, type ConfirmStatus, type GlassPlasticItemStatus } from "./types";
 
 const STATUS_OPTIONS: { value: ConfirmStatus; label: string }[] = [
-  { value: "unconfirmed", label: "確認待ち" },
-  { value: "confirmed", label: "確認済み" },
+  { value: "unconfirmed", label: "点検済み" },
+  { value: "confirmed", label: "承認待ち" },
 ];
 
 const FILTER_STATUS_ORDER: GlassPlasticItemStatus[] = ["normal", "issue", "repairing"];

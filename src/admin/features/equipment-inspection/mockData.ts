@@ -22,6 +22,12 @@ export const initialLines: Line[] = [
   { id: "l9", name: "ゆばライン（つまみ関係）", frequency: "daily", inspectionPoints: [] },
   { id: "l10", name: "ゆばライン（その他）", frequency: "daily", inspectionPoints: [] },
   { id: "l11", name: "自動計量機・風力選別機ライン", frequency: "daily", inspectionPoints: [] },
+  { id: "l12", name: "冷凍・冷蔵設備ライン", frequency: "monthly", inspectionPoints: [] },
+  { id: "l13", name: "排水処理設備ライン", frequency: "monthly", inspectionPoints: [] },
+  { id: "l14", name: "ボイラー設備ライン", frequency: "monthly", inspectionPoints: [] },
+  { id: "l15", name: "コンプレッサー設備ライン", frequency: "monthly", inspectionPoints: [] },
+  { id: "l16", name: "空調・フィルターライン", frequency: "monthly", inspectionPoints: [] },
+  { id: "l17", name: "計量器・秤設備ライン", frequency: "monthly", inspectionPoints: [] },
 ];
 
 export const initialEntries: Record<string, ScheduleEntry> = {

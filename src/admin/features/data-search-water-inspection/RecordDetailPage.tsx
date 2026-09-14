@@ -24,6 +24,10 @@ function StatusTag({ result }: { result: WaterCheckResult }) {
   );
 }
 
+function hasValue(value: unknown) {
+  return value !== undefined && value !== null && value !== "";
+}
+
 function CheckRow({
   label,
   result,
@@ -45,7 +49,9 @@ function CheckRow({
           <p>対応：{result.action || "記録なし"}</p>
         </div>
       )}
-      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      {timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
@@ -135,7 +141,9 @@ export function RecordDetailPage() {
               <p className="text-xl text-[var(--semantic-text-primary)]">ph値</p>
               <p className="text-xl text-[var(--semantic-text-primary)]">{record.ph}</p>
             </div>
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            {hasValue(record.ph) && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -150,7 +158,9 @@ export function RecordDetailPage() {
                 塩素補充
               </span>
             )}
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            {hasValue(record.chlorine) && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -165,7 +175,9 @@ export function RecordDetailPage() {
                 UV殺菌灯交換
               </span>
             )}
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            {hasValue(record.uvOperatingHours) && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -182,7 +194,9 @@ export function RecordDetailPage() {
                 {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
               </p>
             </div>
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            {hasValue(record.uvIndicatorLight) && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            )}
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -199,7 +213,9 @@ export function RecordDetailPage() {
                 {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
               </p>
             </div>
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            {hasValue(record.abnormalDetectionLight) && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+            )}
           </div>
         </div>
 

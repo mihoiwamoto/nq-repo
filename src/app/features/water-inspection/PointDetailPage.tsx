@@ -49,7 +49,7 @@ function Row({
   );
 }
 
-function CheckRow({ item, timestamp }: { item: CheckItem; timestamp: string }) {
+function CheckRow({ item, timestamp }: { item: CheckItem; timestamp?: string }) {
   return (
     <div className="flex flex-col gap-2 w-full py-3 border-b border-[#d0d0d0]">
       <div className="flex items-center justify-between w-full">
@@ -62,7 +62,9 @@ function CheckRow({ item, timestamp }: { item: CheckItem; timestamp: string }) {
           <p>対応：{item.action}</p>
         </div>
       )}
-      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      {item.status && timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
@@ -120,7 +122,7 @@ export function PointDetailPage() {
     <>
       <AppHeader title={`使用水の点検_${record.location}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="flex justify-end w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex justify-end w-full max-w-full">
           <Link
             to={`/app/ledger-list/water-inspection/points/${pointId}/records/${recordId}/edit`}
             className="bg-white border border-[var(--semantic-brand-primary)] flex items-center gap-2 h-11 px-3 rounded-lg shrink-0"
@@ -129,34 +131,45 @@ export function PointDetailPage() {
             <span className="text-sm text-[var(--semantic-brand-primary)]">編集</span>
           </Link>
         </div>
-        <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full">
           <Row label="実施者" value={record.inspector} />
           <Row label="点検場所" value={record.location} />
           <Row label="実施日" value={record.date} />
           {record.checks.map((item) => (
             <CheckRow key={item.label} item={item} timestamp={timestamp} />
           ))}
-          <Row label="ph値" value={record.phValue} timestamp={timestamp} />
+          <Row label="ph値" value={record.phValue} timestamp={record.phValue ? timestamp : undefined} />
           <div className="flex flex-col w-full">
             <Row label="残留塩素濃度(mg/ℓ)" value={record.residualChlorine} noBorder />
             <ToggleRow toggle={record.chlorineToggle} />
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">{timestamp}</p>
+            {record.residualChlorine && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">{timestamp}</p>
+            )}
             <div className="border-t border-[#d0d0d0]" />
           </div>
           <div className="flex flex-col w-full">
             <Row label="UV殺菌灯稼働時間(h)" value={record.uvOperatingHours} noBorder />
             <ToggleRow toggle={record.uvToggle} />
-            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">{timestamp}</p>
+            {record.uvOperatingHours && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">{timestamp}</p>
+            )}
             <div className="border-t border-[#d0d0d0]" />
           </div>
-          <Row label="UV表示灯" value={record.uvIndicatorLight} timestamp={timestamp} />
+          <Row label="UV表示灯" value={record.uvIndicatorLight} timestamp={record.uvIndicatorLight ? timestamp : undefined} />
           <div className="h-3" />
-          <Row label="異常検出灯" value={record.errorIndicatorLight} noBorder compact timestamp={timestamp} />
+          <Row
+            label="異常検出灯"
+            value={record.errorIndicatorLight}
+            noBorder
+            compact
+            timestamp={record.errorIndicatorLight ? timestamp : undefined}
+          />
         </div>
 
+        {/* 上の余白は親の gap(16px) + mt-6 = 40px */}
         <Link
           to={backToHistoryPath}
-          className="bg-white border border-[var(--semantic-text-primary)] flex h-16 items-center justify-center px-4 py-2 rounded-lg w-90 max-w-full"
+          className="bg-white border border-[var(--semantic-text-primary)] flex items-center justify-center mt-6 px-4 py-6 rounded-lg w-90 max-w-full"
         >
           <span className="text-xl text-[var(--semantic-text-primary)]">一覧表示に戻る</span>
         </Link>

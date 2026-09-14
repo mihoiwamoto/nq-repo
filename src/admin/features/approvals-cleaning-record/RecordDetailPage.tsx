@@ -134,9 +134,11 @@ export function RecordDetailPage() {
                           >
                             清掃済
                           </button>
-                          <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
-                            {item.implementer} {item.timestamp}
-                          </p>
+                          {item.cleaned && (
+                            <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
+                              {item.implementer} {item.timestamp}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

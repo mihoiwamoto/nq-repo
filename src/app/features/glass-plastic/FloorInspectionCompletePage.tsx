@@ -1,5 +1,7 @@
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
+import { useFromProgress } from "../../layout/ProgressFlowContext";
 
 export function FloorInspectionCompletePage() {
   const navigate = useNavigate();
@@ -9,15 +11,20 @@ export function FloorInspectionCompletePage() {
     floorName?: string;
     date?: string;
     inspectorName?: string;
-    fromProgress?: boolean;
   } | null;
 
   const floorName = state?.floorName ?? "フロアA";
-  const fromProgress = state?.fromProgress ?? false;
+  // 進捗一覧から入った一連の画面かどうかはレイアウト側が保持している
+  const fromProgress = useFromProgress();
 
   const handleNavigate = (path: string) => {
-    navigate(path, { state: fromProgress ? { fromProgress: true } : undefined });
+    navigate(path);
   };
+
+  // 進捗一覧から入った場合は、帳票を続ける導線は出さず進捗一覧に戻すだけ
+  if (fromProgress) {
+    return <ProgressSubmitComplete ledgerTitle={`ガラス・プラスチック管理_${floorName}`} />;
+  }
 
   return (
     <>

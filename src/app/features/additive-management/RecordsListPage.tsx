@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { todayString } from "../../utils/date";
+import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
 import { AppHeader } from "../../layout/AppHeader";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
 import { ACTORS } from "./mockData";
@@ -20,10 +23,20 @@ export function RecordsListPage() {
   const inspectorName =
     (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
   const { additives, records } = useAdditiveManagement();
-  const [date, setDate] = useState("2025-04-01");
 
   const additive = additives.find((a) => a.id === productId);
-  const productRecords = records.filter((record) => record.additiveId === productId);
+  // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
+  const progressFill = useProgressRecordFill();
+  const additiveFill: RecordFill =
+    additive?.status === "not_inspected" ? "none" : additive?.status === "in_progress" ? "partial" : "full";
+  const fill = progressFill ?? additiveFill;
+  const productRecords = fillSlice(
+    records.filter((record) => record.additiveId === productId),
+    fill,
+  );
+  const [date, setDate] = useState(
+    () => productRecords[0]?.date.replaceAll("/", "-") ?? todayString(),
+  );
   const hasRecords = productRecords.length > 0;
   const basePath = `/app/ledger-list/additive-management/products/${productId}`;
 
@@ -35,12 +48,7 @@ export function RecordsListPage() {
           <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
             実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
           </p>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-          />
+          <DateFilterInput value={date} onChange={setDate} />
         </div>
 
         <div className="bg-white rounded-lg overflow-x-auto">

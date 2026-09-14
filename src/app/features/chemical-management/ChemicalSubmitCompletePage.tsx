@@ -1,15 +1,25 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
+import { useFromProgress } from "../../layout/ProgressFlowContext";
 
 export function ChemicalSubmitCompletePage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { fromProgress?: boolean } | null;
-  const fromProgress = state?.fromProgress ?? false;
+  const state = location.state as { inspectorName?: string } | null;
+  // 進捗一覧から入った一連の画面かどうかはレイアウト側が保持している
+  const fromProgress = useFromProgress();
+  const inspectorName = state?.inspectorName;
 
+  /** 「薬品管理記録を続ける」で戻ったときも実施者を引き継ぐ */
   const handleNavigate = (path: string) => {
-    navigate(path, { state: fromProgress ? { fromProgress: true } : undefined });
+    navigate(path, { state: inspectorName ? { inspectorName } : undefined });
   };
+
+  // 進捗一覧から入った場合は、帳票を続ける導線は出さず進捗一覧に戻すだけ
+  if (fromProgress) {
+    return <ProgressSubmitComplete ledgerTitle="薬品管理" />;
+  }
 
   return (
     <>
@@ -32,7 +42,7 @@ export function ChemicalSubmitCompletePage() {
             onClick={() => handleNavigate("/app/ledger-list/chemical-management")}
             className="bg-[var(--semantic-brand-primary)] h-16 w-full rounded-lg flex items-center justify-center text-xl text-white"
           >
-            薬品管理を続ける
+            薬品管理記録を続ける
           </button>
           <button
             onClick={() => handleNavigate("/app/ledger-list")}

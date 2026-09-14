@@ -1,15 +1,16 @@
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/figma/logo-app.png";
 import iconFontSize from "../../assets/figma/icons/rail/font-size.svg";
 import { railNav } from "../navigation";
+import { useFromProgress } from "./ProgressFlowContext";
 
 export function AppRail() {
-  const location = useLocation();
-  const state = location.state as { fromProgress?: boolean } | null;
-  const forceProgressActive = state?.fromProgress ?? false;
+  // 進捗一覧から入った記録・確認・提出完了の各画面では、
+  // URL が /app/ledger-list 配下でもタブは「進捗」のままにする
+  const forceProgressActive = useFromProgress();
 
   return (
-    <nav className="w-14 shrink-0 bg-[var(--semantic-brand-primary)] flex flex-col items-center gap-4 py-4">
+    <nav className="w-16 shrink-0 bg-[var(--semantic-brand-primary)] flex flex-col items-center gap-4 py-4">
       <Link to="/" className="size-10 rounded-[6.4px] bg-white overflow-hidden shrink-0 block">
         <img src={logo} alt="NQlipo" className="size-full object-cover" />
       </Link>
@@ -33,7 +34,7 @@ export function AppRail() {
                   </span>
                   <span className="text-xs text-white leading-none">{item.label}</span>
                   {item.badge !== undefined && (
-                    <span className="absolute -top-1.5 left-[38px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center">
+                    <span className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center">
                       {String(item.badge).padStart(2, "0")}
                     </span>
                   )}
@@ -75,7 +76,7 @@ export function AppRail() {
                   </span>
                   <span className="text-xs text-white leading-none">{item.label}</span>
                   {item.badge !== undefined && (
-                    <span className="absolute -top-1.5 left-[38px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center">
+                    <span className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center">
                       {String(item.badge).padStart(2, "0")}
                     </span>
                   )}

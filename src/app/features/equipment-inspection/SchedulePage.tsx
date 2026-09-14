@@ -3,12 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { ledgerCategories } from "../../../data/ledgers";
 import { useInspection } from "./InspectionContext";
-import { buildMonthGrid, formatDateLabel, isClosedDay } from "./calendarUtils";
+import { buildMonthGrid, formatDateLabel, isClosedDay, toDateKey } from "./calendarUtils";
 import { useSensorySchedule } from "../sensory-inspection/ScheduleContext";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 
 const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];
+const todayKey = toDateKey(2025, 3, 3);
 const equipmentInspectionIcon = ledgerCategories.find(
   (category) => category.slug === "equipment-inspection"
 )?.appIcon;
@@ -60,6 +62,7 @@ export function SchedulePage() {
   }
 
   const selectedLedgers = ledgersForDate(selectedDateKey);
+  const registeredLedgers = selectedLedgers.filter((ledger) => ledger.hasEntry);
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
@@ -87,17 +90,18 @@ export function SchedulePage() {
   return (
     <>
       <AppHeader title="点検予定" />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-6 items-center">
-        <div className="flex flex-col gap-2 items-start w-full max-w-full max-w-[480px] mx-40">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-6 items-start">
+        <div className="flex flex-col gap-2 items-start w-full">
           <div className="flex items-center justify-between w-full">
             <button
               type="button"
               onClick={() => goToMonth(-1)}
-              className="bg-white border border-[var(--semantic-brand-primary)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)] text-xl"
+              aria-label="前の月"
+              className="bg-white border border-[var(--semantic-brand-primary)] size-10 rounded-lg flex items-center justify-center shrink-0"
             >
               <span
                 aria-hidden
-                className="inline-block size-5 shrink-0"
+                className="inline-block size-6 shrink-0"
                 style={{
                   WebkitMaskImage: `url("${iconArrowLeft}")`,
                   maskImage: `url("${iconArrowLeft}")`,
@@ -109,17 +113,18 @@ export function SchedulePage() {
                 }}
               />
             </button>
-            <p className="text-xl text-[var(--semantic-text-primary)]">
+            <p className="text-xl text-[var(--semantic-text-primary)] text-center">
               {year}年{month + 1}月
             </p>
             <button
               type="button"
               onClick={() => goToMonth(1)}
-              className="bg-white border border-[var(--semantic-brand-primary)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)] text-xl"
+              aria-label="次の月"
+              className="bg-white border border-[var(--semantic-brand-primary)] size-10 rounded-lg flex items-center justify-center shrink-0"
             >
               <span
                 aria-hidden
-                className="inline-block size-5 shrink-0"
+                className="inline-block size-6 shrink-0"
                 style={{
                   WebkitMaskImage: `url("${iconArrowRight}")`,
                   maskImage: `url("${iconArrowRight}")`,
@@ -138,8 +143,12 @@ export function SchedulePage() {
               {WEEKDAY_LABELS.map((label, i) => (
                 <div
                   key={label}
-                  className={`bg-white border border-[#d0d0d0] flex-1 h-8 flex items-center justify-center text-base ${
-                    i === 0 ? "text-[var(--semantic-brand-danger)]" : i === 6 ? "text-[#1057f0]" : "text-[var(--semantic-text-primary)]"
+                  className={`bg-white border border-[#d0d0d0] flex-1 h-8 flex items-center justify-center p-2 text-base ${
+                    i === 0
+                      ? "text-[var(--semantic-brand-danger)]"
+                      : i === 6
+                        ? "text-[#1057f0]"
+                        : "text-[var(--semantic-text-primary)]"
                   }`}
                 >
                   {label}
@@ -148,9 +157,10 @@ export function SchedulePage() {
             </div>
             <div className="flex flex-wrap w-full">
               {cells.map((cell) => {
-                const closed = isClosedDay(cell.dateKey);
+                const closed = isClosedDay(cell.dateKey) && cell.monthOffset === 0;
                 const cellLedgers = ledgersForDate(cell.dateKey).filter((l) => l.hasEntry);
                 const isSelected = cell.dateKey === selectedDateKey;
+                const isToday = cell.dateKey === todayKey;
                 const weekday = new Date(cell.dateKey).getDay();
                 const dayColor =
                   cell.monthOffset !== 0
@@ -165,32 +175,42 @@ export function SchedulePage() {
                     key={`${cell.monthOffset}-${cell.day}`}
                     type="button"
                     onClick={() => setSelectedDateKey(cell.dateKey)}
-                    className={`border border-[#d0d0d0] flex flex-col items-end gap-1 p-1 shrink-0 ${
-                      closed && cell.monthOffset === 0 ? "bg-[#e4e4e4]" : "bg-white"
+                    className={`border border-[#d0d0d0] flex flex-col items-end gap-1 h-24 p-1 shrink-0 overflow-hidden ${
+                      closed ? "bg-[#e4e4e4]" : "bg-white"
                     }`}
-                    style={{ width: "14.2857%", minHeight: "88px" }}
+                    style={{ width: "14.2857%" }}
                   >
                     <span
-                      className={`size-7 rounded-full flex items-center justify-center text-base ${dayColor} ${
-                        isSelected ? "border border-[var(--semantic-brand-primary)]" : ""
+                      className={`size-7 shrink-0 rounded-full flex items-center justify-center p-0.5 text-lg ${
+                        isSelected
+                          ? "bg-[#fdb045] text-white"
+                          : isToday
+                            ? "border border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
+                            : dayColor
                       }`}
                     >
                       {cell.day}
                     </span>
-                    {closed && cell.monthOffset === 0 && (
-                      <span className="text-xs text-[var(--semantic-brand-danger)]">休業日</span>
-                    )}
-                    {cellLedgers.map((ledger) => (
-                      <span
-                        key={ledger.slug}
-                        className="bg-white drop-shadow-[0px_2px_2px_rgba(51,51,51,0.24)] rounded flex items-center gap-1 px-1 py-0.5 w-full"
-                      >
-                        {ledger.icon && <img src={ledger.icon} alt="" className="size-3" />}
-                        <span className="text-[10px] text-[var(--semantic-text-primary)] truncate">
-                          {ledger.label}
+                    <div className="flex flex-col gap-1 items-start w-full min-h-0 flex-1 overflow-hidden">
+                      {closed && (
+                        <span className="flex items-center justify-center p-1 rounded w-full text-sm text-[var(--semantic-text-primary)]">
+                          休業日
                         </span>
-                      </span>
-                    ))}
+                      )}
+                      {cellLedgers.map((ledger) => (
+                        <span
+                          key={ledger.slug}
+                          className="bg-white drop-shadow-[0px_2px_2px_rgba(51,51,51,0.24)] rounded flex items-center gap-0.5 p-1 w-full shrink-0"
+                        >
+                          {ledger.icon && (
+                            <img src={ledger.icon} alt="" className="size-4 shrink-0" />
+                          )}
+                          <span className="flex-1 min-w-0 text-xs text-left text-[var(--semantic-text-primary)] whitespace-nowrap overflow-hidden text-ellipsis">
+                            {ledger.label}
+                          </span>
+                        </span>
+                      ))}
+                    </div>
                   </button>
                 );
               })}
@@ -198,8 +218,8 @@ export function SchedulePage() {
           </div>
         </div>
 
-        <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
-          <div className="flex items-center justify-between w-full">
+        <div className="bg-white flex flex-col flex-1 min-h-0 items-center overflow-hidden rounded-lg w-full">
+          <div className="bg-white drop-shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex items-center justify-between px-4 py-3 rounded-t-lg shrink-0 w-full">
             <p className="text-xl text-[var(--semantic-text-primary)] flex items-center gap-2">
               {formatDateLabel(selectedDateKey)}
               {selectedClosed && (
@@ -210,21 +230,44 @@ export function SchedulePage() {
               <button
                 type="button"
                 onClick={openRegisterDialog}
-                className="bg-[var(--semantic-brand-primary)] h-10 px-4 rounded-lg text-sm text-white flex items-center gap-1"
+                className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-base text-white shrink-0"
               >
-                ＋新規登録
+                <span
+                  aria-hidden
+                  className="inline-block size-5 shrink-0"
+                  style={{
+                    WebkitMaskImage: `url("${iconPlus}")`,
+                    maskImage: `url("${iconPlus}")`,
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    backgroundColor: "#ffffff",
+                  }}
+                />
+                新規登録
               </button>
             )}
           </div>
-          {!selectedClosed &&
-            selectedLedgers
-              .filter((l) => l.hasEntry)
-              .map((ledger) => (
-                <Link key={ledger.slug} to={ledger.targetPath} className="flex items-center gap-2 w-full">
-                  {ledger.icon && <img src={ledger.icon} alt="" className="size-5" />}
-                  <span className="text-base text-[var(--semantic-text-primary)]">{ledger.label}</span>
-                </Link>
+          <div className="flex flex-col flex-1 min-h-0 items-center overflow-y-auto px-4 pb-10 w-full">
+            {!selectedClosed &&
+              registeredLedgers.map((ledger) => (
+                <div key={ledger.slug} className="w-full">
+                  <Link
+                    to={ledger.targetPath}
+                    className="flex flex-col items-start justify-center px-2 py-4 w-full"
+                  >
+                    <span className="flex items-center gap-2 w-full">
+                      {ledger.icon && <img src={ledger.icon} alt="" className="size-6 shrink-0" />}
+                      <span className="flex-1 min-w-0 text-lg text-[var(--semantic-text-primary)]">
+                        {ledger.label}
+                      </span>
+                    </span>
+                  </Link>
+                  <div className="h-px w-full bg-[#d0d0d0]" />
+                </div>
               ))}
+          </div>
         </div>
       </div>
 

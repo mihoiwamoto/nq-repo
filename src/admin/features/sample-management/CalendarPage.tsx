@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useSampleManagement } from "./SampleManagementContext";
 import { getFactoryName } from "../../../data/factories";
 import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
-import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 export function CalendarPage() {
@@ -36,9 +36,7 @@ export function CalendarPage() {
         setMonth(m - 1);
       }
       setShowUpdateToast(true);
-      const timer = setTimeout(() => setShowUpdateToast(false), 3000);
       navigate(location.pathname, { replace: true });
-      return () => clearTimeout(timer);
     }
   }, [location, navigate]);
 
@@ -58,7 +56,6 @@ export function CalendarPage() {
     removeScheduleEntry(selectedDateKey);
     setDeleteDialogOpen(false);
     setShowDeletedToast(true);
-    setTimeout(() => setShowDeletedToast(false), 3000);
   }
 
   return (
@@ -216,11 +213,9 @@ export function CalendarPage() {
                             setMenuOpen(false);
                             setDeleteDialogOpen(true);
                           }}
-                          className="w-full px-4 py-2 hover:bg-[var(--semantic-background-page)]"
+                          className="w-full text-left px-4 py-2 text-sm text-[var(--semantic-brand-danger)] hover:bg-[var(--semantic-background-page)]"
                         >
-                          <span className="bg-white border border-[var(--semantic-brand-danger)] rounded-lg flex items-center justify-center size-8 shrink-0">
-                            <img src={iconTrash} alt="削除" className="size-5" />
-                          </span>
+                          削除
                         </button>
                       </div>
                     )}
@@ -236,13 +231,36 @@ export function CalendarPage() {
               ) : (
                 selectedProducts.map((product, i) => (
                   <div key={`${product.id}-${i}`}>
-                    <div className="flex gap-4 h-12 items-center">
-                      <span className="text-base text-[var(--semantic-text-primary)] w-28">
-                        製品名
-                      </span>
-                      <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                        {product.name}
-                      </span>
+                    <div className="flex flex-col py-4">
+                      <div className="flex gap-4 h-8 items-center">
+                        <span className="text-base text-[var(--semantic-text-primary)] w-28">
+                          製品名
+                        </span>
+                        <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                          {product.name}
+                        </span>
+                      </div>
+                      {/* 製造日・ロットNo. は管理画面で「記載する」とした製品だけに出る任意項目 */}
+                      {product.manufactureDate && (
+                        <div className="flex gap-4 h-8 items-center">
+                          <span className="text-base text-[var(--semantic-text-primary)] w-28">
+                            製造日
+                          </span>
+                          <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                            {product.manufactureDate.replaceAll("-", "/")}
+                          </span>
+                        </div>
+                      )}
+                      {product.lotNumber && (
+                        <div className="flex gap-4 h-8 items-center">
+                          <span className="text-base text-[var(--semantic-text-primary)] w-28">
+                            ロットNo.
+                          </span>
+                          <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                            {product.lotNumber}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     {i < selectedProducts.length - 1 && <div className="border-t border-[#d0d0d0]" />}
                   </div>
@@ -286,23 +304,9 @@ export function CalendarPage() {
       )}
 
       {showDeletedToast && (
-        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
-          <span>✓</span>
-          <span className="text-xl">削除されました。</span>
-          <button type="button" onClick={() => setShowDeletedToast(false)} className="ml-2">
-            ×
-          </button>
-        </div>
+        <Toast message="削除されました。" onClose={() => setShowDeletedToast(false)} />
       )}
-      {showUpdateToast && (
-        <div className="fixed bottom-8 right-8 bg-[#19c95f] flex gap-2 items-center px-4 py-3 rounded-lg text-white">
-          <span>✓</span>
-          <span className="text-xl">更新されました。</span>
-          <button type="button" onClick={() => setShowUpdateToast(false)} className="ml-2">
-            ×
-          </button>
-        </div>
-      )}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );
 }

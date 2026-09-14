@@ -31,7 +31,6 @@ export const PENDING_REVIEWS: PendingReview[] = [
     status: "点検済み",
     lineId: "l8",
   },
-  { id: "p3", date: "04/01", name: "仕出しだし巻き玉子 冷凍", ledgerSlug: "sample-management", status: "点検済み", sampleId: "s2" },
   { id: "p4", date: "04/01", name: "添加物", ledgerSlug: "scale-inspection", status: "点検済み", postId: "additive" },
   {
     id: "p5",
@@ -78,11 +77,11 @@ export const PENDING_REVIEWS: PendingReview[] = [
   },
   {
     id: "p10",
-    date: "04/02",
-    name: "仕出しだし巻き玉子 冷凍",
-    ledgerSlug: "sample-management",
-    status: "差し戻し",
-    sampleId: "s1",
+    date: "04/01",
+    name: "ゆばライン（つまみ関係）",
+    ledgerSlug: "equipment-inspection",
+    status: "点検済み",
+    lineId: "l9",
   },
   {
     id: "p11",
@@ -106,5 +105,13 @@ export const PENDING_REVIEWS: PendingReview[] = [
     ledgerSlug: "metal-xray-detection",
     status: "差し戻し",
     machineId: "m1",
+  },
+  {
+    id: "p14",
+    date: "04/01",
+    name: "豆乳ライン",
+    ledgerSlug: "equipment-inspection",
+    status: "差し戻し",
+    lineId: "l8",
   },
 ];

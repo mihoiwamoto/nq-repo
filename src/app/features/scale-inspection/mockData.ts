@@ -38,11 +38,20 @@ export type ScaleRecord = {
   actionCheck: ActionCheck;
   cause: string;
   actionType: ActionOption | null;
+  /** 対応が「その他」のときに書いてもらう自由記述（DB: operation_handling_other_text） */
+  actionDetail: string;
   levelCheck: boolean;
   dirtCheck: boolean;
   displayValue: string;
   weightCause: WeightIssueOption | null;
   remarks: string;
+  /** 記録した人。項目ごとの入力時刻と並べて確認画面・詳細画面に出す */
+  inspector?: string;
+  /**
+   * 項目ごとの入力時刻（"YYYY/MM/DD HH:mm"）。
+   * キーは "actionCheck" / "levelCheck" / "dirtCheck" / "displayValue"。
+   */
+  timestamps?: Record<string, string>;
 };
 
 export type Scale = {
@@ -117,6 +126,7 @@ export const pendingReviewScales: Scale[] = [
       actionCheck: "ok",
       cause: "",
       actionType: null,
+      actionDetail: "",
       levelCheck: true,
       dirtCheck: true,
       displayValue: "100",
@@ -135,9 +145,10 @@ export const pendingReviewScales: Scale[] = [
       actionCheck: "ng",
       cause: "表示が点灯しない",
       actionType: "修理",
-      levelCheck: false,
-      dirtCheck: false,
-      displayValue: "",
+      actionDetail: "",
+      levelCheck: true,
+      dirtCheck: true,
+      displayValue: "100",
       weightCause: null,
       remarks: "修理担当者へ連絡済み",
     },

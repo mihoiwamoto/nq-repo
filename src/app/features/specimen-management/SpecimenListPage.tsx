@@ -20,7 +20,7 @@ const SPECIMEN_ENTRIES: SpecimenItem[] = [
   },
   {
     id: "specimen-3",
-    productName: "製品名○○○○○○○",
+    productName: "スクランブルエッグ（冷凍）　350g",
     expiryDate: "2024/10/15",
   },
 ];

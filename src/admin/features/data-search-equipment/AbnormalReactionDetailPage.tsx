@@ -97,7 +97,9 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">点検時間</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">{formatTime(selectedItem.timestamp)}</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                {selectedItem.timestamp && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                )}
               </div>
             </div>
           </div>
@@ -108,7 +110,9 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">異常製品</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">マンゴープリン　ストレート　1kg</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                {selectedItem.timestamp && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                )}
               </div>
             </div>
           </div>
@@ -119,7 +123,9 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">通過数量</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">200</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                {selectedItem.timestamp && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                )}
               </div>
             </div>
           </div>
@@ -130,7 +136,9 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">異常数量</p>
               <div className="text-right">
                 <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">5</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                {selectedItem.timestamp && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                )}
               </div>
             </div>
           </div>
@@ -141,7 +149,9 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">原因</p>
               <div className="text-right flex-shrink-0">
                 <p className="text-[20px] text-[var(--semantic-text-primary)]">{selectedItem.cause || "異物混入"}</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal mt-1">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                {selectedItem.timestamp && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] font-normal mt-1">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                )}
               </div>
             </div>
             <p className="text-base text-[#999999] leading-relaxed max-w-[60%] mt-2">
@@ -155,7 +165,9 @@ export function AbnormalReactionDetailPage() {
               <p className="text-[20px] font-bold text-[var(--semantic-text-primary)]">対応</p>
               <div className="text-right flex-shrink-0">
                 <p className="text-[20px] text-[var(--semantic-text-primary)]">{selectedItem.action || "点検調整"}</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] font-normal mt-1">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                {selectedItem.timestamp && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] font-normal mt-1">{selectedItem.inspector}, {formatDate(record.date)} {formatTime(selectedItem.timestamp)}</p>
+                )}
               </div>
             </div>
             <p className="text-base text-[#999999] leading-relaxed max-w-[60%] mt-2">

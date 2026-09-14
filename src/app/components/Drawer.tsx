@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import iconCancelDark from "@images/Icon/cancel.svg";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -31,7 +32,7 @@ export function Drawer({ isOpen, onClose, children, title, fullWidth = false }: 
               className="ml-auto text-xl text-[var(--semantic-text-secondary)] hover:text-[var(--semantic-text-primary)] w-8 h-8 flex items-center justify-center"
               aria-label="Close drawer"
             >
-              ×
+              <img src={iconCancelDark} alt="" aria-hidden="true" className="size-5" />
             </button>
           </div>
         )}

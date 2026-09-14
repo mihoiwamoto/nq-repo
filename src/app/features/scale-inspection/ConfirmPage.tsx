@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { ACTORS } from "../cleaning-record/mockData";
 import { useScaleInspection } from "./ScaleInspectionContext";
 
@@ -29,23 +30,51 @@ function Row({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
-function StatusRow({ label, content }: { label: string; content: ReactNode }) {
+function StatusRow({
+  label,
+  content,
+  inspector,
+  timestamp,
+}: {
+  label: string;
+  content: ReactNode;
+  inspector?: string;
+  timestamp?: string;
+}) {
   return (
-    <div className="flex items-center justify-between w-full gap-6">
-      <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
-      <div className="flex justify-end">{content}</div>
+    <div className="flex flex-col gap-1 w-full">
+      <div className="flex items-center justify-between w-full gap-6">
+        <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
+        <div className="flex justify-end">{content}</div>
+      </div>
+      <RecordTimestamp inspector={inspector} timestamp={timestamp} />
     </div>
   );
 }
 
-function ValueRow({ label, sub, content }: { label: string; sub: string; content: ReactNode }) {
+function ValueRow({
+  label,
+  sub,
+  content,
+  inspector,
+  timestamp,
+}: {
+  label: string;
+  sub: string;
+  content: ReactNode;
+  inspector?: string;
+  timestamp?: string;
+}) {
   return (
-    <div className="flex items-center justify-between w-full gap-6">
-      <div className="flex flex-col gap-2 items-start">
-        <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
-        <p className="text-sm text-[#808080]">{sub}</p>
+    <div className="flex flex-col gap-1 w-full">
+      <div className="flex items-center justify-between w-full gap-6">
+        <div className="flex flex-col gap-2 items-start">
+          <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
+          <p className="text-sm text-[#808080]">{sub}</p>
+        </div>
+        <div className="text-base text-[var(--semantic-text-primary)] text-right">{content}</div>
       </div>
-      <div className="text-base text-[var(--semantic-text-primary)] text-right">{content}</div>
+      <RecordTimestamp inspector={inspector} timestamp={timestamp} />
     </div>
   );
 }
@@ -90,14 +119,14 @@ export function ConfirmPage() {
     <>
       <AppHeader title={`秤点検記録_${post?.name ?? ""}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
         </div>
 
-        <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full">
           <Row label="実施日" value={date.replaceAll("-", "/")} />
           <HLine />
           <Row label="実施者" value={inspectorName} />
@@ -106,7 +135,7 @@ export function ConfirmPage() {
         </div>
 
         {scales.map((scale) => (
-          <div key={scale.id} className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+          <div key={scale.id} className="bg-white flex flex-col gap-3 p-4 rounded-lg w-full max-w-full">
             <Row label="秤No.(ラベル名)" value={scale.label} />
             <HLine />
             <Row label="シリアルナンバー" value={scale.serialNumber} />
@@ -135,30 +164,42 @@ export function ConfirmPage() {
                 <HLine />
                 <RemarksRow text="" />
               </>
-            ) : scale.record?.actionCheck === "ng" ? (
-              <>
-                <StatusRow label="動作確認" content={<StatusTag label="異常あり" color="#f85c5c" />} />
-                <HLine />
-                <StatusRow label="水平点検" content={<Dash />} />
-                <HLine />
-                <StatusRow label="汚れ" content={<Dash />} />
-                <HLine />
-                <ValueRow label="秤の表示値(g)" sub={`使用分銅(g)：${scale.referenceWeight}`} content={<Dash />} />
-                <HLine />
-                <RemarksRow text={scale.record?.remarks ?? ""} />
-              </>
             ) : (
               <>
-                <StatusRow label="動作確認" content={<StatusTag label="正常" color="#19c95f" />} />
+                <StatusRow
+                  label="動作確認"
+                  content={
+                    scale.record?.actionCheck === "ng" ? (
+                      <StatusTag label="異常あり" color="#f85c5c" />
+                    ) : (
+                      <StatusTag label="正常" color="#19c95f" />
+                    )
+                  }
+                  inspector={scale.record?.inspector ?? inspectorName}
+                  timestamp={scale.record?.timestamps?.actionCheck}
+                />
                 <HLine />
-                <StatusRow label="水平点検" content={<StatusTag label="正常" color="#19c95f" />} />
+                {/* 記録が入っていない項目は「正常」ではなく横棒。タイムスタンプも出ない */}
+                <StatusRow
+                  label="水平点検"
+                  content={scale.record?.levelCheck ? <StatusTag label="正常" color="#19c95f" /> : <Dash />}
+                  inspector={scale.record?.inspector ?? inspectorName}
+                  timestamp={scale.record?.timestamps?.levelCheck}
+                />
                 <HLine />
-                <StatusRow label="汚れ" content={<StatusTag label="正常" color="#19c95f" />} />
+                <StatusRow
+                  label="汚れ"
+                  content={scale.record?.dirtCheck ? <StatusTag label="正常" color="#19c95f" /> : <Dash />}
+                  inspector={scale.record?.inspector ?? inspectorName}
+                  timestamp={scale.record?.timestamps?.dirtCheck}
+                />
                 <HLine />
                 <ValueRow
                   label="秤の表示値(g)"
                   sub={`使用分銅(g)：${scale.referenceWeight}`}
-                  content={scale.record?.displayValue ?? ""}
+                  content={scale.record?.displayValue || <Dash />}
+                  inspector={scale.record?.inspector ?? inspectorName}
+                  timestamp={scale.record?.timestamps?.displayValue}
                 />
                 <HLine />
                 <RemarksRow text={scale.record?.remarks ?? ""} />

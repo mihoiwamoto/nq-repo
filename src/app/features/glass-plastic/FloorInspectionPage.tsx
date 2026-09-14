@@ -6,6 +6,10 @@ import iconExpand from "../../../assets/figma/icons/common/expansion.svg";
 import iconReduce from "../../../assets/figma/icons/common/reduction.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { recordTimestamp, todayString } from "../../utils/date";
+import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { AppHeader } from "../../layout/AppHeader";
 import { useGlassPlastic } from "./GlassPlasticContext";
 import { ACTORS } from "../cleaning-record/mockData";
@@ -29,11 +33,39 @@ function keyFor(roomName: string, itemName: string) {
   return `${roomName}|${itemName}`;
 }
 
-function formatTimestamp(date: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(
-    date.getHours()
-  )}:${pad(date.getMinutes())}`;
+/** 画面に出る順の点検項目キー（修理中・要対応のバッジ項目は入力対象外なので除く） */
+function orderedRecordKeys() {
+  return rooms.flatMap((room) =>
+    room.items.filter((item) => !item.badge).map((item) => keyFor(room.name, item.name)),
+  );
+}
+
+/**
+ * ステータスに応じた記録の初期状態。
+ * モックに個別の記録がある項目はそれを、無い項目は「正常」として扱う。
+ */
+function seedRecords(
+  fill: RecordFill,
+  inspectorName: string,
+  inspectionDate?: string,
+): Record<string, RoomItemRecord> {
+  // 点検済み・確認完了の記録は実施者だけでなく入力時刻まで入った状態にする
+  // （実施日から組み立てる。項目ごとの時刻はモックに無いので一律の時刻を使う）
+  const timestamp = inspectionDate ? `${inspectionDate.replace(/-/g, "/")} 09:00` : "";
+  return Object.fromEntries(
+    fillSlice(orderedRecordKeys(), fill).map((key) => [
+      key,
+      initialInspectionRecords[key] ?? {
+        status: "ok" as const,
+        content: null,
+        cause: null,
+        actionType: null,
+        actionDetail: "",
+        timestamp,
+        inspector: inspectorName,
+      },
+    ]),
+  );
 }
 
 function PillButton({
@@ -49,7 +81,7 @@ function PillButton({
     <button
       type="button"
       onClick={onClick}
-      className={`h-12 px-4 rounded-lg text-base ${
+      className={`h-12 px-4 rounded-lg text-base shrink-0 whitespace-nowrap ${
         selected
           ? "bg-white border border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
           : "bg-white text-[var(--semantic-text-primary)]"
@@ -71,11 +103,20 @@ export function FloorInspectionPage() {
   const floor = floors.find((f) => f.id === floorId);
   const floorName = floor?.name ?? "フロアA";
 
-  const [date, setDate] = useState("2025-03-24");
+  // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
+  const progressFill = useProgressRecordFill();
+  const floorFill: RecordFill = floor?.status === "inspected" ? "full" : "none";
+  const fill = progressFill ?? floorFill;
+
+  const [date, setDate] = useState(() =>
+    fill !== "none" ? floor?.inspectionDate || todayString() : todayString(),
+  );
   const [activeRoomId, setActiveRoomId] = useState("all");
   const [mapScale, setMapScale] = useState(1);
   const [mapExpanded, setMapExpanded] = useState(false);
-  const [records, setRecords] = useState<Record<string, RoomItemRecord>>(initialInspectionRecords);
+  const [records, setRecords] = useState<Record<string, RoomItemRecord>>(() =>
+    seedRecords(fill, floor?.inspectorName ?? inspectorName, floor?.inspectionDate),
+  );
 
   const [ngTarget, setNgTarget] = useState<{ roomName: string; itemName: string } | null>(null);
   const [ngStatus, setNgStatus] = useState<RoomItemStatus>("ng");
@@ -112,7 +153,7 @@ export function FloorInspectionPage() {
         cause: detail?.cause ?? null,
         actionType: detail?.actionType ?? null,
         actionDetail: detail?.actionDetail ?? "",
-        timestamp: formatTimestamp(new Date()),
+        timestamp: recordTimestamp(),
         inspector: inspectorName,
       },
     }));
@@ -168,16 +209,11 @@ export function FloorInspectionPage() {
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={date} onChange={setDate} />
           </div>
 
           <div
-            className={`relative bg-[#d0d0d0] border border-[var(--semantic-brand-primary)] rounded-lg overflow-auto flex items-center justify-center ${
+            className={`relative shrink-0 bg-[#d0d0d0] border border-[var(--semantic-brand-primary)] rounded-lg overflow-auto flex items-center justify-center ${
               mapExpanded ? "h-[640px]" : "h-[340px]"
             }`}
           >
@@ -185,7 +221,9 @@ export function FloorInspectionPage() {
               type="button"
               onClick={() => setMapExpanded((expanded) => !expanded)}
               aria-label={mapExpanded ? "縮小表示" : "拡大表示"}
-              className="absolute top-4 left-4 size-10 bg-white rounded-lg flex items-center justify-center text-lg z-10"
+              className={`absolute top-4 left-4 size-10 rounded-[10px] flex items-center justify-center text-lg z-10 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
+                mapExpanded ? "bg-[var(--semantic-brand-primary)]" : "bg-white"
+              }`}
             >
               <span
                 className="size-6"
@@ -196,7 +234,7 @@ export function FloorInspectionPage() {
                   maskSize: "contain",
                   WebkitMaskRepeat: "no-repeat",
                   maskRepeat: "no-repeat",
-                  backgroundColor: "#009944",
+                  backgroundColor: mapExpanded ? "#ffffff" : "#009944",
                 }}
               />
             </button>
@@ -342,11 +380,10 @@ export function FloorInspectionPage() {
                           </div>
                         )}
 
-                        {record?.timestamp && (
-                          <p className="text-sm font-normal text-[var(--semantic-text-secondary)] text-right w-full">
-                            {record.inspector} {record.timestamp}
-                          </p>
-                        )}
+                        <RecordTimestamp
+                          inspector={record?.inspector}
+                          timestamp={record?.timestamp}
+                        />
                       </div>
                     );
                   })}
@@ -380,7 +417,7 @@ export function FloorInspectionPage() {
       {ngTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeNgDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full max-w-[1000px] mx-40 max-h-[90vh] overflow-y-auto overflow-x-hidden mx-16">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-8 py-10 w-full max-w-[1040px] mx-6 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 点検箇所

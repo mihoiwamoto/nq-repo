@@ -23,7 +23,7 @@ export function SettingsPage() {
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col items-center">
-        <div className="flex flex-col gap-10 items-center w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex flex-col gap-10 items-center w-full max-w-full">
           <div className="flex flex-col gap-4 items-start w-full">
             <button
               type="button"

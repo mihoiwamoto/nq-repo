@@ -4,7 +4,7 @@ import { AppHeader } from "../../layout/AppHeader";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import {
   MACHINES,
-  MACHINE_RECORDS,
+  recordsForMachine,
   METAL_DETECTOR_CHECKLIST,
   METAL_TEST_PIECES,
   RESULT_COLORS,
@@ -24,7 +24,7 @@ function StatusBadge({ value }: { value: OkNg }) {
   const result = value === "ok" ? "OK" : "NG";
   return (
     <span
-      className="h-6 shrink-0 px-2 rounded-lg text-xs text-white inline-flex items-center justify-center"
+      className="h-6 w-16 shrink-0 rounded-lg text-xs text-white inline-flex items-center justify-center"
       style={{ backgroundColor: RESULT_COLORS[result] }}
     >
       {RESULT_LABELS[result]}
@@ -47,7 +47,9 @@ function DetailRow({
         <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
         <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
       </div>
-      {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>}
+      {value && timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
@@ -69,20 +71,24 @@ function DetailNoteRow({
         <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
         <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
       </div>
-      <p className="text-base text-[var(--semantic-text-primary)] whitespace-pre-wrap">{note}</p>
-      {timestamp && <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>}
+      {note && <p className="text-base text-[var(--semantic-text-primary)] whitespace-pre-wrap">{note}</p>}
+      {(value || note) && timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
 
-function DetailCheckRow({ label, value, timestamp }: { label: string; value: OkNg; timestamp: string }) {
+function DetailCheckRow({ label, value, timestamp }: { label: string; value: OkNg; timestamp?: string }) {
   return (
     <div className="flex flex-col gap-2 items-end w-full">
       <div className="flex items-center justify-between gap-4 w-full">
         <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
         <StatusBadge value={value} />
       </div>
-      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      {value && timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
@@ -186,7 +192,11 @@ function TestPieceDetailGroup({
         {pieces.map((piece, index) => (
           <Fragment key={piece.key}>
             <div className="flex flex-col gap-3 items-start w-full">
-              <DetailRow label={`テストピース：${piece.label}`} value={values[piece.key] ?? ""} timestamp={timestamp} />
+              <DetailRow
+                label={`テストピース：${piece.label}`}
+                value={values[piece.key] ?? ""}
+                timestamp={values[piece.key] ? timestamp : undefined}
+              />
               {checks[piece.key] && (
                 <DetailCheckRow label={`検知確認：${piece.label}`} value={checks[piece.key]} timestamp={timestamp} />
               )}
@@ -229,10 +239,12 @@ export function MachineRecordDetailPage() {
   const { machineId, recordId } = useParams<{ machineId: string; recordId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as { inspectionDate?: string; inspectorName?: string } | null;
+  const state = location.state as
+    | { inspectionDate?: string; inspectorName?: string; editReturn?: unknown }
+    | null;
   const inspectionDate = state?.inspectionDate ?? "";
   const machine = MACHINES.find((m) => m.id === machineId);
-  const record = (MACHINE_RECORDS[machineId ?? ""] ?? []).find((r) => r.id === recordId);
+  const record = recordsForMachine(machineId).find((r) => r.id === recordId);
 
   if (!machine || !record) return null;
 
@@ -263,7 +275,7 @@ export function MachineRecordDetailPage() {
     const [hours, minutes] = time.split(":");
     return `${hours}:${minutes}`;
   };
-  const timestampFor = (time: string) => `${record.inspectorName} ${dateLabel} ${formatTime(time)}`;
+  const timestampFor = (time: string) => (time ? `${record.inspectorName} ${dateLabel} ${formatTime(time)}` : "");
 
   return (
     <>
@@ -283,9 +295,18 @@ export function MachineRecordDetailPage() {
           </div>
           <Divider />
           <div className="flex items-center justify-between w-full">
+            <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
+            <p className="text-base text-[var(--semantic-text-primary)]">{record.inspectorName}</p>
+          </div>
+          <Divider />
+          <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">点検内容</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{record.content}</p>
           </div>
+          <Divider />
+          {/* 記録があれば「誰がいつ入れたか」が必ず出るように、点検時間はどの点検内容でも出す
+              （確認待ち画面の記録詳細と同じ並び） */}
+          <DetailRow label="点検時間" value={record.time} timestamp={timestampFor(record.time)} />
           <Divider />
 
           {record.content === "動作確認" && record.detail && (
@@ -437,8 +458,7 @@ export function MachineRecordDetailPage() {
 
           {record.content === "異常反応" && record.abnormalDetail && (
             <>
-              <DetailRow label="点検時間" value={record.time} timestamp={timestampFor(record.time)} />
-              <Divider />
+              {/* 点検時間は上の共通部分で出しているのでここでは省く */}
               <DetailRow label="異常製品" value={record.passedProduct} timestamp={timestampFor(record.time)} />
               <Divider />
               <DetailRow
@@ -481,7 +501,9 @@ export function MachineRecordDetailPage() {
         <button
           type="button"
           onClick={() =>
-            navigate(getBackPath(), { state: { inspectionDate, inspectorName: state?.inspectorName } })
+            navigate(getBackPath(), {
+              state: { inspectionDate, inspectorName: state?.inspectorName, editReturn: state?.editReturn },
+            })
           }
           className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
         >

@@ -22,16 +22,31 @@ function StatusTag({ status }: { status: CheckItem["status"] }) {
   );
 }
 
-function Row({ label, value, hideBorder }: { label: string; value: string; hideBorder?: boolean }) {
+function Row({
+  label,
+  value,
+  hideBorder,
+  timestamp,
+}: {
+  label: string;
+  value: string;
+  hideBorder?: boolean;
+  timestamp?: string;
+}) {
   return (
-    <div className={`flex items-center justify-between w-full py-3 ${!hideBorder && "border-b border-[#d0d0d0]"}`}>
-      <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
-      <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
+    <div className={`flex flex-col gap-1 w-full py-3 ${!hideBorder && "border-b border-[#d0d0d0]"}`}>
+      <div className="flex items-center justify-between w-full">
+        <p className="text-base text-[var(--semantic-text-primary)]">{label}</p>
+        <p className="text-base text-[var(--semantic-text-primary)]">{value}</p>
+      </div>
+      {timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
 
-function CheckRow({ item }: { item: CheckItem }) {
+function CheckRow({ item, timestamp }: { item: CheckItem; timestamp?: string }) {
   return (
     <div className="flex flex-col gap-2 w-full py-3 border-b border-[#d0d0d0]">
       <div className="flex items-center justify-between w-full">
@@ -44,6 +59,9 @@ function CheckRow({ item }: { item: CheckItem }) {
           <p>対応：{item.action}</p>
         </div>
       )}
+      {timestamp && (
+        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{timestamp}</p>
+      )}
     </div>
   );
 }
@@ -51,7 +69,7 @@ function CheckRow({ item }: { item: CheckItem }) {
 function ToggleRow({ label, checked }: { label: string; checked: boolean }) {
   if (!checked) return null;
   return (
-    <div className="flex justify-end w-full pb-3 -mt-1 border-b border-[#d0d0d0]">
+    <div className="flex justify-end w-full pb-3 -mt-1">
       <span className="flex items-center gap-1 text-base text-[var(--semantic-status-success)]">
         <svg viewBox="0 0 24 24" className="size-6" fill="none">
           <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.6" />
@@ -93,6 +111,12 @@ export function RecordEditConfirmPage() {
     );
   }
 
+  // 編集画面で項目ごとに付いた入力時刻を「実施者 + 入力時刻」の形にして各行に添える
+  const inspectorName = state.inspectorName ?? original.inspector;
+  const checkTimestamps = state.checkTimestamps ?? {};
+  const fieldTimestamps = state.fieldTimestamps ?? {};
+  const metaFor = (timestamp?: string) => (timestamp ? `${inspectorName} ${timestamp}` : undefined);
+
   function handleSave() {
     updateRecord(pointId, {
       ...original,
@@ -127,24 +151,44 @@ export function RecordEditConfirmPage() {
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
         </div>
-        <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full">
           <Row label="実施者" value={original.inspector} />
           <Row label="点検場所" value={original.location} />
           <Row label="実施日" value={state.date.replaceAll("-", "/")} />
           {state.checks.map((item) => (
-            <CheckRow key={item.label} item={item} />
+            <CheckRow key={item.label} item={item} timestamp={metaFor(checkTimestamps[item.label])} />
           ))}
-          <Row label="ph値" value={state.phValue} />
+          <Row label="ph値" value={state.phValue} timestamp={metaFor(fieldTimestamps.phValue)} />
           <div className="flex flex-col w-full">
             <Row label="残留塩素濃度(mg/ℓ)" value={state.residualChlorine} hideBorder />
             <ToggleRow label="塩素補充" checked={state.chlorineChecked} />
+            {fieldTimestamps.residualChlorine && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">
+                {metaFor(fieldTimestamps.residualChlorine)}
+              </p>
+            )}
+            <div className="border-t border-[#d0d0d0]" />
           </div>
           <div className="flex flex-col w-full">
             <Row label="UV殺菌灯稼働時間(h)" value={state.uvOperatingHours} hideBorder />
             <ToggleRow label="UV殺菌灯交換" checked={state.uvChecked} />
+            {fieldTimestamps.uvOperatingHours && (
+              <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal pb-3">
+                {metaFor(fieldTimestamps.uvOperatingHours)}
+              </p>
+            )}
+            <div className="border-t border-[#d0d0d0]" />
           </div>
-          <Row label="UV表示灯" value={state.uvIndicatorOk ? "点灯" : "消灯"} />
-          <Row label="異常検出灯" value={state.errorIndicatorOk ? "消灯" : "点灯"} />
+          <Row
+            label="UV表示灯"
+            value={state.uvIndicatorOk ? "点灯" : "消灯"}
+            timestamp={metaFor(fieldTimestamps.uvIndicator)}
+          />
+          <Row
+            label="異常検出灯"
+            value={state.errorIndicatorOk ? "消灯" : "点灯"}
+            timestamp={metaFor(fieldTimestamps.errorIndicator)}
+          />
         </div>
       </div>
 

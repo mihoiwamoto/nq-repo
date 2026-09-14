@@ -130,7 +130,7 @@ export function AnomalyDialog({
                             : "bg-[#d0d0d0] text-[#999]"
                         }`}
                       >
-                        <img src={iconCheck} alt="正常" className="size-5" />
+                        <img src={iconCheck} alt="正常" className="size-5 brightness-0 invert" />
                       </button>
                     </div>
                   </div>
@@ -198,7 +198,7 @@ export function AnomalyDialog({
                           : "bg-[#d0d0d0] text-[#999]"
                       }`}
                     >
-                      <img src={iconCheck} alt="正常" className="size-5" />
+                      <img src={iconCheck} alt="正常" className="size-5 brightness-0 invert" />
                     </button>
                   </div>
                 </div>
@@ -264,7 +264,7 @@ export function AnomalyDialog({
                       type="button"
                       className="flex-1 h-[40px] rounded-r-lg bg-[#d0d0d0] text-[#999] flex items-center justify-center"
                     >
-                      <img src={iconCheck} alt="正常" className="size-5" />
+                      <img src={iconCheck} alt="正常" className="size-5 brightness-0 invert" />
                     </button>
                   </div>
                 </div>

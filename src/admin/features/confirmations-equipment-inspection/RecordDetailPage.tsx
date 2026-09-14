@@ -11,8 +11,8 @@ import { useRecords } from "./RecordsContext";
 import type { ConfirmStatus } from "./types";
 
 const STATUS_OPTIONS: { value: ConfirmStatus; label: string }[] = [
-  { value: "unconfirmed", label: "確認待ち" },
-  { value: "confirmed", label: "確認済み" },
+  { value: "unconfirmed", label: "点検済み" },
+  { value: "confirmed", label: "承認待ち" },
 ];
 
 function formatDate(date: string) {
@@ -130,9 +130,11 @@ export function RecordDetailPage() {
                             <p>対応：{item.action}</p>
                           </div>
                         )}
-                        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-                          {item.inspector} {item.timestamp}
-                        </p>
+                        {item.timestamp && (
+                          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                            {item.inspector} {item.timestamp}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

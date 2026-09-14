@@ -1,16 +1,41 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
+import { todayString } from "../../utils/date";
+import { stampTimestamps, seedTimestamp } from "../../utils/recordTimestamps";
+import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
 import { AppHeader } from "../../layout/AppHeader";
-import { CustomSelect } from "../../components/CustomSelect";
+import { PulldownSelect } from "../../components/PulldownSelect";
 import { ACTORS } from "../cleaning-record/mockData";
 import { useSensoryInspection } from "./SensoryInspectionContext";
 import {
   CRITERIA,
+  pendingReviewScoreRows,
   products,
   type ComparisonOption,
   type Criterion,
   type CriterionRecord,
+  type SensoryRecord,
 } from "./mockData";
+
+const EMPTY_SCORES: Record<Criterion, CriterionRecord | null> = {
+  味: null,
+  形: null,
+  色: null,
+  食感: null,
+  香り: null,
+  とろみ: null,
+};
+
+/** 点検中は前半の評価項目だけ点数が入った「記録途中」の状態にする */
+function seedScores(fill: RecordFill): Record<Criterion, CriterionRecord | null> {
+  const source = pendingReviewScoreRows[0].scores;
+  const scored = new Set(fillSlice([...CRITERIA], fill));
+  return Object.fromEntries(
+    CRITERIA.map((criterion) => [criterion, scored.has(criterion) ? source[criterion] : null]),
+  ) as Record<Criterion, CriterionRecord | null>;
+}
 
 function scoreButtonColor(value: number, selected: number | undefined) {
   if (selected !== value) return "bg-[#d0d0d0]";
@@ -57,22 +82,53 @@ export function RecordPage() {
     (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
   const existing = productId ? recordsByProduct[productId] : null;
 
-  const [date, setDate] = useState(existing?.date ?? "2025-03-24");
-  const [manufactureDate, setManufactureDate] = useState(existing?.manufactureDate ?? "2025-03-24");
-  const [comparison, setComparison] = useState<ComparisonOption | null>(existing?.comparison ?? null);
+  // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
+  const progressFill = useProgressRecordFill();
+  const productFill: RecordFill = product?.status === "inspected" ? "full" : "none";
+  const fill = progressFill ?? productFill;
+  // この画面で登録済みのものがあればそれを、無ければステータスに応じた初期状態を出す
+  const seeded: SensoryRecord | null =
+    existing ??
+    (fill === "none"
+      ? null
+      : {
+          date: product?.date || todayString(),
+          manufactureDate: pendingReviewScoreRows[0].manufactureDate,
+          comparison: pendingReviewScoreRows[0].comparison,
+          comparisonManufactureDate: pendingReviewScoreRows[0].comparisonManufactureDate,
+          scores: seedScores(fill),
+        });
+
+  const [date, setDate] = useState(seeded?.date ?? todayString());
+  const [manufactureDate, setManufactureDate] = useState(seeded?.manufactureDate ?? "2025-03-24");
+  const [comparison, setComparison] = useState<ComparisonOption | null>(seeded?.comparison ?? null);
   const [comparisonManufactureDate, setComparisonManufactureDate] = useState(
-    existing?.comparisonManufactureDate ?? "2025-03-22"
+    seeded?.comparisonManufactureDate || "2025-03-22"
   );
   const [scores, setScores] = useState<Record<Criterion, CriterionRecord | null>>(
-    existing?.scores ?? {
-      味: null,
-      形: null,
-      色: null,
-      食感: null,
-      香り: null,
-      とろみ: null,
-    }
+    seeded?.scores ?? EMPTY_SCORES
   );
+
+  /** 項目ごとに「いつ入力したか」を持たせ、入力欄の下に実施者名と並べて出す。
+   *  点検済み・記録途中で開いたときは、すでに入っている項目に実施日を出しておく */
+  const [timestamps, setTimestamps] = useState<Record<string, string>>(() =>
+    seeded
+      ? Object.fromEntries(
+          [
+            ["manufactureDate", seeded.manufactureDate],
+            ["comparison", seeded.comparison],
+            ...CRITERIA.map((c) => [c, seeded.scores[c]]),
+          ]
+            .filter(([, value]) => value)
+            .map(([key]) => [key as string, seedTimestamp(seeded.date)])
+        )
+      : {}
+  );
+
+  /** 値が入っていれば入力時刻を打ち、消して未記録に戻したら時刻表示も消す */
+  function stamp(field: string, value: unknown) {
+    setTimestamps((prev) => stampTimestamps(prev, field, value));
+  }
 
   const [dialogCriterion, setDialogCriterion] = useState<Criterion | null>(null);
   const [dialogScore, setDialogScore] = useState<number | null>(null);
@@ -95,6 +151,7 @@ export function RecordPage() {
         ...prev,
         [criterion]: { score: value, reason: "" },
       }));
+      stamp(criterion, value);
     } else {
       setDialogCriterion(criterion);
       setDialogScore(value);
@@ -115,6 +172,7 @@ export function RecordPage() {
       ...prev,
       [dialogCriterion]: { score: dialogScore, reason: dialogScore <= 2 ? dialogReason : "" },
     }));
+    stamp(dialogCriterion, dialogScore);
     closeDialog();
   }
 
@@ -136,6 +194,7 @@ export function RecordPage() {
           comparison,
           comparisonManufactureDate: comparison === "present" ? comparisonManufactureDate : "",
           scores,
+          timestamps,
         },
       },
     });
@@ -148,7 +207,7 @@ export function RecordPage() {
     <>
       <AppHeader title="官能検査記録" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-5 items-center">
-        <div className="bg-white flex flex-col gap-2 items-start p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col gap-2 items-start p-4 rounded-lg w-full max-w-full">
           <div className="flex gap-2 items-center">
             <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
             <span className="text-base text-[var(--semantic-text-primary)]">{product.name}</span>
@@ -161,60 +220,71 @@ export function RecordPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-5 items-start w-full max-w-full max-w-[480px] mx-40">
+        <div className="flex flex-col gap-5 items-start w-full max-w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={date} onChange={setDate} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-              製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
-            </p>
-            <input
-              type="date"
-              value={manufactureDate}
-              onChange={(e) => setManufactureDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+          <div className="flex flex-col gap-1 w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
+                製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
+              </p>
+              <DateFilterInput
+                value={manufactureDate}
+                onChange={(v) => {
+                  setManufactureDate(v);
+                  stamp("manufactureDate", v);
+                }}
+              />
+            </div>
+            <RecordTimestamp inspector={inspectorName} timestamp={timestamps.manufactureDate} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-              比較商品 <span className="text-[var(--semantic-brand-danger)]">※</span>
-            </p>
-            <CustomSelect
-              value={comparison}
-              onChange={setComparison}
-              options={[
-                { value: "none", label: "比較商品なし" },
-                { value: "present", label: "比較商品あり" },
-              ]}
-              placeholder="選択してください"
-            />
+          <div className="flex flex-col gap-1 w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
+                比較商品 <span className="text-[var(--semantic-brand-danger)]">※</span>
+              </p>
+              <PulldownSelect
+                value={comparison}
+                onChange={(v) => {
+                  setComparison(v);
+                  stamp("comparison", v);
+                }}
+                options={[
+                  { value: "none", label: "比較商品なし" },
+                  { value: "present", label: "比較商品あり" },
+                ]}
+              />
+            </div>
+            <RecordTimestamp inspector={inspectorName} timestamp={timestamps.comparison} />
           </div>
 
           {comparison === "present" && (
             <>
               <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-                  比較商品製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
-                </p>
-                <input
-                  type="date"
-                  value={comparisonManufactureDate}
-                  onChange={(e) => setComparisonManufactureDate(e.target.value)}
-                  className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between w-full">
+                  <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
+                    比較商品製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                  </p>
+                  <DateFilterInput
+                    value={comparisonManufactureDate}
+                    onChange={(v) => {
+                      setComparisonManufactureDate(v);
+                      stamp("comparisonManufactureDate", v);
+                    }}
+                  />
+                </div>
+                <RecordTimestamp
+                  inspector={inspectorName}
+                  timestamp={timestamps.comparisonManufactureDate}
                 />
               </div>
             </>
@@ -245,6 +315,7 @@ export function RecordPage() {
               {scores[criterion] && scores[criterion]!.score <= 2 && (
                 <p className="text-base text-[#808080] px-2">理由：{scores[criterion]!.reason}</p>
               )}
+              <RecordTimestamp inspector={inspectorName} timestamp={timestamps[criterion]} />
               {index < CRITERIA.length - 1 && <div className="border-t border-[#d0d0d0] w-full" />}
             </div>
           ))}
@@ -274,7 +345,7 @@ export function RecordPage() {
       {dialogCriterion && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full max-w-[1000px] mx-40 max-h-[90vh] overflow-y-auto mx-16">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full mx-40 mx-16 max-h-[90vh] overflow-y-auto">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">点検箇所</h2>
               <div className="flex flex-col gap-6 items-start w-full">

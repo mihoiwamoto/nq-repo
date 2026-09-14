@@ -5,6 +5,7 @@ import { AnnouncementBar, type AnnouncementStatus } from "./AnnouncementBar";
 import { AnnouncementBarContext } from "./AnnouncementBarContext";
 import { SessionExpiredDialog } from "./SessionExpiredDialog";
 import { TextSizeProvider } from "./TextSizeContext";
+import { ProgressFlowProvider } from "./ProgressFlowContext";
 
 const SESSION_TIMEOUT_MS = 15 * 60 * 1000;
 const ACTIVITY_EVENTS = ["mousemove", "keydown", "click", "touchstart"] as const;
@@ -45,15 +46,17 @@ export function AppLayout() {
   return (
     <TextSizeProvider>
       <AnnouncementBarContext.Provider value={{ notifyOfflineInspection }}>
-        <div className="w-full h-full flex bg-[var(--semantic-brand-primary)]">
-          <AppRail />
-          <div className="flex-1 flex flex-col p-2 h-full w-full min-w-0">
-            <div className="flex-1 rounded-lg bg-[var(--semantic-background-page)] overflow-hidden flex flex-col min-w-0 w-full">
-              {status && <AnnouncementBar status={status} onSend={handleSend} />}
-              <Outlet />
+        <ProgressFlowProvider>
+          <div className="w-full h-full flex bg-[var(--semantic-brand-primary)]">
+            <AppRail />
+            <div className="flex-1 flex flex-col py-2 pr-2 h-full w-full min-w-0">
+              <div className="flex-1 rounded-lg bg-[var(--semantic-background-page)] overflow-hidden flex flex-col min-w-0 w-full">
+                {status && <AnnouncementBar status={status} onSend={handleSend} />}
+                <Outlet />
+              </div>
             </div>
           </div>
-        </div>
+        </ProgressFlowProvider>
         {sessionExpired && <SessionExpiredDialog />}
       </AnnouncementBarContext.Provider>
     </TextSizeProvider>

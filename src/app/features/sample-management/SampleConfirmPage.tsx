@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { SampleProductInfo } from "./SampleProductInfo";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { SAMPLE_ENTRIES, SAMPLE_TYPE_LABELS, type SampleConfirmState } from "./mockData";
 
@@ -56,9 +57,11 @@ export function SampleConfirmPage() {
     );
   }
 
-  const { inspectorName, inspectionDate, manufactureDate, sampleType, quantity, unit, storageLocation, remarks, timestamp } =
+  const { inspectorName, inspectionDate, manufactureDate, sampleType, quantity, unit, storageLocation, remarks } =
     state;
-  const meta = `${inspectorName} ${timestamp}`;
+  // 記録画面で項目ごとに付いた入力時刻。記録が無い項目には時刻も無いので、その行には出ない
+  const timestamps = state.timestamps ?? {};
+  const metaFor = (field: string) => (timestamps[field] ? `${inspectorName} ${timestamps[field]}` : undefined);
 
   function handleSubmit() {
     navigate(`${basePath}/samples/${sampleId}/complete`, {
@@ -70,40 +73,36 @@ export function SampleConfirmPage() {
     <>
       <AppHeader title="検体管理" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden pt-6 px-4 pb-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
         </div>
 
-        <div className="bg-white flex flex-wrap gap-x-10 gap-y-2 items-center p-4 rounded-lg w-full max-w-full max-w-[480px] mx-40">
-          <div className="flex gap-2 items-center">
-            <p className="text-base text-[var(--semantic-text-secondary)]">製品名</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{entry.productName}</p>
-          </div>
-          <div className="flex gap-2 items-center">
-            <p className="text-base text-[var(--semantic-text-secondary)]">賞味期限</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{entry.expiryDate}</p>
-          </div>
-        </div>
+        <SampleProductInfo
+          productName={entry.productName}
+          expiryDate={entry.expiryDate}
+          lotNumber={entry.lotNumber}
+        />
 
-        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full max-w-[480px] mx-40">
+        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{inspectorName}</p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <ConfirmRow label="実施日" value={inspectionDate.replaceAll("-", "/")} meta={meta} />
-          <ConfirmRow label="製造日" value={manufactureDate.replaceAll("-", "/")} meta={meta} />
-          <ConfirmRow label="検体種別" value={SAMPLE_TYPE_LABELS[sampleType]} meta={meta} />
-          <ConfirmRow label="検体数量" value={quantity} meta={meta} />
-          <ConfirmRow label="単位" value={unit} meta={meta} />
-          <ConfirmRow label="保管場所" value={storageLocation} meta={meta} />
+          {/* 実施日は記録のヘッダ情報なのでタイムスタンプは付けない（記録画面と同じ扱い） */}
+          <ConfirmRow label="実施日" value={inspectionDate.replaceAll("-", "/")} />
+          <ConfirmRow label="製造日" value={manufactureDate.replaceAll("-", "/")} meta={metaFor("manufactureDate")} />
+          <ConfirmRow label="検体種別" value={SAMPLE_TYPE_LABELS[sampleType]} meta={metaFor("sampleType")} />
+          <ConfirmRow label="検体数量" value={quantity} meta={metaFor("quantity")} />
+          <ConfirmRow label="単位" value={unit} meta={metaFor("unit")} />
+          <ConfirmRow label="保管場所" value={storageLocation} meta={metaFor("storageLocation")} />
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
             <p className="text-base text-[var(--semantic-text-secondary)]">
-              {remarks || "点検内容に関する補足を入力できます（任意）"}
+              {remarks}
             </p>
           </div>
         </div>

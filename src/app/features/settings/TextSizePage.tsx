@@ -21,7 +21,7 @@ export function TextSizePage() {
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col items-center gap-20">
-        <div className="bg-white flex items-center justify-center px-20 py-2 rounded-lg w-full max-w-full max-w-[480px] mx-40 min-h-[285px]">
+        <div className="bg-white flex items-center justify-center px-20 py-2 rounded-lg w-full max-w-full min-h-[285px]">
           <p className="text-xl text-[var(--semantic-text-primary)] text-center">
             テキストのサイズは、「大」「中」「小」の3つから選ぶことができます。文字が小さくて読みづらいと感じたら、サイズを調整してみてください。
           </p>

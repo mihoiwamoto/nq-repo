@@ -120,16 +120,16 @@ export function SpecimenManagementConfirmPage() {
             <p className="text-base text-[#333]">{inspectorName}</p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <ConfirmRow label="実施日" value={inspectionDate.replaceAll("-", "/")} meta={meta} />
-          <ConfirmRow label="製造日" value={manufactureDate.replaceAll("-", "/")} meta={meta} />
-          <ConfirmRow label="検体種別" value={specimenType} meta={meta} />
-          <ConfirmRow label="検体数量" value={quantity} meta={meta} />
-          <ConfirmRow label="単位" value={unit} meta={meta} />
-          <ConfirmRow label="保管場所" value={storageLocation} meta={meta} />
+          <ConfirmRow label="実施日" value={inspectionDate.replaceAll("-", "/")} meta={inspectionDate ? meta : undefined} />
+          <ConfirmRow label="製造日" value={manufactureDate.replaceAll("-", "/")} meta={manufactureDate ? meta : undefined} />
+          <ConfirmRow label="検体種別" value={specimenType} meta={specimenType ? meta : undefined} />
+          <ConfirmRow label="検体数量" value={quantity} meta={quantity ? meta : undefined} />
+          <ConfirmRow label="単位" value={unit} meta={unit ? meta : undefined} />
+          <ConfirmRow label="保管場所" value={storageLocation} meta={storageLocation ? meta : undefined} />
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-base font-semibold text-[#333]">備考</p>
             <p className="text-base text-[#333] whitespace-pre-wrap break-words">
-              {remarks || "特記事項なし"}
+              {remarks}
             </p>
           </div>
         </div>

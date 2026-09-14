@@ -169,7 +169,7 @@ export function RecordInspectionListPage() {
         ) : (
           <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full">
             <p className="text-[14px] text-[var(--semantic-text-secondary)] font-normal">
-              {record.remarks || "特記事項はありません"}
+              {record.remarks}
             </p>
           </div>
         )}

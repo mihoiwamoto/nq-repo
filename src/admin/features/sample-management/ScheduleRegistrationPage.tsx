@@ -130,20 +130,50 @@ export function ScheduleRegistrationPage() {
               </div>
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
-            <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
+            <div className="bg-white flex flex-col items-center px-4 w-full">
               {selectedProducts.length === 0 ? (
-                <p className="text-sm text-[var(--semantic-text-primary)] w-full">
+                <p className="py-4 text-sm text-[var(--semantic-text-primary)] w-full">
                   登録された製品がありません
                 </p>
               ) : (
-                selectedProducts.map((product) => (
-                  <div key={product.id} className="flex items-center w-full gap-4">
-                    <span className="w-[112px] text-base text-[var(--semantic-text-primary)]">
-                      製品名
-                    </span>
-                    <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                      {product.name}
-                    </span>
+                selectedProducts.map((product, index) => (
+                  <div
+                    key={product.id}
+                    className={`flex items-center w-full gap-6 py-4 ${
+                      index > 0 ? "border-t border-[#d0d0d0]" : ""
+                    }`}
+                  >
+                    <div className="flex-1 flex flex-col gap-3 items-start">
+                      <div className="flex gap-2 items-start w-full">
+                        <span className="w-[162px] shrink-0 text-base leading-4 text-[var(--semantic-text-primary)]">
+                          製品名
+                        </span>
+                        <span className="flex-1 text-base leading-4 text-[var(--semantic-text-primary)]">
+                          {product.name}
+                        </span>
+                      </div>
+                      {/* 製造日・ロットNo. は管理画面で「記載する」とした製品だけに出る任意項目 */}
+                      {product.manufactureDate && (
+                        <div className="flex gap-2 items-start w-full">
+                          <span className="w-[162px] shrink-0 text-base leading-4 text-[var(--semantic-text-primary)]">
+                            製造日
+                          </span>
+                          <span className="flex-1 text-base leading-4 text-[var(--semantic-text-primary)]">
+                            {product.manufactureDate.replaceAll("-", "/")}
+                          </span>
+                        </div>
+                      )}
+                      {product.lotNumber && (
+                        <div className="flex gap-2 items-start w-full">
+                          <span className="w-[162px] shrink-0 text-base leading-4 text-[var(--semantic-text-primary)]">
+                            ロットNo.
+                          </span>
+                          <span className="flex-1 text-base leading-4 text-[var(--semantic-text-primary)]">
+                            {product.lotNumber}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     <button
                       type="button"
                       onClick={() => setProductToDelete(product.id)}

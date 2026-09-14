@@ -40,8 +40,8 @@ export function OkNgToggle({
           <img src={iconCheck} alt="正常" className="size-5" />
         </button>
       </div>
-      {timestamp && (
-        <p className="text-sm text-[var(--semantic-text-secondary)]">
+      {status && timestamp && (
+        <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">
           {inspectorName} {timestamp}
         </p>
       )}

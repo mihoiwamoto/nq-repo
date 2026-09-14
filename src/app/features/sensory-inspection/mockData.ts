@@ -51,6 +51,12 @@ export type SensoryRecord = {
   comparison: ComparisonOption;
   comparisonManufactureDate: string;
   scores: Record<Criterion, CriterionRecord | null>;
+  /**
+   * 項目ごとの入力時刻（"YYYY/MM/DD HH:mm"）。キーは "manufactureDate" /
+   * "comparison" / "comparisonManufactureDate" と各評価項目名。
+   * 記録画面で付けた時刻を確認画面・確認完了画面まで持ち越すために持たせる。
+   */
+  timestamps?: Record<string, string>;
 };
 
 export const recordsByProduct: Record<string, SensoryRecord | null> = {

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import iconCheck from "../../../assets/figma/icons/common/checkmark-custom.svg";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { recordTimestamp, todayString } from "../../utils/date";
+import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { AppHeader } from "../../layout/AppHeader";
 import { useCleaningRecord } from "./CleaningRecordContext";
 import {
@@ -8,18 +12,30 @@ import {
   cleaningPoints,
   initialRecords,
   initialRemarks,
+  pendingReviewRecords,
+  skippedRemarks,
   type CleaningItemRecord,
 } from "./mockData";
-
-function formatTimestamp(date: Date) {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}/${pad(date.getMonth() + 1)}/${pad(date.getDate())} ${pad(
-    date.getHours()
-  )}:${pad(date.getMinutes())}`;
-}
+import iconCheckbox from "@images/Icon/ckeckbox.svg";
+import iconCheckboxOn from "@images/Icon/ckeckbox_on.svg";
 
 function keyFor(location: string, item: string) {
   return `${location}|${item}`;
+}
+
+function orderedRecordKeys() {
+  return cleaningPoints.flatMap((point) => point.items.map((item) => keyFor(point.location, item)));
+}
+
+/**
+ * ステータスに応じた記録の初期状態。
+ * initialRecords に無い項目は pendingReviewRecords で補い、点検済みなら全項目そろった状態にする。
+ */
+function seedRecords(fill: RecordFill): Record<string, CleaningItemRecord> {
+  const entries = fillSlice(orderedRecordKeys(), fill)
+    .map((key) => [key, initialRecords[key] ?? pendingReviewRecords[key]] as const)
+    .filter(([, record]) => Boolean(record));
+  return Object.fromEntries(entries);
 }
 
 function isAllDone(records: Record<string, CleaningItemRecord>) {
@@ -36,15 +52,32 @@ export function RecordingPage() {
   const inspectorName =
     (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
 
-  const [date, setDate] = useState("2025-04-01");
-  const [records, setRecords] = useState<Record<string, CleaningItemRecord>>(initialRecords);
-  const [remarks, setRemarks] = useState(initialRemarks);
+  const line = lines.find((l) => l.id === lineId);
+  // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
+  const progressFill = useProgressRecordFill();
+  const lineFill: RecordFill =
+    line?.status === "not_inspected" || line?.status === "skipped"
+      ? "none"
+      : line?.status === "in_progress"
+        ? "partial"
+        : "full";
+  const fill = progressFill ?? lineFill;
+  const hasStarted = fill !== "none";
+  // 見送りのラインは清掃自体を行っていないので、記録は空・備考に見送り理由だけを表示する
+  const isSkipped = progressFill === null && line?.status === "skipped";
+
+  const [date, setDate] = useState(() => (hasStarted ? line?.inspectionDate || todayString() : todayString()));
+  const [records, setRecords] = useState<Record<string, CleaningItemRecord>>(() =>
+    isSkipped ? {} : seedRecords(fill),
+  );
+  const [remarks, setRemarks] = useState(() =>
+    isSkipped ? skippedRemarks : hasStarted ? initialRemarks : "",
+  );
   const [skipDialogOpen, setSkipDialogOpen] = useState(false);
   const [skipReason, setSkipReason] = useState("");
   const [deferToTomorrow, setDeferToTomorrow] = useState<boolean | null>(null);
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
 
-  const line = lines.find((l) => l.id === lineId);
   const lineName = line?.name ?? "ゆばライン";
   const isDaily = (line?.frequency ?? "daily") === "daily";
   const allDone = isAllDone(records);
@@ -55,7 +88,7 @@ export function RecordingPage() {
       ...prev,
       [key]:
         status === "done"
-          ? { status: "done", timestamp: formatTimestamp(new Date()), inspector: inspectorName }
+          ? { status: "done", timestamp: recordTimestamp(), inspector: inspectorName }
           : { status: null, timestamp: "", inspector: "" },
     }));
   }
@@ -112,12 +145,7 @@ export function RecordingPage() {
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
-            />
+            <DateFilterInput value={date} onChange={setDate} />
           </div>
 
           {cleaningPoints.map((point, pointIndex) => {
@@ -132,17 +160,17 @@ export function RecordingPage() {
                     <button
                       type="button"
                       onClick={() => toggleAllDone(point.location, point.items)}
-                      className="bg-white border border-[#d0d0d0] h-12 w-40 rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-text-primary)]"
+                      aria-pressed={allPointDone}
+                      className={`bg-white h-12 w-40 rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-text-primary)] border transition-all duration-200 ${
+                        allPointDone ? "border-[#009944] all-ok-glow" : "border-[#d0d0d0]"
+                      }`}
                     >
-                      <span
-                        className={
-                          allPointDone
-                            ? "text-[var(--semantic-brand-primary)]"
-                            : "text-[var(--semantic-text-secondary)]"
-                        }
-                      >
-                        {allPointDone ? "☑" : "☐"}
-                      </span>
+                      <img
+                        src={allPointDone ? iconCheckboxOn : iconCheckbox}
+                        alt=""
+                        aria-hidden="true"
+                        className="size-6 shrink-0"
+                      />
                       全て清掃済み
                     </button>
                   </div>
@@ -165,11 +193,10 @@ export function RecordingPage() {
                               <img src={iconCheck} alt="完了" className="size-5" />
                             </button>
                           </div>
-                          {record?.timestamp && (
-                            <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full">
-                              {record.inspector} {record.timestamp}
-                            </p>
-                          )}
+                          <RecordTimestamp
+                            inspector={record?.inspector}
+                            timestamp={record?.timestamp}
+                          />
                         </div>
                       );
                     })}
@@ -227,12 +254,12 @@ export function RecordingPage() {
       {saveDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSaveDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 途中保存しました
               </h2>
-              <p className="text-base text-[var(--semantic-text-primary)]">
+              <p className="text-base text-[var(--semantic-text-primary)] whitespace-nowrap">
                 入力内容を途中保存しました。続きは後から入力できます。
               </p>
             </div>
@@ -250,7 +277,7 @@ export function RecordingPage() {
       {skipDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeSkipDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 点検を見送りますか？

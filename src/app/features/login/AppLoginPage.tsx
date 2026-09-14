@@ -44,7 +44,7 @@ export function AppLoginPage() {
       <div className="flex-1 rounded-lg bg-[var(--semantic-background-page)] overflow-hidden flex flex-col">
         <AppHeader title="NQリポ" />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4">
-          <div className="flex flex-col gap-10 max-w-full max-w-[480px] mx-40">
+          <div className="flex flex-col gap-10 max-w-full">
             <div className="flex flex-col gap-6 items-start w-full">
               <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">ログイン</p>
               <div className="flex flex-col gap-6 items-start w-full">

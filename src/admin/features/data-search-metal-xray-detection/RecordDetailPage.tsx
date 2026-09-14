@@ -138,7 +138,9 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">点検時間</p>
                   <p className="text-xl text-[#333]">{inspectionRecord.time}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                {inspectionRecord.time && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                )}
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -148,7 +150,9 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">異常製品</p>
                   <p className="text-xl text-[#333]">{inspectionRecord.passedProduct}</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                {inspectionRecord.passedProduct && inspectionRecord.time && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                )}
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -158,7 +162,9 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">通過数量</p>
                   <p className="text-xl text-[#333]">200</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                {inspectionRecord.time && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                )}
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -168,7 +174,9 @@ export function RecordDetailPage() {
                   <p className="text-xl font-semibold text-[#333]">異常数量</p>
                   <p className="text-xl text-[#333]">5</p>
                 </div>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                {inspectionRecord.time && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                )}
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -179,7 +187,9 @@ export function RecordDetailPage() {
                   <p className="text-xl text-[#333]">異物混入</p>
                 </div>
                 <p className="text-base text-[#808080]">検査時に金属異物が検知され、金属探知機が反応しました。原因は食材の加工過程で混入した金属片と推定されます。</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                {inspectionRecord.time && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                )}
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
@@ -190,14 +200,16 @@ export function RecordDetailPage() {
                   <p className="text-xl text-[#333]">点検調整</p>
                 </div>
                 <p className="text-base text-[#808080]">異常が検知された製品は廃棄処理しました。金属探知機の感度を確認し、キャリブレーションを実施しました。今後は同じロットの製品について追加検査を実施します。</p>
-                <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                {inspectionRecord.time && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">{inspectionRecord.inspectorName} 2026/08/27 {inspectionRecord.time}</p>
+                )}
               </div>
               <div className="h-px bg-[#d0d0d0] w-full" />
 
               {/* 備考 */}
               <div className="flex flex-col gap-2 w-full">
                 <p className="text-xl font-semibold text-[#333]">備考</p>
-                <p className="text-base text-[#333]">{inspectionRecord.remarks || "検査日時における異常検知について報告いたします。該当製品は速やかに隔離し、廃棄処理を完了いたしました。"}</p>
+                <p className="text-base text-[#333]">{inspectionRecord.remarks}</p>
               </div>
             </div>
           </div>
