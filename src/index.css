@@ -149,3 +149,27 @@ textarea::placeholder {
 .admin-sidebar-scroll::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.6);
 }
+
+/* アプリ（/app）は 768×1024（タブレット）ちょうどの枠に収めて、現場で使う見え方に合わせる。
+   窓がそれより小さいときは、はみ出さないよう枠ごと縮小する（大きさの比は保つ）。
+   枠の内側の座標は常に 768×1024 なので、レイアウトは実機と同じ */
+.app-viewport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #dfe3e8;
+}
+
+.app-viewport-frame {
+  width: 768px;
+  height: 1024px;
+  flex: none;
+  overflow: hidden;
+  /* 枠の外（グレー）との境目。ちょうど 768×1024 の窓では枠の外に出るので見えない */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.16);
+  /* transform（縮小率）は AppViewport.tsx から入れる。常に掛かっているので、
+     ダイアログ（position: fixed）の基準も窓ではなくこの枠になり、枠の外まで広がらない */
+}

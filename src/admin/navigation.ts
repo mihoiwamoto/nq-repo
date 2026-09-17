@@ -12,6 +12,9 @@ import iconLog from "../assets/figma/icons/nav/log.svg";
 import iconDevice from "../assets/figma/icons/nav/device.svg";
 import iconGuide from "../assets/figma/icons/nav/guide.svg";
 import iconScreenGuide from "../assets/figma/icons/nav/screen-guide.svg";
+import iconScreenFlow from "../assets/figma/icons/nav/screen-flow.svg";
+import iconScreenDescription from "../assets/figma/icons/nav/screen-description.svg";
+import iconDevVersion from "../assets/figma/icons/nav/dev-version.svg";
 import iconFeedback from "../assets/figma/icons/nav/feedback.svg";
 import iconHelp from "../assets/figma/icons/nav/help.svg";
 import type { PrototypeRoleId } from "../data/roleStore";
@@ -54,6 +57,9 @@ export const primaryNav: AdminNavItem[] = [
     path: "/admin/guide",
     children: [
       { label: "変更履歴", icon: iconScreenGuide, path: "/admin/guide/screens" },
+      { label: "画面遷移図", icon: iconScreenFlow, path: "/admin/guide/flow" },
+      { label: "画面説明", icon: iconScreenDescription, path: "/admin/guide/descriptions" },
+      { label: "開発Ver管理", icon: iconDevVersion, path: "/admin/guide/versions" },
       { label: "フィードバック管理", icon: iconFeedback, path: "/admin/guide/feedback" },
       { label: "ヘルプ", icon: iconHelp, path: "/admin/help" },
     ],

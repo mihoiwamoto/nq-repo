@@ -13,6 +13,7 @@ import {
   applyAll,
   applyOp,
   computedOf,
+  findElementsByText,
   isTextEditable,
   rectOf,
   resolveSelector,
@@ -21,12 +22,15 @@ import {
   targetLabel,
 } from "./domInspector";
 import { newOpId, readActiveOps, useCanvasEdits } from "./useCanvasEdits";
-import { CanvasStage, FRAME_GAP, STAGE_PADDING } from "./CanvasStage";
+import { CanvasStage, FRAME_GAP, STAGE_PADDING, type ChangeRect } from "./CanvasStage";
 import { resolveDrop, type DropIndicator, type DropPlacement } from "./dropTarget";
 import { ScreenListPanel } from "./ScreenListPanel";
 import { PropertyPanel } from "./PropertyPanel";
 import { PromptPanel } from "./PromptPanel";
 import { CommentPanel, type CommentDraft, type CommentFilter, type ScreenCommentGroup } from "./CommentPanel";
+import { ChangeHistoryPanel, type CompareMode } from "./ChangeHistoryPanel";
+import { isLocatableSection, shortStamp, useClaudeChanges, useScreenChangeDetail } from "./claudeChanges";
+import { shotUrl } from "./screenShots";
 import { commentsOfScreen, loadAuthor, saveAuthor, useScreenComments } from "./comments";
 import { useGoogleAccount } from "./googleAccount";
 import {
@@ -36,6 +40,7 @@ import {
   IconPanelLeft,
   IconClose,
   IconComment,
+  IconHistory,
   IconRedo,
   IconReload,
   IconScreens,
@@ -47,7 +52,7 @@ import {
 } from "./CanvasIcons";
 
 /** 左の 1 本のパネルに出せる中身 */
-type PanelTab = "screens" | "props" | "comments" | "prompt";
+type PanelTab = "screens" | "props" | "comments" | "history" | "prompt";
 
 /** ドラッグ中に画面へ出す情報（要素の移動 / 部品の追加で共通） */
 type DragState = {
@@ -62,12 +67,13 @@ const PANEL_LABELS: Record<PanelTab, string> = {
   screens: "画面一覧",
   props: "プロパティ",
   comments: "コメント",
+  history: "変更履歴",
   prompt: "プロンプト",
 };
 
 const LS_SCREEN = "nq_screen_canvas_screen";
 
-/** 管理画面は PC、現場アプリはタブレットで表示する */
+/** 管理画面は PC、アプリはタブレットで表示する */
 function deviceFor(screen: ScreenEntry | undefined): DeviceMode {
   return screen?.category === "App" ? "tablet" : "pc";
 }
@@ -79,8 +85,10 @@ function screensForDevice(device: DeviceMode): ScreenEntry[] {
 
 const DEVICE_MODE_LABELS: Record<DeviceMode, { title: string; hint: string }> = {
   pc: { title: "管理画面", hint: "管理画面を PC 幅（1280px）で表示" },
-  tablet: { title: "アプリ", hint: "現場アプリをタブレット縦（768×1024）で表示" },
+  tablet: { title: "アプリ", hint: "アプリをタブレット縦（768×1024）で表示" },
 };
+/** 「変わった部分」を選んでいないときに、まとめて囲む数の上限（画面が枠だらけにならないように） */
+const MAX_MARKED_SECTIONS = 8;
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 2;
 
@@ -201,20 +209,23 @@ function ScreenCanvas() {
   const [zoom, setZoom] = useState(0.5);
   const [tool, setTool] = useState<ToolMode>("select");
   // パネルは左の 1 本だけ。レールのアイコンで中身を切り替える。
-  // コメントを見に来たときはコメント、それ以外は画面一覧から始める。
-  const [panel, setPanel] = useState<PanelTab | null>(requestedCommentId ? "comments" : "screens");
+  // コメントを見に来たときはコメント、それ以外は変更履歴から始める。
+  const [panel, setPanel] = useState<PanelTab | null>(requestedCommentId ? "comments" : "history");
   const [doc, setDoc] = useState<Document | null>(null);
   const [hovered, setHovered] = useState<HTMLElement | null>(null);
   const [selected, setSelected] = useState<HTMLElement | null>(null);
   const [, setTick] = useState(0);
-  const [thumbIds, setThumbIds] = useState<Set<string>>(() => new Set());
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState<string | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
-  // 編集があるときは、右に「Before（編集前）」の画面を並べて見比べられるようにする
-  const [showBefore, setShowBefore] = useState(true);
+  // 右に何を並べるか（変更前のスクリーンショット / ピクセル差分 / 並べない）
+  const [compare, setCompare] = useState<CompareMode>("before");
   // 編集した要素を赤枠で囲って、どこを変えたか分かるようにする
   const [showEdited, setShowEdited] = useState(true);
+  // Claude が変えた箇所（編集追跡の記録）をオレンジ枠で囲む
+  const [showChanges, setShowChanges] = useState(true);
+  /** 変更履歴パネルで選んだ「変わった部分」。選ぶとその場所だけ強調する */
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   /** 今 iframe に表示されている実際のパス（操作モードで遷移したときも追う。Before 側はこれを読む） */
   const [livePath, setLivePath] = useState(() => SCREENS.find((s) => s.id === screenId)?.route ?? "/admin/home");
 
@@ -235,6 +246,13 @@ function ScreenCanvas() {
   const endElementDragRef = useRef<((commit: boolean) => void) | null>(null);
 
   const edits = useCanvasEdits(screenId);
+
+  // ---- Claude が変えた箇所（編集追跡システムの記録）----------------------------
+
+  const changes = useClaudeChanges();
+  const change = screenId ? changes.byId.get(screenId) : undefined;
+  const { detail: changeDetail } = useScreenChangeDetail(screenId, changes.stamp);
+  const screensById = useMemo(() => new Map(SCREENS.map((s) => [s.id, s])), []);
 
   // ---- コメント ---------------------------------------------------------------
 
@@ -339,15 +357,21 @@ function ScreenCanvas() {
     setDevice(deviceFor(screen));
   }, [screen]);
 
-  // 撮影済みサムネイル（あれば画面一覧に出す。無くても動く）
+  /** 変更履歴パネルの「ほかの画面」に出してよい画面（今の表示モードのもの） */
+  const visibleChangeIds = useMemo(() => new Set(screensForDevice(device).map((s) => s.id)), [device]);
+
+  // 画面を変えたら、選んでいた「変わった部分」は持ち越さない
   useEffect(() => {
-    fetch("/.claude/shots-index.json")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d: { screens?: Record<string, unknown> } | null) => {
-        if (d?.screens) setThumbIds(new Set(Object.keys(d.screens)));
-      })
-      .catch(() => {});
-  }, []);
+    setActiveSection(null);
+  }, [screenId]);
+
+  // 「変わった部分」を選んだら、その場所が見えるところまで画面をスクロールする
+  useEffect(() => {
+    const d = frameRef.current?.contentDocument;
+    if (!activeSection || !d || loading) return;
+    const el = findElementsByText(d, activeSection, 1)[0];
+    el?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [activeSection, loading, livePath]);
 
   /** DOM が動いた・スクロールしたときに枠の位置を描き直す（1 フレームにまとめる） */
   const bump = useCallback(() => {
@@ -358,7 +382,29 @@ function ScreenCanvas() {
     });
   }, []);
 
-  const beforeVisible = showBefore && edits.cursor > 0;
+  /**
+   * 右に並べる「変更前」。
+   * Claude の編集前に撮ったスクリーンショットがあればそれを、無ければ
+   * （キャンバスで仮の編集をしているときだけ）編集前の画面を iframe で並べる。
+   */
+  const beforeImage = useMemo(() => {
+    if (!screenId || !change) return null;
+    // 撮影幅が端末枠と違うと縮めて出すことになるので、その旨をラベルに出す
+    // （画面ごとの幅が記録されていない古い撮影のときだけ、全体の幅で代用する）
+    const shotWidth = change.shotWidth ?? changes.index?.shotWidth ?? null;
+    const widthNote = shotWidth && shotWidth !== DEVICE_SIZES[device].width ? `・${shotWidth}px 幅` : "";
+    if (compare === "before" && change.hasBefore) {
+      return { src: shotUrl(screenId, "before"), label: `Before（変更前 ${shortStamp(change.shotAt)} 撮影${widthNote}）` };
+    }
+    if (compare === "diff" && change.diffRatio !== null) {
+      return { src: shotUrl(screenId, "diff"), label: `差分（マゼンタが変わった所${widthNote}）` };
+    }
+    return null;
+  }, [screenId, change, compare, changes.index, device]);
+  const beforeFrameSrc = compare === "before" && !beforeImage && edits.cursor > 0 ? livePath : null;
+  const beforeVisible = !!beforeImage || !!beforeFrameSrc;
+  /** 変更前を並べられるか（撮影済みの絵があるか、キャンバスで編集しているか） */
+  const canCompareBefore = !!change?.hasBefore || edits.cursor > 0;
 
   const fitZoom = useCallback(() => {
     const stage = stageRef.current;
@@ -913,10 +959,47 @@ function ScreenCanvas() {
     }
   }
 
+  // Claude が変えた箇所の枠。記録に残っている「変わった部分」の文字を画面から探して囲む。
+  // 探すのは重いので、画面・記録・選んだ部分が変わったときだけ引き直し、位置は毎回取り直す。
+  const changeTargets = useMemo(() => {
+    if (!showChanges || !doc || !changeDetail || loading) return [] as { el: HTMLElement; label: string; active: boolean }[];
+    const sections = changeDetail.sections.filter(isLocatableSection);
+    const picked = activeSection ? sections.filter((x) => x.name === activeSection) : sections.slice(0, MAX_MARKED_SECTIONS);
+    const out: { el: HTMLElement; label: string; active: boolean }[] = [];
+    const seen = new Set<HTMLElement>();
+    for (const section of picked) {
+      for (const el of findElementsByText(doc, section.name, activeSection ? 12 : 4)) {
+        if (seen.has(el)) continue;
+        seen.add(el);
+        out.push({ el, label: section.name, active: activeSection === section.name });
+      }
+    }
+    return out;
+    // livePath / iframeKey が変わると DOM ごと入れ替わるので、そのときも引き直す
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showChanges, doc, changeDetail, activeSection, loading, livePath, iframeKey]);
+
+  const changeRects: ChangeRect[] = [];
+  changeTargets.forEach((t, i) => {
+    if (!doc?.contains(t.el)) return;
+    const r = rectOf(t.el);
+    if (r.width <= 0 || r.height <= 0) return;
+    changeRects.push({ key: `${t.label}:${i}`, rect: r, label: t.label, active: t.active });
+  });
+
   // ピンはドキュメント座標で持っているので、今のスクロール量を引いて表示位置にする
   const frameWindow = frameRef.current?.contentWindow;
   const frameScrollX = frameWindow?.scrollX ?? 0;
   const frameScrollY = frameWindow?.scrollY ?? 0;
+
+  /**
+   * 撮影したピクセル差分の位置。撮影と同じ幅で見ているときだけ重ねる
+   * （タブレット表示は 1280px 幅で撮った絵なので位置が合わない）。
+   */
+  const diffRects: Rect[] =
+    compare === "diff" && changeDetail && (changeDetail.shotWidth ?? changes.index?.shotWidth) === DEVICE_SIZES[device].width
+      ? changeDetail.diffBoxes.map((b) => ({ x: b.x, y: b.y - frameScrollY, width: b.w, height: b.h }))
+      : [];
   const pins = shownComments.map(({ comment, n }) => ({
     id: comment.id,
     n,
@@ -934,7 +1017,6 @@ function ScreenCanvas() {
         activeId={screenId}
         counts={edits.countsByScreen}
         commentCounts={commentStore.countsByScreen}
-        thumbIds={thumbIds}
         onSelect={selectScreen}
       />
     ) : panel === "props" ? (
@@ -970,6 +1052,26 @@ function ScreenCanvas() {
           setActiveCommentId(commentId);
         }}
       />
+    ) : panel === "history" ? (
+      <ChangeHistoryPanel
+        screen={screen}
+        screensById={screensById}
+        index={changes.index}
+        loading={changes.loading}
+        onReload={changes.reload}
+        change={change}
+        detail={changeDetail}
+        activeSection={activeSection}
+        onSelectSection={(name) => {
+          setActiveSection(name);
+          if (name) setShowChanges(true);
+        }}
+        compare={compare}
+        onCompareChange={setCompare}
+        deviceLabel={DEVICE_MODE_LABELS[device].title}
+        visibleIds={visibleChangeIds}
+        onJump={selectScreen}
+      />
     ) : panel === "prompt" ? (
       <PromptPanel screen={screen} ops={edits.ops} cursor={edits.cursor} onToggleDone={edits.setDone} onReset={resetEdits} />
     ) : null;
@@ -980,7 +1082,7 @@ function ScreenCanvas() {
         title="変更履歴"
         action={
           <span className="text-sm font-normal text-[var(--semantic-text-secondary)]">
-            NQ の画面を読み込んで、見た目をその場で編集・プロンプト化できます
+            Claude が変えた箇所を実画面の上で確認し、変更前と見比べられます
           </span>
         }
       />
@@ -998,13 +1100,15 @@ function ScreenCanvas() {
           <RailButton active={panel === "screens"} title="画面一覧" onClick={() => setPanel((t) => (t === "screens" ? null : "screens"))}>
             <IconScreens />
           </RailButton>
+          {/* レールの履歴マークは Claude の変更履歴。キャンバスのピンコメントは
+              下のツールバーの「コメント」から今まで通り開く */}
           <RailButton
-            active={panel === "comments"}
-            title="コメント (C)"
-            badge={openCommentCount || undefined}
-            onClick={() => setPanel((t) => (t === "comments" ? null : "comments"))}
+            active={panel === "history"}
+            title="変更履歴（Claude が変えた箇所）"
+            badge={change?.level === "direct" ? change.sectionTotal || undefined : undefined}
+            onClick={() => setPanel((t) => (t === "history" ? null : "history"))}
           >
-            <IconComment />
+            <IconHistory />
           </RailButton>
           <RailButton
             active={panel === "prompt"}
@@ -1054,20 +1158,50 @@ function ScreenCanvas() {
             </ToolButton>
             <span className="w-px h-5 bg-[#e5e5e5] mx-1" />
             <ToolButton
+              active={showChanges && !!change}
+              disabled={!change}
+              title={
+                change
+                  ? "Claude が変えた箇所をオレンジ枠で囲む（変更履歴の記録から）"
+                  : "この画面は今の記録では変わっていません"
+              }
+              onClick={() => setShowChanges((v) => !v)}
+            >
+              <span className="whitespace-nowrap px-0.5">変更箇所</span>
+            </ToolButton>
+            <ToolButton
               active={showEdited && edits.cursor > 0}
               disabled={edits.cursor === 0}
-              title="編集した場所を赤枠で囲む"
+              title="このキャンバスで仮に編集した場所を赤枠で囲む"
               onClick={() => setShowEdited((v) => !v)}
             >
               <span className="whitespace-nowrap px-0.5">編集箇所</span>
             </ToolButton>
             <ToolButton
-              active={beforeVisible}
-              disabled={edits.cursor === 0}
-              title={edits.cursor === 0 ? "編集すると、編集前の画面（Before）を右に並べて見比べられます" : "編集前の画面（Before）を右に並べる"}
-              onClick={() => setShowBefore((v) => !v)}
+              active={compare === "before" && beforeVisible}
+              disabled={!canCompareBefore}
+              title={
+                change?.hasBefore
+                  ? `Claude が変える前に撮った画面（${shortStamp(change.shotAt)}）を右に並べる`
+                  : edits.cursor > 0
+                  ? "このキャンバスで編集する前の画面を右に並べる"
+                  : "この画面の変更前スクリーンショットがまだありません"
+              }
+              onClick={() => setCompare((m) => (m === "before" ? "none" : "before"))}
             >
-              <span className="whitespace-nowrap px-0.5">Before</span>
+              <span className="whitespace-nowrap px-0.5">変更前</span>
+            </ToolButton>
+            <ToolButton
+              active={compare === "diff" && beforeVisible}
+              disabled={!change || change.diffRatio === null}
+              title={
+                change && change.diffRatio !== null
+                  ? `変更前と変更後のピクセル差分を右に並べる${change.diffShift ? `（${change.diffShift}px ずれ）` : ""}`
+                  : "この画面のピクセル差分がまだありません"
+              }
+              onClick={() => setCompare((m) => (m === "diff" ? "none" : "diff"))}
+            >
+              <span className="whitespace-nowrap px-0.5">差分</span>
             </ToolButton>
             <span className="flex-1 min-w-0 px-2 text-xs text-[var(--semantic-text-secondary)] truncate text-center">
               {drag
@@ -1116,7 +1250,10 @@ function ScreenCanvas() {
             onZoomBy={zoomBy}
             dropIndicator={drag?.indicator ?? null}
             editedRects={editedRects}
-            beforeSrc={beforeVisible ? livePath : null}
+            changeRects={changeRects}
+            diffRects={diffRects}
+            beforeSrc={beforeFrameSrc}
+            beforeImage={beforeImage ? { ...beforeImage, offsetY: frameScrollY } : null}
             beforeFrameRef={beforeFrameRef}
             pins={pins}
             draftPin={draftPin}

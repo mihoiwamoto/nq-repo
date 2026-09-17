@@ -3,6 +3,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { CRITERIA, isAbnormalScore } from "./types";
 
 function formatDate(date: string) {
@@ -93,10 +94,10 @@ export function ScoreDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(entry.date)}</p>
           </div>
           {CRITERIA.map((criterion) => {
-            const { score, reason, action } = entry.scores[criterion];
+            const { score, reason, action, timestamp } = entry.scores[criterion];
             const abnormal = isAbnormalScore(score);
             return (
-              <div key={criterion} className="flex flex-col gap-2 items-start w-full">
+              <div key={criterion} className="flex flex-col gap-1 items-start w-full">
                 <div className="border-t border-[#d0d0d0] w-full" />
                 <div className="flex items-center justify-between w-full">
                   <p className="text-xl text-[var(--semantic-text-primary)]">{criterion}</p>
@@ -108,6 +109,8 @@ export function ScoreDetailPage() {
                     {action && <p>対応：{action}</p>}
                   </div>
                 )}
+                {/* アプリで点数を入れたときのスタンプ */}
+                <RecordTimestamp inspector={entry.inspectorName} timestamp={timestamp} />
               </div>
             );
           })}

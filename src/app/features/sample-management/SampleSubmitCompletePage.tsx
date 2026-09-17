@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
+import { SubmitOutcome } from "../../components/SubmitOutcome";
 import { useFromProgress } from "../../layout/ProgressFlowContext";
 
 export function SampleSubmitCompletePage() {
@@ -18,7 +19,11 @@ export function SampleSubmitCompletePage() {
   }
 
   return (
-    <>
+    <SubmitOutcome
+      ledgerTitle="検体管理"
+      backLabel="帳票一覧に戻る"
+      onBack={() => handleNavigate("/app/ledger-list")}
+    >
       <AppHeader title="検体管理" />
       <div className="flex-1 flex flex-col items-center justify-start gap-10 px-8 py-6">
         <div className="flex flex-col gap-6 items-center w-full max-w-[640px]">
@@ -65,6 +70,6 @@ export function SampleSubmitCompletePage() {
           </button>
         </div>
       </div>
-    </>
+    </SubmitOutcome>
   );
 }

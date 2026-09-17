@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { AppViewport } from "../../layout/AppViewport";
 import { LoadingOverlay } from "../../layout/LoadingOverlay";
-import { OfflineDialog } from "./OfflineDialog";
+import { OfflineBanner } from "./OfflineBanner";
 import { registerFirstLoginDevice } from "../../../data/deviceStore";
+import { isDemoOnline } from "../../../components/demo/demoStore";
 import iconEye from "../../../assets/figma/icons/common/eye.svg?url";
 import iconEyeOff from "../../../assets/figma/icons/common/eye-off.svg?url";
 
@@ -20,13 +22,15 @@ export function AppLoginPage() {
   const [visible, setVisible] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [showOfflineDialog, setShowOfflineDialog] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
 
   function handleSubmit() {
-    if (!navigator.onLine) {
-      setShowOfflineDialog(true);
+    // 動作デモの「オフライン」を試している間も、実際に繋がっていないときと同じ帯を出す
+    if (!isDemoOnline()) {
+      setIsOffline(true);
       return;
     }
+    setIsOffline(false);
     if (factoryId === DEMO_FACTORY_ID && password === DEMO_PASSWORD) {
       if (!localStorage.getItem(APP_DEVICE_REGISTERED_KEY)) {
         registerFirstLoginDevice(APP_DEVICE_FACTORY_ID, "新規端末");
@@ -40,81 +44,80 @@ export function AppLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--semantic-brand-primary)] p-2 flex flex-col">
-      <div className="flex-1 rounded-lg bg-[var(--semantic-background-page)] overflow-hidden flex flex-col">
-        <AppHeader title="NQリポ" />
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4">
-          <div className="flex flex-col gap-10 max-w-full">
-            <div className="flex flex-col gap-6 items-start w-full">
-              <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">ログイン</p>
+    /* ログインもアプリの画面なので、他の画面と同じタブレットサイズの枠に収める */
+    <AppViewport>
+      <div className="h-full w-full bg-[var(--semantic-brand-primary)] p-2 flex flex-col">
+        <div className="flex-1 rounded-lg bg-[var(--semantic-background-page)] overflow-hidden flex flex-col">
+          {isOffline && <OfflineBanner />}
+          <AppHeader title="NQリポ" />
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6">
+            <div className="flex flex-col gap-10 max-w-full">
               <div className="flex flex-col gap-6 items-start w-full">
-                <div className="flex flex-col gap-1 items-start w-full">
-                  <p className="text-base font-semibold text-[var(--semantic-text-primary)]">工場ID</p>
-                  <input
-                    type="text"
-                    value={factoryId}
-                    onChange={(e) => setFactoryId(e.target.value)}
-                    placeholder="例）012345"
-                    className={`bg-white h-12 px-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full border placeholder:text-[var(--semantic-text-secondary)] ${
-                      hasError ? "border-[var(--semantic-brand-danger)]" : "border-[var(--semantic-text-secondary)]"
-                    }`}
-                  />
-                </div>
-                <div className="flex flex-col gap-1 items-start w-full">
-                  <p className="text-base font-semibold text-[var(--semantic-text-primary)]">パスワード</p>
-                  <p className="text-sm font-semibold text-[var(--semantic-text-secondary)]">
-                    ※8文字以上の英数字、記号を含む
-                  </p>
-                  <div
-                    className={`bg-white flex items-center gap-2 h-12 px-2 rounded-lg w-full border ${
-                      hasError ? "border-[var(--semantic-brand-danger)]" : "border-[var(--semantic-text-secondary)]"
-                    }`}
-                  >
+                <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">ログイン</p>
+                <div className="flex flex-col gap-6 items-start w-full">
+                  <div className="flex flex-col gap-1 items-start w-full">
+                    <p className="text-base font-semibold text-[var(--semantic-text-primary)]">工場ID</p>
                     <input
-                      type={visible ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="例）Ex@mple123"
-                      className="flex-1 text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] outline-none"
+                      type="text"
+                      value={factoryId}
+                      onChange={(e) => setFactoryId(e.target.value)}
+                      placeholder="例）012345"
+                      className={`bg-white h-12 px-2 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] w-full border placeholder:text-[var(--semantic-text-secondary)] ${
+                        hasError ? "border-[var(--semantic-brand-danger)]" : "border-[var(--semantic-text-secondary)]"
+                      }`}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setVisible((v) => !v)}
-                      aria-label={visible ? "パスワードを隠す" : "パスワードを表示"}
-                      className="shrink-0"
-                    >
-                      <img src={visible ? iconEyeOff : iconEye} alt="" className="size-6" />
-                    </button>
                   </div>
+                  <div className="flex flex-col gap-1 items-start w-full">
+                    <p className="text-base font-semibold text-[var(--semantic-text-primary)]">パスワード</p>
+                    <p className="text-sm font-semibold text-[var(--semantic-text-secondary)]">
+                      ※8文字以上の英数字、記号を含む
+                    </p>
+                    <div
+                      className={`bg-white flex items-center gap-2 h-12 px-2 rounded-lg w-full border ${
+                        hasError ? "border-[var(--semantic-brand-danger)]" : "border-[var(--semantic-text-secondary)]"
+                      }`}
+                    >
+                      <input
+                        type={visible ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="例）Ex@mple123"
+                        className="flex-1 text-base font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setVisible((v) => !v)}
+                        aria-label={visible ? "パスワードを隠す" : "パスワードを表示"}
+                        className="shrink-0"
+                      >
+                        <img src={visible ? iconEyeOff : iconEye} alt="" className="size-6" />
+                      </button>
+                    </div>
+                  </div>
+                  {hasError && (
+                    <p className="text-sm text-[var(--semantic-brand-danger)] w-full">※パスワードが一致しません</p>
+                  )}
                 </div>
-                {hasError && (
-                  <p className="text-sm text-[var(--semantic-brand-danger)] w-full">
-                    ※パスワードが一致しません
-                  </p>
-                )}
               </div>
-            </div>
 
-            <div className="flex flex-col items-center w-full">
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="bg-[var(--semantic-brand-primary)] h-16 w-full max-w-[360px] rounded-lg text-xl font-semibold text-white"
-              >
-                ログイン
-              </button>
-            </div>
+              <div className="flex flex-col items-center w-full">
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="bg-[var(--semantic-brand-primary)] h-16 w-full max-w-[360px] rounded-lg text-xl font-semibold text-white"
+                >
+                  ログイン
+                </button>
+              </div>
 
-            <p className="text-base text-[var(--semantic-text-primary)] w-full">
-              ※西原商会グループ向けアプリケーションとなります。一般の方はご利用いただけません。
-            </p>
+              <p className="text-base font-normal text-[var(--semantic-text-primary)] w-full">
+                ※西原商会グループ向けアプリケーションとなります。一般の方はご利用いただけません。
+              </p>
+            </div>
           </div>
         </div>
+        {isLoggingIn && <LoadingOverlay />}
       </div>
-      {isLoggingIn && <LoadingOverlay />}
-      {showOfflineDialog && (
-        <OfflineDialog onRetry={() => window.location.reload()} />
-      )}
-    </div>
+    </AppViewport>
   );
 }

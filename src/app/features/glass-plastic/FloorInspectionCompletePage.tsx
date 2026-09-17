@@ -1,6 +1,7 @@
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
+import { SubmitOutcome } from "../../components/SubmitOutcome";
 import { useFromProgress } from "../../layout/ProgressFlowContext";
 
 export function FloorInspectionCompletePage() {
@@ -27,7 +28,11 @@ export function FloorInspectionCompletePage() {
   }
 
   return (
-    <>
+    <SubmitOutcome
+      ledgerTitle={`ガラス・プラスチック管理_${floorName}`}
+      backLabel="ガラス・プラスチック管理に戻る"
+      onBack={() => handleNavigate("/app/ledger-list/glass-plastic")}
+    >
       <AppHeader title={`ガラス・プラスチック管理_${floorName}`} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-12 flex flex-col gap-8 items-center justify-center">
@@ -68,6 +73,6 @@ export function FloorInspectionCompletePage() {
           </div>
         </div>
       </div>
-    </>
+    </SubmitOutcome>
   );
 }

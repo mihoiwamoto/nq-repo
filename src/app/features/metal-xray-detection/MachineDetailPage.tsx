@@ -16,6 +16,7 @@ import {
   type InspectionContent,
   type MachineRecord,
 } from "./mockData";
+import { useDemoList } from "../../../components/demo/demoStore";
 
 const COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -65,14 +66,18 @@ export function MachineDetailPage() {
   // 編集モードで削除した記録（モックなので画面内だけで消す）と、削除確認中の記録
   const [deletedRecordIds, setDeletedRecordIds] = useState<string[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<MachineRecord | null>(null);
+  // 動作デモの「データが無い」を試している間は、この機械の記録が 1 件も無い状態にする
+  const machineRecords = useDemoList(recordsForMachine(machineId));
 
   if (!machine) return null;
 
   const basePath = "/app/ledger-list/metal-xray-detection";
-  const canProceed = inspectionDate.trim() !== "";
-  const records = fillSlice(recordsForMachine(machineId), fill).filter(
+  const records = fillSlice(machineRecords, fill).filter(
     (record) => !deletedRecordIds.includes(record.id),
   );
+  // 記録が 1 件も無いうちは確認画面へ進めない（実施日は今日の日付が自動で入るため、
+  // 実施日だけを見ていると「表が空なのにボタンが押せる」状態になる）
+  const canProceed = inspectionDate.trim() !== "" && records.length > 0;
   const columns = editReturn ? EDIT_COLUMNS : COLUMNS;
 
   return (

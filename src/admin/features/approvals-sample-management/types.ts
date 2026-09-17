@@ -23,6 +23,8 @@ export type SampleApprovalRecord = {
   unit: string;
   storageLocation: string;
   remarks: string;
+  /** アプリで記録した時刻。詳細画面で項目の下に出す */
+  timestamp?: string;
   status: SampleStatus;
   discardedDate?: string;
   discardReason?: DiscardReason;

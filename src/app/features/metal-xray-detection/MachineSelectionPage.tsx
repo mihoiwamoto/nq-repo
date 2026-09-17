@@ -5,6 +5,7 @@ import { MachineProgressPanel } from "./MachineProgressPanel";
 import { MACHINE_STATUS_COLORS, MACHINE_STATUS_LABELS, MACHINES, isMachineDisplayable } from "./mockData";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import { StatusChip } from "../../components/StatusChip";
+import { useDemoUninspected } from "../../../components/demo/demoStore";
 
 export function MachineSelectionPage() {
   const location = useLocation();
@@ -12,7 +13,9 @@ export function MachineSelectionPage() {
   const inspectorName = (location.state as { inspectorName?: string } | null)?.inspectorName ?? "";
   const [progressDrawerOpen, setProgressDrawerOpen] = useState(false);
 
-  const displayableMachines = MACHINES.filter(isMachineDisplayable);
+  // 動作デモ「データが無い」のときは、どの機械もまだ点検していない状態で見せる
+  const machines = useDemoUninspected(MACHINES);
+  const displayableMachines = machines.filter(isMachineDisplayable);
   const inspectedCount = displayableMachines.filter((m) => m.status === "inspected").length;
 
   return (

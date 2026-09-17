@@ -111,6 +111,35 @@ export function directText(el: Element): string {
     .join("");
 }
 
+/**
+ * 画面の中から「その文字が書かれている要素」を探す。
+ * 編集追跡が拾った変更部分（「製品コード」などの日本語ラベル）を、
+ * 実画面のどこかに重ねて示すために使う。
+ * 同じ文字が何度も出る画面（表の見出しなど）があるので、上から順に limit 件まで返す。
+ */
+export function findElementsByText(doc: Document, text: string, limit = 12): HTMLElement[] {
+  const target = text.replace(/\s+/g, " ").trim();
+  const out: HTMLElement[] = [];
+  if (!target || !doc.body) return out;
+  for (const el of Array.from(doc.body.querySelectorAll<HTMLElement>("*"))) {
+    if (out.length >= limit) break;
+    // 入れ子の外側まで拾うと画面全体が囲まれてしまうので、文字を直接持つ要素だけにする
+    const own = directText(el).replace(/\s+/g, " ").trim();
+    if (own !== target) continue;
+    const whole = (el.textContent ?? "").replace(/\s+/g, " ").trim();
+    if (whole !== target) continue;
+    out.push(el);
+  }
+  // 入力欄の placeholder / value にしか出ない文字もある
+  if (out.length === 0) {
+    for (const el of Array.from(doc.body.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("input,textarea"))) {
+      if (out.length >= limit) break;
+      if ((el.placeholder ?? "").trim() === target || (el.value ?? "").trim() === target) out.push(el);
+    }
+  }
+  return out;
+}
+
 /** 子がテキストだけなら、丸ごとテキストとして編集できる */
 export function isTextEditable(el: Element): boolean {
   if (el.childNodes.length === 0) return false;

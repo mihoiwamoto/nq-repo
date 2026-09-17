@@ -255,6 +255,10 @@ import { LogListPage } from "./admin/features/log-management/LogListPage";
 import { HelpPage } from "./admin/features/help/HelpPage";
 import { HelpFaqDetailPage } from "./admin/features/help/HelpFaqDetailPage";
 import { ScreenCanvasPage } from "./admin/features/guide/ScreenCanvasPage";
+import { ScreenFlowPage } from "./admin/features/guide/ScreenFlowPage";
+import { DevVersionPage } from "./admin/features/guide/DevVersionPage";
+import { ScreenDescriptionsPage } from "./admin/features/guide/ScreenDescriptionsPage";
+import { ScreenDescriptionDetailPage } from "./admin/features/guide/ScreenDescriptionDetailPage";
 import { FeedbackManagementPage } from "./admin/features/feedback/FeedbackManagementPage";
 import { AccountPage } from "./admin/features/account/AccountPage";
 import { PasswordChangePage } from "./admin/features/account/PasswordChangePage";
@@ -360,10 +364,10 @@ import { ChemicalManagementProviderOutlet as AppChemicalManagementProviderOutlet
 import { SpecimenManagementConfirmPage as AppSpecimenManagementConfirmPage } from "./app/features/specimen-management/SpecimenManagementConfirmPage";
 import { SpecimenListPage as AppSpecimenListPage } from "./app/features/specimen-management/SpecimenListPage";
 import { railNav } from "./app/navigation";
-import { HomePage } from "./pages/HomePage";
 import { ComingSoonPage } from "./pages/ComingSoonPage";
-import { PageDescriptionButton } from "./components/PageDescriptionButton";
+import { DemoGuideWidget } from "./components/demo/DemoGuideWidget";
 import { FeedbackWidget } from "./components/feedback/FeedbackWidget";
+import { ScreenCoachMarksHost } from "./components/screen-description/ScreenCoachMarks";
 
 const adminPlaceholderRoutes = flattenNavPaths([...adminPrimaryNav, ...adminSecondaryNav]).filter(
   (item) =>
@@ -377,6 +381,9 @@ const adminPlaceholderRoutes = flattenNavPaths([...adminPrimaryNav, ...adminSeco
     item.path !== "/admin/logs" &&
     item.path !== "/admin/help" &&
     item.path !== "/admin/guide/screens" &&
+    item.path !== "/admin/guide/flow" &&
+    item.path !== "/admin/guide/descriptions" &&
+    item.path !== "/admin/guide/versions" &&
     item.path !== "/admin/guide/feedback" &&
     item.path !== "/admin/devices" &&
     item.path !== "/admin/storage"
@@ -396,7 +403,8 @@ function App() {
   return (
     <>
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      {/* 管理画面/アプリ画面を選ぶトップ画面は廃止。ルートは管理画面ログインへ */}
+      <Route path="/" element={<Navigate to="/admin/login" replace />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/admin/logout" element={<LogoutCompletePage />} />
       <Route path="/app/login" element={<AppLoginPage />} />
@@ -1014,8 +1022,14 @@ function App() {
           <Route index element={<ProductListPage />} />
           <Route path="host/:productId" element={<HostProductDetailPage />} />
           <Route path="nq/new" element={<NqProductFormPage />} />
-          <Route path="nq/new/complete" element={<NqProductCompletePage />} />
-          <Route path="nq/deleted" element={<NqProductCompletePage />} />
+          <Route
+            path="nq/new/complete"
+            element={<NqProductCompletePage message="製品の新規登録が完了しました" />}
+          />
+          <Route
+            path="nq/deleted"
+            element={<NqProductCompletePage message="製品の削除が完了しました" />}
+          />
           <Route path="nq/:productId" element={<NqProductDetailPage />} />
           <Route path="nq/:productId/edit" element={<NqProductFormPage />} />
         </Route>
@@ -1065,6 +1079,10 @@ function App() {
         <Route path="help" element={<HelpPage />} />
         <Route path="help/:faqId" element={<HelpFaqDetailPage />} />
         <Route path="guide/screens" element={<ScreenCanvasPage />} />
+        <Route path="guide/flow" element={<ScreenFlowPage />} />
+        <Route path="guide/versions" element={<DevVersionPage />} />
+        <Route path="guide/descriptions" element={<ScreenDescriptionsPage />} />
+        <Route path="guide/descriptions/:screenId" element={<ScreenDescriptionDetailPage />} />
         <Route path="guide/feedback" element={<FeedbackManagementPage />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="account/password" element={<PasswordChangePage />} />
@@ -1352,8 +1370,13 @@ function App() {
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-    <PageDescriptionButton />
-    <FeedbackWidget />
+    <DemoGuideWidget />
+    {/* フィードバックのパネル本体。開くボタンは動作デモのピル（メニュー内）と動作デモのツールバーにあるので、
+        こちらの右下ボタンは出さない。openFeedbackPanel() の合図を受けてパネルを開く */}
+    <FeedbackWidget showButton={false} />
+    {/* 画面上コーチマーク（画面説明）。動作デモのピル › 資料 › 画面説明 の合図で開く。
+        動作デモの端末枠（iframe）の中でも開けるよう、埋め込み時も描く */}
+    <ScreenCoachMarksHost />
     </>
   );
 }

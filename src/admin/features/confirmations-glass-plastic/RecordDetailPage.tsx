@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
+import { seedTimestamp } from "../../utils/recordTimestamps";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -62,6 +64,10 @@ export function RecordDetailPage() {
           : room.items.filter((item) => activeFilters.includes(item.status)),
     }))
     .filter((room) => room.items.length > 0);
+
+  // アプリで点検箇所ごとに打った時刻。モックに項目ごとの時刻が無いので実施日から組み立てる
+  // （データ検索の同じ画面と同じ 10:15 を使う）
+  const itemTimestamp = seedTimestamp(record.date, "10:15");
 
   return (
     <div>
@@ -194,6 +200,8 @@ export function RecordDetailPage() {
                           </p>
                         </div>
                       )}
+                      {/* アプリで点検箇所ごとに打ったスタンプ（データ検索の同じ画面と同じ） */}
+                      <RecordTimestamp inspector={record.implementer} timestamp={itemTimestamp} />
                       {index < room.items.length - 1 && <div className="border-t border-[#e0e0e0] w-full" />}
                     </div>
                   ))}

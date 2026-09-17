@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-09-14T09:06:07.806Z",
-  "screenCount": 298,
+  "generatedAt": "2026-09-17T02:03:43.920Z",
+  "screenCount": 301,
   "screens": [
     {
       "id": "scr_5021db3ab2",
@@ -489,7 +489,7 @@
       "routes": [
         "/admin/approvals/additive-management"
       ],
-      "lineCount": 302,
+      "lineCount": 305,
       "structure": [
         "subtitle",
         "button",
@@ -506,62 +506,62 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 18,
-          "endLine": 36,
+          "startLine": 19,
+          "endLine": 37,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 37,
-          "endLine": 40,
+          "startLine": 38,
+          "endLine": 43,
           "kind": "code"
         },
         {
           "name": "request",
-          "startLine": 41,
-          "endLine": 55,
+          "startLine": 44,
+          "endLine": 58,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 56,
-          "endLine": 64,
+          "startLine": 59,
+          "endLine": 67,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 65,
-          "endLine": 66,
+          "startLine": 68,
+          "endLine": 69,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 67,
-          "endLine": 72,
+          "startLine": 70,
+          "endLine": 75,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 73,
-          "endLine": 79,
+          "startLine": 76,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "handleApprove",
-          "startLine": 80,
-          "endLine": 101,
+          "startLine": 83,
+          "endLine": 104,
           "kind": "code"
         },
         {
           "name": "㈱西原食品 本社工場",
-          "startLine": 102,
-          "endLine": 110,
+          "startLine": 105,
+          "endLine": 113,
           "kind": "label"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 111,
-          "endLine": 302,
+          "startLine": 114,
+          "endLine": 305,
           "kind": "label"
         }
       ]
@@ -691,7 +691,7 @@
       "routes": [
         "/admin/approvals/chemical-management"
       ],
-      "lineCount": 302,
+      "lineCount": 305,
       "structure": [
         "subtitle",
         "button",
@@ -708,62 +708,62 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 18,
-          "endLine": 36,
+          "startLine": 19,
+          "endLine": 37,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 37,
-          "endLine": 40,
+          "startLine": 38,
+          "endLine": 43,
           "kind": "code"
         },
         {
           "name": "request",
-          "startLine": 41,
-          "endLine": 55,
+          "startLine": 44,
+          "endLine": 58,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 56,
-          "endLine": 64,
+          "startLine": 59,
+          "endLine": 67,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 65,
-          "endLine": 66,
+          "startLine": 68,
+          "endLine": 69,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 67,
-          "endLine": 72,
+          "startLine": 70,
+          "endLine": 75,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 73,
-          "endLine": 79,
+          "startLine": 76,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "handleApprove",
-          "startLine": 80,
-          "endLine": 101,
+          "startLine": 83,
+          "endLine": 104,
           "kind": "code"
         },
         {
           "name": "㈱西原食品 本社工場",
-          "startLine": 102,
-          "endLine": 110,
+          "startLine": 105,
+          "endLine": 113,
           "kind": "label"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 111,
-          "endLine": 302,
+          "startLine": 114,
+          "endLine": 305,
           "kind": "label"
         }
       ]
@@ -1064,7 +1064,7 @@
       "routes": [
         "/admin/approvals/equipment-inspection"
       ],
-      "lineCount": 154,
+      "lineCount": 162,
       "structure": [
         "subtitle",
         "list",
@@ -1074,50 +1074,50 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 12,
-          "endLine": 16,
+          "startLine": 13,
+          "endLine": 17,
           "kind": "code"
         },
         {
           "name": "ResultBadge",
-          "startLine": 17,
-          "endLine": 51,
+          "startLine": 18,
+          "endLine": 52,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 52,
-          "endLine": 54,
+          "startLine": 53,
+          "endLine": 57,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 55,
-          "endLine": 56,
+          "startLine": 58,
+          "endLine": 59,
           "kind": "code"
         },
         {
           "name": "request",
-          "startLine": 57,
-          "endLine": 58,
+          "startLine": 60,
+          "endLine": 61,
           "kind": "code"
         },
         {
           "name": "handleApprove",
-          "startLine": 59,
-          "endLine": 80,
+          "startLine": 62,
+          "endLine": 83,
           "kind": "code"
         },
         {
           "name": "㈱西原食品 本社工場",
-          "startLine": 81,
-          "endLine": 83,
+          "startLine": 84,
+          "endLine": 86,
           "kind": "label"
         },
         {
           "name": "25年4月1日点検分",
-          "startLine": 84,
-          "endLine": 154,
+          "startLine": 87,
+          "endLine": 162,
           "kind": "label"
         }
       ]
@@ -1373,7 +1373,7 @@
       "routes": [
         "/admin/approvals/metal-xray-detection"
       ],
-      "lineCount": 140,
+      "lineCount": 143,
       "structure": [
         "subtitle",
         "list",
@@ -1383,50 +1383,50 @@
       "sections": [
         {
           "name": "ResultTag",
-          "startLine": 18,
-          "endLine": 28,
+          "startLine": 19,
+          "endLine": 29,
           "kind": "code"
         },
         {
           "name": "formatDate",
-          "startLine": 29,
-          "endLine": 32,
+          "startLine": 30,
+          "endLine": 33,
           "kind": "code"
         },
         {
           "name": "overallResult",
-          "startLine": 33,
-          "endLine": 45,
+          "startLine": 34,
+          "endLine": 46,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 46,
-          "endLine": 48,
+          "startLine": 47,
+          "endLine": 51,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 49,
-          "endLine": 50,
+          "startLine": 52,
+          "endLine": 53,
           "kind": "code"
         },
         {
           "name": "request",
-          "startLine": 51,
-          "endLine": 52,
+          "startLine": 54,
+          "endLine": 55,
           "kind": "code"
         },
         {
           "name": "handleApprove",
-          "startLine": 53,
-          "endLine": 74,
+          "startLine": 56,
+          "endLine": 77,
           "kind": "code"
         },
         {
           "name": "25年4月1日点検分",
-          "startLine": 75,
-          "endLine": 140,
+          "startLine": 78,
+          "endLine": 143,
           "kind": "label"
         }
       ]
@@ -1860,7 +1860,7 @@
       "routes": [
         "/admin/approvals/sample-management"
       ],
-      "lineCount": 319,
+      "lineCount": 322,
       "structure": [
         "list",
         "button",
@@ -1875,80 +1875,80 @@
       "sections": [
         {
           "name": "HyphenIcon",
-          "startLine": 14,
-          "endLine": 21,
+          "startLine": 15,
+          "endLine": 22,
           "kind": "code"
         },
         {
           "name": "DateDisplay",
-          "startLine": 22,
-          "endLine": 28,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 29,
+          "startLine": 23,
           "endLine": 29,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 30,
-          "endLine": 58,
+          "endLine": 30,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 31,
+          "endLine": 59,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 59,
-          "endLine": 63,
+          "startLine": 60,
+          "endLine": 66,
           "kind": "code"
         },
         {
           "name": "request",
-          "startLine": 64,
-          "endLine": 68,
+          "startLine": 67,
+          "endLine": 71,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 69,
-          "endLine": 70,
+          "startLine": 72,
+          "endLine": 73,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 71,
-          "endLine": 87,
+          "startLine": 74,
+          "endLine": 90,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 88,
-          "endLine": 106,
+          "startLine": 91,
+          "endLine": 109,
           "kind": "code"
         },
         {
           "name": "handleApprove",
-          "startLine": 107,
-          "endLine": 153,
+          "startLine": 110,
+          "endLine": 156,
           "kind": "code"
         },
         {
           "name": "㈱西原食品 本社工場",
-          "startLine": 154,
-          "endLine": 156,
+          "startLine": 157,
+          "endLine": 159,
           "kind": "label"
         },
         {
           "name": "25年4月点検分",
-          "startLine": 157,
-          "endLine": 196,
+          "startLine": 160,
+          "endLine": 199,
           "kind": "label"
         },
         {
           "name": "ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目",
-          "startLine": 197,
-          "endLine": 319,
+          "startLine": 200,
+          "endLine": 322,
           "kind": "comment"
         }
       ]
@@ -2120,7 +2120,7 @@
       "routes": [
         "/admin/approvals/scale-inspection/:requestId"
       ],
-      "lineCount": 226,
+      "lineCount": 234,
       "structure": [
         "subtitle",
         "list",
@@ -2130,56 +2130,56 @@
       "sections": [
         {
           "name": "CheckCell",
-          "startLine": 13,
-          "endLine": 69,
+          "startLine": 14,
+          "endLine": 70,
           "kind": "code"
         },
         {
           "name": "isOperationAbnormal",
-          "startLine": 70,
-          "endLine": 73,
+          "startLine": 71,
+          "endLine": 74,
           "kind": "code"
         },
         {
           "name": "DisplayValueCell",
-          "startLine": 74,
-          "endLine": 84,
+          "startLine": 75,
+          "endLine": 85,
           "kind": "code"
         },
         {
           "name": "formatDateShort",
-          "startLine": 85,
-          "endLine": 105,
+          "startLine": 86,
+          "endLine": 106,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 106,
-          "endLine": 111,
-          "kind": "code"
-        },
-        {
-          "name": "request",
-          "startLine": 112,
-          "endLine": 112,
-          "kind": "code"
-        },
-        {
-          "name": "batchRecords",
-          "startLine": 113,
+          "startLine": 107,
           "endLine": 114,
           "kind": "code"
         },
         {
-          "name": "rowStripeClasses",
+          "name": "request",
           "startLine": 115,
-          "endLine": 116,
+          "endLine": 115,
+          "kind": "code"
+        },
+        {
+          "name": "batchRecords",
+          "startLine": 116,
+          "endLine": 117,
+          "kind": "code"
+        },
+        {
+          "name": "rowStripeClasses",
+          "startLine": 118,
+          "endLine": 119,
           "kind": "code"
         },
         {
           "name": "handleApproveClick",
-          "startLine": 117,
-          "endLine": 226,
+          "startLine": 120,
+          "endLine": 234,
           "kind": "code"
         }
       ]
@@ -2381,7 +2381,7 @@
       "routes": [
         "/admin/approvals/sensory-inspection"
       ],
-      "lineCount": 148,
+      "lineCount": 151,
       "structure": [
         "subtitle",
         "list",
@@ -2391,50 +2391,50 @@
       "sections": [
         {
           "name": "averageScore",
-          "startLine": 11,
-          "endLine": 11,
+          "startLine": 12,
+          "endLine": 12,
           "kind": "code"
         },
         {
           "name": "scores",
-          "startLine": 12,
-          "endLine": 15,
+          "startLine": 13,
+          "endLine": 16,
           "kind": "code"
         },
         {
           "name": "isRecordAbnormal",
-          "startLine": 16,
-          "endLine": 28,
+          "startLine": 17,
+          "endLine": 29,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 29,
-          "endLine": 31,
+          "startLine": 30,
+          "endLine": 34,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 32,
-          "endLine": 33,
+          "startLine": 35,
+          "endLine": 36,
           "kind": "code"
         },
         {
           "name": "request",
-          "startLine": 34,
-          "endLine": 35,
+          "startLine": 37,
+          "endLine": 38,
           "kind": "code"
         },
         {
           "name": "handleApprove",
-          "startLine": 36,
-          "endLine": 57,
+          "startLine": 39,
+          "endLine": 60,
           "kind": "code"
         },
         {
           "name": "25年4月1日点検分",
-          "startLine": 58,
-          "endLine": 148,
+          "startLine": 61,
+          "endLine": 151,
           "kind": "label"
         }
       ]
@@ -2677,7 +2677,7 @@
       "routes": [
         "/admin/approvals/water-inspection"
       ],
-      "lineCount": 370,
+      "lineCount": 373,
       "structure": [
         "image",
         "list",
@@ -2696,74 +2696,74 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 20,
-          "endLine": 24,
+          "startLine": 21,
+          "endLine": 25,
           "kind": "code"
         },
         {
           "name": "CheckCell",
-          "startLine": 25,
-          "endLine": 48,
+          "startLine": 26,
+          "endLine": 49,
           "kind": "code"
         },
         {
           "name": "ChlorineCell",
-          "startLine": 49,
-          "endLine": 95,
+          "startLine": 50,
+          "endLine": 96,
           "kind": "code"
         },
         {
           "name": "ApprovalRecordsListPage",
-          "startLine": 96,
-          "endLine": 99,
+          "startLine": 97,
+          "endLine": 102,
           "kind": "code"
         },
         {
           "name": "request",
-          "startLine": 100,
-          "endLine": 113,
+          "startLine": 103,
+          "endLine": 116,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 114,
-          "endLine": 121,
+          "startLine": 117,
+          "endLine": 124,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 122,
-          "endLine": 123,
+          "startLine": 125,
+          "endLine": 126,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 124,
-          "endLine": 129,
+          "startLine": 127,
+          "endLine": 132,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 130,
-          "endLine": 135,
+          "startLine": 133,
+          "endLine": 138,
           "kind": "code"
         },
         {
           "name": "handleApprove",
-          "startLine": 136,
-          "endLine": 157,
+          "startLine": 139,
+          "endLine": 160,
           "kind": "code"
         },
         {
           "name": "㈱西原食品 本社工場",
-          "startLine": 158,
-          "endLine": 166,
+          "startLine": 161,
+          "endLine": 169,
           "kind": "label"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 167,
-          "endLine": 370,
+          "startLine": 170,
+          "endLine": 373,
           "kind": "label"
         }
       ]
@@ -3929,7 +3929,7 @@
       "routes": [
         "/admin/confirmations/additive-management/factories/:factoryId"
       ],
-      "lineCount": 380,
+      "lineCount": 383,
       "structure": [
         "subtitle",
         "button",
@@ -3949,44 +3949,44 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 42,
-          "endLine": 46,
+          "startLine": 43,
+          "endLine": 47,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 47,
-          "endLine": 70,
+          "startLine": 48,
+          "endLine": 73,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 71,
-          "endLine": 79,
+          "startLine": 74,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 80,
-          "endLine": 81,
+          "startLine": 83,
+          "endLine": 84,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 82,
-          "endLine": 87,
+          "startLine": 85,
+          "endLine": 90,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 88,
-          "endLine": 117,
+          "startLine": 91,
+          "endLine": 120,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 118,
-          "endLine": 380,
+          "startLine": 121,
+          "endLine": 383,
           "kind": "label"
         }
       ]
@@ -4116,7 +4116,7 @@
       "routes": [
         "/admin/confirmations/chemical-management/factories/:factoryId"
       ],
-      "lineCount": 380,
+      "lineCount": 383,
       "structure": [
         "subtitle",
         "button",
@@ -4136,44 +4136,44 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 42,
-          "endLine": 46,
+          "startLine": 43,
+          "endLine": 47,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 47,
-          "endLine": 70,
+          "startLine": 48,
+          "endLine": 73,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 71,
-          "endLine": 79,
+          "startLine": 74,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 80,
-          "endLine": 81,
+          "startLine": 83,
+          "endLine": 84,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 82,
-          "endLine": 87,
+          "startLine": 85,
+          "endLine": 90,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 88,
-          "endLine": 117,
+          "startLine": 91,
+          "endLine": 120,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 118,
-          "endLine": 380,
+          "startLine": 121,
+          "endLine": 383,
           "kind": "label"
         }
       ]
@@ -4301,7 +4301,7 @@
       "routes": [
         "/admin/confirmations/cleaning-record/factories/:factoryId"
       ],
-      "lineCount": 372,
+      "lineCount": 375,
       "structure": [
         "list",
         "subtitle",
@@ -4321,50 +4321,50 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 28,
-          "endLine": 32,
+          "startLine": 29,
+          "endLine": 33,
           "kind": "code"
         },
         {
           "name": "CleanedIcon",
-          "startLine": 33,
-          "endLine": 43,
+          "startLine": 34,
+          "endLine": 44,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 44,
-          "endLine": 63,
+          "startLine": 45,
+          "endLine": 66,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 64,
-          "endLine": 72,
+          "startLine": 67,
+          "endLine": 75,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 73,
-          "endLine": 74,
+          "startLine": 76,
+          "endLine": 77,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 75,
-          "endLine": 80,
+          "startLine": 78,
+          "endLine": 83,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 81,
-          "endLine": 110,
+          "startLine": 84,
+          "endLine": 113,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 111,
-          "endLine": 372,
+          "startLine": 114,
+          "endLine": 375,
           "kind": "label"
         }
       ]
@@ -4494,7 +4494,7 @@
       "routes": [
         "/admin/confirmations/equipment-inspection/factories/:factoryId"
       ],
-      "lineCount": 398,
+      "lineCount": 401,
       "structure": [
         "list",
         "subtitle",
@@ -4514,50 +4514,50 @@
       "sections": [
         {
           "name": "ResultBadge",
-          "startLine": 28,
-          "endLine": 62,
+          "startLine": 29,
+          "endLine": 63,
           "kind": "code"
         },
         {
           "name": "formatDateShort",
-          "startLine": 63,
-          "endLine": 67,
+          "startLine": 64,
+          "endLine": 68,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 68,
-          "endLine": 87,
+          "startLine": 69,
+          "endLine": 90,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 88,
-          "endLine": 96,
+          "startLine": 91,
+          "endLine": 99,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 97,
-          "endLine": 98,
+          "startLine": 100,
+          "endLine": 101,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 99,
-          "endLine": 104,
+          "startLine": 102,
+          "endLine": 107,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 105,
-          "endLine": 134,
+          "startLine": 108,
+          "endLine": 137,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 135,
-          "endLine": 398,
+          "startLine": 138,
+          "endLine": 401,
           "kind": "label"
         }
       ]
@@ -4572,7 +4572,7 @@
       "routes": [
         "/admin/confirmations/glass-plastic/factories/:factoryId/records/:recordId"
       ],
-      "lineCount": 230,
+      "lineCount": 238,
       "structure": [
         "list",
         "subtitle",
@@ -4592,86 +4592,92 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 21,
-          "endLine": 24,
+          "startLine": 23,
+          "endLine": 26,
           "kind": "code"
         },
         {
           "name": "RecordDetailPage",
-          "startLine": 25,
-          "endLine": 30,
+          "startLine": 27,
+          "endLine": 32,
           "kind": "code"
         },
         {
           "name": "record",
-          "startLine": 31,
-          "endLine": 38,
+          "startLine": 33,
+          "endLine": 40,
           "kind": "code"
         },
         {
           "name": "データが見つかりません",
-          "startLine": 39,
-          "endLine": 43,
+          "startLine": 41,
+          "endLine": 45,
           "kind": "label"
         },
         {
           "name": "toggleFilter",
-          "startLine": 44,
-          "endLine": 49,
+          "startLine": 46,
+          "endLine": 51,
           "kind": "code"
         },
         {
           "name": "handleAddComment",
-          "startLine": 50,
-          "endLine": 92,
+          "startLine": 52,
+          "endLine": 98,
           "kind": "code"
         },
         {
           "name": "実施者",
-          "startLine": 93,
-          "endLine": 97,
+          "startLine": 99,
+          "endLine": 103,
           "kind": "label"
         },
         {
           "name": "確認者",
-          "startLine": 98,
-          "endLine": 102,
+          "startLine": 104,
+          "endLine": 108,
           "kind": "label"
         },
         {
           "name": "フロア名",
-          "startLine": 103,
-          "endLine": 107,
+          "startLine": 109,
+          "endLine": 113,
           "kind": "label"
         },
         {
           "name": "実施日",
-          "startLine": 108,
-          "endLine": 138,
+          "startLine": 114,
+          "endLine": 144,
           "kind": "label"
         },
         {
           "name": "絞り込み：",
-          "startLine": 139,
-          "endLine": 163,
+          "startLine": 145,
+          "endLine": 169,
           "kind": "label"
         },
         {
           "name": "該当する点検箇所がありません",
-          "startLine": 164,
-          "endLine": 206,
+          "startLine": 170,
+          "endLine": 202,
           "kind": "label"
         },
         {
+          "name": "アプリで点検箇所ごとに打ったスタンプ（データ検索の同じ画面と同じ）",
+          "startLine": 203,
+          "endLine": 214,
+          "kind": "comment"
+        },
+        {
           "name": "修理状況",
-          "startLine": 207,
-          "endLine": 221,
+          "startLine": 215,
+          "endLine": 229,
           "kind": "label"
         },
         {
           "name": "コメント",
-          "startLine": 222,
-          "endLine": 230,
+          "startLine": 230,
+          "endLine": 238,
           "kind": "label"
         }
       ]
@@ -4686,7 +4692,7 @@
       "routes": [
         "/admin/confirmations/glass-plastic/factories/:factoryId"
       ],
-      "lineCount": 377,
+      "lineCount": 380,
       "structure": [
         "subtitle",
         "button",
@@ -4706,44 +4712,44 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 40,
-          "endLine": 44,
+          "startLine": 41,
+          "endLine": 45,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 45,
-          "endLine": 64,
+          "startLine": 46,
+          "endLine": 67,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 65,
-          "endLine": 73,
+          "startLine": 68,
+          "endLine": 76,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 74,
-          "endLine": 75,
+          "startLine": 77,
+          "endLine": 78,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 76,
-          "endLine": 81,
+          "startLine": 79,
+          "endLine": 84,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 82,
-          "endLine": 109,
+          "startLine": 85,
+          "endLine": 112,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 110,
-          "endLine": 377,
+          "startLine": 113,
+          "endLine": 380,
           "kind": "label"
         }
       ]
@@ -4869,7 +4875,7 @@
       "routes": [
         "/admin/confirmations/metal-xray-detection/factories/:factoryId"
       ],
-      "lineCount": 361,
+      "lineCount": 364,
       "structure": [
         "subtitle",
         "button",
@@ -4889,50 +4895,50 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 38,
-          "endLine": 41,
+          "startLine": 39,
+          "endLine": 42,
           "kind": "code"
         },
         {
           "name": "ResultIcon",
-          "startLine": 42,
-          "endLine": 48,
+          "startLine": 43,
+          "endLine": 49,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 49,
-          "endLine": 68,
+          "startLine": 50,
+          "endLine": 71,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 69,
-          "endLine": 77,
+          "startLine": 72,
+          "endLine": 80,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 78,
-          "endLine": 79,
+          "startLine": 81,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 80,
-          "endLine": 85,
+          "startLine": 83,
+          "endLine": 88,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 86,
-          "endLine": 113,
+          "startLine": 89,
+          "endLine": 116,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 114,
-          "endLine": 361,
+          "startLine": 117,
+          "endLine": 364,
           "kind": "label"
         }
       ]
@@ -5104,7 +5110,7 @@
       "routes": [
         "/admin/confirmations/sample-management/factories/:factoryId"
       ],
-      "lineCount": 409,
+      "lineCount": 412,
       "structure": [
         "list",
         "subtitle",
@@ -5124,56 +5130,56 @@
       "sections": [
         {
           "name": "HyphenIcon",
-          "startLine": 28,
-          "endLine": 35,
+          "startLine": 29,
+          "endLine": 36,
           "kind": "code"
         },
         {
           "name": "DateDisplay",
-          "startLine": 36,
-          "endLine": 61,
+          "startLine": 37,
+          "endLine": 62,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 62,
-          "endLine": 81,
+          "startLine": 63,
+          "endLine": 84,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 82,
-          "endLine": 90,
+          "startLine": 85,
+          "endLine": 93,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 91,
-          "endLine": 92,
+          "startLine": 94,
+          "endLine": 95,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 93,
-          "endLine": 98,
+          "startLine": 96,
+          "endLine": 101,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 99,
-          "endLine": 128,
+          "startLine": 102,
+          "endLine": 131,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 129,
-          "endLine": 361,
+          "startLine": 132,
+          "endLine": 364,
           "kind": "label"
         },
         {
           "name": "ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目",
-          "startLine": 362,
-          "endLine": 409,
+          "startLine": 365,
+          "endLine": 412,
           "kind": "comment"
         }
       ]
@@ -5188,7 +5194,7 @@
       "routes": [
         "/admin/confirmations/scale-inspection/factories/:factoryId/records/:recordId"
       ],
-      "lineCount": 264,
+      "lineCount": 286,
       "structure": [
         "subtitle",
         "field",
@@ -5199,170 +5205,176 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 18,
-          "endLine": 21,
+          "startLine": 20,
+          "endLine": 23,
           "kind": "code"
         },
         {
           "name": "CheckStatusTag",
-          "startLine": 22,
-          "endLine": 33,
+          "startLine": 24,
+          "endLine": 35,
           "kind": "code"
         },
         {
           "name": "Dash",
-          "startLine": 34,
-          "endLine": 37,
-          "kind": "code"
-        },
-        {
-          "name": "HLine",
-          "startLine": 38,
+          "startLine": 36,
           "endLine": 39,
           "kind": "code"
         },
         {
-          "name": "RecordDetailPage",
+          "name": "HLine",
           "startLine": 40,
-          "endLine": 46,
+          "endLine": 41,
+          "kind": "code"
+        },
+        {
+          "name": "RecordDetailPage",
+          "startLine": 42,
+          "endLine": 48,
           "kind": "code"
         },
         {
           "name": "record",
-          "startLine": 47,
-          "endLine": 51,
+          "startLine": 49,
+          "endLine": 53,
           "kind": "code"
         },
         {
           "name": "データが見つかりません",
-          "startLine": 52,
-          "endLine": 58,
+          "startLine": 54,
+          "endLine": 61,
           "kind": "label"
         },
         {
+          "name": "stampAt",
+          "startLine": 62,
+          "endLine": 63,
+          "kind": "code"
+        },
+        {
           "name": "handleAddComment",
-          "startLine": 59,
-          "endLine": 91,
+          "startLine": 64,
+          "endLine": 96,
           "kind": "code"
         },
         {
           "name": "実施日",
-          "startLine": 92,
-          "endLine": 96,
-          "kind": "label"
-        },
-        {
-          "name": "実施者",
           "startLine": 97,
           "endLine": 101,
           "kind": "label"
         },
         {
-          "name": "確認者",
+          "name": "実施者",
           "startLine": 102,
           "endLine": 106,
           "kind": "label"
         },
         {
-          "name": "持ち場",
+          "name": "確認者",
           "startLine": 107,
           "endLine": 111,
           "kind": "label"
         },
         {
-          "name": "秤No.(ラベル名)",
+          "name": "持ち場",
           "startLine": 112,
           "endLine": 116,
           "kind": "label"
         },
         {
-          "name": "シリアルナンバー",
+          "name": "秤No.(ラベル名)",
           "startLine": 117,
-          "endLine": 124,
+          "endLine": 121,
           "kind": "label"
         },
         {
-          "name": "動作確認",
-          "startLine": 125,
+          "name": "シリアルナンバー",
+          "startLine": 122,
           "endLine": 129,
           "kind": "label"
         },
         {
-          "name": "水平点検",
+          "name": "動作確認",
           "startLine": 130,
           "endLine": 134,
           "kind": "label"
         },
         {
-          "name": "汚れ",
+          "name": "水平点検",
           "startLine": 135,
-          "endLine": 140,
+          "endLine": 139,
+          "kind": "label"
+        },
+        {
+          "name": "汚れ",
+          "startLine": 140,
+          "endLine": 145,
           "kind": "label"
         },
         {
           "name": "秤の表示値(g)",
-          "startLine": 141,
-          "endLine": 152,
+          "startLine": 146,
+          "endLine": 157,
           "kind": "label"
         },
         {
           "name": "動作確認",
-          "startLine": 153,
-          "endLine": 166,
+          "startLine": 158,
+          "endLine": 173,
           "kind": "label"
         },
         {
           "name": "水平点検",
-          "startLine": 167,
-          "endLine": 171,
+          "startLine": 174,
+          "endLine": 181,
           "kind": "label"
         },
         {
           "name": "汚れ",
-          "startLine": 172,
-          "endLine": 177,
+          "startLine": 182,
+          "endLine": 190,
           "kind": "label"
         },
         {
           "name": "秤の表示値(g)",
-          "startLine": 178,
-          "endLine": 188,
+          "startLine": 191,
+          "endLine": 204,
           "kind": "label"
         },
         {
           "name": "水平点検",
-          "startLine": 189,
-          "endLine": 193,
+          "startLine": 205,
+          "endLine": 212,
           "kind": "label"
         },
         {
           "name": "汚れ",
-          "startLine": 194,
-          "endLine": 200,
+          "startLine": 213,
+          "endLine": 221,
           "kind": "label"
         },
         {
           "name": "秤の表示値(g)",
-          "startLine": 201,
-          "endLine": 226,
+          "startLine": 222,
+          "endLine": 248,
           "kind": "label"
         },
         {
           "name": "備考",
-          "startLine": 227,
-          "endLine": 236,
+          "startLine": 249,
+          "endLine": 258,
           "kind": "label"
         },
         {
           "name": "修理状況",
-          "startLine": 237,
-          "endLine": 255,
+          "startLine": 259,
+          "endLine": 277,
           "kind": "label"
         },
         {
           "name": "コメント",
-          "startLine": 256,
-          "endLine": 264,
+          "startLine": 278,
+          "endLine": 286,
           "kind": "label"
         }
       ]
@@ -5377,7 +5389,7 @@
       "routes": [
         "/admin/confirmations/scale-inspection/factories/:factoryId"
       ],
-      "lineCount": 475,
+      "lineCount": 478,
       "structure": [
         "list",
         "subtitle",
@@ -5397,74 +5409,74 @@
       "sections": [
         {
           "name": "CheckCell",
-          "startLine": 44,
-          "endLine": 100,
+          "startLine": 45,
+          "endLine": 101,
           "kind": "code"
         },
         {
           "name": "isOperationAbnormal",
-          "startLine": 101,
-          "endLine": 104,
+          "startLine": 102,
+          "endLine": 105,
           "kind": "code"
         },
         {
           "name": "DisplayValueCell",
-          "startLine": 105,
-          "endLine": 115,
+          "startLine": 106,
+          "endLine": 116,
           "kind": "code"
         },
         {
           "name": "formatDateShort",
-          "startLine": 116,
-          "endLine": 120,
+          "startLine": 117,
+          "endLine": 121,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 121,
-          "endLine": 140,
+          "startLine": 122,
+          "endLine": 143,
           "kind": "code"
         },
         {
           "name": "postOptions",
-          "startLine": 141,
-          "endLine": 142,
+          "startLine": 144,
+          "endLine": 145,
           "kind": "code"
         },
         {
           "name": "isAbnormal",
-          "startLine": 143,
-          "endLine": 144,
+          "startLine": 146,
+          "endLine": 147,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 145,
-          "endLine": 154,
+          "startLine": 148,
+          "endLine": 157,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 155,
-          "endLine": 156,
+          "startLine": 158,
+          "endLine": 159,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 157,
-          "endLine": 162,
+          "startLine": 160,
+          "endLine": 165,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 163,
-          "endLine": 193,
+          "startLine": 166,
+          "endLine": 196,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 194,
-          "endLine": 475,
+          "startLine": 197,
+          "endLine": 478,
           "kind": "label"
         }
       ]
@@ -5479,7 +5491,7 @@
       "routes": [
         "/admin/confirmations/sensory-inspection/factories/:factoryId"
       ],
-      "lineCount": 404,
+      "lineCount": 407,
       "structure": [
         "subtitle",
         "button",
@@ -5499,62 +5511,62 @@
       "sections": [
         {
           "name": "averageScore",
-          "startLine": 28,
-          "endLine": 28,
+          "startLine": 29,
+          "endLine": 29,
           "kind": "code"
         },
         {
           "name": "scores",
-          "startLine": 29,
-          "endLine": 32,
+          "startLine": 30,
+          "endLine": 33,
           "kind": "code"
         },
         {
           "name": "isRecordAbnormal",
-          "startLine": 33,
-          "endLine": 46,
+          "startLine": 34,
+          "endLine": 47,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 47,
-          "endLine": 66,
+          "startLine": 48,
+          "endLine": 69,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 67,
-          "endLine": 75,
+          "startLine": 70,
+          "endLine": 78,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 76,
-          "endLine": 77,
+          "startLine": 79,
+          "endLine": 80,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 78,
-          "endLine": 83,
+          "startLine": 81,
+          "endLine": 86,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 84,
-          "endLine": 113,
+          "startLine": 87,
+          "endLine": 116,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 114,
-          "endLine": 399,
+          "startLine": 117,
+          "endLine": 402,
           "kind": "label"
         },
         {
           "name": "formatDateShort",
-          "startLine": 400,
-          "endLine": 404,
+          "startLine": 403,
+          "endLine": 407,
           "kind": "code"
         }
       ]
@@ -5686,7 +5698,7 @@
       "routes": [
         "/admin/confirmations/sensory-inspection/factories/:factoryId/records/:recordId/scores/:scoreId"
       ],
-      "lineCount": 119,
+      "lineCount": 122,
       "structure": [
         "subtitle",
         "list",
@@ -5695,69 +5707,75 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 8,
-          "endLine": 11,
+          "startLine": 9,
+          "endLine": 12,
           "kind": "code"
         },
         {
           "name": "ScoreTag",
-          "startLine": 12,
-          "endLine": 23,
+          "startLine": 13,
+          "endLine": 24,
           "kind": "code"
         },
         {
           "name": "ScoreDetailPage",
-          "startLine": 24,
-          "endLine": 33,
-          "kind": "code"
-        },
-        {
-          "name": "record",
-          "startLine": 34,
+          "startLine": 25,
           "endLine": 34,
           "kind": "code"
         },
         {
-          "name": "entry",
+          "name": "record",
           "startLine": 35,
-          "endLine": 39,
+          "endLine": 35,
+          "kind": "code"
+        },
+        {
+          "name": "entry",
+          "startLine": 36,
+          "endLine": 40,
           "kind": "code"
         },
         {
           "name": "データが見つかりません",
-          "startLine": 40,
-          "endLine": 63,
+          "startLine": 41,
+          "endLine": 64,
           "kind": "label"
         },
         {
           "name": "実施者",
-          "startLine": 64,
-          "endLine": 68,
+          "startLine": 65,
+          "endLine": 69,
           "kind": "label"
         },
         {
           "name": "確認者",
-          "startLine": 69,
-          "endLine": 73,
+          "startLine": 70,
+          "endLine": 74,
           "kind": "label"
         },
         {
           "name": "比較製品",
-          "startLine": 74,
-          "endLine": 82,
+          "startLine": 75,
+          "endLine": 83,
           "kind": "label"
         },
         {
           "name": "比較製品製造日",
-          "startLine": 83,
-          "endLine": 91,
+          "startLine": 84,
+          "endLine": 92,
           "kind": "label"
         },
         {
           "name": "実施日",
-          "startLine": 92,
-          "endLine": 119,
+          "startLine": 93,
+          "endLine": 111,
           "kind": "label"
+        },
+        {
+          "name": "アプリで点数を入れたときのスタンプ",
+          "startLine": 112,
+          "endLine": 122,
+          "kind": "comment"
         }
       ]
     },
@@ -5771,7 +5789,7 @@
       "routes": [
         "/admin/confirmations/water-inspection/factories/:factoryId/records/:recordId"
       ],
-      "lineCount": 206,
+      "lineCount": 231,
       "structure": [
         "subtitle",
         "field",
@@ -5784,104 +5802,104 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 19,
-          "endLine": 22,
+          "startLine": 20,
+          "endLine": 23,
           "kind": "code"
         },
         {
           "name": "StatusTag",
-          "startLine": 23,
-          "endLine": 35,
+          "startLine": 24,
+          "endLine": 36,
           "kind": "code"
         },
         {
           "name": "CheckRow",
-          "startLine": 36,
-          "endLine": 52,
+          "startLine": 37,
+          "endLine": 62,
           "kind": "code"
         },
         {
           "name": "RecordDetailPage",
-          "startLine": 53,
-          "endLine": 57,
+          "startLine": 63,
+          "endLine": 67,
           "kind": "code"
         },
         {
           "name": "record",
-          "startLine": 58,
-          "endLine": 63,
+          "startLine": 68,
+          "endLine": 73,
           "kind": "code"
         },
         {
           "name": "データが見つかりません",
-          "startLine": 64,
-          "endLine": 68,
+          "startLine": 74,
+          "endLine": 78,
           "kind": "label"
         },
         {
           "name": "handleAddComment",
-          "startLine": 69,
-          "endLine": 101,
+          "startLine": 79,
+          "endLine": 115,
           "kind": "code"
         },
         {
           "name": "実施者",
-          "startLine": 102,
-          "endLine": 106,
+          "startLine": 116,
+          "endLine": 120,
           "kind": "label"
         },
         {
           "name": "確認者",
-          "startLine": 107,
-          "endLine": 111,
+          "startLine": 121,
+          "endLine": 125,
           "kind": "label"
         },
         {
           "name": "点検場所",
-          "startLine": 112,
-          "endLine": 116,
+          "startLine": 126,
+          "endLine": 130,
           "kind": "label"
         },
         {
           "name": "実施日",
-          "startLine": 117,
-          "endLine": 135,
+          "startLine": 131,
+          "endLine": 150,
           "kind": "label"
         },
         {
           "name": "ph値",
-          "startLine": 136,
-          "endLine": 142,
+          "startLine": 151,
+          "endLine": 159,
           "kind": "label"
         },
         {
           "name": "残留塩素濃度（mg/ℓ）",
-          "startLine": 143,
-          "endLine": 156,
+          "startLine": 160,
+          "endLine": 174,
           "kind": "label"
         },
         {
           "name": "UV殺菌灯稼働時間（h）",
-          "startLine": 157,
-          "endLine": 169,
+          "startLine": 175,
+          "endLine": 189,
           "kind": "label"
         },
         {
           "name": "UV表示灯",
-          "startLine": 170,
-          "endLine": 183,
+          "startLine": 190,
+          "endLine": 206,
           "kind": "label"
         },
         {
           "name": "異常検出灯",
-          "startLine": 184,
-          "endLine": 197,
+          "startLine": 207,
+          "endLine": 222,
           "kind": "label"
         },
         {
           "name": "コメント",
-          "startLine": 198,
-          "endLine": 206,
+          "startLine": 223,
+          "endLine": 231,
           "kind": "label"
         }
       ]
@@ -5896,7 +5914,7 @@
       "routes": [
         "/admin/confirmations/water-inspection/factories/:factoryId"
       ],
-      "lineCount": 462,
+      "lineCount": 465,
       "structure": [
         "image",
         "list",
@@ -5916,62 +5934,62 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 50,
-          "endLine": 54,
+          "startLine": 51,
+          "endLine": 55,
           "kind": "code"
         },
         {
           "name": "CheckCell",
-          "startLine": 55,
-          "endLine": 70,
+          "startLine": 56,
+          "endLine": 71,
           "kind": "code"
         },
         {
           "name": "ChlorineCell",
-          "startLine": 71,
-          "endLine": 103,
+          "startLine": 72,
+          "endLine": 104,
           "kind": "code"
         },
         {
           "name": "isRecordAbnormal",
-          "startLine": 104,
-          "endLine": 113,
+          "startLine": 105,
+          "endLine": 114,
           "kind": "code"
         },
         {
           "name": "RecordsListPage",
-          "startLine": 114,
-          "endLine": 133,
+          "startLine": 115,
+          "endLine": 136,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 134,
-          "endLine": 142,
+          "startLine": 137,
+          "endLine": 145,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 143,
-          "endLine": 144,
+          "startLine": 146,
+          "endLine": 147,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 145,
-          "endLine": 150,
+          "startLine": 148,
+          "endLine": 153,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 151,
-          "endLine": 178,
+          "startLine": 154,
+          "endLine": 181,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 179,
-          "endLine": 462,
+          "startLine": 182,
+          "endLine": 465,
           "kind": "label"
         }
       ]
@@ -5986,7 +6004,7 @@
       "routes": [
         "/admin/data-search/additive-management/factories/:factoryId"
       ],
-      "lineCount": 499,
+      "lineCount": 502,
       "structure": [
         "button",
         "subtitle",
@@ -6006,68 +6024,68 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 19,
-          "endLine": 23,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 24,
+          "startLine": 20,
           "endLine": 24,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 25,
-          "endLine": 52,
+          "endLine": 25,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 26,
+          "endLine": 53,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 53,
-          "endLine": 80,
+          "startLine": 54,
+          "endLine": 83,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 81,
-          "endLine": 89,
+          "startLine": 84,
+          "endLine": 92,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 90,
-          "endLine": 91,
+          "startLine": 93,
+          "endLine": 94,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 92,
-          "endLine": 97,
+          "startLine": 95,
+          "endLine": 100,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 98,
-          "endLine": 104,
+          "startLine": 101,
+          "endLine": 107,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 105,
-          "endLine": 106,
+          "startLine": 108,
+          "endLine": 109,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 107,
-          "endLine": 168,
+          "startLine": 110,
+          "endLine": 171,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 169,
-          "endLine": 499,
+          "startLine": 172,
+          "endLine": 502,
           "kind": "label"
         }
       ]
@@ -6221,7 +6239,7 @@
       "routes": [
         "/admin/data-search/chemical-management/factories/:factoryId"
       ],
-      "lineCount": 499,
+      "lineCount": 502,
       "structure": [
         "button",
         "subtitle",
@@ -6241,68 +6259,68 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 19,
-          "endLine": 23,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 24,
+          "startLine": 20,
           "endLine": 24,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 25,
-          "endLine": 52,
+          "endLine": 25,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 26,
+          "endLine": 53,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 53,
-          "endLine": 80,
+          "startLine": 54,
+          "endLine": 83,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 81,
-          "endLine": 89,
+          "startLine": 84,
+          "endLine": 92,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 90,
-          "endLine": 91,
+          "startLine": 93,
+          "endLine": 94,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 92,
-          "endLine": 97,
+          "startLine": 95,
+          "endLine": 100,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 98,
-          "endLine": 104,
+          "startLine": 101,
+          "endLine": 107,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 105,
-          "endLine": 106,
+          "startLine": 108,
+          "endLine": 109,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 107,
-          "endLine": 168,
+          "startLine": 110,
+          "endLine": 171,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 169,
-          "endLine": 499,
+          "startLine": 172,
+          "endLine": 502,
           "kind": "label"
         }
       ]
@@ -6456,7 +6474,7 @@
       "routes": [
         "/admin/data-search/cleaning-record/factories/:factoryId"
       ],
-      "lineCount": 476,
+      "lineCount": 479,
       "structure": [
         "list",
         "button",
@@ -6476,74 +6494,74 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 18,
-          "endLine": 22,
+          "startLine": 19,
+          "endLine": 23,
           "kind": "code"
         },
         {
           "name": "CleanedIcon",
-          "startLine": 23,
-          "endLine": 33,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 34,
+          "startLine": 24,
           "endLine": 34,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 35,
-          "endLine": 49,
+          "endLine": 35,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 36,
+          "endLine": 50,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 50,
-          "endLine": 71,
+          "startLine": 51,
+          "endLine": 74,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 72,
-          "endLine": 79,
+          "startLine": 75,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 80,
-          "endLine": 81,
+          "startLine": 83,
+          "endLine": 84,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 82,
-          "endLine": 87,
+          "startLine": 85,
+          "endLine": 90,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 88,
-          "endLine": 93,
+          "startLine": 91,
+          "endLine": 96,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 94,
-          "endLine": 95,
+          "startLine": 97,
+          "endLine": 98,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 96,
-          "endLine": 154,
+          "startLine": 99,
+          "endLine": 157,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 155,
-          "endLine": 476,
+          "startLine": 158,
+          "endLine": 479,
           "kind": "label"
         }
       ]
@@ -6886,7 +6904,7 @@
       "routes": [
         "/admin/data-search/equipment-inspection/factories/:factoryId"
       ],
-      "lineCount": 501,
+      "lineCount": 504,
       "structure": [
         "list",
         "button",
@@ -6906,74 +6924,74 @@
       "sections": [
         {
           "name": "ResultBadge",
-          "startLine": 19,
-          "endLine": 53,
+          "startLine": 20,
+          "endLine": 54,
           "kind": "code"
         },
         {
           "name": "formatDateShort",
-          "startLine": 54,
-          "endLine": 58,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 59,
+          "startLine": 55,
           "endLine": 59,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 60,
-          "endLine": 74,
+          "endLine": 60,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 61,
+          "endLine": 75,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 75,
-          "endLine": 96,
+          "startLine": 76,
+          "endLine": 99,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 97,
-          "endLine": 104,
+          "startLine": 100,
+          "endLine": 107,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 105,
-          "endLine": 106,
+          "startLine": 108,
+          "endLine": 109,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 107,
-          "endLine": 112,
+          "startLine": 110,
+          "endLine": 115,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 113,
-          "endLine": 118,
+          "startLine": 116,
+          "endLine": 121,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 119,
-          "endLine": 120,
+          "startLine": 122,
+          "endLine": 123,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 121,
-          "endLine": 179,
+          "startLine": 124,
+          "endLine": 182,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 180,
-          "endLine": 501,
+          "startLine": 183,
+          "endLine": 504,
           "kind": "label"
         }
       ]
@@ -7316,7 +7334,7 @@
       "routes": [
         "/admin/data-search/equipment-inspection/factories/:factoryId/records/:recordId/list"
       ],
-      "lineCount": 193,
+      "lineCount": 196,
       "structure": [
         "list",
         "subtitle"
@@ -7324,98 +7342,98 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 8,
-          "endLine": 11,
+          "startLine": 9,
+          "endLine": 12,
           "kind": "code"
         },
         {
           "name": "formatTime",
-          "startLine": 12,
-          "endLine": 16,
+          "startLine": 13,
+          "endLine": 17,
           "kind": "code"
         },
         {
           "name": "CheckmarkIconOk",
-          "startLine": 17,
-          "endLine": 22,
+          "startLine": 18,
+          "endLine": 23,
           "kind": "code"
         },
         {
           "name": "CheckmarkIconNg",
-          "startLine": 23,
-          "endLine": 30,
+          "startLine": 24,
+          "endLine": 31,
           "kind": "code"
         },
         {
           "name": "RecordInspectionListPage",
-          "startLine": 31,
-          "endLine": 36,
+          "startLine": 32,
+          "endLine": 39,
           "kind": "code"
         },
         {
           "name": "record",
-          "startLine": 37,
-          "endLine": 41,
+          "startLine": 40,
+          "endLine": 44,
           "kind": "code"
         },
         {
           "name": "データが見つかりません",
-          "startLine": 42,
-          "endLine": 47,
+          "startLine": 45,
+          "endLine": 50,
           "kind": "label"
         },
         {
           "name": "allItems",
-          "startLine": 48,
-          "endLine": 77,
+          "startLine": 51,
+          "endLine": 80,
           "kind": "code"
         },
         {
           "name": "Summary Info",
-          "startLine": 78,
-          "endLine": 80,
+          "startLine": 81,
+          "endLine": 83,
           "kind": "comment"
         },
         {
           "name": "実施日",
-          "startLine": 81,
-          "endLine": 85,
+          "startLine": 84,
+          "endLine": 88,
           "kind": "label"
         },
         {
           "name": "金属探知機",
-          "startLine": 86,
-          "endLine": 90,
+          "startLine": 89,
+          "endLine": 93,
           "kind": "label"
         },
         {
           "name": "X線探知機",
-          "startLine": 91,
-          "endLine": 95,
+          "startLine": 94,
+          "endLine": 98,
           "kind": "label"
         },
         {
           "name": "ウェイトチェッカー",
-          "startLine": 96,
-          "endLine": 100,
+          "startLine": 99,
+          "endLine": 103,
           "kind": "label"
         },
         {
           "name": "Inspection Table",
-          "startLine": 101,
-          "endLine": 176,
+          "startLine": 104,
+          "endLine": 179,
           "kind": "comment"
         },
         {
           "name": "Comments Section",
-          "startLine": 177,
-          "endLine": 178,
+          "startLine": 180,
+          "endLine": 181,
           "kind": "comment"
         },
         {
           "name": "コメント",
-          "startLine": 179,
-          "endLine": 193,
+          "startLine": 182,
+          "endLine": 196,
           "kind": "label"
         }
       ]
@@ -7462,7 +7480,7 @@
       "routes": [
         "/admin/data-search/glass-plastic/factories/:factoryId/floors/:floorId"
       ],
-      "lineCount": 492,
+      "lineCount": 495,
       "structure": [
         "button",
         "subtitle",
@@ -7482,68 +7500,68 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 20,
-          "endLine": 24,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 25,
+          "startLine": 21,
           "endLine": 25,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 26,
-          "endLine": 51,
+          "endLine": 26,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 27,
+          "endLine": 52,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 52,
-          "endLine": 55,
+          "startLine": 53,
+          "endLine": 58,
           "kind": "code"
         },
         {
           "name": "floorName",
-          "startLine": 56,
-          "endLine": 84,
+          "startLine": 59,
+          "endLine": 87,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 85,
-          "endLine": 86,
+          "startLine": 88,
+          "endLine": 89,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 87,
-          "endLine": 92,
+          "startLine": 90,
+          "endLine": 95,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 93,
-          "endLine": 98,
+          "startLine": 96,
+          "endLine": 101,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 99,
-          "endLine": 100,
+          "startLine": 102,
+          "endLine": 103,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 101,
-          "endLine": 164,
+          "startLine": 104,
+          "endLine": 167,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 165,
-          "endLine": 492,
+          "startLine": 168,
+          "endLine": 495,
           "kind": "label"
         }
       ]
@@ -8634,7 +8652,7 @@
       "routes": [
         "/admin/data-search/metal-xray-detection/factories/:factoryId/records/:recordId"
       ],
-      "lineCount": 181,
+      "lineCount": 184,
       "structure": [
         "title",
         "list",
@@ -8643,86 +8661,86 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 8,
-          "endLine": 11,
+          "startLine": 9,
+          "endLine": 12,
           "kind": "code"
         },
         {
           "name": "CheckmarkIconOk",
-          "startLine": 12,
-          "endLine": 17,
+          "startLine": 13,
+          "endLine": 18,
           "kind": "code"
         },
         {
           "name": "CheckmarkIconNg",
-          "startLine": 18,
-          "endLine": 25,
+          "startLine": 19,
+          "endLine": 26,
           "kind": "code"
         },
         {
           "name": "RecordInspectionListPage",
-          "startLine": 26,
-          "endLine": 31,
+          "startLine": 27,
+          "endLine": 34,
           "kind": "code"
         },
         {
           "name": "record",
-          "startLine": 32,
-          "endLine": 36,
+          "startLine": 35,
+          "endLine": 39,
           "kind": "code"
         },
         {
           "name": "データが見つかりません",
-          "startLine": 37,
-          "endLine": 59,
+          "startLine": 40,
+          "endLine": 62,
           "kind": "label"
         },
         {
           "name": "Summary Info",
-          "startLine": 60,
-          "endLine": 62,
+          "startLine": 63,
+          "endLine": 65,
           "kind": "comment"
         },
         {
           "name": "実施日",
-          "startLine": 63,
-          "endLine": 67,
+          "startLine": 66,
+          "endLine": 70,
           "kind": "label"
         },
         {
           "name": "金属探知機",
-          "startLine": 68,
-          "endLine": 72,
+          "startLine": 71,
+          "endLine": 75,
           "kind": "label"
         },
         {
           "name": "X線探知機",
-          "startLine": 73,
-          "endLine": 77,
+          "startLine": 76,
+          "endLine": 80,
           "kind": "label"
         },
         {
           "name": "ウェイトチェッカー",
-          "startLine": 78,
-          "endLine": 82,
+          "startLine": 81,
+          "endLine": 85,
           "kind": "label"
         },
         {
           "name": "Inspection Table",
-          "startLine": 83,
-          "endLine": 167,
+          "startLine": 86,
+          "endLine": 170,
           "kind": "comment"
         },
         {
           "name": "Comments Section",
-          "startLine": 168,
-          "endLine": 169,
+          "startLine": 171,
+          "endLine": 172,
           "kind": "comment"
         },
         {
           "name": "コメント",
-          "startLine": 170,
-          "endLine": 181,
+          "startLine": 173,
+          "endLine": 184,
           "kind": "label"
         }
       ]
@@ -8886,7 +8904,7 @@
       "routes": [
         "/admin/data-search/sample-management/factories/:factoryId"
       ],
-      "lineCount": 535,
+      "lineCount": 538,
       "structure": [
         "list",
         "button",
@@ -8906,80 +8924,80 @@
       "sections": [
         {
           "name": "HyphenIcon",
-          "startLine": 18,
-          "endLine": 25,
+          "startLine": 19,
+          "endLine": 26,
           "kind": "code"
         },
         {
           "name": "DateDisplay",
-          "startLine": 26,
-          "endLine": 32,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 33,
+          "startLine": 27,
           "endLine": 33,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 34,
-          "endLine": 66,
+          "endLine": 34,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 35,
+          "endLine": 67,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 67,
-          "endLine": 88,
+          "startLine": 68,
+          "endLine": 91,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 89,
-          "endLine": 96,
+          "startLine": 92,
+          "endLine": 99,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 97,
-          "endLine": 98,
+          "startLine": 100,
+          "endLine": 101,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 99,
-          "endLine": 104,
+          "startLine": 102,
+          "endLine": 107,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 105,
-          "endLine": 110,
+          "startLine": 108,
+          "endLine": 113,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 111,
-          "endLine": 127,
+          "startLine": 114,
+          "endLine": 130,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 128,
-          "endLine": 194,
+          "startLine": 131,
+          "endLine": 197,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 195,
-          "endLine": 421,
+          "startLine": 198,
+          "endLine": 424,
           "kind": "label"
         },
         {
           "name": "ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目",
-          "startLine": 422,
-          "endLine": 535,
+          "startLine": 425,
+          "endLine": 538,
           "kind": "comment"
         }
       ]
@@ -9181,7 +9199,7 @@
       "routes": [
         "/admin/data-search/scale-inspection/factories/:factoryId"
       ],
-      "lineCount": 595,
+      "lineCount": 598,
       "structure": [
         "list",
         "button",
@@ -9201,98 +9219,98 @@
       "sections": [
         {
           "name": "CheckCell",
-          "startLine": 19,
-          "endLine": 75,
+          "startLine": 20,
+          "endLine": 76,
           "kind": "code"
         },
         {
           "name": "isOperationAbnormal",
-          "startLine": 76,
-          "endLine": 79,
+          "startLine": 77,
+          "endLine": 80,
           "kind": "code"
         },
         {
           "name": "DisplayValueCell",
-          "startLine": 80,
-          "endLine": 92,
+          "startLine": 81,
+          "endLine": 93,
           "kind": "code"
         },
         {
           "name": "formatDateShort",
-          "startLine": 93,
-          "endLine": 97,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 98,
+          "startLine": 94,
           "endLine": 98,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 99,
-          "endLine": 128,
+          "endLine": 99,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 100,
+          "endLine": 129,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 129,
-          "endLine": 150,
+          "startLine": 130,
+          "endLine": 153,
           "kind": "code"
         },
         {
           "name": "postOptions",
-          "startLine": 151,
-          "endLine": 152,
+          "startLine": 154,
+          "endLine": 155,
           "kind": "code"
         },
         {
           "name": "isAbnormal",
-          "startLine": 153,
-          "endLine": 154,
+          "startLine": 156,
+          "endLine": 157,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 155,
-          "endLine": 163,
+          "startLine": 158,
+          "endLine": 166,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 164,
-          "endLine": 165,
+          "startLine": 167,
+          "endLine": 168,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 166,
-          "endLine": 171,
+          "startLine": 169,
+          "endLine": 174,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 172,
-          "endLine": 178,
+          "startLine": 175,
+          "endLine": 181,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 179,
-          "endLine": 192,
+          "startLine": 182,
+          "endLine": 195,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 193,
-          "endLine": 256,
+          "startLine": 196,
+          "endLine": 259,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 257,
-          "endLine": 595,
+          "startLine": 260,
+          "endLine": 598,
           "kind": "label"
         }
       ]
@@ -9520,7 +9538,7 @@
       "routes": [
         "/admin/data-search/sensory-inspection/factories/:factoryId"
       ],
-      "lineCount": 504,
+      "lineCount": 507,
       "structure": [
         "button",
         "subtitle",
@@ -9540,86 +9558,86 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 19,
-          "endLine": 23,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 24,
+          "startLine": 20,
           "endLine": 24,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 25,
-          "endLine": 39,
+          "endLine": 25,
           "kind": "code"
         },
         {
-          "name": "averageScore",
-          "startLine": 40,
+          "name": "csv",
+          "startLine": 26,
           "endLine": 40,
           "kind": "code"
         },
         {
-          "name": "scores",
+          "name": "averageScore",
           "startLine": 41,
-          "endLine": 44,
+          "endLine": 41,
+          "kind": "code"
+        },
+        {
+          "name": "scores",
+          "startLine": 42,
+          "endLine": 45,
           "kind": "code"
         },
         {
           "name": "isRecordAbnormal",
-          "startLine": 45,
-          "endLine": 57,
+          "startLine": 46,
+          "endLine": 58,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 58,
-          "endLine": 79,
+          "startLine": 59,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 80,
-          "endLine": 87,
+          "startLine": 83,
+          "endLine": 90,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 88,
-          "endLine": 89,
+          "startLine": 91,
+          "endLine": 92,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 90,
-          "endLine": 95,
+          "startLine": 93,
+          "endLine": 98,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 96,
-          "endLine": 101,
+          "startLine": 99,
+          "endLine": 104,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 102,
-          "endLine": 103,
+          "startLine": 105,
+          "endLine": 106,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 104,
-          "endLine": 161,
+          "startLine": 107,
+          "endLine": 164,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 162,
-          "endLine": 504,
+          "startLine": 165,
+          "endLine": 507,
           "kind": "label"
         }
       ]
@@ -9744,7 +9762,7 @@
       "routes": [
         "/admin/data-search/sensory-inspection/factories/:factoryId/records/:recordId/scores/:scoreId"
       ],
-      "lineCount": 133,
+      "lineCount": 136,
       "structure": [
         "subtitle",
         "list",
@@ -9753,87 +9771,93 @@
       "sections": [
         {
           "name": "formatDate",
-          "startLine": 8,
-          "endLine": 11,
+          "startLine": 9,
+          "endLine": 12,
           "kind": "code"
         },
         {
           "name": "ScoreTag",
-          "startLine": 12,
-          "endLine": 23,
+          "startLine": 13,
+          "endLine": 24,
           "kind": "code"
         },
         {
           "name": "ScoreDetailPage",
-          "startLine": 24,
-          "endLine": 33,
-          "kind": "code"
-        },
-        {
-          "name": "record",
-          "startLine": 34,
+          "startLine": 25,
           "endLine": 34,
           "kind": "code"
         },
         {
-          "name": "entry",
+          "name": "record",
           "startLine": 35,
-          "endLine": 39,
+          "endLine": 35,
+          "kind": "code"
+        },
+        {
+          "name": "entry",
+          "startLine": 36,
+          "endLine": 40,
           "kind": "code"
         },
         {
           "name": "データが見つかりません",
-          "startLine": 40,
-          "endLine": 63,
+          "startLine": 41,
+          "endLine": 64,
           "kind": "label"
         },
         {
           "name": "検査製品名",
-          "startLine": 64,
-          "endLine": 67,
+          "startLine": 65,
+          "endLine": 68,
           "kind": "label"
         },
         {
           "name": "製造日",
-          "startLine": 68,
-          "endLine": 73,
+          "startLine": 69,
+          "endLine": 74,
           "kind": "label"
         },
         {
           "name": "賞味期限",
-          "startLine": 74,
-          "endLine": 80,
+          "startLine": 75,
+          "endLine": 81,
           "kind": "label"
         },
         {
           "name": "実施者",
-          "startLine": 81,
-          "endLine": 85,
+          "startLine": 82,
+          "endLine": 86,
           "kind": "label"
         },
         {
           "name": "確認者",
-          "startLine": 86,
-          "endLine": 90,
+          "startLine": 87,
+          "endLine": 91,
           "kind": "label"
         },
         {
           "name": "比較製品",
-          "startLine": 91,
-          "endLine": 99,
+          "startLine": 92,
+          "endLine": 100,
           "kind": "label"
         },
         {
           "name": "比較製品製造日",
-          "startLine": 100,
-          "endLine": 108,
+          "startLine": 101,
+          "endLine": 109,
           "kind": "label"
         },
         {
           "name": "実施日",
-          "startLine": 109,
-          "endLine": 133,
+          "startLine": 110,
+          "endLine": 125,
           "kind": "label"
+        },
+        {
+          "name": "アプリで点数を入れたときのスタンプ。承認画面の点数詳細と同じ形で出す",
+          "startLine": 126,
+          "endLine": 136,
+          "kind": "comment"
         }
       ]
     },
@@ -9879,7 +9903,7 @@
       "routes": [
         "/admin/data-search/water-inspection/factories/:factoryId/points/:pointId"
       ],
-      "lineCount": 592,
+      "lineCount": 595,
       "structure": [
         "image",
         "list",
@@ -9899,98 +9923,98 @@
       "sections": [
         {
           "name": "formatDateShort",
-          "startLine": 21,
-          "endLine": 25,
+          "startLine": 22,
+          "endLine": 26,
           "kind": "code"
         },
         {
           "name": "CheckboxMarkIcon",
-          "startLine": 26,
-          "endLine": 40,
+          "startLine": 27,
+          "endLine": 41,
           "kind": "code"
         },
         {
           "name": "ChlorineCell",
-          "startLine": 41,
-          "endLine": 65,
+          "startLine": 42,
+          "endLine": 66,
           "kind": "code"
         },
         {
           "name": "CheckCell",
-          "startLine": 66,
-          "endLine": 81,
+          "startLine": 67,
+          "endLine": 82,
           "kind": "code"
         },
         {
           "name": "isRecordAbnormal",
-          "startLine": 82,
-          "endLine": 91,
-          "kind": "code"
-        },
-        {
-          "name": "downloadCsv",
-          "startLine": 92,
+          "startLine": 83,
           "endLine": 92,
           "kind": "code"
         },
         {
-          "name": "csv",
+          "name": "downloadCsv",
           "startLine": 93,
-          "endLine": 126,
+          "endLine": 93,
+          "kind": "code"
+        },
+        {
+          "name": "csv",
+          "startLine": 94,
+          "endLine": 127,
           "kind": "code"
         },
         {
           "name": "DataListPage",
-          "startLine": 127,
-          "endLine": 149,
+          "startLine": 128,
+          "endLine": 152,
           "kind": "code"
         },
         {
           "name": "filtered",
-          "startLine": 150,
-          "endLine": 158,
+          "startLine": 153,
+          "endLine": 161,
           "kind": "code"
         },
         {
           "name": "rowStripeClasses",
-          "startLine": 159,
-          "endLine": 160,
+          "startLine": 162,
+          "endLine": 163,
           "kind": "code"
         },
         {
           "name": "goToMonth",
-          "startLine": 161,
-          "endLine": 166,
+          "startLine": 164,
+          "endLine": 169,
           "kind": "code"
         },
         {
           "name": "handleReset",
-          "startLine": 167,
-          "endLine": 172,
+          "startLine": 170,
+          "endLine": 175,
           "kind": "code"
         },
         {
           "name": "handleDownload",
-          "startLine": 173,
-          "endLine": 173,
+          "startLine": 176,
+          "endLine": 176,
           "kind": "code"
         },
         {
           "name": "header",
-          "startLine": 174,
-          "endLine": 174,
+          "startLine": 177,
+          "endLine": 177,
           "kind": "code"
         },
         {
           "name": "rows",
-          "startLine": 175,
-          "endLine": 246,
+          "startLine": 178,
+          "endLine": 249,
           "kind": "code"
         },
         {
           "name": "絞り込み検索",
-          "startLine": 247,
-          "endLine": 592,
+          "startLine": 250,
+          "endLine": 595,
           "kind": "label"
         }
       ]
@@ -11187,114 +11211,135 @@
       "routes": [
         "/admin/guide/feedback"
       ],
-      "lineCount": 274,
+      "lineCount": 352,
       "structure": [
         "button",
+        "list",
+        "card",
         "field",
         "card",
         "button",
         "card",
         "table",
         "list",
-        "title",
+        "button",
+        "card",
         "button"
       ],
       "sections": [
         {
+          "name": "IconPin",
+          "startLine": 41,
+          "endLine": 47,
+          "kind": "code"
+        },
+        {
+          "name": "IconComment",
+          "startLine": 48,
+          "endLine": 53,
+          "kind": "code"
+        },
+        {
           "name": "KIND_OPTIONS",
-          "startLine": 40,
-          "endLine": 41,
+          "startLine": 54,
+          "endLine": 62,
           "kind": "code"
         },
         {
           "name": "FeedbackManagementPage",
-          "startLine": 42,
-          "endLine": 50,
+          "startLine": 63,
+          "endLine": 73,
           "kind": "code"
         },
         {
           "name": "screenOptions",
-          "startLine": 51,
-          "endLine": 61,
+          "startLine": 74,
+          "endLine": 84,
           "kind": "code"
         },
         {
           "name": "visible",
-          "startLine": 62,
-          "endLine": 104,
+          "startLine": 85,
+          "endLine": 99,
           "kind": "code"
         },
         {
-          "name": "件数",
-          "startLine": 105,
-          "endLine": 111,
+          "name": "openEntry",
+          "startLine": 100,
+          "endLine": 136,
+          "kind": "code"
+        },
+        {
+          "name": "状態の絞り込み。数字はその状態の件数",
+          "startLine": 137,
+          "endLine": 158,
           "kind": "comment"
         },
         {
-          "name": "絞り込み",
-          "startLine": 112,
-          "endLine": 139,
+          "name": "種類・画面・所属・キーワード",
+          "startLine": 159,
+          "endLine": 192,
           "kind": "comment"
         },
         {
           "name": "一覧",
-          "startLine": 140,
-          "endLine": 152,
+          "startLine": 193,
+          "endLine": 206,
           "kind": "comment"
         },
         {
           "name": "状態",
-          "startLine": 153,
-          "endLine": 153,
+          "startLine": 207,
+          "endLine": 207,
           "kind": "label"
         },
         {
           "name": "種類",
-          "startLine": 154,
-          "endLine": 154,
+          "startLine": 208,
+          "endLine": 208,
           "kind": "label"
         },
         {
           "name": "画面 / 場所",
-          "startLine": 155,
-          "endLine": 155,
+          "startLine": 209,
+          "endLine": 209,
           "kind": "label"
         },
         {
           "name": "内容",
-          "startLine": 156,
-          "endLine": 156,
+          "startLine": 210,
+          "endLine": 210,
           "kind": "label"
         },
         {
           "name": "記入者 / 日時",
-          "startLine": 157,
-          "endLine": 157,
+          "startLine": 211,
+          "endLine": 247,
           "kind": "label"
         },
         {
-          "name": "操作",
-          "startLine": 158,
-          "endLine": 184,
-          "kind": "label"
-        },
-        {
-          "name": "CountCard",
-          "startLine": 185,
-          "endLine": 195,
+          "name": "StatusChip",
+          "startLine": 248,
+          "endLine": 278,
           "kind": "code"
         },
         {
           "name": "EmptyState",
-          "startLine": 196,
-          "endLine": 204,
+          "startLine": 279,
+          "endLine": 287,
           "kind": "code"
         },
         {
           "name": "Row",
-          "startLine": 205,
-          "endLine": 274,
+          "startLine": 288,
+          "endLine": 321,
           "kind": "code"
+        },
+        {
+          "name": "見出しをボタンにしておき、キーボードだけでも詳細を開けるようにする",
+          "startLine": 322,
+          "endLine": 352,
+          "kind": "comment"
         }
       ]
     },
@@ -11651,6 +11696,162 @@
       ]
     },
     {
+      "id": "scr_662724f868",
+      "displayName": "Dev Version",
+      "frameTitle": "開発Ver管理",
+      "filePath": "src/admin/features/guide/DevVersionPage.tsx",
+      "category": "Admin",
+      "feature": "guide",
+      "routes": [
+        "/admin/guide/versions"
+      ],
+      "lineCount": 343,
+      "structure": [
+        "button",
+        "card",
+        "subtitle",
+        "list",
+        "card",
+        "list",
+        "card",
+        "list",
+        "card",
+        "list",
+        "card",
+        "list",
+        "card",
+        "field"
+      ],
+      "sections": [
+        {
+          "name": "buildLedgerStats",
+          "startLine": 28,
+          "endLine": 51,
+          "kind": "code"
+        },
+        {
+          "name": "formatDate",
+          "startLine": 52,
+          "endLine": 55,
+          "kind": "code"
+        },
+        {
+          "name": "formatPeriod",
+          "startLine": 56,
+          "endLine": 67,
+          "kind": "code"
+        },
+        {
+          "name": "readMemo",
+          "startLine": 68,
+          "endLine": 75,
+          "kind": "code"
+        },
+        {
+          "name": "writeMemo",
+          "startLine": 76,
+          "endLine": 84,
+          "kind": "code"
+        },
+        {
+          "name": "StatusBadge",
+          "startLine": 85,
+          "endLine": 94,
+          "kind": "code"
+        },
+        {
+          "name": "VersionChip",
+          "startLine": 95,
+          "endLine": 108,
+          "kind": "code"
+        },
+        {
+          "name": "VersionListItem",
+          "startLine": 109,
+          "endLine": 147,
+          "kind": "code"
+        },
+        {
+          "name": "SectionTitle",
+          "startLine": 148,
+          "endLine": 156,
+          "kind": "code"
+        },
+        {
+          "name": "DevVersionPage",
+          "startLine": 157,
+          "endLine": 159,
+          "kind": "code"
+        },
+        {
+          "name": "selected",
+          "startLine": 160,
+          "endLine": 161,
+          "kind": "code"
+        },
+        {
+          "name": "screenTotal",
+          "startLine": 162,
+          "endLine": 170,
+          "kind": "code"
+        },
+        {
+          "name": "saveMemo",
+          "startLine": 171,
+          "endLine": 198,
+          "kind": "code"
+        },
+        {
+          "name": "左: Ver 一覧",
+          "startLine": 199,
+          "endLine": 211,
+          "kind": "comment"
+        },
+        {
+          "name": "右: 選んだ Ver の詳細",
+          "startLine": 212,
+          "endLine": 241,
+          "kind": "comment"
+        },
+        {
+          "name": "この Ver で追加した帳票",
+          "startLine": 242,
+          "endLine": 247,
+          "kind": "label"
+        },
+        {
+          "name": "帳票の追加はありません",
+          "startLine": 248,
+          "endLine": 264,
+          "kind": "label"
+        },
+        {
+          "name": "記録",
+          "startLine": 265,
+          "endLine": 293,
+          "kind": "label"
+        },
+        {
+          "name": "参考",
+          "startLine": 294,
+          "endLine": 312,
+          "kind": "label"
+        },
+        {
+          "name": "メモ",
+          "startLine": 313,
+          "endLine": 332,
+          "kind": "label"
+        },
+        {
+          "name": "保存しました",
+          "startLine": 333,
+          "endLine": 343,
+          "kind": "label"
+        }
+      ]
+    },
+    {
       "id": "scr_86b329ab08",
       "displayName": "Screen Canvas",
       "frameTitle": "変更履歴",
@@ -11660,7 +11861,7 @@
       "routes": [
         "/admin/guide/screens"
       ],
-      "lineCount": 1135,
+      "lineCount": 1133,
       "structure": [
         "button",
         "list"
@@ -11668,338 +11869,921 @@
       "sections": [
         {
           "name": "deviceFor",
-          "startLine": 71,
-          "endLine": 75,
+          "startLine": 74,
+          "endLine": 78,
           "kind": "code"
         },
         {
           "name": "screensForDevice",
-          "startLine": 76,
-          "endLine": 89,
+          "startLine": 79,
+          "endLine": 92,
           "kind": "code"
         },
         {
           "name": "waitForFrameReady",
-          "startLine": 90,
-          "endLine": 94,
+          "startLine": 93,
+          "endLine": 97,
           "kind": "code"
         },
         {
           "name": "tick",
-          "startLine": 95,
-          "endLine": 107,
+          "startLine": 98,
+          "endLine": 110,
           "kind": "code"
         },
         {
           "name": "RailButton",
-          "startLine": 108,
-          "endLine": 140,
+          "startLine": 111,
+          "endLine": 143,
           "kind": "code"
         },
         {
           "name": "PanelHeader",
-          "startLine": 141,
-          "endLine": 156,
+          "startLine": 144,
+          "endLine": 159,
           "kind": "code"
         },
         {
           "name": "ToolButton",
-          "startLine": 157,
-          "endLine": 172,
+          "startLine": 160,
+          "endLine": 175,
           "kind": "code"
         },
         {
           "name": "ScreenCanvasPage",
-          "startLine": 173,
-          "endLine": 178,
+          "startLine": 176,
+          "endLine": 181,
           "kind": "code"
         },
         {
           "name": "変更履歴キャンバスはキャンバス内では開けません。",
-          "startLine": 179,
-          "endLine": 185,
+          "startLine": 182,
+          "endLine": 188,
           "kind": "label"
         },
         {
           "name": "ScreenCanvas",
-          "startLine": 186,
-          "endLine": 196,
+          "startLine": 189,
+          "endLine": 199,
           "kind": "code"
         },
         {
           "name": "screen",
-          "startLine": 197,
-          "endLine": 226,
+          "startLine": 200,
+          "endLine": 228,
           "kind": "code"
         },
         {
           "name": "cleanupRef",
-          "startLine": 227,
-          "endLine": 230,
+          "startLine": 229,
+          "endLine": 232,
           "kind": "code"
         },
         {
           "name": "commitRef",
-          "startLine": 231,
-          "endLine": 234,
+          "startLine": 233,
+          "endLine": 236,
           "kind": "code"
         },
         {
           "name": "endElementDragRef",
-          "startLine": 235,
-          "endLine": 252,
+          "startLine": 237,
+          "endLine": 257,
           "kind": "code"
         },
         {
           "name": "startCommentRef",
-          "startLine": 253,
-          "endLine": 262,
+          "startLine": 258,
+          "endLine": 267,
           "kind": "code"
         },
         {
           "name": "openCommentCount",
-          "startLine": 263,
-          "endLine": 265,
+          "startLine": 268,
+          "endLine": 270,
           "kind": "code"
         },
         {
           "name": "otherCommentGroups",
-          "startLine": 266,
-          "endLine": 274,
+          "startLine": 271,
+          "endLine": 279,
           "kind": "code"
         },
         {
           "name": "latest",
-          "startLine": 275,
-          "endLine": 280,
+          "startLine": 280,
+          "endLine": 285,
           "kind": "code"
         },
         {
           "name": "startComment",
-          "startLine": 281,
-          "endLine": 308,
+          "startLine": 286,
+          "endLine": 313,
           "kind": "code"
         },
         {
           "name": "changeAuthor",
-          "startLine": 309,
-          "endLine": 322,
+          "startLine": 314,
+          "endLine": 327,
           "kind": "code"
         },
         {
           "name": "showProps",
-          "startLine": 323,
-          "endLine": 352,
+          "startLine": 328,
+          "endLine": 347,
           "kind": "code"
         },
         {
           "name": "bump",
-          "startLine": 353,
-          "endLine": 362,
+          "startLine": 348,
+          "endLine": 357,
           "kind": "code"
         },
         {
           "name": "fitZoom",
-          "startLine": 363,
-          "endLine": 377,
+          "startLine": 358,
+          "endLine": 372,
           "kind": "code"
         },
         {
           "name": "zoomBy",
-          "startLine": 378,
-          "endLine": 396,
+          "startLine": 373,
+          "endLine": 391,
           "kind": "code"
         },
         {
           "name": "commitElementDrop",
-          "startLine": 397,
-          "endLine": 426,
+          "startLine": 392,
+          "endLine": 421,
           "kind": "code"
         },
         {
           "name": "undo",
-          "startLine": 427,
-          "endLine": 434,
+          "startLine": 422,
+          "endLine": 429,
           "kind": "code"
         },
         {
           "name": "redo",
-          "startLine": 435,
-          "endLine": 442,
+          "startLine": 430,
+          "endLine": 437,
           "kind": "code"
         },
         {
           "name": "resetEdits",
-          "startLine": 443,
-          "endLine": 477,
+          "startLine": 438,
+          "endLine": 472,
           "kind": "code"
         },
         {
           "name": "handleFrameLoad",
-          "startLine": 478,
-          "endLine": 487,
+          "startLine": 473,
+          "endLine": 482,
           "kind": "code"
         },
         {
           "name": "isEditing",
-          "startLine": 488,
-          "endLine": 496,
+          "startLine": 483,
+          "endLine": 491,
           "kind": "code"
         },
         {
           "name": "updateElementDrag",
-          "startLine": 497,
-          "endLine": 503,
+          "startLine": 492,
+          "endLine": 498,
           "kind": "code"
         },
         {
           "name": "beginElementDrag",
-          "startLine": 504,
-          "endLine": 515,
+          "startLine": 499,
+          "endLine": 510,
           "kind": "code"
         },
         {
           "name": "endElementDrag",
-          "startLine": 516,
-          "endLine": 530,
+          "startLine": 511,
+          "endLine": 525,
           "kind": "code"
         },
         {
           "name": "onMove",
-          "startLine": 531,
-          "endLine": 543,
+          "startLine": 526,
+          "endLine": 538,
           "kind": "code"
         },
         {
           "name": "onUp",
-          "startLine": 544,
-          "endLine": 549,
+          "startLine": 539,
+          "endLine": 544,
           "kind": "code"
         },
         {
           "name": "onDown",
-          "startLine": 550,
-          "endLine": 563,
+          "startLine": 545,
+          "endLine": 558,
           "kind": "code"
         },
         {
           "name": "onClick",
-          "startLine": 564,
-          "endLine": 592,
+          "startLine": 559,
+          "endLine": 587,
           "kind": "code"
         },
         {
           "name": "onDblClick",
-          "startLine": 593,
-          "endLine": 599,
+          "startLine": 588,
+          "endLine": 594,
           "kind": "code"
         },
         {
           "name": "onLeave",
-          "startLine": 600,
-          "endLine": 600,
+          "startLine": 595,
+          "endLine": 595,
           "kind": "code"
         },
         {
           "name": "onScroll",
-          "startLine": 601,
-          "endLine": 606,
+          "startLine": 596,
+          "endLine": 601,
           "kind": "code"
         },
         {
           "name": "onKeyDown",
-          "startLine": 607,
-          "endLine": 612,
+          "startLine": 602,
+          "endLine": 607,
           "kind": "code"
         },
         {
           "name": "observer",
-          "startLine": 613,
-          "endLine": 654,
+          "startLine": 608,
+          "endLine": 649,
           "kind": "code"
         },
         {
           "name": "timer",
-          "startLine": 655,
-          "endLine": 684,
+          "startLine": 650,
+          "endLine": 679,
           "kind": "code"
         },
         {
           "name": "target",
-          "startLine": 685,
-          "endLine": 696,
+          "startLine": 680,
+          "endLine": 691,
           "kind": "code"
         },
         {
           "name": "beginInlineEdit",
-          "startLine": 697,
-          "endLine": 706,
+          "startLine": 692,
+          "endLine": 701,
           "kind": "code"
         },
         {
           "name": "onKey",
-          "startLine": 707,
-          "endLine": 716,
+          "startLine": 702,
+          "endLine": 711,
           "kind": "code"
         },
         {
           "name": "onBlur",
-          "startLine": 717,
-          "endLine": 759,
+          "startLine": 712,
+          "endLine": 754,
           "kind": "code"
         },
         {
           "name": "reloadFrame",
-          "startLine": 760,
-          "endLine": 768,
+          "startLine": 755,
+          "endLine": 763,
           "kind": "code"
         },
         {
           "name": "withSelected",
-          "startLine": 769,
-          "endLine": 832,
+          "startLine": 764,
+          "endLine": 827,
           "kind": "code"
         },
         {
           "name": "onUp",
-          "startLine": 833,
-          "endLine": 840,
+          "startLine": 828,
+          "endLine": 835,
           "kind": "code"
         },
         {
           "name": "onKey",
-          "startLine": 841,
-          "endLine": 888,
+          "startLine": 836,
+          "endLine": 883,
           "kind": "code"
         },
         {
           "name": "visibleScreens",
-          "startLine": 889,
-          "endLine": 919,
+          "startLine": 884,
+          "endLine": 914,
           "kind": "code"
         },
         {
           "name": "pins",
-          "startLine": 920,
-          "endLine": 987,
+          "startLine": 915,
+          "endLine": 983,
           "kind": "code"
         },
         {
           "name": "左レール",
-          "startLine": 988,
-          "endLine": 1028,
+          "startLine": 984,
+          "endLine": 1026,
           "kind": "comment"
         },
         {
           "name": "中央",
-          "startLine": 1029,
-          "endLine": 1061,
+          "startLine": 1027,
+          "endLine": 1059,
           "kind": "comment"
         },
         {
           "name": "編集箇所",
-          "startLine": 1062,
-          "endLine": 1135,
+          "startLine": 1060,
+          "endLine": 1133,
+          "kind": "label"
+        }
+      ]
+    },
+    {
+      "id": "scr_068cede687",
+      "displayName": "Screen Description Detail",
+      "frameTitle": "画面説明",
+      "filePath": "src/admin/features/guide/ScreenDescriptionDetailPage.tsx",
+      "category": "Admin",
+      "feature": "guide",
+      "routes": [
+        "/admin/guide/descriptions/:screenId"
+      ],
+      "lineCount": 242,
+      "structure": [
+        "card",
+        "image",
+        "card",
+        "subtitle",
+        "list",
+        "card",
+        "subtitle",
+        "card",
+        "list"
+      ],
+      "sections": [
+        {
+          "name": "Chip",
+          "startLine": 21,
+          "endLine": 25,
+          "kind": "code"
+        },
+        {
+          "name": "Screenshot",
+          "startLine": 26,
+          "endLine": 39,
+          "kind": "code"
+        },
+        {
+          "name": "スクリーンショットはまだありません",
+          "startLine": 40,
+          "endLine": 59,
+          "kind": "label"
+        },
+        {
+          "name": "ScreenDescriptionDetailPage",
+          "startLine": 60,
+          "endLine": 61,
+          "kind": "code"
+        },
+        {
+          "name": "screen",
+          "startLine": 62,
+          "endLine": 68,
+          "kind": "code"
+        },
+        {
+          "name": "この画面 ID は画面一覧にありません。",
+          "startLine": 69,
+          "endLine": 86,
+          "kind": "label"
+        },
+        {
+          "name": "siblings",
+          "startLine": 87,
+          "endLine": 87,
+          "kind": "code"
+        },
+        {
+          "name": "index",
+          "startLine": 88,
+          "endLine": 119,
+          "kind": "code"
+        },
+        {
+          "name": "パンくず + チップ",
+          "startLine": 120,
+          "endLine": 132,
+          "kind": "comment"
+        },
+        {
+          "name": "説明本文",
+          "startLine": 133,
+          "endLine": 136,
+          "kind": "comment"
+        },
+        {
+          "name": "この画面の説明はまだ書かれていません。",
+          "startLine": 137,
+          "endLine": 145,
+          "kind": "label"
+        },
+        {
+          "name": "概要",
+          "startLine": 146,
+          "endLine": 150,
+          "kind": "heading"
+        },
+        {
+          "name": "この画面でできること",
+          "startLine": 151,
+          "endLine": 175,
+          "kind": "heading"
+        },
+        {
+          "name": "スクリーンショット + 行き先",
+          "startLine": 176,
+          "endLine": 201,
+          "kind": "comment"
+        },
+        {
+          "name": "ファイル",
+          "startLine": 202,
+          "endLine": 208,
+          "kind": "label"
+        },
+        {
+          "name": "同じ帳票の画面",
+          "startLine": 209,
+          "endLine": 242,
+          "kind": "comment"
+        }
+      ]
+    },
+    {
+      "id": "scr_dd7d767868",
+      "displayName": "Screen Descriptions",
+      "frameTitle": "画面説明",
+      "filePath": "src/admin/features/guide/ScreenDescriptionsPage.tsx",
+      "category": "Admin",
+      "feature": "guide",
+      "routes": [
+        "/admin/guide/descriptions"
+      ],
+      "lineCount": 495,
+      "structure": [
+        "card",
+        "subtitle",
+        "list",
+        "subtitle",
+        "list",
+        "card",
+        "list",
+        "button",
+        "list",
+        "button",
+        "card",
+        "field",
+        "button",
+        "list"
+      ],
+      "sections": [
+        {
+          "name": "buildSections",
+          "startLine": 63,
+          "endLine": 97,
+          "kind": "code"
+        },
+        {
+          "name": "sorted",
+          "startLine": 98,
+          "endLine": 103,
+          "kind": "code"
+        },
+        {
+          "name": "ScreenCard",
+          "startLine": 104,
+          "endLine": 134,
+          "kind": "code"
+        },
+        {
+          "name": "左: サムネイル（幅固定・16:10）",
+          "startLine": 135,
+          "endLine": 140,
+          "kind": "comment"
+        },
+        {
+          "name": "スクリーンショットなし",
+          "startLine": 141,
+          "endLine": 151,
+          "kind": "label"
+        },
+        {
+          "name": "右: タイトル・説明・URL",
+          "startLine": 152,
+          "endLine": 165,
+          "kind": "comment"
+        },
+        {
+          "name": "RoleBlock",
+          "startLine": 166,
+          "endLine": 198,
+          "kind": "code"
+        },
+        {
+          "name": "GroupHeading",
+          "startLine": 199,
+          "endLine": 218,
+          "kind": "code"
+        },
+        {
+          "name": "ScreenDescriptionsPage",
+          "startLine": 219,
+          "endLine": 225,
+          "kind": "code"
+        },
+        {
+          "name": "missingCount",
+          "startLine": 226,
+          "endLine": 228,
+          "kind": "code"
+        },
+        {
+          "name": "allSections",
+          "startLine": 229,
+          "endLine": 229,
+          "kind": "code"
+        },
+        {
+          "name": "totalByGroup",
+          "startLine": 230,
+          "endLine": 233,
+          "kind": "code"
+        },
+        {
+          "name": "filtered",
+          "startLine": 234,
+          "endLine": 257,
+          "kind": "code"
+        },
+        {
+          "name": "sections",
+          "startLine": 258,
+          "endLine": 258,
+          "kind": "code"
+        },
+        {
+          "name": "countByGroup",
+          "startLine": 259,
+          "endLine": 262,
+          "kind": "code"
+        },
+        {
+          "name": "activeKey",
+          "startLine": 263,
+          "endLine": 263,
+          "kind": "code"
+        },
+        {
+          "name": "active",
+          "startLine": 264,
+          "endLine": 265,
+          "kind": "code"
+        },
+        {
+          "name": "selectGroup",
+          "startLine": 266,
+          "endLine": 275,
+          "kind": "code"
+        },
+        {
+          "name": "openScreen",
+          "startLine": 276,
+          "endLine": 277,
+          "kind": "code"
+        },
+        {
+          "name": "openDrawer",
+          "startLine": 278,
+          "endLine": 285,
+          "kind": "code"
+        },
+        {
+          "name": "closeDrawer",
+          "startLine": 286,
+          "endLine": 294,
+          "kind": "code"
+        },
+        {
+          "name": "navGroups",
+          "startLine": 295,
+          "endLine": 295,
+          "kind": "code"
+        },
+        {
+          "name": "ledgers",
+          "startLine": 296,
+          "endLine": 301,
+          "kind": "code"
+        },
+        {
+          "name": "others",
+          "startLine": 302,
+          "endLine": 309,
+          "kind": "code"
+        },
+        {
+          "name": "activeNav",
+          "startLine": 310,
+          "endLine": 312,
+          "kind": "code"
+        },
+        {
+          "name": "selectVersion",
+          "startLine": 313,
+          "endLine": 313,
+          "kind": "code"
+        },
+        {
+          "name": "nav",
+          "startLine": 314,
+          "endLine": 314,
+          "kind": "code"
+        },
+        {
+          "name": "first",
+          "startLine": 315,
+          "endLine": 337,
+          "kind": "code"
+        },
+        {
+          "name": "ツールバー（画面遷移図と同じ並び・見た目）",
+          "startLine": 338,
+          "endLine": 357,
+          "kind": "comment"
+        },
+        {
+          "name": "バージョンのチップ。押すとそのバージョンの帳票だけが左に並ぶ",
+          "startLine": 358,
+          "endLine": 360,
+          "kind": "comment"
+        },
+        {
+          "name": "count",
+          "startLine": 361,
+          "endLine": 415,
+          "kind": "code"
+        },
+        {
+          "name": "左: 帳票の一覧（閉じると開くボタンだけの細い帯になる）",
+          "startLine": 416,
+          "endLine": 435,
+          "kind": "comment"
+        },
+        {
+          "name": "選んでいるバージョンの帳票",
+          "startLine": 436,
+          "endLine": 467,
+          "kind": "comment"
+        },
+        {
+          "name": "右: 選んだ帳票の画面（検索中は一致した帳票をすべて）",
+          "startLine": 468,
+          "endLine": 470,
+          "kind": "comment"
+        },
+        {
+          "name": "該当する画面がありません",
+          "startLine": 471,
+          "endLine": 495,
+          "kind": "label"
+        }
+      ]
+    },
+    {
+      "id": "scr_f995d3122c",
+      "displayName": "Screen Flow",
+      "frameTitle": "画面遷移図",
+      "filePath": "src/admin/features/guide/ScreenFlowPage.tsx",
+      "category": "Admin",
+      "feature": "guide",
+      "routes": [
+        "/admin/guide/flow"
+      ],
+      "lineCount": 627,
+      "structure": [
+        "button",
+        "card",
+        "list",
+        "card",
+        "list",
+        "button",
+        "list",
+        "button",
+        "card",
+        "field",
+        "button",
+        "list",
+        "card",
+        "button"
+      ],
+      "sections": [
+        {
+          "name": "deviceFor",
+          "startLine": 53,
+          "endLine": 57,
+          "kind": "code"
+        },
+        {
+          "name": "nodeMetrics",
+          "startLine": 58,
+          "endLine": 67,
+          "kind": "code"
+        },
+        {
+          "name": "readZoom",
+          "startLine": 68,
+          "endLine": 73,
+          "kind": "code"
+        },
+        {
+          "name": "NodePlaceholder",
+          "startLine": 74,
+          "endLine": 89,
+          "kind": "code"
+        },
+        {
+          "name": "loadQueue",
+          "startLine": 90,
+          "endLine": 90,
+          "kind": "code"
+        },
+        {
+          "name": "acquireLoadSlot",
+          "startLine": 91,
+          "endLine": 93,
+          "kind": "code"
+        },
+        {
+          "name": "run",
+          "startLine": 94,
+          "endLine": 120,
+          "kind": "code"
+        },
+        {
+          "name": "LivePreview",
+          "startLine": 121,
+          "endLine": 127,
+          "kind": "code"
+        },
+        {
+          "name": "releaseRef",
+          "startLine": 128,
+          "endLine": 150,
+          "kind": "code"
+        },
+        {
+          "name": "release",
+          "startLine": 151,
+          "endLine": 158,
+          "kind": "code"
+        },
+        {
+          "name": "onLoad",
+          "startLine": 159,
+          "endLine": 197,
+          "kind": "code"
+        },
+        {
+          "name": "ScreenPopup",
+          "startLine": 198,
+          "endLine": 204,
+          "kind": "code"
+        },
+        {
+          "name": "onLoad",
+          "startLine": 205,
+          "endLine": 211,
+          "kind": "code"
+        },
+        {
+          "name": "onResize",
+          "startLine": 212,
+          "endLine": 212,
+          "kind": "code"
+        },
+        {
+          "name": "onKey",
+          "startLine": 213,
+          "endLine": 256,
+          "kind": "code"
+        },
+        {
+          "name": "読み込み中…",
+          "startLine": 257,
+          "endLine": 273,
+          "kind": "label"
+        },
+        {
+          "name": "FlowNodeView",
+          "startLine": 274,
+          "endLine": 334,
+          "kind": "code"
+        },
+        {
+          "name": "FlowModuleView",
+          "startLine": 335,
+          "endLine": 350,
+          "kind": "code"
+        },
+        {
+          "name": "showBack",
+          "startLine": 351,
+          "endLine": 410,
+          "kind": "code"
+        },
+        {
+          "name": "ScreenFlowPage",
+          "startLine": 411,
+          "endLine": 428,
+          "kind": "code"
+        },
+        {
+          "name": "allSections",
+          "startLine": 429,
+          "endLine": 431,
+          "kind": "code"
+        },
+        {
+          "name": "matchIds",
+          "startLine": 432,
+          "endLine": 451,
+          "kind": "code"
+        },
+        {
+          "name": "totals",
+          "startLine": 452,
+          "endLine": 452,
+          "kind": "code"
+        },
+        {
+          "name": "admin",
+          "startLine": 453,
+          "endLine": 456,
+          "kind": "code"
+        },
+        {
+          "name": "openPopup",
+          "startLine": 457,
+          "endLine": 457,
+          "kind": "code"
+        },
+        {
+          "name": "closePopup",
+          "startLine": 458,
+          "endLine": 459,
+          "kind": "code"
+        },
+        {
+          "name": "toggleCollapsed",
+          "startLine": 460,
+          "endLine": 466,
+          "kind": "code"
+        },
+        {
+          "name": "allCollapsed",
+          "startLine": 467,
+          "endLine": 469,
+          "kind": "code"
+        },
+        {
+          "name": "zoomBy",
+          "startLine": 470,
+          "endLine": 494,
+          "kind": "code"
+        },
+        {
+          "name": "ツールバー",
+          "startLine": 495,
+          "endLine": 566,
+          "kind": "comment"
+        },
+        {
+          "name": "本体",
+          "startLine": 567,
+          "endLine": 584,
+          "kind": "comment"
+        },
+        {
+          "name": "該当する画面がありません",
+          "startLine": 585,
+          "endLine": 627,
           "kind": "label"
         }
       ]
@@ -16435,7 +17219,7 @@
       "routes": [
         "/admin/approvals"
       ],
-      "lineCount": 132,
+      "lineCount": 135,
       "structure": [
         "title",
         "list",
@@ -16449,32 +17233,32 @@
       "sections": [
         {
           "name": "ApprovalManagementPage",
-          "startLine": 14,
-          "endLine": 17,
+          "startLine": 15,
+          "endLine": 20,
           "kind": "code"
         },
         {
           "name": "items",
-          "startLine": 18,
-          "endLine": 18,
+          "startLine": 21,
+          "endLine": 21,
           "kind": "code"
         },
         {
           "name": "pendingCount",
-          "startLine": 19,
-          "endLine": 65,
+          "startLine": 22,
+          "endLine": 68,
           "kind": "code"
         },
         {
           "name": "対象の申請はありません",
-          "startLine": 66,
-          "endLine": 69,
+          "startLine": 69,
+          "endLine": 72,
           "kind": "label"
         },
         {
           "name": "category",
-          "startLine": 70,
-          "endLine": 132,
+          "startLine": 73,
+          "endLine": 135,
           "kind": "code"
         }
       ]
@@ -16550,15 +17334,15 @@
       "routes": [
         "/admin/confirmations"
       ],
-      "lineCount": 16,
+      "lineCount": 20,
       "structure": [
         "title"
       ],
       "sections": [
         {
           "name": "ConfirmationManagementPage",
-          "startLine": 4,
-          "endLine": 16,
+          "startLine": 5,
+          "endLine": 20,
           "kind": "code"
         }
       ]
@@ -16901,7 +17685,7 @@
       "routes": [
         "/app/ledger-list/additive-management/products/:productId"
       ],
-      "lineCount": 149,
+      "lineCount": 152,
       "structure": [
         "table",
         "list",
@@ -16914,14 +17698,14 @@
       "sections": [
         {
           "name": "RecordsListPage",
-          "startLine": 20,
-          "endLine": 26,
+          "startLine": 21,
+          "endLine": 29,
           "kind": "code"
         },
         {
           "name": "additive",
-          "startLine": 27,
-          "endLine": 149,
+          "startLine": 30,
+          "endLine": 152,
           "kind": "code"
         }
       ]
@@ -16936,7 +17720,7 @@
       "routes": [
         "/app/ledger-list/additive-management/products/:productId/complete"
       ],
-      "lineCount": 55,
+      "lineCount": 60,
       "structure": [
         "title",
         "button",
@@ -16947,14 +17731,14 @@
       "sections": [
         {
           "name": "SubmitCompletePage",
-          "startLine": 6,
-          "endLine": 11,
+          "startLine": 7,
+          "endLine": 12,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 12,
-          "endLine": 55,
+          "startLine": 13,
+          "endLine": 60,
           "kind": "code"
         }
       ]
@@ -17196,7 +17980,7 @@
       "routes": [
         "/app/ledger-list/chemical-management/:chemicalId"
       ],
-      "lineCount": 157,
+      "lineCount": 160,
       "structure": [
         "table",
         "list",
@@ -17208,14 +17992,14 @@
       "sections": [
         {
           "name": "ChemicalRecordsListPage",
-          "startLine": 21,
-          "endLine": 27,
+          "startLine": 22,
+          "endLine": 30,
           "kind": "code"
         },
         {
           "name": "chemical",
-          "startLine": 28,
-          "endLine": 157,
+          "startLine": 31,
+          "endLine": 160,
           "kind": "code"
         }
       ]
@@ -17273,7 +18057,7 @@
       "routes": [
         "/app/ledger-list/chemical-management/:chemicalId/confirm/complete"
       ],
-      "lineCount": 58,
+      "lineCount": 63,
       "structure": [
         "title",
         "button",
@@ -17284,14 +18068,14 @@
       "sections": [
         {
           "name": "ChemicalSubmitCompletePage",
-          "startLine": 6,
-          "endLine": 14,
+          "startLine": 7,
+          "endLine": 15,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 15,
-          "endLine": 58,
+          "startLine": 16,
+          "endLine": 63,
           "kind": "code"
         }
       ]
@@ -17620,7 +18404,7 @@
       "routes": [
         "/app/ledger-list/cleaning-record/lines/:lineId/complete"
       ],
-      "lineCount": 54,
+      "lineCount": 59,
       "structure": [
         "title",
         "button",
@@ -17631,14 +18415,14 @@
       "sections": [
         {
           "name": "SubmitCompletePage",
-          "startLine": 6,
-          "endLine": 10,
+          "startLine": 7,
+          "endLine": 11,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 11,
-          "endLine": 54,
+          "startLine": 12,
+          "endLine": 59,
           "kind": "code"
         }
       ]
@@ -18201,7 +18985,7 @@
       "routes": [
         "/app/ledger-list/equipment-inspection/lines/:lineId/complete"
       ],
-      "lineCount": 54,
+      "lineCount": 59,
       "structure": [
         "title",
         "button",
@@ -18212,14 +18996,14 @@
       "sections": [
         {
           "name": "SubmitCompletePage",
-          "startLine": 6,
-          "endLine": 10,
+          "startLine": 7,
+          "endLine": 11,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 11,
-          "endLine": 54,
+          "startLine": 12,
+          "endLine": 59,
           "kind": "code"
         }
       ]
@@ -18234,7 +19018,7 @@
       "routes": [
         "/app/ledger-list/glass-plastic/floors/:floorId/complete"
       ],
-      "lineCount": 74,
+      "lineCount": 79,
       "structure": [
         "title",
         "button"
@@ -18242,20 +19026,20 @@
       "sections": [
         {
           "name": "FloorInspectionCompletePage",
-          "startLine": 6,
-          "endLine": 19,
+          "startLine": 7,
+          "endLine": 20,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 20,
-          "endLine": 54,
+          "startLine": 21,
+          "endLine": 59,
           "kind": "code"
         },
         {
           "name": "保存完了",
-          "startLine": 55,
-          "endLine": 74,
+          "startLine": 60,
+          "endLine": 79,
           "kind": "heading"
         }
       ]
@@ -18357,7 +19141,7 @@
       "routes": [
         "/app/ledger-list/glass-plastic/floors/:floorId"
       ],
-      "lineCount": 554,
+      "lineCount": 559,
       "structure": [
         "button",
         "image",
@@ -18414,43 +19198,43 @@
         {
           "name": "visibleRooms",
           "startLine": 130,
-          "endLine": 131,
+          "endLine": 132,
           "kind": "code"
         },
         {
           "name": "allItemsComplete",
-          "startLine": 132,
-          "endLine": 140,
+          "startLine": 133,
+          "endLine": 145,
           "kind": "code"
         },
         {
           "name": "setStatus",
-          "startLine": 141,
-          "endLine": 161,
+          "startLine": 146,
+          "endLine": 166,
           "kind": "code"
         },
         {
           "name": "openNgDialog",
-          "startLine": 162,
-          "endLine": 173,
+          "startLine": 167,
+          "endLine": 178,
           "kind": "code"
         },
         {
           "name": "closeNgDialog",
-          "startLine": 174,
-          "endLine": 179,
+          "startLine": 179,
+          "endLine": 184,
           "kind": "code"
         },
         {
           "name": "confirmNgDialog",
-          "startLine": 180,
-          "endLine": 195,
+          "startLine": 185,
+          "endLine": 200,
           "kind": "code"
         },
         {
           "name": "goToConfirm",
-          "startLine": 196,
-          "endLine": 554,
+          "startLine": 201,
+          "endLine": 559,
           "kind": "code"
         }
       ]
@@ -18602,7 +19386,7 @@
       "routes": [
         "/app/login"
       ],
-      "lineCount": 121,
+      "lineCount": 124,
       "structure": [
         "subtitle",
         "field",
@@ -18614,32 +19398,38 @@
       "sections": [
         {
           "name": "AppLoginPage",
-          "startLine": 16,
-          "endLine": 24,
+          "startLine": 18,
+          "endLine": 26,
           "kind": "code"
         },
         {
           "name": "handleSubmit",
-          "startLine": 25,
-          "endLine": 48,
+          "startLine": 27,
+          "endLine": 55,
           "kind": "code"
         },
         {
           "name": "ログイン",
-          "startLine": 49,
-          "endLine": 51,
+          "startLine": 56,
+          "endLine": 58,
           "kind": "label"
         },
         {
           "name": "工場ID",
-          "startLine": 52,
-          "endLine": 63,
+          "startLine": 59,
+          "endLine": 70,
           "kind": "label"
         },
         {
           "name": "パスワード",
-          "startLine": 64,
-          "endLine": 121,
+          "startLine": 71,
+          "endLine": 97,
+          "kind": "label"
+        },
+        {
+          "name": "※パスワードが一致しません",
+          "startLine": 98,
+          "endLine": 124,
           "kind": "label"
         }
       ]
@@ -18695,7 +19485,7 @@
       "routes": [
         "/app/ledger-list/metal-xray-detection/machines/:machineId"
       ],
-      "lineCount": 398,
+      "lineCount": 403,
       "structure": [
         "table",
         "list",
@@ -18715,32 +19505,32 @@
       "sections": [
         {
           "name": "MachineDetailPage",
-          "startLine": 41,
-          "endLine": 51,
+          "startLine": 42,
+          "endLine": 52,
           "kind": "code"
         },
         {
           "name": "machine",
-          "startLine": 52,
-          "endLine": 85,
+          "startLine": 53,
+          "endLine": 90,
           "kind": "code"
         },
         {
           "name": "金属探知機",
-          "startLine": 86,
-          "endLine": 92,
+          "startLine": 91,
+          "endLine": 97,
           "kind": "label"
         },
         {
           "name": "X線探知機",
-          "startLine": 93,
-          "endLine": 99,
+          "startLine": 98,
+          "endLine": 104,
           "kind": "label"
         },
         {
           "name": "ウェイトチェッカー",
-          "startLine": 100,
-          "endLine": 398,
+          "startLine": 105,
+          "endLine": 403,
           "kind": "label"
         }
       ]
@@ -19253,7 +20043,7 @@
       "routes": [
         "/app/ledger-list/metal-xray-detection"
       ],
-      "lineCount": 82,
+      "lineCount": 85,
       "structure": [
         "button",
         "list",
@@ -19263,32 +20053,32 @@
       "sections": [
         {
           "name": "MachineSelectionPage",
-          "startLine": 9,
-          "endLine": 15,
+          "startLine": 10,
+          "endLine": 18,
           "kind": "code"
         },
         {
           "name": "inspectedCount",
-          "startLine": 16,
-          "endLine": 41,
+          "startLine": 19,
+          "endLine": 44,
           "kind": "code"
         },
         {
           "name": "点検済み",
-          "startLine": 42,
-          "endLine": 68,
+          "startLine": 45,
+          "endLine": 71,
           "kind": "label"
         },
         {
           "name": "上の余白は親の gap(24px) + mt-4 = 40px",
-          "startLine": 69,
-          "endLine": 73,
+          "startLine": 72,
+          "endLine": 76,
           "kind": "comment"
         },
         {
           "name": "帳票一覧に戻る",
-          "startLine": 74,
-          "endLine": 82,
+          "startLine": 77,
+          "endLine": 85,
           "kind": "label"
         }
       ]
@@ -20040,7 +20830,7 @@
       "routes": [
         "/app/pending-review"
       ],
-      "lineCount": 222,
+      "lineCount": 228,
       "structure": [
         "image",
         "button",
@@ -20060,68 +20850,68 @@
       "sections": [
         {
           "name": "ledgerFor",
-          "startLine": 15,
-          "endLine": 18,
+          "startLine": 16,
+          "endLine": 19,
           "kind": "code"
         },
         {
           "name": "groupByDate",
-          "startLine": 19,
-          "endLine": 21,
+          "startLine": 20,
+          "endLine": 22,
           "kind": "code"
         },
         {
           "name": "group",
-          "startLine": 22,
-          "endLine": 31,
+          "startLine": 23,
+          "endLine": 32,
           "kind": "code"
         },
         {
           "name": "PendingReviewListPage",
-          "startLine": 32,
-          "endLine": 41,
+          "startLine": 33,
+          "endLine": 45,
           "kind": "code"
         },
         {
           "name": "openFilterDialog",
-          "startLine": 42,
-          "endLine": 46,
+          "startLine": 46,
+          "endLine": 50,
           "kind": "code"
         },
         {
           "name": "toggleFilterLedger",
-          "startLine": 47,
-          "endLine": 55,
+          "startLine": 51,
+          "endLine": 59,
           "kind": "code"
         },
         {
           "name": "applyFilters",
-          "startLine": 56,
-          "endLine": 60,
+          "startLine": 60,
+          "endLine": 64,
           "kind": "code"
         },
         {
           "name": "removeFilter",
-          "startLine": 61,
-          "endLine": 102,
+          "startLine": 65,
+          "endLine": 106,
           "kind": "code"
         },
         {
           "name": "絞り込み条件",
-          "startLine": 103,
-          "endLine": 138,
+          "startLine": 107,
+          "endLine": 144,
           "kind": "label"
         },
         {
           "name": "ledger",
-          "startLine": 139,
-          "endLine": 178,
+          "startLine": 145,
+          "endLine": 184,
           "kind": "code"
         },
         {
           "name": "絞り込み条件",
-          "startLine": 179,
-          "endLine": 222,
+          "startLine": 185,
+          "endLine": 228,
           "kind": "heading"
         }
       ]
@@ -20136,7 +20926,7 @@
       "routes": [
         "/app/progress"
       ],
-      "lineCount": 440,
+      "lineCount": 495,
       "structure": [
         "list",
         "button",
@@ -20156,146 +20946,170 @@
       "sections": [
         {
           "name": "ledgerFor",
-          "startLine": 18,
-          "endLine": 21,
+          "startLine": 21,
+          "endLine": 24,
           "kind": "code"
         },
         {
           "name": "groupByDate",
-          "startLine": 22,
-          "endLine": 31,
+          "startLine": 25,
+          "endLine": 34,
           "kind": "code"
         },
         {
           "name": "groupByLedger",
-          "startLine": 32,
-          "endLine": 41,
+          "startLine": 35,
+          "endLine": 44,
           "kind": "code"
         },
         {
           "name": "destinationPathFor",
-          "startLine": 42,
-          "endLine": 69,
+          "startLine": 45,
+          "endLine": 76,
           "kind": "code"
         },
         {
-          "name": "StatusBadge",
-          "startLine": 70,
-          "endLine": 75,
-          "kind": "code"
-        },
-        {
-          "name": "ProgressListPage",
-          "startLine": 76,
-          "endLine": 94,
-          "kind": "code"
-        },
-        {
-          "name": "notInspectedCount",
-          "startLine": 95,
+          "name": "UnsentIcon",
+          "startLine": 77,
           "endLine": 96,
           "kind": "code"
         },
         {
-          "name": "filtered",
+          "name": "StatusBadge",
           "startLine": 97,
-          "endLine": 104,
+          "endLine": 105,
           "kind": "code"
         },
         {
-          "name": "grouped",
-          "startLine": 105,
-          "endLine": 106,
+          "name": "ProgressListPage",
+          "startLine": 106,
+          "endLine": 128,
           "kind": "code"
         },
         {
-          "name": "openFilterDialog",
-          "startLine": 107,
-          "endLine": 111,
+          "name": "notInspectedCount",
+          "startLine": 129,
+          "endLine": 135,
           "kind": "code"
         },
         {
-          "name": "toggleFilterLedger",
-          "startLine": 112,
-          "endLine": 120,
+          "name": "isUnsent",
+          "startLine": 136,
+          "endLine": 139,
           "kind": "code"
         },
         {
-          "name": "applyFilters",
-          "startLine": 121,
-          "endLine": 125,
-          "kind": "code"
-        },
-        {
-          "name": "removeFilter",
-          "startLine": 126,
-          "endLine": 133,
-          "kind": "code"
-        },
-        {
-          "name": "toggleGroupExpanded",
-          "startLine": 134,
-          "endLine": 142,
-          "kind": "code"
-        },
-        {
-          "name": "handleEntryClick",
-          "startLine": 143,
+          "name": "filtered",
+          "startLine": 140,
           "endLine": 147,
           "kind": "code"
         },
         {
-          "name": "closeActorPicker",
+          "name": "grouped",
           "startLine": 148,
-          "endLine": 151,
+          "endLine": 149,
+          "kind": "code"
+        },
+        {
+          "name": "openFilterDialog",
+          "startLine": 150,
+          "endLine": 154,
+          "kind": "code"
+        },
+        {
+          "name": "toggleFilterLedger",
+          "startLine": 155,
+          "endLine": 163,
+          "kind": "code"
+        },
+        {
+          "name": "applyFilters",
+          "startLine": 164,
+          "endLine": 168,
+          "kind": "code"
+        },
+        {
+          "name": "removeFilter",
+          "startLine": 169,
+          "endLine": 176,
+          "kind": "code"
+        },
+        {
+          "name": "toggleGroupExpanded",
+          "startLine": 177,
+          "endLine": 185,
+          "kind": "code"
+        },
+        {
+          "name": "handleEntryClick",
+          "startLine": 186,
+          "endLine": 190,
+          "kind": "code"
+        },
+        {
+          "name": "closeActorPicker",
+          "startLine": 191,
+          "endLine": 194,
           "kind": "code"
         },
         {
           "name": "confirmActorPicker",
-          "startLine": 152,
-          "endLine": 153,
+          "startLine": 195,
+          "endLine": 196,
           "kind": "code"
         },
         {
           "name": "actor",
-          "startLine": 154,
-          "endLine": 205,
+          "startLine": 197,
+          "endLine": 241,
           "kind": "code"
         },
         {
-          "name": "絞り込み条件",
-          "startLine": 206,
+          "name": "」アイコンがあるものは未送信データです。ヘルプは",
+          "startLine": 242,
           "endLine": 245,
           "kind": "label"
         },
         {
-          "name": "confirmedCount",
+          "name": "から。",
           "startLine": 246,
-          "endLine": 251,
-          "kind": "code"
-        },
-        {
-          "name": "確認完了",
-          "startLine": 252,
-          "endLine": 268,
-          "kind": "label"
-        },
-        {
-          "name": "金属探知機1号機",
-          "startLine": 269,
-          "endLine": 334,
+          "endLine": 260,
           "kind": "label"
         },
         {
           "name": "絞り込み条件",
-          "startLine": 335,
-          "endLine": 381,
+          "startLine": 261,
+          "endLine": 300,
+          "kind": "label"
+        },
+        {
+          "name": "confirmedCount",
+          "startLine": 301,
+          "endLine": 306,
+          "kind": "code"
+        },
+        {
+          "name": "確認完了",
+          "startLine": 307,
+          "endLine": 323,
+          "kind": "label"
+        },
+        {
+          "name": "金属探知機1号機",
+          "startLine": 324,
+          "endLine": 389,
+          "kind": "label"
+        },
+        {
+          "name": "絞り込み条件",
+          "startLine": 390,
+          "endLine": 436,
           "kind": "heading"
         },
         {
           "name": "実施者を選んでください",
-          "startLine": 382,
-          "endLine": 440,
+          "startLine": 437,
+          "endLine": 495,
           "kind": "heading"
         }
       ]
@@ -20438,7 +21252,7 @@
       "routes": [
         "/app/ledger-list/sample-management"
       ],
-      "lineCount": 655,
+      "lineCount": 666,
       "structure": [
         "image",
         "list",
@@ -20458,188 +21272,188 @@
       "sections": [
         {
           "name": "DestructionLabel",
-          "startLine": 24,
-          "endLine": 58,
+          "startLine": 25,
+          "endLine": 59,
           "kind": "code"
         },
         {
           "name": "SampleListPage",
-          "startLine": 59,
-          "endLine": 79,
+          "startLine": 60,
+          "endLine": 86,
           "kind": "code"
         },
         {
           "name": "inspectedCount",
-          "startLine": 80,
-          "endLine": 81,
+          "startLine": 87,
+          "endLine": 88,
           "kind": "code"
         },
         {
           "name": "entries",
-          "startLine": 82,
-          "endLine": 89,
+          "startLine": 89,
+          "endLine": 96,
           "kind": "code"
         },
         {
           "name": "handleSearch",
-          "startLine": 90,
-          "endLine": 93,
+          "startLine": 97,
+          "endLine": 100,
           "kind": "code"
         },
         {
           "name": "filteredStoredSamples",
-          "startLine": 94,
-          "endLine": 113,
+          "startLine": 101,
+          "endLine": 120,
           "kind": "code"
         },
         {
           "name": "openFilterDialog",
-          "startLine": 114,
-          "endLine": 118,
+          "startLine": 121,
+          "endLine": 125,
           "kind": "code"
         },
         {
           "name": "applyStorageFilter",
-          "startLine": 119,
-          "endLine": 123,
+          "startLine": 126,
+          "endLine": 130,
           "kind": "code"
         },
         {
           "name": "enterBulkSelectionMode",
-          "startLine": 124,
-          "endLine": 128,
+          "startLine": 131,
+          "endLine": 135,
           "kind": "code"
         },
         {
           "name": "exitBulkSelectionMode",
-          "startLine": 129,
-          "endLine": 133,
+          "startLine": 136,
+          "endLine": 140,
           "kind": "code"
         },
         {
           "name": "toggleSelected",
-          "startLine": 134,
-          "endLine": 142,
+          "startLine": 141,
+          "endLine": 149,
           "kind": "code"
         },
         {
           "name": "selectAll",
-          "startLine": 143,
-          "endLine": 146,
+          "startLine": 150,
+          "endLine": 153,
           "kind": "code"
         },
         {
           "name": "clearSelection",
-          "startLine": 147,
-          "endLine": 150,
+          "startLine": 154,
+          "endLine": 157,
           "kind": "code"
         },
         {
           "name": "openBulkDiscardDialog",
-          "startLine": 151,
-          "endLine": 158,
+          "startLine": 158,
+          "endLine": 165,
           "kind": "code"
         },
         {
           "name": "handleBulkDiscard",
-          "startLine": 159,
-          "endLine": 166,
+          "startLine": 166,
+          "endLine": 173,
           "kind": "code"
         },
         {
           "name": "handleBulkCompleteClose",
-          "startLine": 167,
-          "endLine": 171,
+          "startLine": 174,
+          "endLine": 178,
           "kind": "code"
         },
         {
           "name": "inspectedSamples",
-          "startLine": 172,
-          "endLine": 197,
+          "startLine": 179,
+          "endLine": 204,
           "kind": "code"
         },
         {
           "name": "点検済み",
-          "startLine": 198,
-          "endLine": 262,
+          "startLine": 205,
+          "endLine": 271,
           "kind": "label"
         },
         {
           "name": "製造日・ロットNo. は管理画面で「記載する」とした製品だけに出る任意項目",
-          "startLine": 263,
-          "endLine": 269,
+          "startLine": 272,
+          "endLine": 278,
           "kind": "comment"
         },
         {
           "name": "製造日",
-          "startLine": 270,
-          "endLine": 277,
+          "startLine": 279,
+          "endLine": 286,
           "kind": "label"
         },
         {
           "name": "ロットNo.",
-          "startLine": 278,
-          "endLine": 354,
+          "startLine": 287,
+          "endLine": 365,
           "kind": "label"
         },
         {
           "name": "製造日",
-          "startLine": 355,
-          "endLine": 360,
+          "startLine": 366,
+          "endLine": 371,
           "kind": "label"
         },
         {
           "name": "賞味期限",
-          "startLine": 361,
-          "endLine": 414,
+          "startLine": 372,
+          "endLine": 425,
           "kind": "label"
         },
         {
           "name": "帳票一覧に戻る",
-          "startLine": 415,
-          "endLine": 445,
+          "startLine": 426,
+          "endLine": 456,
           "kind": "label"
         },
         {
           "name": "絞り込み条件",
-          "startLine": 446,
-          "endLine": 448,
+          "startLine": 457,
+          "endLine": 459,
           "kind": "heading"
         },
         {
           "name": "製品名",
-          "startLine": 449,
-          "endLine": 461,
+          "startLine": 460,
+          "endLine": 472,
           "kind": "label"
         },
         {
           "name": "期間",
-          "startLine": 462,
-          "endLine": 531,
+          "startLine": 473,
+          "endLine": 542,
           "kind": "label"
         },
         {
           "name": "検体一括破棄",
-          "startLine": 532,
-          "endLine": 547,
+          "startLine": 543,
+          "endLine": 558,
           "kind": "heading"
         },
         {
           "name": "製品名",
-          "startLine": 548,
-          "endLine": 553,
+          "startLine": 559,
+          "endLine": 564,
           "kind": "label"
         },
         {
           "name": "賞味期限",
-          "startLine": 554,
-          "endLine": 637,
+          "startLine": 565,
+          "endLine": 648,
           "kind": "label"
         },
         {
           "name": "廃棄が完了しました",
-          "startLine": 638,
-          "endLine": 655,
+          "startLine": 649,
+          "endLine": 666,
           "kind": "heading"
         }
       ]
@@ -20654,7 +21468,7 @@
       "routes": [
         "/app/ledger-list/sample-management/samples/:sampleId/complete"
       ],
-      "lineCount": 71,
+      "lineCount": 76,
       "structure": [
         "title",
         "button",
@@ -20665,14 +21479,14 @@
       "sections": [
         {
           "name": "SampleSubmitCompletePage",
-          "startLine": 6,
-          "endLine": 10,
+          "startLine": 7,
+          "endLine": 11,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 11,
-          "endLine": 71,
+          "startLine": 12,
+          "endLine": 76,
           "kind": "code"
         }
       ]
@@ -21123,7 +21937,7 @@
       "routes": [
         "/app/ledger-list/scale-inspection/posts/:postId"
       ],
-      "lineCount": 455,
+      "lineCount": 458,
       "structure": [
         "image",
         "list",
@@ -21174,37 +21988,37 @@
         {
           "name": "recordedIds",
           "startLine": 98,
-          "endLine": 147,
+          "endLine": 150,
           "kind": "code"
         },
         {
           "name": "openAddDialog",
-          "startLine": 148,
-          "endLine": 154,
+          "startLine": 151,
+          "endLine": 157,
           "kind": "code"
         },
         {
           "name": "closeAddDialog",
-          "startLine": 155,
-          "endLine": 158,
+          "startLine": 158,
+          "endLine": 161,
           "kind": "code"
         },
         {
           "name": "selectOtherScale",
-          "startLine": 159,
-          "endLine": 163,
+          "startLine": 162,
+          "endLine": 166,
           "kind": "code"
         },
         {
           "name": "confirmAddDialog",
-          "startLine": 164,
-          "endLine": 298,
+          "startLine": 167,
+          "endLine": 301,
           "kind": "code"
         },
         {
           "name": "秤を選択してください",
-          "startLine": 299,
-          "endLine": 455,
+          "startLine": 302,
+          "endLine": 458,
           "kind": "heading"
         }
       ]
@@ -21426,7 +22240,7 @@
       "routes": [
         "/app/ledger-list/scale-inspection/posts/:postId/complete"
       ],
-      "lineCount": 56,
+      "lineCount": 61,
       "structure": [
         "title",
         "button",
@@ -21437,20 +22251,20 @@
       "sections": [
         {
           "name": "SubmitCompletePage",
-          "startLine": 6,
-          "endLine": 10,
+          "startLine": 7,
+          "endLine": 11,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 11,
-          "endLine": 30,
+          "startLine": 12,
+          "endLine": 35,
           "kind": "code"
         },
         {
           "name": "提出が完了しました！",
-          "startLine": 31,
-          "endLine": 56,
+          "startLine": 36,
+          "endLine": 61,
           "kind": "label"
         }
       ]
@@ -21949,7 +22763,7 @@
       "routes": [
         "/app/ledger-list/sensory-inspection/products/:productId/complete"
       ],
-      "lineCount": 56,
+      "lineCount": 61,
       "structure": [
         "title",
         "button",
@@ -21960,20 +22774,20 @@
       "sections": [
         {
           "name": "SubmitCompletePage",
-          "startLine": 6,
-          "endLine": 10,
+          "startLine": 7,
+          "endLine": 11,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 11,
-          "endLine": 30,
+          "startLine": 12,
+          "endLine": 35,
           "kind": "code"
         },
         {
           "name": "提出が完了しました！",
-          "startLine": 31,
-          "endLine": 56,
+          "startLine": 36,
+          "endLine": 61,
           "kind": "label"
         }
       ]
@@ -22085,7 +22899,7 @@
       "routes": [
         "/app/ledger-list/specimen-management"
       ],
-      "lineCount": 82,
+      "lineCount": 90,
       "structure": [
         "subtitle",
         "list",
@@ -22095,20 +22909,20 @@
       "sections": [
         {
           "name": "SpecimenListPage",
-          "startLine": 28,
-          "endLine": 30,
+          "startLine": 29,
+          "endLine": 33,
           "kind": "code"
         },
         {
           "name": "handleConfirm",
-          "startLine": 31,
-          "endLine": 53,
+          "startLine": 34,
+          "endLine": 56,
           "kind": "code"
         },
         {
           "name": "検体一覧",
-          "startLine": 54,
-          "endLine": 82,
+          "startLine": 57,
+          "endLine": 90,
           "kind": "heading"
         }
       ]
@@ -22282,7 +23096,7 @@
       "routes": [
         "/app/ledger-list/water-inspection/points/:pointId/new"
       ],
-      "lineCount": 575,
+      "lineCount": 591,
       "structure": [
         "button",
         "subtitle",
@@ -22369,31 +23183,31 @@
         {
           "name": "confirmNgDialog",
           "startLine": 237,
-          "endLine": 249,
+          "endLine": 261,
           "kind": "code"
         },
         {
           "name": "handleGoToConfirm",
-          "startLine": 250,
-          "endLine": 356,
+          "startLine": 262,
+          "endLine": 369,
           "kind": "code"
         },
         {
           "name": "塩素補充",
-          "startLine": 357,
-          "endLine": 383,
+          "startLine": 370,
+          "endLine": 396,
           "kind": "label"
         },
         {
           "name": "交換アラート",
-          "startLine": 384,
-          "endLine": 413,
+          "startLine": 397,
+          "endLine": 426,
           "kind": "label"
         },
         {
           "name": "UV殺菌灯交換",
-          "startLine": 414,
-          "endLine": 575,
+          "startLine": 427,
+          "endLine": 591,
           "kind": "label"
         }
       ]
@@ -22408,7 +23222,7 @@
       "routes": [
         "/app/ledger-list/water-inspection/complete"
       ],
-      "lineCount": 54,
+      "lineCount": 59,
       "structure": [
         "title",
         "button",
@@ -22419,14 +23233,14 @@
       "sections": [
         {
           "name": "NewRecordSubmitCompletePage",
-          "startLine": 6,
-          "endLine": 10,
+          "startLine": 7,
+          "endLine": 11,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 11,
-          "endLine": 54,
+          "startLine": 12,
+          "endLine": 59,
           "kind": "code"
         }
       ]
@@ -22515,7 +23329,7 @@
       "routes": [
         "/app/ledger-list/water-inspection/points/:pointId"
       ],
-      "lineCount": 185,
+      "lineCount": 188,
       "structure": [
         "image",
         "button",
@@ -22527,44 +23341,44 @@
       "sections": [
         {
           "name": "CheckCell",
-          "startLine": 27,
-          "endLine": 44,
+          "startLine": 28,
+          "endLine": 45,
           "kind": "code"
         },
         {
           "name": "ChlorineCell",
-          "startLine": 45,
-          "endLine": 49,
+          "startLine": 46,
+          "endLine": 50,
           "kind": "code"
         },
         {
           "name": "補充",
-          "startLine": 50,
-          "endLine": 60,
+          "startLine": 51,
+          "endLine": 61,
           "kind": "label"
         },
         {
           "name": "checkFor",
-          "startLine": 61,
-          "endLine": 64,
+          "startLine": 62,
+          "endLine": 65,
           "kind": "code"
         },
         {
           "name": "PointHistoryTablePage",
-          "startLine": 65,
-          "endLine": 68,
+          "startLine": 66,
+          "endLine": 71,
           "kind": "code"
         },
         {
           "name": "records",
-          "startLine": 69,
-          "endLine": 78,
+          "startLine": 72,
+          "endLine": 81,
           "kind": "code"
         },
         {
           "name": "並び順：",
-          "startLine": 79,
-          "endLine": 185,
+          "startLine": 82,
+          "endLine": 188,
           "kind": "label"
         }
       ]
@@ -22623,7 +23437,7 @@
       "routes": [
         "/app/ledger-list/water-inspection/points/:pointId/records/:recordId/edit/complete"
       ],
-      "lineCount": 63,
+      "lineCount": 68,
       "structure": [
         "title",
         "button",
@@ -22634,20 +23448,20 @@
       "sections": [
         {
           "name": "RecordEditCompletePage",
-          "startLine": 7,
-          "endLine": 10,
+          "startLine": 8,
+          "endLine": 11,
           "kind": "code"
         },
         {
           "name": "record",
-          "startLine": 11,
-          "endLine": 14,
+          "startLine": 12,
+          "endLine": 15,
           "kind": "code"
         },
         {
           "name": "handleNavigate",
-          "startLine": 15,
-          "endLine": 63,
+          "startLine": 16,
+          "endLine": 68,
           "kind": "code"
         }
       ]
@@ -22970,29 +23784,6 @@
           "startLine": 5,
           "endLine": 9,
           "kind": "label"
-        }
-      ]
-    },
-    {
-      "id": "scr_2d39860f15",
-      "displayName": "Home",
-      "frameTitle": "Home",
-      "filePath": "src/pages/HomePage.tsx",
-      "category": "Common",
-      "feature": "pages",
-      "routes": [
-        "/"
-      ],
-      "lineCount": 28,
-      "structure": [
-        "title"
-      ],
-      "sections": [
-        {
-          "name": "HomePage",
-          "startLine": 3,
-          "endLine": 28,
-          "kind": "code"
         }
       ]
     }

@@ -6,6 +6,7 @@ import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
 import { CommentInputBox } from "../../components/CommentInputBox";
 import { CONFIRM_STATUS_COLOR } from "../../components/ConfirmStatusBadge";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { useRecords } from "./RecordsContext";
 import { getFactoryName } from "../../../data/factories";
 import type { ConfirmStatus, WaterCheckResult } from "./types";
@@ -33,7 +34,15 @@ function StatusTag({ result }: { result: WaterCheckResult }) {
   );
 }
 
-function CheckRow({ label, result }: { label: string; result: WaterCheckResult }) {
+function CheckRow({
+  label,
+  result,
+  timestamp,
+}: {
+  label: string;
+  result: WaterCheckResult;
+  timestamp?: string;
+}) {
   return (
     <div className="flex flex-col gap-2 items-start w-full">
       <div className="flex items-center justify-between w-full">
@@ -46,6 +55,7 @@ function CheckRow({ label, result }: { label: string; result: WaterCheckResult }
           <p>対応：{result.action || "記録なし"}</p>
         </div>
       )}
+      <RecordTimestamp timestamp={timestamp} />
     </div>
   );
 }
@@ -71,6 +81,10 @@ export function RecordDetailPage() {
     addComment(record.id, newComment.trim());
     setNewComment("");
   }
+
+  // アプリで記録したときのスタンプ。項目ごとの時刻はモックに無いので実施日時を使う
+  // （データ検索の同じ画面と同じ作り）
+  const timestamp = `${record.implementer} ${formatDate(record.date)} ${record.time}`;
 
   return (
     <div>
@@ -121,20 +135,23 @@ export function RecordDetailPage() {
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <CheckRow label="味" result={record.taste} />
+          <CheckRow label="味" result={record.taste} timestamp={timestamp} />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="臭い" result={record.smell} />
+          <CheckRow label="臭い" result={record.smell} timestamp={timestamp} />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="色" result={record.color} />
+          <CheckRow label="色" result={record.color} timestamp={timestamp} />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="濁り" result={record.turbidity} />
+          <CheckRow label="濁り" result={record.turbidity} timestamp={timestamp} />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <CheckRow label="異物" result={record.foreignMatter} />
+          <CheckRow label="異物" result={record.foreignMatter} timestamp={timestamp} />
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">ph値</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.ph}</p>
+          <div className="flex flex-col gap-1 items-start w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-xl text-[var(--semantic-text-primary)]">ph値</p>
+              <p className="text-xl text-[var(--semantic-text-primary)]">{record.ph}</p>
+            </div>
+            <RecordTimestamp timestamp={timestamp} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -149,6 +166,7 @@ export function RecordDetailPage() {
                 塩素補充
               </span>
             )}
+            <RecordTimestamp timestamp={timestamp} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -163,34 +181,41 @@ export function RecordDetailPage() {
                 UV殺菌灯交換
               </span>
             )}
+            <RecordTimestamp timestamp={timestamp} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">UV表示灯</p>
-            <p
-              className={`text-xl ${
-                record.uvIndicatorLight === "off"
-                  ? "text-[var(--semantic-brand-danger)]"
-                  : "text-[var(--semantic-text-primary)]"
-              }`}
-            >
-              {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
-            </p>
+          <div className="flex flex-col gap-1 items-start w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-xl text-[var(--semantic-text-primary)]">UV表示灯</p>
+              <p
+                className={`text-xl ${
+                  record.uvIndicatorLight === "off"
+                    ? "text-[var(--semantic-brand-danger)]"
+                    : "text-[var(--semantic-text-primary)]"
+                }`}
+              >
+                {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
+              </p>
+            </div>
+            <RecordTimestamp timestamp={timestamp} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">異常検出灯</p>
-            <p
-              className={`text-xl ${
-                record.abnormalDetectionLight === "on"
-                  ? "text-[var(--semantic-brand-danger)]"
-                  : "text-[var(--semantic-text-primary)]"
-              }`}
-            >
-              {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
-            </p>
+          <div className="flex flex-col gap-1 items-start w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-xl text-[var(--semantic-text-primary)]">異常検出灯</p>
+              <p
+                className={`text-xl ${
+                  record.abnormalDetectionLight === "on"
+                    ? "text-[var(--semantic-brand-danger)]"
+                    : "text-[var(--semantic-text-primary)]"
+                }`}
+              >
+                {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
+              </p>
+            </div>
+            <RecordTimestamp timestamp={timestamp} />
           </div>
         </div>
 

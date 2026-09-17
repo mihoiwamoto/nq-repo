@@ -1,14 +1,16 @@
-import type { SensoryRecord } from "./types";
+import { stepTimestamps } from "../../utils/recordTimestamps";
+import { CRITERIA } from "./types";
+import type { CriterionScore, Criterion, SensoryRecord } from "./types";
 
-function fullScores(base: Record<string, number>) {
-  return {
-    味: { score: base.味 },
-    形: { score: base.形 },
-    色: { score: base.色 },
-    食感: { score: base.食感 },
-    香り: { score: base.香り },
-    とろみ: { score: base.とろみ },
-  };
+/**
+ * 点数と、アプリで入力した時刻。時刻はモックに無いので実施日から組み立てる
+ * （上の項目から順に 5 分ずつずらす）。
+ */
+function fullScores(base: Record<string, number>, date: string): Record<Criterion, CriterionScore> {
+  const timestamps = stepTimestamps(date, CRITERIA.length, { start: "10:10" });
+  return Object.fromEntries(
+    CRITERIA.map((criterion, i) => [criterion, { score: base[criterion], timestamp: timestamps[i] }]),
+  ) as Record<Criterion, CriterionScore>;
 }
 
 export const sensoryRecords: SensoryRecord[] = [
@@ -41,7 +43,7 @@ export const sensoryRecords: SensoryRecord[] = [
         confirmerName: "山本真理",
         date: "2025-04-01",
         hasComparisonProduct: false,
-        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 5, 香り: 5, とろみ: 5 }),
+        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 5, 香り: 5, とろみ: 5 }, "2025-04-01"),
       },
       {
         id: "se2",
@@ -50,7 +52,7 @@ export const sensoryRecords: SensoryRecord[] = [
         date: "2025-04-01",
         hasComparisonProduct: true,
         comparisonManufactureDate: "2025-03-22",
-        scores: fullScores({ 味: 4, 形: 4, 色: 5, 食感: 4, 香り: 5, とろみ: 4 }),
+        scores: fullScores({ 味: 4, 形: 4, 色: 5, 食感: 4, 香り: 5, とろみ: 4 }, "2025-04-01"),
       },
     ],
   },
@@ -70,12 +72,12 @@ export const sensoryRecords: SensoryRecord[] = [
         date: "2025-04-01",
         hasComparisonProduct: false,
         scores: {
-          味: { score: 4 },
-          形: { score: 4 },
-          色: { score: 3 },
-          食感: { score: 5 },
-          香り: { score: 3 },
-          とろみ: { score: 2, reason: "冷やし固まりが弱い" },
+          ...fullScores({ 味: 4, 形: 4, 色: 3, 食感: 5, 香り: 3, とろみ: 2 }, "2025-04-01"),
+          とろみ: {
+            score: 2,
+            reason: "冷やし固まりが弱い",
+            timestamp: stepTimestamps("2025-04-01", CRITERIA.length, { start: "10:10" })[5],
+          },
         },
       },
     ],
@@ -95,7 +97,7 @@ export const sensoryRecords: SensoryRecord[] = [
         confirmerName: "加藤由美",
         date: "2025-04-02",
         hasComparisonProduct: false,
-        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 4, 香り: 5, とろみ: 5 }),
+        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 4, 香り: 5, とろみ: 5 }, "2025-04-02"),
       },
       {
         id: "se5",
@@ -103,7 +105,7 @@ export const sensoryRecords: SensoryRecord[] = [
         confirmerName: "加藤由美",
         date: "2025-04-02",
         hasComparisonProduct: false,
-        scores: fullScores({ 味: 4, 形: 5, 色: 5, 食感: 5, 香り: 4, とろみ: 5 }),
+        scores: fullScores({ 味: 4, 形: 5, 色: 5, 食感: 5, 香り: 4, とろみ: 5 }, "2025-04-02"),
       },
     ],
   },
@@ -122,7 +124,7 @@ export const sensoryRecords: SensoryRecord[] = [
         confirmerName: "山本真理",
         date: "2025-04-03",
         hasComparisonProduct: false,
-        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 5, 香り: 5, とろみ: 5 }),
+        scores: fullScores({ 味: 5, 形: 5, 色: 5, 食感: 5, 香り: 5, とろみ: 5 }, "2025-04-03"),
       },
     ],
   },

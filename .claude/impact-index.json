@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-14T09:06:07.806Z",
+  "generatedAt": "2026-09-17T02:03:43.920Z",
   "impact": {
     "src/admin/components/PageTitleBar.tsx": [
       "scr_5021db3ab2",
@@ -137,7 +137,11 @@
       "scr_e5e5136bf0",
       "scr_4e0163dd72",
       "scr_0054dd6007",
+      "scr_662724f868",
       "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c",
       "scr_6e5603f704",
       "scr_cfccc7b313",
       "scr_167c2b49a3",
@@ -401,7 +405,12 @@
       "scr_7e8f1d5f88"
     ],
     "src/data/roleStore.ts": [
-      "scr_5021db3ab2"
+      "scr_5021db3ab2",
+      "scr_c2b629e75f",
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c"
     ],
     "src/data/useCurrentRole.ts": [
       "scr_5021db3ab2"
@@ -834,6 +843,100 @@
       "scr_ed3572a6d2",
       "scr_3f2541b7dd"
     ],
+    "src/components/demo/demoStore.ts": [
+      "scr_ed3572a6d2",
+      "scr_3d2b9148f0",
+      "scr_02aab90406",
+      "scr_5637171708",
+      "scr_a3e87c217e",
+      "scr_7d3efc8d7e",
+      "scr_529ad83de7",
+      "scr_fba36e73bd",
+      "scr_84efdf0eb8",
+      "scr_47e6f13b8b",
+      "scr_f19f179735",
+      "scr_86a3ccf128",
+      "scr_70d8e456f9",
+      "scr_4d6750083f",
+      "scr_5558274cc7",
+      "scr_2fb1b21718",
+      "scr_a4e480e9d8",
+      "scr_c60574c5f8",
+      "scr_572ca90a9d",
+      "scr_abece7ec8a",
+      "scr_f740958425",
+      "scr_ea210a96a2",
+      "scr_1d34f6f6c6",
+      "scr_5206f5e209",
+      "scr_7498c12401",
+      "scr_426b9efb29",
+      "scr_4b05fcc5b5",
+      "scr_ca1e33a598",
+      "scr_6aefb7424d",
+      "scr_b6d82ef7f8",
+      "scr_cd389b034d",
+      "scr_f86ef92f99",
+      "scr_b4e560d060",
+      "scr_a007afa28b",
+      "scr_b594cf8041",
+      "scr_47e17a19c2",
+      "scr_bb9e23b161",
+      "scr_2c2d7d9066",
+      "scr_12826fb9e6",
+      "scr_cf8516ef42",
+      "scr_4a00e7ebb5",
+      "scr_99a356091b",
+      "scr_81fcb67ecb",
+      "scr_565bd5038b",
+      "scr_d86ceddcf1",
+      "scr_f16501be69",
+      "scr_7479d4e8f5",
+      "scr_80b3020484",
+      "scr_0673b13dec",
+      "scr_8dfe5dae21",
+      "scr_8ae46ae1a3",
+      "scr_fad5db77f2",
+      "scr_8f0b16515d",
+      "scr_06f31aaec1",
+      "scr_4bf41bb1ea",
+      "scr_40e8aa20e5",
+      "scr_c2ccacfb8b",
+      "scr_986fb7abe0",
+      "scr_6ac89cb9d2",
+      "scr_ad6ab79254",
+      "scr_2c4ed7b17c",
+      "scr_1a82f38b1a",
+      "scr_9631ea409e",
+      "scr_e17a4c24cd",
+      "scr_6d30383da0",
+      "scr_d910bef482",
+      "scr_744c58e987",
+      "scr_f502fc0ba2",
+      "scr_7d1e4982ef",
+      "scr_c3b6d60578",
+      "scr_62d78cb654",
+      "scr_0524c06ed4",
+      "scr_05cc5e6dc6",
+      "scr_9c59f0cde0",
+      "scr_5995b9057c",
+      "scr_4af948bff5",
+      "scr_595e4ac181",
+      "scr_edb157c37a",
+      "scr_c7001fbf87",
+      "scr_6642faa075",
+      "scr_7875de59fd",
+      "scr_41c489219f",
+      "scr_a8b53c5489",
+      "scr_9aa9e11924",
+      "scr_0471bfe913",
+      "scr_06839b791b",
+      "scr_4da9c5a21f",
+      "scr_e0366063f1",
+      "scr_feb7ceb18e",
+      "scr_12da231b94",
+      "scr_930c62fdb5",
+      "scr_c628b879d9"
+    ],
     "src/admin/utils/tableStripe.ts": [
       "scr_ed3572a6d2",
       "scr_3d2b9148f0",
@@ -925,6 +1028,11 @@
       "scr_ca1e33a598",
       "scr_a66d9ce0ed",
       "scr_2ffa87d706",
+      "scr_c2b629e75f",
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c",
       "scr_b6d82ef7f8"
     ],
     "src/admin/features/approvals-additive-management/types.ts": [
@@ -1251,6 +1359,23 @@
       "scr_750d95a0dc",
       "scr_86a3ccf128"
     ],
+    "src/admin/components/RecordTimestamp.tsx": [
+      "scr_f77ae947e2",
+      "scr_498aceef58",
+      "scr_f66534ef73",
+      "scr_8e3cfae6c3",
+      "scr_2ffa87d706"
+    ],
+    "src/admin/utils/recordTimestamps.ts": [
+      "scr_f77ae947e2",
+      "scr_498aceef58",
+      "scr_a4e480e9d8",
+      "scr_391b40400a",
+      "scr_f66534ef73",
+      "scr_ca1e33a598",
+      "scr_a66d9ce0ed",
+      "scr_2ffa87d706"
+    ],
     "src/admin/features/confirmations-glass-plastic/RecordsContext.tsx": [
       "scr_f77ae947e2",
       "scr_70d8e456f9"
@@ -1524,6 +1649,7 @@
     "src/data/ledgers.ts": [
       "scr_4b65c55eaf",
       "scr_cc35f2d1db",
+      "scr_f995d3122c",
       "scr_167c2b49a3",
       "scr_70a0f64213",
       "scr_b6d82ef7f8",
@@ -1549,6 +1675,7 @@
     "src/types/ledger.ts": [
       "scr_4b65c55eaf",
       "scr_cc35f2d1db",
+      "scr_f995d3122c",
       "scr_167c2b49a3",
       "scr_70a0f64213",
       "scr_b6d82ef7f8",
@@ -1572,8 +1699,42 @@
       "scr_cc35f2d1db",
       "scr_89809592fd"
     ],
+    "src/admin/features/feedback/FeedbackDetailDialog.tsx": [
+      "scr_c2b629e75f",
+      "scr_86b329ab08"
+    ],
+    "src/components/feedback/screenBreadcrumb.ts": [
+      "scr_c2b629e75f",
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868"
+    ],
     "src/components/feedback/feedbackStore.ts": [
-      "scr_c2b629e75f"
+      "scr_c2b629e75f",
+      "scr_86b329ab08"
+    ],
+    "src/admin/navigation.ts": [
+      "scr_c2b629e75f",
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c"
+    ],
+    "src/app/navigation.ts": [
+      "scr_c2b629e75f",
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_bb9e23b161",
+      "scr_81fcb67ecb",
+      "scr_80b3020484",
+      "scr_4bf41bb1ea",
+      "scr_40e8aa20e5",
+      "scr_c3b6d60578",
+      "scr_595e4ac181",
+      "scr_41c489219f",
+      "scr_06839b791b",
+      "scr_12da231b94"
     ],
     "src/admin/features/guide/comments.ts": [
       "scr_c2b629e75f",
@@ -1582,6 +1743,14 @@
     "src/admin/features/guide/googleAccount.ts": [
       "scr_c2b629e75f",
       "scr_86b329ab08"
+    ],
+    "src/admin/data/confirmations.ts": [
+      "scr_c2b629e75f",
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c",
+      "scr_cd389b034d"
     ],
     "src/admin/features/glass-plastic/GlassPlasticContext.tsx": [
       "scr_a4919a37f6",
@@ -1609,10 +1778,18 @@
       "scr_4e0163dd72"
     ],
     "src/admin/features/guide/screenCatalog.ts": [
-      "scr_86b329ab08"
+      "scr_662724f868",
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c"
+    ],
+    "src/admin/features/guide/devVersions.ts": [
+      "scr_662724f868"
     ],
     "src/admin/features/guide/canvasTypes.ts": [
-      "scr_86b329ab08"
+      "scr_86b329ab08",
+      "scr_f995d3122c"
     ],
     "src/admin/features/guide/domInspector.ts": [
       "scr_86b329ab08"
@@ -1638,11 +1815,40 @@
     "src/admin/features/guide/CommentPanel.tsx": [
       "scr_86b329ab08"
     ],
-    "src/admin/features/guide/CanvasIcons.tsx": [
+    "src/admin/features/guide/FeedbackPanel.tsx": [
       "scr_86b329ab08"
+    ],
+    "src/admin/features/guide/CanvasIcons.tsx": [
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c"
+    ],
+    "src/admin/features/guide/screenShots.tsx": [
+      "scr_86b329ab08",
+      "scr_068cede687",
+      "scr_dd7d767868",
+      "scr_f995d3122c"
     ],
     "src/admin/features/guide/promptBuilder.ts": [
       "scr_86b329ab08"
+    ],
+    "src/components/screen-description/screenDescriptions.ts": [
+      "scr_068cede687",
+      "scr_dd7d767868"
+    ],
+    "src/components/screen-description/screenDescriptionUtils.ts": [
+      "scr_068cede687",
+      "scr_dd7d767868"
+    ],
+    "src/admin/features/guide/ScreenDescriptionDrawer.tsx": [
+      "scr_dd7d767868"
+    ],
+    "src/admin/features/guide/screenFlow.ts": [
+      "scr_f995d3122c"
+    ],
+    "src/admin/features/guide/screenPreviewState.ts": [
+      "scr_f995d3122c"
     ],
     "src/admin/features/help/HelpAccordion.tsx": [
       "scr_6e5603f704",
@@ -1874,9 +2080,6 @@
       "scr_814757bf46",
       "scr_9a9cda1987"
     ],
-    "src/admin/data/confirmations.ts": [
-      "scr_cd389b034d"
-    ],
     "src/app/layout/AppHeader.tsx": [
       "scr_f86ef92f99",
       "scr_b4e560d060",
@@ -2081,6 +2284,19 @@
       "scr_06839b791b",
       "scr_12da231b94"
     ],
+    "src/app/components/SubmitOutcome.tsx": [
+      "scr_bb9e23b161",
+      "scr_81fcb67ecb",
+      "scr_80b3020484",
+      "scr_4bf41bb1ea",
+      "scr_40e8aa20e5",
+      "scr_e17a4c24cd",
+      "scr_c3b6d60578",
+      "scr_595e4ac181",
+      "scr_41c489219f",
+      "scr_06839b791b",
+      "scr_12da231b94"
+    ],
     "src/app/layout/ProgressFlowContext.tsx": [
       "scr_bb9e23b161",
       "scr_81fcb67ecb",
@@ -2093,12 +2309,32 @@
       "scr_06839b791b",
       "scr_12da231b94"
     ],
-    "src/app/navigation.ts": [
+    "src/app/layout/AnnouncementBarContext.tsx": [
+      "scr_bb9e23b161",
+      "scr_81fcb67ecb",
+      "scr_80b3020484",
+      "scr_0673b13dec",
+      "scr_4bf41bb1ea",
+      "scr_40e8aa20e5",
+      "scr_e17a4c24cd",
+      "scr_6d30383da0",
+      "scr_744c58e987",
+      "scr_c3b6d60578",
+      "scr_595e4ac181",
+      "scr_41c489219f",
+      "scr_9aa9e11924",
+      "scr_06839b791b",
+      "scr_12da231b94",
+      "scr_930c62fdb5"
+    ],
+    "src/app/components/ErrorDialog.tsx": [
       "scr_bb9e23b161",
       "scr_81fcb67ecb",
       "scr_80b3020484",
       "scr_4bf41bb1ea",
       "scr_40e8aa20e5",
+      "scr_e17a4c24cd",
+      "scr_6d30383da0",
       "scr_c3b6d60578",
       "scr_595e4ac181",
       "scr_41c489219f",
@@ -2162,11 +2398,6 @@
       "scr_930c62fdb5",
       "scr_c628b879d9"
     ],
-    "src/app/layout/AnnouncementBarContext.tsx": [
-      "scr_0673b13dec",
-      "scr_9aa9e11924",
-      "scr_930c62fdb5"
-    ],
     "src/app/features/equipment-inspection/InspectionContext.tsx": [
       "scr_0673b13dec",
       "scr_8dfe5dae21",
@@ -2225,10 +2456,13 @@
     "src/app/features/glass-plastic/FloorProgressPanel.tsx": [
       "scr_6ac89cb9d2"
     ],
+    "src/app/layout/AppViewport.tsx": [
+      "scr_ad6ab79254"
+    ],
     "src/app/layout/LoadingOverlay.tsx": [
       "scr_ad6ab79254"
     ],
-    "src/app/features/login/OfflineDialog.tsx": [
+    "src/app/features/login/OfflineBanner.tsx": [
       "scr_ad6ab79254"
     ],
     "src/app/features/metal-xray-detection/mockData.ts": [

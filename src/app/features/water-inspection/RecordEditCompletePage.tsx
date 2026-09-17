@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
+import { SubmitOutcome } from "../../components/SubmitOutcome";
 import { useFromProgress } from "../../layout/ProgressFlowContext";
 import { useWaterInspection } from "./WaterInspectionContext";
 
@@ -27,7 +28,11 @@ export function RecordEditCompletePage() {
   }
 
   return (
-    <>
+    <SubmitOutcome
+      ledgerTitle={`使用水の点検_${record?.location ?? ""}`}
+      backLabel="帳票一覧に戻る"
+      onBack={() => handleNavigate("/app/ledger-list")}
+    >
       <AppHeader title={`使用水の点検_${record?.location ?? ""}`} />
       <div className="flex-1 flex flex-col items-center justify-center gap-10 p-6">
         <div className="flex flex-col gap-4 items-center w-full max-w-[440px]">
@@ -57,6 +62,6 @@ export function RecordEditCompletePage() {
           </button>
         </div>
       </div>
-    </>
+    </SubmitOutcome>
   );
 }

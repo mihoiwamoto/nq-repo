@@ -247,7 +247,20 @@ export function NewRecordPage() {
     closeNgDialog();
   }
 
+  /**
+   * 何か 1 つでも記録したか。実施日は今日の日付が自動で入るので数えない。
+   * 測定値と表示灯は、値が入ったときだけ fieldTimestamps に入る（消すと消える）ので
+   * そのまま「入力したか」の判定に使える。
+   */
+  const hasInput =
+    checks.some((check) => !isUnrecorded(check.status)) ||
+    Object.keys(fieldTimestamps).length > 0 ||
+    chlorineChecked ||
+    uvChecked;
+  const canProceed = date !== "" && hasInput;
+
   function handleGoToConfirm() {
+    if (!canProceed) return;
     const state: NewRecordFormState = {
       date,
       checks,
@@ -470,8 +483,11 @@ export function NewRecordPage() {
         </button>
         <button
           type="button"
+          disabled={!canProceed}
           onClick={handleGoToConfirm}
-          className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
+          className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+            canProceed ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+          }`}
         >
           確認画面へ
         </button>

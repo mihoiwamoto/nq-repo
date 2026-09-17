@@ -3,6 +3,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { Comments } from "../../components/Comments";
 
 function formatDate(date: string) {
@@ -25,7 +26,9 @@ const CheckmarkIconNg = () => (
 
 export function RecordInspectionListPage() {
   const { factoryId, recordId } = useParams<{ factoryId: string; recordId: string }>();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/data-search/metal-xray-detection/factories/${factoryId}`;
 

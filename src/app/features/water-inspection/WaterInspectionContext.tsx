@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
   points as initialPoints,
@@ -19,7 +20,8 @@ type WaterInspectionContextValue = {
 const WaterInspectionContext = createContext<WaterInspectionContextValue | null>(null);
 
 export function WaterInspectionProvider({ children }: { children: ReactNode }) {
-  const [points, setPoints] = useState<WaterPoint[]>(initialPoints);
+  // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
+  const [points, setPoints] = useDemoInspectionState<WaterPoint>(initialPoints);
   const [recordsByPoint, setRecordsByPoint] = useState(initialRecordsByPoint);
 
   const value = useMemo<WaterInspectionContextValue>(

@@ -95,7 +95,6 @@ const JAPANESE_TITLES: Record<string, string> = {
   "src/app/features/scale-inspection/ConfirmPage.tsx": "秤点検記録_確認",
   "src/app/features/water-inspection/RecordEditCompletePage.tsx": "使用水の点検_保存完了",
   "src/pages/ComingSoonPage.tsx": "準備中",
-  "src/pages/HomePage.tsx": "食品工場管理システム（トップ）",
 };
 
 /** 日本語（かな・漢字）を含むか。含まないなら見出しが取れずコンポーネント名になっている */
@@ -123,7 +122,7 @@ export function findScreenByPathname(pathname: string): ScreenEntry | undefined 
 
 export const CATEGORY_LABELS: Record<RawScreen["category"], string> = {
   Admin: "管理画面",
-  App: "現場アプリ",
+  App: "アプリ",
   Common: "共通",
 };
 
@@ -140,33 +139,45 @@ export type ScreenGroup = {
   kind: "ledger" | "other";
   /** 帳票が追加されたバージョン（帳票のみ） */
   version?: string;
+  /** その帳票が何を記録するものかの説明（帳票のみ）。画面説明ページの帳票見出しの下に出す */
+  description?: string;
 };
 
-/** 並び順はこの配列の順（新しいバージョンが上） */
-const LEDGER_GROUPS: { version: string; label: string; features: string[] }[] = [
+/** 並び順はこの配列の順（新しいバージョンが上）。description は画面説明ページの帳票見出しの下に出す */
+const LEDGER_GROUPS: { version: string; label: string; description: string; features: string[] }[] = [
   {
     version: "Ver.4.0",
     label: "機械器具点検",
+    description:
+      "製造ラインの機械・器具を始業前・終業後に点検し、その結果を残す帳票です。管理画面で持ち場/ライン（豆乳ラインなど）ごとに点検箇所と点検項目・頻度を組み、点検予定カレンダーで日程を決めます。アプリでは持ち場/ラインを選んで点検箇所ごとに項目を確認し、点検を行わない日は理由を付けて見送りにできます。",
     features: ["equipment-inspection", "data-search-equipment", "approvals-equipment-inspection", "confirmations-equipment-inspection"],
   },
   {
     version: "Ver.4.0",
     label: "清掃記録",
+    description:
+      "製造ラインの機械や場所を清掃した記録を残す帳票です。管理画面で持ち場/ライン（ゆばラインなど）ごとに清掃箇所と清掃項目・頻度を組み、点検予定カレンダーで日程を決めます。アプリでは清掃箇所ごとの項目に済んだものからチェックしていき、清掃を行わない日は理由を付けて見送りにできます。",
     features: ["cleaning-record", "data-search-cleaning-record", "approvals-cleaning-record", "confirmations-cleaning-record"],
   },
   {
     version: "Ver.4.0",
     label: "添加物管理",
+    description:
+      "食品添加物（ソルビン酸など）の入庫・出庫を記録して在庫を管理する帳票です。管理画面で工場ごとに添加物とその規格・保管場所を登録し、アプリでは添加物を選んで入庫または出庫の数量を記録します。数量を入れると現在庫数が自動で計算され、1 日分をまとめて提出します。",
     features: ["additive-management", "data-search-additive-management", "approvals-additive-management", "confirmations-additive-management"],
   },
   {
     version: "Ver.4.0",
     label: "薬品管理",
+    description:
+      "洗浄・殺菌などに使う薬品（次亜塩素酸ナトリウムなど）の入庫・出庫を記録して在庫を管理する帳票です。管理画面で工場ごとに薬品とその規格・保管場所を登録し、アプリでは薬品を選んで入庫または出庫の数量を記録します。数量を入れると現在庫数が自動で計算され、1 日分をまとめて提出します。",
     features: ["chemical-management", "data-search-chemical-management", "approvals-chemical-management", "confirmations-chemical-management"],
   },
   {
     version: "Ver.3.0",
     label: "金属/X線探知機",
+    description:
+      "異物検査機器（金属探知機・X線探知機・ウェイトチェッカー）の動作確認とテストピース通過の記録を残す帳票です。管理画面で各機器をマスタ登録し、製品ごとの設定番号やテストピース、動作確認項目を決めたうえで、1 セットで点検する「点検構成」を組みます。アプリでは点検構成ごとに、1 日の中で動作確認・テストピース・製品通過・異常反応を何度も記録し、最後にまとめて提出します。",
     features: [
       "metal-detector-management",
       "xray-detector-management",
@@ -180,6 +191,8 @@ const LEDGER_GROUPS: { version: string; label: string; features: string[] }[] = 
   {
     version: "Ver.3.0",
     label: "検体管理",
+    description:
+      "製品の検体（保存サンプル）を採取して保管し、保管期限が来たら破棄するまでを記録する帳票です。管理画面で検体を取る対象製品を登録し、点検予定カレンダーでどの日にどの製品の検体を取るかを決めます。アプリでは「本日の点検」で採取した検体の種別・数量・保管場所を記録し、「保管検体」で保管中の検体を確認・破棄します。",
     features: [
       "sample-management",
       "specimen-management",
@@ -190,22 +203,30 @@ const LEDGER_GROUPS: { version: string; label: string; features: string[] }[] = 
   },
   {
     version: "Ver.2.0",
-    label: "ガラスプラスチック管理",
-    features: ["glass-plastic", "data-search-glass-plastic", "approvals-glass-plastic", "confirmations-glass-plastic"],
-  },
-  {
-    version: "Ver.2.0",
     label: "秤点検管理",
+    description:
+      "製造で使う秤が正しく量れているかを点検する帳票です。管理画面で秤（ラベル名・シリアル・秤量）と持ち場をマスタ登録し、どの秤をどの持ち場で点検対象にするかを決めます。アプリでは持ち場にある秤を 1 台ずつ選び、動作確認・水平点検・汚れ・分銅を載せたときの表示値を記録します。",
     features: ["scale-inspection", "data-search-scale-inspection", "approvals-scale-inspection", "confirmations-scale-inspection"],
   },
   {
     version: "Ver.2.0",
     label: "官能検査記録",
+    description:
+      "製品の味・香り・見た目などを人の感覚で検査し、採点を残す帳票です。管理画面で検査対象の製品を登録し、点検予定カレンダーでどの日にどの製品を検査するかを決めます。アプリでは検査製品を点検箇所（味・香りなど）ごとに 5 点満点で採点します。",
     features: ["sensory-inspection", "data-search-sensory-inspection", "approvals-sensory-inspection", "confirmations-sensory-inspection"],
+  },
+  {
+    version: "Ver.1.5",
+    label: "ガラスプラスチック管理",
+    description:
+      "工場内のガラス・プラスチック製品（照明カバー、窓、容器など）に破損や欠けがないかを点検する帳票です。管理画面でフロアごとに配置図の画像を登録し、その上に点検箇所のアイコンを置きます。アプリでは配置図を見ながら点検箇所を 1 つずつ確認し、破損があれば修理ステータスも管理できます。",
+    features: ["glass-plastic", "data-search-glass-plastic", "approvals-glass-plastic", "confirmations-glass-plastic"],
   },
   {
     version: "Ver.1.0",
     label: "使用水の点検",
+    description:
+      "製造に使う水の安全を確かめる帳票で、最初に作られた帳票です。管理画面で点検場所（給湯室、製造室の蛇口など）と記録する項目を登録し、アプリでは場所ごとの履歴表から新しい記録を付け始めて、臭い・濁り・異物・pH・残留塩素・UV 殺菌灯の状態を入力します。",
     features: ["water-inspection", "data-search-water-inspection", "approvals-water-inspection", "confirmations-water-inspection"],
   },
 ];
@@ -283,7 +304,9 @@ export const SCREENS: ScreenEntry[] = rawScreens
 
 export function groupOf(screen: ScreenEntry): ScreenGroup {
   const ledger = featureToLedger.get(screen.feature);
-  if (ledger) return { key: `ledger:${ledger.label}`, label: ledger.label, kind: "ledger", version: ledger.version };
+  if (ledger) {
+    return { key: `ledger:${ledger.label}`, label: ledger.label, kind: "ledger", version: ledger.version, description: ledger.description };
+  }
   return { key: `other:${screen.feature}`, label: OTHER_FEATURE_LABELS[screen.feature] ?? screen.feature, kind: "other" };
 }
 

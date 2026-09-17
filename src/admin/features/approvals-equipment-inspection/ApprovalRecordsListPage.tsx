@@ -4,6 +4,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
@@ -51,7 +52,9 @@ function ResultBadge({ icon }: { icon: ResultIcon }) {
 
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const rowStripeClasses = getDateStripeClasses(records, (r) => r.date);
   const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
   const request = approvalRequests.find((r) => r.ledgerSlug === "equipment-inspection");
@@ -98,6 +101,11 @@ export function ApprovalRecordsListPage() {
                     )
                   )}
                 </div>
+                {records.length === 0 && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-center py-6">
+                    該当するデータがありません
+                  </p>
+                )}
                 {records.map((record, index) => (
                   <div
                     key={record.id}

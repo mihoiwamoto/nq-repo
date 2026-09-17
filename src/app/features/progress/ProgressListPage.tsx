@@ -1,10 +1,13 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import iconXMarkGreen from "../../../assets/figma/icons/common/cancel-green.svg";
+import iconUnsent from "../../../assets/figma/icons/common/unsent.svg";
 import iconSearch from "@images/Icon/search.svg";
 import { AppHeader } from "../../layout/AppHeader";
 import { ledgerCategories } from "../../../data/ledgers";
 import { StatusChip } from "../../components/StatusChip";
+import { useDemoList } from "../../../components/demo/demoStore";
+import { useAnnouncementBar } from "../../layout/AnnouncementBarContext";
 import {
   ACTORS,
   PROGRESS_ENTRIES,
@@ -67,22 +70,53 @@ function destinationPathFor(entry: ProgressEntry) {
   }
 }
 
-function StatusBadge({ entry }: { entry: ProgressEntry }) {
+/**
+ * 未送信マークの ↖ アイコン。注意書き（14px・黒）と行（24px・グレー）で
+ * 色も大きさも違うので、1 枚の SVG をマスクにして色と大きさだけ変えて使う。
+ */
+function UnsentIcon({ size, color }: { size: number; color: string }) {
   return (
-    <StatusChip color={PROGRESS_STATUS_COLORS[entry.status]}>{PROGRESS_STATUS_LABELS[entry.status]}</StatusChip>
+    <span
+      aria-hidden
+      className="inline-block shrink-0 align-middle"
+      style={{
+        width: size,
+        height: size,
+        WebkitMaskImage: `url("${iconUnsent}")`,
+        maskImage: `url("${iconUnsent}")`,
+        WebkitMaskSize: "contain",
+        maskSize: "contain",
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        backgroundColor: color,
+      }}
+    />
+  );
+}
+
+function StatusBadge({ entry, unsent }: { entry: ProgressEntry; unsent: boolean }) {
+  return (
+    <span className="flex items-center gap-2 shrink-0">
+      {unsent && <UnsentIcon size={24} color="var(--semantic-text-secondary)" />}
+      <StatusChip color={PROGRESS_STATUS_COLORS[entry.status]}>{PROGRESS_STATUS_LABELS[entry.status]}</StatusChip>
+    </span>
   );
 }
 
 export function ProgressListPage() {
   const navigate = useNavigate();
+  // 上に「未送信のデータがあります」の帯が出ている間だけ、未送信マークを出す
+  const { hasUnsent } = useAnnouncementBar();
+  // 動作デモの「データが無い」を試している間は、進捗そのものが 1 件も無い状態にする
+  const entries = useDemoList(PROGRESS_ENTRIES);
   const [tab, setTab] = useState<"all" | "not_inspected">("all");
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [pickerSelected, setPickerSelected] = useState<Set<string>>(new Set());
   const [appliedFilters, setAppliedFilters] = useState<Set<string>>(new Set());
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => {
     const keys = new Set<string>();
-    groupByDate(PROGRESS_ENTRIES).forEach(([date, entries]) => {
-      groupByLedger(entries).forEach(([slug]) => {
+    groupByDate(PROGRESS_ENTRIES).forEach(([date, dateEntries]) => {
+      groupByLedger(dateEntries).forEach(([slug]) => {
         keys.add(`${date}|${slug}`);
       });
     });
@@ -92,15 +126,24 @@ export function ProgressListPage() {
   const [selectedActorId, setSelectedActorId] = useState(ACTORS[0].id);
   const [unsupportedNotice, setUnsupportedNotice] = useState(false);
 
-  const notInspectedCount = PROGRESS_ENTRIES.filter((e) => e.status === "not_inspected").length;
+  const notInspectedCount = entries.filter((e) => e.status === "not_inspected").length;
+
+  /**
+   * その行が未送信かどうか。
+   * 未送信になりうるのは「点検して提出したが、まだ送れていない」記録なので、
+   * 点検済み（＝提出済み・確認前）の行だけにマークを出す。
+   */
+  function isUnsent(entry: ProgressEntry) {
+    return hasUnsent && entry.status === "inspected";
+  }
 
   const filtered = useMemo(() => {
-    return PROGRESS_ENTRIES.filter((entry) => {
+    return entries.filter((entry) => {
       if (appliedFilters.size > 0 && !appliedFilters.has(entry.ledgerSlug)) return false;
       if (tab === "not_inspected" && entry.status !== "not_inspected") return false;
       return true;
     });
-  }, [tab, appliedFilters]);
+  }, [entries, tab, appliedFilters]);
 
   const grouped = useMemo(() => groupByDate(filtered), [filtered]);
 
@@ -192,6 +235,18 @@ export function ProgressListPage() {
           ))}
         </div>
 
+        {hasUnsent && (
+          <p className="flex flex-wrap items-center justify-end gap-0 text-base text-[var(--semantic-text-primary)] w-full">
+            <span>※「</span>
+            <UnsentIcon size={14} color="var(--semantic-text-primary)" />
+            <span>」アイコンがあるものは未送信データです。ヘルプは</span>
+            <Link to="/app/help" className="text-[var(--semantic-brand-primary)] underline">
+              こちら
+            </Link>
+            <span>から。</span>
+          </p>
+        )}
+
         <button
           type="button"
           onClick={openFilterDialog}
@@ -229,7 +284,7 @@ export function ProgressListPage() {
 
         {grouped.length === 0 ? (
           <p className="text-lg text-[var(--semantic-text-secondary)] text-center py-6">
-            該当する点検はありません
+            {entries.length === 0 ? "点検予定はまだありません" : "該当する点検はありません"}
           </p>
         ) : (
           grouped.map(([date, entries]) => (
@@ -289,7 +344,7 @@ export function ProgressListPage() {
                                   <span className="text-lg text-[var(--semantic-text-primary)]">
                                     {entry.name}
                                   </span>
-                                  <StatusBadge entry={entry} />
+                                  <StatusBadge entry={entry} unsent={isUnsent(entry)} />
                                 </button>
                                 {idx !== groupEntries.length - 1 && (
                                   <div className="border-b border-[#d0d0d0] mx-4" />
@@ -319,7 +374,7 @@ export function ProgressListPage() {
                             </span>
                           </span>
                         </span>
-                        <StatusBadge entry={entry} />
+                        <StatusBadge entry={entry} unsent={isUnsent(entry)} />
                       </button>
                     );
                   })}

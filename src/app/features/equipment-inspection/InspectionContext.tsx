@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
   initialScheduleEntries,
@@ -19,7 +20,8 @@ type InspectionContextValue = {
 const InspectionContext = createContext<InspectionContextValue | null>(null);
 
 export function InspectionProvider({ children }: { children: ReactNode }) {
-  const [lines, setLines] = useState<Line[]>(initialLines);
+  // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
+  const [lines, setLines] = useDemoInspectionState<Line>(initialLines);
   const [entries, setEntries] = useState<Record<string, ScheduleEntry>>(initialScheduleEntries);
 
   const value = useMemo<InspectionContextValue>(

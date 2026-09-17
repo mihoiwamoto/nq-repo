@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
   products as initialProducts,
@@ -16,7 +17,8 @@ type SensoryInspectionContextValue = {
 const SensoryInspectionContext = createContext<SensoryInspectionContextValue | null>(null);
 
 export function SensoryInspectionProvider({ children }: { children: ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  // 動作デモ「データが無い」のときは、まだ 1 件も検査していない状態から始める
+  const [products, setProducts] = useDemoInspectionState<Product>(initialProducts);
   const [recordsByProduct, setRecordsByProduct] = useState<Record<string, SensoryRecord | null>>(
     initialRecordsByProduct
   );

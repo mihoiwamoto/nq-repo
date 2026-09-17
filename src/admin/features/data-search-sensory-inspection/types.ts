@@ -13,6 +13,8 @@ export type Criterion = (typeof CRITERIA)[number];
 export type CriterionScore = {
   score: number;
   reason?: string;
+  /** アプリで点数を入れた時刻。詳細画面で実施者名と並べて出す */
+  timestamp?: string;
 };
 
 export function isAbnormalScore(score: number) {

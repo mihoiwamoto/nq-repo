@@ -20,6 +20,7 @@ import searchIcon from "@images/Icon/search.svg";
 import burnIcon from "@images/Icon/burn.svg";
 import iconCheckWhite from "../../../assets/figma/icons/common/checkmark-custom.svg";
 import { StatusChip } from "../../components/StatusChip";
+import { useDemoList, useDemoUninspected } from "../../../components/demo/demoStore";
 
 function DestructionLabel() {
   return (
@@ -77,22 +78,28 @@ export function SampleListPage() {
   const [bulkDiscardCompleteDialogOpen, setBulkDiscardCompleteDialogOpen] = useState(false);
   const [discardedIds, setDiscardedIds] = useState<Set<string>>(new Set(discardedId ? [discardedId] : []));
 
-  const inspectedCount = SAMPLE_ENTRIES.filter((entry) => entry.status === "inspected").length;
+  // 動作デモの「データが無い」を試している間は、検体が 1 件も無い状態にする
+  // 「今日」は今日採取する検体（点検予定）なので、動作デモ「データが無い」でも
+  // 行は残したまま全部「未点検」にする。「保存品」は過去に保存した記録なので空にする。
+  const sampleEntries = useDemoUninspected(SAMPLE_ENTRIES);
+  const storedSamples = useDemoList(STORED_SAMPLES);
+
+  const inspectedCount = sampleEntries.filter((entry) => entry.status === "inspected").length;
 
   const entries = useMemo(() => {
-    return SAMPLE_ENTRIES.filter((entry) => {
+    return sampleEntries.filter((entry) => {
       if (entry.tab !== "today") return false;
       if (appliedQuery && !entry.productName.includes(appliedQuery)) return false;
       return true;
     });
-  }, [appliedQuery]);
+  }, [sampleEntries, appliedQuery]);
 
   function handleSearch() {
     setAppliedQuery(searchQuery.trim());
   }
 
   const filteredStoredSamples = useMemo(() => {
-    return STORED_SAMPLES.filter((sample) => {
+    return storedSamples.filter((sample) => {
       if (discardedIds.has(sample.id)) return false;
       if (
         appliedFilter.productName &&
@@ -109,7 +116,7 @@ export function SampleListPage() {
       }
       return true;
     });
-  }, [appliedFilter, discardedIds]);
+  }, [storedSamples, appliedFilter, discardedIds]);
 
   function openFilterDialog() {
     setFilterDraft(appliedFilter);
@@ -169,7 +176,7 @@ export function SampleListPage() {
   }
 
   const [progressOpen, setProgressOpen] = useState(false);
-  const inspectedSamples = SAMPLE_ENTRIES.filter((s) => s.status === "inspected");
+  const inspectedSamples = sampleEntries.filter((s) => s.status === "inspected");
 
   return (
     <>
@@ -197,7 +204,7 @@ export function SampleListPage() {
             <span className="bg-white flex flex-col items-center justify-center gap-0 px-2 py-1">
               <span className="text-xs text-[var(--semantic-brand-primary)] font-semibold">点検済み</span>
               <span className="text-lg text-[var(--semantic-brand-primary)] leading-none font-bold">
-                {inspectedCount}/{SAMPLE_ENTRIES.length}
+                {inspectedCount}/{sampleEntries.length}
               </span>
             </span>
           </button>
@@ -250,7 +257,9 @@ export function SampleListPage() {
               <div className="flex flex-col gap-6 items-start w-full">
                 {entries.length === 0 ? (
                   <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6 w-full">
-                    該当する検体はありません
+                    {sampleEntries.length === 0
+                      ? "本日の検体はまだありません"
+                      : "該当する検体はありません"}
                   </p>
                 ) : (
                   entries.map((entry) => (
@@ -342,7 +351,9 @@ export function SampleListPage() {
               <div className="flex flex-col gap-6 items-start w-full">
                 {filteredStoredSamples.length === 0 ? (
                   <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6 w-full">
-                    該当する検体はありません
+                    {storedSamples.length === 0
+                      ? "保管中の検体はまだありません"
+                      : "該当する検体はありません"}
                   </p>
                 ) : (
                   filteredStoredSamples.map((sample) => {
@@ -648,7 +659,7 @@ export function SampleListPage() {
         </div>
       )}
 
-      {progressOpen && <SampleProgressPanel samples={SAMPLE_ENTRIES} inspectedSamples={inspectedSamples} onClose={() => setProgressOpen(false)} />}
+      {progressOpen && <SampleProgressPanel samples={sampleEntries} inspectedSamples={inspectedSamples} onClose={() => setProgressOpen(false)} />}
     </>
   );
 }

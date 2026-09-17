@@ -16,17 +16,20 @@ export function AdminHeader() {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   return (
-    <header className="relative flex items-center justify-between px-6 py-3 h-16 bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.16)] shrink-0">
+    // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「ヘッダー」「アカウント名」を見つけるための印
+    <header data-nq-part="admin-header" className="relative flex items-center justify-between px-6 py-3 h-16 bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.16)] shrink-0">
       <div className="flex items-center gap-4">
-        <Link to="/" className="size-10 rounded-[6.4px] bg-white overflow-hidden block">
+        {/* ロゴは装飾のみ。押しても遷移しない */}
+        <div className="size-10 rounded-[6.4px] bg-white overflow-hidden">
           <img src={logo} alt="NQlipo" className="size-full object-cover" />
-        </Link>
+        </div>
         <span className="text-base font-semibold text-white">Design Spec</span>
       </div>
       <div className="relative">
         <button
           type="button"
           onClick={() => setMenuOpen((v) => !v)}
+          data-nq-part="account"
           className="h-10 px-20 rounded-lg bg-white flex items-center justify-center text-base text-[var(--semantic-text-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
         >
           {ACCOUNT_NAME}

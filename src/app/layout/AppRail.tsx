@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import logo from "../../assets/figma/logo-app.png";
 import iconFontSize from "../../assets/figma/icons/rail/font-size.svg";
 import { railNav } from "../navigation";
@@ -10,10 +10,12 @@ export function AppRail() {
   const forceProgressActive = useFromProgress();
 
   return (
-    <nav className="w-16 shrink-0 bg-[var(--semantic-brand-primary)] flex flex-col items-center gap-4 py-4">
-      <Link to="/" className="size-10 rounded-[6.4px] bg-white overflow-hidden shrink-0 block">
+    // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「メニュー」を見つけるための印。見た目には影響しない
+    <nav data-nq-part="app-rail" className="w-16 shrink-0 bg-[var(--semantic-brand-primary)] flex flex-col items-center gap-4 py-4">
+      {/* ロゴは装飾のみ。押しても遷移しない */}
+      <div className="size-10 rounded-[6.4px] bg-white overflow-hidden shrink-0">
         <img src={logo} alt="NQlipo" className="size-full object-cover" />
-      </Link>
+      </div>
       <div className="flex flex-col gap-5 items-center w-full">
         {railNav.slice(0, 4).map((item) => (
           <NavLink
@@ -34,7 +36,10 @@ export function AppRail() {
                   </span>
                   <span className="text-xs text-white leading-none">{item.label}</span>
                   {item.badge !== undefined && (
-                    <span className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center">
+                    <span
+                      data-nq-part="badge"
+                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center"
+                    >
                       {String(item.badge).padStart(2, "0")}
                     </span>
                   )}
@@ -76,7 +81,10 @@ export function AppRail() {
                   </span>
                   <span className="text-xs text-white leading-none">{item.label}</span>
                   {item.badge !== undefined && (
-                    <span className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center">
+                    <span
+                      data-nq-part="badge"
+                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center"
+                    >
                       {String(item.badge).padStart(2, "0")}
                     </span>
                   )}

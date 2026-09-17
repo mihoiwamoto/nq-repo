@@ -183,6 +183,13 @@ export const IconFolder = (p: Props) => (
     <path d="M3 6a1 1 0 011-1h5l2 2h9a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1z" />
   </svg>
 );
+export const IconHistory = (p: Props) => (
+  <svg {...base(p)}>
+    <path d="M3.2 10.5A9 9 0 1112 21a8.96 8.96 0 01-6.2-2.5" />
+    <path d="M3 5v5h5" />
+    <path d="M12 7.5V12l3 2" />
+  </svg>
+);
 export const IconComment = (p: Props) => (
   <svg {...base(p)}>
     <path d="M4 5.5A1.5 1.5 0 015.5 4h13A1.5 1.5 0 0120 5.5v10a1.5 1.5 0 01-1.5 1.5H10l-4 3.2V17h-.5A1.5 1.5 0 014 15.5z" />

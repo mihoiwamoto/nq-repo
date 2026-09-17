@@ -51,7 +51,7 @@ type CommentInputProps = {
 };
 
 /**
- * 現場アプリ共通のコメント欄。
+ * アプリ共通のコメント欄。
  * 投稿済みコメントのカード + 白背景 68px の入力枠 + 緑の送信ボタン + 右寄せの文字数カウンタ。
  */
 export function CommentInput({

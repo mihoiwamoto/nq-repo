@@ -7,6 +7,7 @@ import { AppHeader } from "../../layout/AppHeader";
 import { PENDING_REVIEWS } from "../../data/pendingReviews";
 import { ledgerCategories } from "../../../data/ledgers";
 import { StatusChip } from "../../components/StatusChip";
+import { useDemoList } from "../../../components/demo/demoStore";
 
 const FILTER_LEDGERS = ledgerCategories.filter(
   (c) => c.slug !== "chemical-management" && c.slug !== "additive-management"
@@ -34,7 +35,10 @@ export function PendingReviewListPage() {
   const [pickerSelected, setPickerSelected] = useState<Set<string>>(new Set());
   const [appliedFilters, setAppliedFilters] = useState<Set<string>>(new Set());
 
-  const filtered = PENDING_REVIEWS.filter(
+  // 動作デモの「データが無い」を試している間は、確認待ちが 1 件も無い状態にする
+  const reviews = useDemoList(PENDING_REVIEWS);
+
+  const filtered = reviews.filter(
     (review) => appliedFilters.size === 0 || appliedFilters.has(review.ledgerSlug)
   );
   const groups = groupByDate(filtered);
@@ -126,7 +130,9 @@ export function PendingReviewListPage() {
 
         {groups.length === 0 ? (
           <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6">
-            該当する確認待ちはありません
+            {reviews.length === 0
+              ? "確認待ちの記録はまだありません"
+              : "該当する確認待ちはありません"}
           </p>
         ) : (
           <div className="flex flex-col gap-10">

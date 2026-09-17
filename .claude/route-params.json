@@ -27,12 +27,17 @@
     ":unitId": "u1"
   },
   "byScreen": {
-    "src/admin/features/approvals-sensory-inspection/ScoreDetailPage.tsx": {
-      ":recordId": "asr1",
-      ":scoreId": "ase1"
+    "src/admin/features/approvals-additive-management/RecordDetailPage.tsx": {
+      ":recordId": "a1"
     },
-    "src/admin/features/data-search-sample-management/RecordDetailPage.tsx": {
-      ":recordId": "ds1"
+    "src/admin/features/approvals-chemical-management/RecordDetailPage.tsx": {
+      ":recordId": "ch1"
+    },
+    "src/admin/features/approvals-cleaning-record/RecordDetailPage.tsx": {
+      ":recordId": "a1"
+    },
+    "src/admin/features/approvals-equipment-inspection/RecordDetailPage.tsx": {
+      ":recordId": "a1"
     },
     "src/admin/features/approvals-metal-xray-detection/MachineDetailPage.tsx": {
       ":recordId": "am1"
@@ -41,11 +46,125 @@
       ":recordId": "am1",
       ":itemId": "am1-2"
     },
-    "src/admin/features/approvals-cleaning-record/RecordDetailPage.tsx": {
-      ":recordId": "a1"
+    "src/admin/features/approvals-sample-management/RecordDetailPage.tsx": {
+      ":recordId": "sa1"
+    },
+    "src/admin/features/approvals-scale-inspection/ApprovalRecordsListPage.tsx": {
+      ":requestId": "2"
+    },
+    "src/admin/features/approvals-scale-inspection/RecordDetailPage.tsx": {
+      ":requestId": "2",
+      ":recordId": "sa1"
+    },
+    "src/admin/features/approvals-sensory-inspection/RecordDetailPage.tsx": {
+      ":recordId": "asr1"
+    },
+    "src/admin/features/approvals-sensory-inspection/ScoreDetailPage.tsx": {
+      ":recordId": "asr1",
+      ":scoreId": "ase1"
     },
     "src/admin/features/approvals-water-inspection/RecordDetailPage.tsx": {
       ":recordId": "war1"
+    },
+    "src/admin/features/cleaning-record/LineDetailPage.tsx": {
+      ":lineId": "c1"
+    },
+    "src/admin/features/confirmations-additive-management/RecordDetailPage.tsx": {
+      ":recordId": "adc1"
+    },
+    "src/admin/features/confirmations-chemical-management/RecordDetailPage.tsx": {
+      ":recordId": "chc1"
+    },
+    "src/admin/features/confirmations-cleaning-record/RecordDetailPage.tsx": {
+      ":recordId": "clc1"
+    },
+    "src/admin/features/confirmations-equipment-inspection/RecordDetailPage.tsx": {
+      ":recordId": "eqc1"
+    },
+    "src/admin/features/confirmations-glass-plastic/RecordDetailPage.tsx": {
+      ":recordId": "gpc1"
+    },
+    "src/admin/features/confirmations-metal-xray-detection/RecordDetailPage.tsx": {
+      ":recordId": "mxc1"
+    },
+    "src/admin/features/confirmations-sample-management/RecordDetailPage.tsx": {
+      ":recordId": "smc1"
+    },
+    "src/admin/features/confirmations-scale-inspection/RecordDetailPage.tsx": {
+      ":recordId": "scc1"
+    },
+    "src/admin/features/confirmations-sensory-inspection/RecordDetailPage.tsx": {
+      ":recordId": "snc1"
+    },
+    "src/admin/features/confirmations-sensory-inspection/ScoreDetailPage.tsx": {
+      ":recordId": "snc1",
+      ":scoreId": "sne1"
+    },
+    "src/admin/features/confirmations-water-inspection/RecordDetailPage.tsx": {
+      ":recordId": "wcr1"
+    },
+    "src/admin/features/data-search-additive-management/RecordDetailPage.tsx": {
+      ":recordId": "add1"
+    },
+    "src/admin/features/data-search-chemical-management/RecordDetailPage.tsx": {
+      ":recordId": "dch1"
+    },
+    "src/admin/features/data-search-equipment/AbnormalReactionDetailPage.tsx": {
+      ":recordId": "r3"
+    },
+    "src/admin/features/data-search-equipment/InspectionItemDetailPage.tsx": {
+      ":recordId": "r3"
+    },
+    "src/admin/features/data-search-glass-plastic/RecordDetailPage.tsx": {
+      ":floorId": "f1",
+      ":recordId": "dgp1"
+    },
+    "src/admin/features/data-search-metal-xray-detection/AbnormalReactionDetailPage.tsx": {
+      ":recordId": "dm1"
+    },
+    "src/admin/features/data-search-metal-xray-detection/PassedProductDetailPage.tsx": {
+      ":recordId": "dm1"
+    },
+    "src/admin/features/data-search-metal-xray-detection/RecordDetailPage.tsx": {
+      ":recordId": "dm1"
+    },
+    "src/admin/features/data-search-metal-xray-detection/RecordInspectionListPage.tsx": {
+      ":recordId": "dm1"
+    },
+    "src/admin/features/data-search-metal-xray-detection/TestPieceDetailPage.tsx": {
+      ":recordId": "dm1"
+    },
+    "src/admin/features/data-search-sample-management/RecordDetailPage.tsx": {
+      ":recordId": "ds1"
+    },
+    "src/admin/features/data-search-scale-inspection/RecordDetailPage.tsx": {
+      ":recordId": "sc1"
+    },
+    "src/admin/features/data-search-sensory-inspection/RecordDetailPage.tsx": {
+      ":recordId": "sr1"
+    },
+    "src/admin/features/data-search-sensory-inspection/ScoreDetailPage.tsx": {
+      ":recordId": "sr1",
+      ":scoreId": "se1"
+    },
+    "src/admin/features/data-search-water-inspection/DataListPage.tsx": {
+      ":pointId": "%E7%B5%A6%E6%B9%AF%E5%AE%A4"
+    },
+    "src/admin/features/data-search-water-inspection/RecordDetailPage.tsx": {
+      ":pointId": "%E7%B5%A6%E6%B9%AF%E5%AE%A4",
+      ":recordId": "wr1"
+    },
+    "src/admin/features/guide/ScreenDescriptionDetailPage.tsx": {
+      ":screenId": "scr_dd7d767868"
+    },
+    "src/admin/features/help/HelpFaqDetailPage.tsx": {
+      ":faqId": "faq1"
+    },
+    "src/admin/features/scale-inspection/PostDetailPage.tsx": {
+      ":postId": "post-additive"
+    },
+    "src/admin/features/scale-inspection/ScaleDetailPage.tsx": {
+      ":scaleId": "scale1"
     },
     "src/admin/features/scale-inspection/ScaleManagementDetailPage.tsx": {
       ":scaleId": "scale1"
@@ -53,11 +172,83 @@
     "src/admin/features/scale-inspection/ScaleManagementFormPage.tsx": {
       ":scaleId": "scale1"
     },
+    "src/admin/features/sensory-inspection/ProductDetailPage.tsx": {
+      ":productId": "stp1"
+    },
+    "src/admin/features/staff-management/StaffDetailPage.tsx": {
+      ":staffId": "st1"
+    },
+    "src/admin/features/water-inspection/PointDetailPage.tsx": {
+      ":pointId": "wp1"
+    },
+    "src/admin/features/weight-checker-management/WeightCheckerDetailPage.tsx": {
+      ":unitId": "wu1"
+    },
+    "src/admin/features/xray-detector-management/XrayDetectorDetailPage.tsx": {
+      ":unitId": "xu1"
+    },
+    "src/app/features/additive-management/ConfirmPage.tsx": {
+      ":productId": "a1"
+    },
+    "src/app/features/additive-management/RecordDetailPage.tsx": {
+      ":productId": "a1"
+    },
+    "src/app/features/additive-management/RecordingPage.tsx": {
+      ":productId": "a1"
+    },
+    "src/app/features/additive-management/RecordsListPage.tsx": {
+      ":productId": "a1"
+    },
+    "src/app/features/additive-management/SubmitCompletePage.tsx": {
+      ":productId": "a1"
+    },
+    "src/app/features/cleaning-record/ConfirmPage.tsx": {
+      ":lineId": "c1"
+    },
+    "src/app/features/cleaning-record/RecordingPage.tsx": {
+      ":lineId": "c1"
+    },
+    "src/app/features/cleaning-record/SkipConfirmPage.tsx": {
+      ":lineId": "c1"
+    },
+    "src/app/features/cleaning-record/SubmitCompletePage.tsx": {
+      ":lineId": "c1"
+    },
+    "src/app/features/pending-review/PendingReviewDetailPage.tsx": {
+      ":id": "p4"
+    },
+    "src/app/features/scale-inspection/ConfirmPage.tsx": {
+      ":postId": "additive"
+    },
+    "src/app/features/scale-inspection/ScaleDetailPage.tsx": {
+      ":postId": "additive"
+    },
+    "src/app/features/scale-inspection/ScaleListPage.tsx": {
+      ":postId": "additive"
+    },
+    "src/app/features/scale-inspection/ScaleRecordPage.tsx": {
+      ":postId": "additive"
+    },
+    "src/app/features/scale-inspection/ScaleReviewPage.tsx": {
+      ":postId": "additive"
+    },
+    "src/app/features/scale-inspection/SubmitCompletePage.tsx": {
+      ":postId": "additive"
+    },
+    "src/app/features/water-inspection/NewRecordConfirmPage.tsx": {
+      ":pointId": "wp1"
+    },
+    "src/app/features/water-inspection/NewRecordPage.tsx": {
+      ":pointId": "wp1"
+    },
     "src/app/features/water-inspection/PointDetailPage.tsx": {
       ":pointId": "wp1",
       ":recordId": "wp1-r1"
     },
-    "src/app/features/water-inspection/RecordEditPage.tsx": {
+    "src/app/features/water-inspection/PointHistoryTablePage.tsx": {
+      ":pointId": "wp1"
+    },
+    "src/app/features/water-inspection/RecordEditCompletePage.tsx": {
       ":pointId": "wp1",
       ":recordId": "wp1-r1"
     },
@@ -65,17 +256,9 @@
       ":pointId": "wp1",
       ":recordId": "wp1-r1"
     },
-    "src/app/features/water-inspection/PointHistoryTablePage.tsx": {
-      ":pointId": "wp1"
-    },
-    "src/app/features/pending-review/PendingReviewDetailPage.tsx": {
-      ":id": "p4"
-    },
-    "src/admin/features/confirmations-sample-management/RecordDetailPage.tsx": {
-      ":recordId": "smc1"
-    },
-    "src/admin/features/approvals-sample-management/RecordDetailPage.tsx": {
-      ":recordId": "sa1"
+    "src/app/features/water-inspection/RecordEditPage.tsx": {
+      ":pointId": "wp1",
+      ":recordId": "wp1-r1"
     }
   }
 }

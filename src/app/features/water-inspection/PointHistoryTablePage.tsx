@@ -5,6 +5,7 @@ import iconCheck from "../../../assets/figma/icons/common/checkmark-custom.svg";
 import { AppHeader } from "../../layout/AppHeader";
 import type { CheckItem, WaterInspectionRecord } from "./mockData";
 import { useWaterInspection } from "./WaterInspectionContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 
 const COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -66,7 +67,9 @@ export function PointHistoryTablePage() {
   const { pointId } = useParams<{ pointId: string }>();
   const [sortAsc, setSortAsc] = useState(true);
   const { recordsByPoint } = useWaterInspection();
-  const records = [...(pointId ? recordsByPoint[pointId] ?? [] : [])].sort((a, b) =>
+  // 動作デモの「データが無い」を試している間は、点検記録が 1 件も無い状態にする
+  const pointRecords = useDemoList(pointId ? recordsByPoint[pointId] ?? [] : []);
+  const records = [...pointRecords].sort((a, b) =>
     sortAsc ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date)
   );
   const location = records[0]?.location ?? "";

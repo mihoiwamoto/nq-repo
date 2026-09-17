@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { groupOf, groupOrder, roleOf, roleOrder, type ScreenEntry, type ScreenGroup, type ScreenRole } from "./screenCatalog";
+import { ScreenThumb } from "./screenShots";
 import { IconExternal, IconFolder, IconLedger, IconSearch } from "./CanvasIcons";
 import type { ScreenCommentCount } from "./comments";
 import iconArrowDown from "@images/Icon/arrow_down.svg";
@@ -8,15 +9,17 @@ import iconArrowUp from "@images/Icon/arrow_up.svg";
 /** 帳票が追加されたバージョンごとのチップの色 */
 const VERSION_CHIP_CLASS: Record<string, string> = {
   "Ver.1.0": "bg-[#fdefe0] text-[#d97316]",
+  "Ver.1.5": "bg-[#f1ebfd] text-[#7c4dcc]",
   "Ver.2.0": "bg-[#e7f1fe] text-[#2f7fd4]",
   "Ver.3.0": "bg-[#fdeaea] text-[var(--semantic-brand-danger)]",
   "Ver.4.0": "bg-[#e6f4ec] text-[var(--semantic-brand-primary)]",
 };
 /** 絞り込みチップの並び（新しいバージョンが左） */
-const VERSION_ORDER = ["Ver.4.0", "Ver.3.0", "Ver.2.0", "Ver.1.0"];
+const VERSION_ORDER = ["Ver.4.0", "Ver.3.0", "Ver.2.0", "Ver.1.5", "Ver.1.0"];
 
 const VERSION_DOT_CLASS: Record<string, string> = {
   "Ver.1.0": "bg-[#d97316]",
+  "Ver.1.5": "bg-[#7c4dcc]",
   "Ver.2.0": "bg-[#2f7fd4]",
   "Ver.3.0": "bg-[var(--semantic-brand-danger)]",
   "Ver.4.0": "bg-[var(--semantic-brand-primary)]",
@@ -80,7 +83,6 @@ export function ScreenListPanel({
   activeId,
   counts,
   commentCounts,
-  thumbIds,
   onSelect,
 }: {
   /** 表示モード（PC=管理画面 / タブレット=アプリ）で絞り込んだあとの画面 */
@@ -90,8 +92,6 @@ export function ScreenListPanel({
   counts: Record<string, number>;
   /** 画面ごとのコメント件数（緑バッジ。未解決の数を出す） */
   commentCounts: Record<string, ScreenCommentCount>;
-  /** 撮影済みサムネイルがある画面 ID */
-  thumbIds: Set<string>;
   onSelect: (screen: ScreenEntry) => void;
 }) {
   const [keyword, setKeyword] = useState("");
@@ -278,11 +278,7 @@ export function ScreenListPanel({
                               className="flex-1 min-w-0 flex items-center gap-2 text-left"
                             >
                               <span className="w-12 h-8 shrink-0 rounded border border-[#e0e0e0] bg-[#f1efea] overflow-hidden flex items-center justify-center text-[10px] text-[#a0a0a0]">
-                                {thumbIds.has(s.id) ? (
-                                  <img src={`/.claude/.shots/thumb/${s.id}.jpg`} alt="" className="w-full h-full object-cover object-top" loading="lazy" />
-                                ) : (
-                                  s.componentName.slice(0, 1)
-                                )}
+                                <ScreenThumb screenId={s.id} fallback={s.componentName.slice(0, 1)} />
                               </span>
                               <span className="flex-1 min-w-0">
                                 <span className={`block text-sm truncate ${active ? "text-[var(--semantic-brand-primary)]" : "text-[var(--semantic-text-primary)]"}`}>

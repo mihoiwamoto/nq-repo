@@ -138,7 +138,10 @@ export function ScaleListPage() {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [selectedSource, setSelectedSource] = useState<SourceScale | null>(null);
 
-  const canProceed = date !== "" && scales.length > 0;
+  // 秤の行があっても、どの秤にもまだ記録が入っていなければ確認画面へは進めない
+  // （見送りにした秤は「記録した」扱い）
+  const canProceed =
+    date !== "" && scales.some((scale) => scale.skipped || scale.record !== null);
 
   const otherPostGroups = posts
     .filter((p) => p.id !== postId)

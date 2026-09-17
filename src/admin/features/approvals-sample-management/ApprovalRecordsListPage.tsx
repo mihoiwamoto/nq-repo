@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
@@ -58,7 +59,9 @@ const COLUMNS: { label: string; width: string }[] = [
 
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const tableRef = useRef<HTMLDivElement>(null);
   const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
   const request = approvalRequests.find((r) => r.ledgerSlug === "sample-management");

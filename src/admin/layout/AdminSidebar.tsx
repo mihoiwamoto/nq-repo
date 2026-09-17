@@ -6,11 +6,13 @@ import iconArrowUp from "@images/Icon/arrow_up.svg";
 import { filterNavByRole, primaryNav, secondaryNav, type AdminNavItem } from "../navigation";
 import { useCurrentRole } from "../../data/useCurrentRole";
 import { useCanvasEditTotal } from "../features/guide/useCanvasEdits";
+import { useDemoCount } from "../../components/demo/demoStore";
 
 /** 赤い件数バッジ（承認申請管理の「10」と同じ見た目） */
 function CountBadge({ count, compact }: { count: number; compact?: boolean }) {
   return (
     <span
+      data-nq-part="badge"
       className={`h-5 px-1.5 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[10px] flex items-center justify-center ${
         compact ? "min-w-5 shrink-0" : "min-w-[30px]"
       }`}
@@ -45,6 +47,9 @@ function NavIcon({ src, active }: { src: string; active: boolean }) {
 }
 
 function NavItem({ item }: { item: AdminNavItem }) {
+  // 動作デモ「データが無い」のときは、承認待ち・確認待ちの件数も 0 件
+  const badge = useDemoCount(item.badge ?? 0);
+
   return (
     <NavLink
       to={item.path}
@@ -64,7 +69,7 @@ function NavItem({ item }: { item: AdminNavItem }) {
           >
             {item.label}
           </span>
-          {item.badge !== undefined && <CountBadge count={item.badge} />}
+          {item.badge !== undefined && <CountBadge count={badge} />}
         </>
       )}
     </NavLink>
@@ -161,6 +166,8 @@ export function AdminSidebar() {
   return (
     <nav
       ref={navRef}
+      // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「サイドメニュー」を見つけるための印
+      data-nq-part="admin-sidebar"
       onScroll={handleScroll}
       className="admin-sidebar-scroll hidden md:flex w-64 shrink-0 bg-[var(--semantic-brand-primary)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex-col justify-between px-2 py-0 md:h-screen sticky top-0 overflow-y-auto overscroll-contain">
       <div className="flex flex-col items-start w-full shrink-0">

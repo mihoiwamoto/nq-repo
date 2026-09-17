@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../layout/AppHeader";
+import { SubmitOutcome } from "./SubmitOutcome";
 
 type ProgressSubmitCompleteProps = {
   /** ヘッダーに出す帳票名（例: 秤点検記録） */
@@ -17,6 +18,9 @@ type ProgressSubmitCompleteProps = {
 /**
  * 進捗一覧から入って提出したときの完了画面。
  * 帳票を続けて入力する導線は出さず、進捗一覧に戻るだけにする。
+ *
+ * 動作デモで「オフライン」「送信エラー」を試しているときは、SubmitOutcome が
+ * 送信できなかった画面に差し替える（進捗一覧から入るどの帳票でも同じ）。
  */
 export function ProgressSubmitComplete({
   ledgerTitle,
@@ -27,8 +31,14 @@ export function ProgressSubmitComplete({
 }: ProgressSubmitCompleteProps) {
   const navigate = useNavigate();
 
+  const handleBack = () => (onBack ? onBack() : navigate("/app/progress"));
+
   return (
-    <>
+    <SubmitOutcome
+      ledgerTitle={ledgerTitle}
+      backLabel={backLabel}
+      onBack={handleBack}
+    >
       <AppHeader title={ledgerTitle} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <div className="flex flex-col gap-10 items-center px-8 py-6 w-full">
@@ -62,7 +72,7 @@ export function ProgressSubmitComplete({
           <div className="flex items-center justify-center w-full">
             <button
               type="button"
-              onClick={() => (onBack ? onBack() : navigate("/app/progress"))}
+              onClick={handleBack}
               className="bg-white border border-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-[360px] max-w-full px-4 rounded-lg text-xl text-[var(--semantic-brand-primary)] font-semibold"
             >
               {backLabel}
@@ -70,6 +80,6 @@ export function ProgressSubmitComplete({
           </div>
         </div>
       </div>
-    </>
+    </SubmitOutcome>
   );
 }

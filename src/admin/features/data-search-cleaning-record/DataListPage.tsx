@@ -6,6 +6,7 @@ import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
@@ -49,7 +50,9 @@ const MONTH_LABELS = [
 
 export function DataListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/data-search/cleaning-record/factories/${factoryId}`;
 

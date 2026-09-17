@@ -16,19 +16,32 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { CATEGORY_LABELS, findScreenByPathname } from "../../admin/features/guide/screenCatalog";
+import { screenBreadcrumb } from "./screenBreadcrumb";
 import { isRootElement, resolveSelector, selectorFor, targetLabel } from "../../admin/features/guide/domInspector";
 import {
+  COMPANY_LABELS,
+  COMPANY_ORDER,
   KIND_LABELS,
   KIND_ORDER,
-  feedbackToMarkdown,
+  companyLabel,
   formatFeedbackTime,
   initialAuthor,
+  initialCompany,
   saveFeedbackAuthor,
+  saveFeedbackCompany,
   sortNewestFirst,
   spotDisplay,
+  feedbackHeadline,
+  feedbackDetail,
+  isUnresolved,
+  FEEDBACK_OPEN_EVENT,
+  STATUS_CHIP_CLASS,
+  STATUS_LABELS,
   useFeedback,
+  type FeedbackCompany,
   type FeedbackEntry,
   type FeedbackKind,
+  type FeedbackOpenDetail,
   type FeedbackSpot,
 } from "./feedbackStore";
 
@@ -171,16 +184,33 @@ const IconTrash = ({ className }: { className?: string }) => (
 
 /* ───────────────────────── 本体 ───────────────────────── */
 
-export function FeedbackWidget() {
+type FeedbackWidgetProps = {
+  /**
+   * 右下の丸いボタンを出すか。既定は出す。
+   * 動作デモのピル（メニュー内の「フィードバック」）から開く構成のときは false にして、
+   * パネルと合図の受け口だけを置く（ボタンが二重に並ばないようにする）。
+   */
+  showButton?: boolean;
+};
+
+export function FeedbackWidget({ showButton = true }: FeedbackWidgetProps = {}) {
   const [open, setOpen] = useState(loadOpen);
   const [picking, setPicking] = useState(false);
   /** 入力中のフィードバックに付ける場所 */
   const [spot, setSpot] = useState<FeedbackSpot | null>(null);
   /** ピンを押して選んだ一覧項目 */
   const [activeId, setActiveId] = useState<string | null>(null);
+  /**
+   * 今いる画面の代わりに対象にする画面のパス。
+   * 動作デモのツールバーから開いたとき、端末枠の中に出している画面を対象にするために使う。
+   * 別の画面へ移ったら解除して、いつも通り今いる画面を対象にする。
+   */
+  const [targetPath, setTargetPath] = useState<string | null>(null);
   const location = useLocation();
   const { entries, openCount, add, setStatus, remove } = useFeedback();
-  const target = useMemo(() => resolveTarget(location.pathname), [location.pathname]);
+  const target = useMemo(() => resolveTarget(targetPath ?? location.pathname), [targetPath, location.pathname]);
+  /** 端末枠の中の画面を対象にしているときは、この画面上で場所を選んでも意味が無いので選ばせない */
+  const canPick = targetPath === null;
 
   // 画面説明キャンバス（iframe）の中では出さない
   const embedded = typeof window !== "undefined" && window.self !== window.top;
@@ -193,7 +223,27 @@ export function FeedbackWidget() {
     setSpot(null);
     setPicking(false);
     setActiveId(null);
+    setTargetPath(null);
   }, [location.pathname]);
+
+  // 右下のボタン以外（動作デモのツールバーなど）から開かれたとき
+  useEffect(() => {
+    const onOpen = (e: Event) => {
+      const detail = (e as CustomEvent<FeedbackOpenDetail>).detail;
+      // 今いる画面と同じパスでも、動作デモの端末枠から開いたときは「枠の中の画面」が対象。
+      // この画面上（動作デモの上）で場所を選ばせないよう、パスがあれば必ず上書き扱いにする
+      const next = detail?.pathname ?? null;
+      setTargetPath(next);
+      if (next !== null) {
+        setSpot(null);
+        setPicking(false);
+        setActiveId(null);
+      }
+      setOpen(true);
+    };
+    window.addEventListener(FEEDBACK_OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(FEEDBACK_OPEN_EVENT, onOpen);
+  }, []);
 
   // Esc で閉じる（場所選びの最中は SpotPicker 側が Esc で選びをやめる）
   useEffect(() => {
@@ -222,15 +272,18 @@ export function FeedbackWidget() {
   /** 画面に出すピン: 未対応で場所付きのもの + 入力中の場所 */
   const markers = useMemo(() => {
     const list = screenEntries
-      .filter((e) => e.spot && e.status === "open")
+      .filter((e) => e.spot && isUnresolved(e.status))
       .map((e) => ({ id: e.id, spot: e.spot!, n: pinNumbers.get(e.id) ?? null, active: e.id === activeId }));
     if (spot) list.push({ id: "__draft", spot, n: null, active: true });
     return list;
   }, [screenEntries, pinNumbers, activeId, spot]);
 
   const startPicking = useCallback(() => setPicking(true), []);
-  /** 選んだあとも選択モードは続ける。続けて別の場所をクリックすれば、そのまま選び直せる */
-  const handlePick = useCallback((s: FeedbackSpot) => setSpot(s), []);
+  /** 1 つ選んだら選択モードは終わる（選びっぱなしで画面が触れなくなるのを防ぐ）。選び直しは「選び直す」から */
+  const handlePick = useCallback((s: FeedbackSpot) => {
+    setSpot(s);
+    setPicking(false);
+  }, []);
   const endPicking = useCallback(() => setPicking(false), []);
 
 
@@ -238,15 +291,20 @@ export function FeedbackWidget() {
 
   return (
     <>
+      {showButton && (
       <button
           {...own}
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => {
+            // 右下のボタンからはいつも「今いる画面」が対象
+            setTargetPath(null);
+            setOpen((v) => !v);
+          }}
           aria-label="フィードバックを送る"
           aria-expanded={open}
           aria-controls="nq-feedback-panel"
           title="フィードバック"
-          className="nq-feedback-fab fixed bottom-6 right-24 z-50 w-14 h-14 rounded-full bg-[var(--semantic-brand-primary)] text-white shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:brightness-110"
+          className="nq-feedback-fab fixed bottom-24 right-24 z-50 w-14 h-14 rounded-full bg-[var(--semantic-brand-primary)] text-white shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 hover:brightness-110"
         >
           <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 5.5A1.5 1.5 0 015.5 4h13A1.5 1.5 0 0120 5.5v10a1.5 1.5 0 01-1.5 1.5H10l-4 3.2V17h-.5A1.5 1.5 0 014 15.5z" />
@@ -261,6 +319,7 @@ export function FeedbackWidget() {
             </span>
           )}
         </button>
+      )}
 
       {/* 背景は暗くしない。パネルを開いたまま画面を操作・遷移できる（対象画面は遷移先に追従する）。
           場所を選んでいる間も消さない（覆いはパネルより下の層に置くので、パネルはそのまま触れる） */}
@@ -273,20 +332,25 @@ export function FeedbackWidget() {
           activeId={activeId}
           spot={spot}
           picking={picking}
+          canPick={canPick}
           onPickStart={startPicking}
           onPickEnd={endPicking}
           onClearSpot={() => setSpot(null)}
           onClose={() => setOpen(false)}
-          onSubmit={(kind, body, author) => {
+          onSubmit={(kind, title, body, author, company) => {
             add({
               kind,
+              title: title || undefined,
               body,
               author,
+              company,
               spot: spot ?? undefined,
               pathname: target.pathname,
               screenId: target.id,
               screenTitle: target.title,
               screenCategory: target.category,
+              // 不具合の再現環境の手がかり（管理画面の詳細ポップアップに出す）
+              ua: navigator.userAgent,
             });
             setSpot(null);
             setPicking(false);
@@ -296,9 +360,10 @@ export function FeedbackWidget() {
         />
       )}
 
-      {open && markers.length > 0 && <SpotMarkers items={markers} onSelect={setActiveId} />}
+      {/* 端末枠の中の画面を対象にしているときは、ピンの場所はこの画面上には無いので出さない */}
+      {open && canPick && markers.length > 0 && <SpotMarkers items={markers} onSelect={setActiveId} />}
 
-      {picking && <SpotPicker picked={!!spot} onPick={handlePick} onEnd={endPicking} />}
+      {picking && <SpotPicker onPick={handlePick} onEnd={endPicking} />}
 
       <style>{`
         @keyframes nq-feedback-slide-in {
@@ -328,12 +393,9 @@ export function FeedbackWidget() {
 /* ───────────────────────── 場所を選ぶ（画面全体を覆う） ───────────────────────── */
 
 function SpotPicker({
-  picked,
   onPick,
   onEnd,
 }: {
-  /** すでに場所を 1 つ選んでいるか（案内の文言が変わる） */
-  picked: boolean;
   onPick: (spot: FeedbackSpot) => void;
   onEnd: () => void;
 }) {
@@ -398,25 +460,20 @@ function SpotPicker({
       )}
 
       {/* 案内はパネルに隠れない位置（パネルを除いた幅の中央）に出す。
-          1 つ選んだあとも選択モードは続くので、文言を「選び直せます」に変える */}
+          1 つクリックすれば選択モードは終わるので、文言は 1 つだけ */}
       <div
         className="absolute top-4 -translate-x-1/2 pointer-events-auto flex items-center gap-3 rounded-full bg-[#333] text-white shadow-lg pl-4 pr-2 py-2"
         style={{ left: `calc((100vw - ${PANEL_WIDTH}px) / 2)` }}
       >
         <IconPin className="w-4 h-4 shrink-0" />
-        <span className="text-xs font-bold whitespace-nowrap">
-          {picked ? "別の場所をクリックすると選び直せます" : "フィードバックしたい場所をクリックしてください"}
-        </span>
-        {/* 場所を選ぶ前だけ「中止」を出す。選んだあとは Esc で終わればよいのでボタンは置かない */}
-        {!picked && (
-          <button
-            type="button"
-            onClick={onEnd}
-            className="h-7 px-3 rounded-full bg-white/15 hover:bg-white/25 text-xs font-normal whitespace-nowrap"
-          >
-            中止 (Esc)
-          </button>
-        )}
+        <span className="text-xs font-bold whitespace-nowrap">フィードバックしたい場所をクリックしてください</span>
+        <button
+          type="button"
+          onClick={onEnd}
+          className="h-7 px-3 rounded-full bg-white/15 hover:bg-white/25 text-xs font-normal whitespace-nowrap"
+        >
+          中止 (Esc)
+        </button>
       </div>
     </div>,
     document.body
@@ -519,6 +576,7 @@ function FeedbackPanel({
   activeId,
   spot,
   picking,
+  canPick,
   onPickStart,
   onPickEnd,
   onClearSpot,
@@ -537,17 +595,21 @@ function FeedbackPanel({
   spot: FeedbackSpot | null;
   /** 画面上の場所を選んでいる最中か */
   picking: boolean;
+  /** 場所を選べるか。対象が今いる画面でないとき（動作デモの端末枠の中など）は選べない */
+  canPick: boolean;
   onPickStart: () => void;
   onPickEnd: () => void;
   onClearSpot: () => void;
   onClose: () => void;
-  onSubmit: (kind: FeedbackKind, body: string, author: string) => void;
+  onSubmit: (kind: FeedbackKind, title: string, body: string, author: string, company: FeedbackCompany) => void;
   onToggleStatus: (entry: FeedbackEntry) => void;
   onRemove: (id: string) => void;
 }) {
   const [kind, setKind] = useState<FeedbackKind>("improvement");
+  const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [author, setAuthor] = useState(initialAuthor);
+  const [company, setCompany] = useState<FeedbackCompany>(initialCompany);
   const [scope, setScope] = useState<ListScope>("screen");
   const [notice, setNotice] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -573,27 +635,22 @@ function FeedbackPanel({
     noticeTimer.current = setTimeout(() => setNotice(null), 2500);
   }, []);
 
-  const canSubmit = body.trim().length > 0;
+  // 件名・内容の両方が必須
+  const canSubmit = title.trim().length > 0 && body.trim().length > 0;
 
   const submit = () => {
     if (!canSubmit) return;
     const trimmedAuthor = author.trim();
-    onSubmit(kind, body.trim(), trimmedAuthor);
+    onSubmit(kind, title.trim(), body.trim(), trimmedAuthor, company);
     saveFeedbackAuthor(trimmedAuthor);
+    saveFeedbackCompany(company);
+    setTitle("");
     setBody("");
     flash("フィードバックを送信しました");
     textareaRef.current?.focus();
   };
 
-  const copyAll = async () => {
-    try {
-      await navigator.clipboard.writeText(feedbackToMarkdown(entries));
-      flash(`${entries.length} 件を Markdown でコピーしました`);
-    } catch {
-      flash("コピーできませんでした");
-    }
-  };
-
+  const targetTrail = useMemo(() => screenBreadcrumb(target.pathname, target.title), [target.pathname, target.title]);
   const allEntries = useMemo(() => sortNewestFirst(entries), [entries]);
   const visible = scope === "screen" ? screenEntries : allEntries;
   const isThisScreen = (e: FeedbackEntry) => (target.id ? e.screenId === target.id : e.pathname === target.pathname);
@@ -630,10 +687,9 @@ function FeedbackPanel({
           <div className="rounded-lg bg-[var(--semantic-background-page)] px-3 py-2 flex flex-col gap-0.5">
             <span className="text-[11px] font-normal text-[var(--semantic-text-secondary)]">対象画面</span>
             <span className="text-sm font-bold text-[var(--semantic-text-primary)] truncate">
-              <span className="font-normal text-[var(--semantic-text-secondary)]">{target.category} › </span>
-              {target.title}
+              <span className="font-normal text-[var(--semantic-text-secondary)]">{targetTrail.slice(0, -1).join(" › ")} › </span>
+              {targetTrail[targetTrail.length - 1]}
             </span>
-            <span className="text-[11px] font-normal text-[var(--semantic-text-secondary)] truncate">{target.pathname}</span>
           </div>
 
           {/* 場所 */}
@@ -642,27 +698,26 @@ function FeedbackPanel({
               場所 <span className="font-normal text-[var(--semantic-text-secondary)]">（省略可）</span>
             </span>
             {picking ? (
-              // 選択モード中。選んだあとも続くので、選んだ場所を出しつつ「別の場所をクリックで選び直せる」と伝える
+              // 選択モード中。1 つクリックすれば終わるので、案内と「中止」だけを出す。
+              // 選び直しのときは、まだ前の場所が入っているので下に出しておく（中止すればそこへ戻る）
               <div className="flex flex-col gap-1.5 rounded-lg border-2 border-dashed border-[var(--semantic-brand-primary)] bg-[#f6fbf8] px-2.5 py-2">
                 <div className="flex items-center gap-2">
                   <IconPin className="w-4 h-4 shrink-0 text-[var(--semantic-brand-primary)]" />
                   <span className="flex-1 min-w-0 text-xs font-normal leading-snug text-[var(--semantic-text-primary)]">
                     <span className="font-bold text-[var(--semantic-brand-primary)]">選択中</span>{" "}
-                    {spot ? "別の場所をクリックすると選び直せます" : "左の画面で、気になる場所をクリックしてください"}
+                    左の画面で、気になる場所をクリックしてください
                   </span>
-                  {/* 場所を選ぶ前だけ「中止」を出す。選んだあとは Esc で終わればよいのでボタンは置かない */}
-                  {!spot && (
-                    <button
-                      type="button"
-                      onClick={onPickEnd}
-                      className="shrink-0 h-7 px-2.5 rounded-md border border-[#ddd] bg-white text-[11px] font-normal text-[var(--semantic-text-primary)] hover:bg-[#f0f0f0] whitespace-nowrap"
-                    >
-                      中止
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={onPickEnd}
+                    className="shrink-0 h-7 px-2.5 rounded-md border border-[#ddd] bg-white text-[11px] font-normal text-[var(--semantic-text-primary)] hover:bg-[#f0f0f0] whitespace-nowrap"
+                  >
+                    中止
+                  </button>
                 </div>
                 {spot && (
                   <div className="flex items-center gap-1.5 rounded-md bg-white px-2 py-1.5">
+                    <span className="shrink-0 text-[11px] font-normal text-[var(--semantic-text-secondary)]">今の場所</span>
                     <span className="flex-1 min-w-0 truncate text-xs font-bold text-[var(--semantic-text-primary)]" title={spotDisplay(spot)}>
                       {spotDisplay(spot)}
                     </span>
@@ -703,7 +758,7 @@ function FeedbackPanel({
                   </svg>
                 </button>
               </div>
-            ) : (
+            ) : canPick ? (
               <button
                 type="button"
                 onClick={onPickStart}
@@ -712,6 +767,11 @@ function FeedbackPanel({
                 <IconPin className="w-4 h-4 text-[var(--semantic-brand-primary)]" />
                 画面上の場所を選ぶ
               </button>
+            ) : (
+              // 動作デモの端末枠の中の画面が対象のとき。この画面上で選んだ場所は端末枠の中とは対応しない
+              <p className="min-h-9 px-3 py-2 rounded-lg bg-[#f4f4f4] text-[11px] leading-4 text-[var(--semantic-text-secondary)]">
+                端末枠の中の画面には場所を指定できません。場所を伝えたいときは本文に書いてください。
+              </p>
             )}
           </div>
 
@@ -738,6 +798,23 @@ function FeedbackPanel({
             </div>
           </div>
 
+          {/* 件名（必須。一覧の見出しになる） */}
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs font-bold text-[var(--semantic-text-primary)]">
+              件名 <span className="text-[var(--semantic-brand-danger)]">*</span>
+            </span>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === "Enter") submit();
+              }}
+              placeholder="ひとことで言うと？"
+              className="h-9 w-full rounded-lg border border-[#ddd] px-3 text-sm font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-disabled)] outline-none focus:border-[var(--semantic-brand-primary)]"
+            />
+          </label>
+
           {/* 内容 */}
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-bold text-[var(--semantic-text-primary)]">
@@ -756,29 +833,40 @@ function FeedbackPanel({
             />
           </label>
 
-          {/* 名前 */}
-          <label className="flex items-center gap-2">
+          {/* 所属と名前 */}
+          <div className="flex items-center gap-2">
             <span className="shrink-0 text-xs font-bold text-[var(--semantic-text-primary)]">名前</span>
+            {/* 所属（既定は西原商会）。矢印は index.css の select 共通スタイルが描く */}
+            <select
+              value={company}
+              onChange={(e) => setCompany(e.target.value as FeedbackCompany)}
+              aria-label="所属"
+              className="shrink-0 h-9 w-[140px] rounded-lg border border-[#ddd] pl-3 text-sm font-normal text-[var(--semantic-text-primary)] outline-none focus:border-[var(--semantic-brand-primary)]"
+            >
+              {COMPANY_ORDER.map((c) => (
+                <option key={c} value={c}>
+                  {COMPANY_LABELS[c]}
+                </option>
+              ))}
+            </select>
             <input
               type="text"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
+              aria-label="名前"
               placeholder="未入力可"
               className="flex-1 min-w-0 h-9 rounded-lg border border-[#ddd] px-3 text-sm font-normal text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-disabled)] outline-none focus:border-[var(--semantic-brand-primary)]"
             />
-          </label>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={submit}
-              disabled={!canSubmit}
-              className="h-11 flex-1 rounded-lg bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] text-white text-sm font-bold shadow-[0px_2px_2px_rgba(51,51,51,0.24)] disabled:shadow-none"
-            >
-              送信する
-            </button>
-            <span className="text-[11px] font-normal text-[var(--semantic-text-secondary)] whitespace-nowrap">⌘/Ctrl + Enter でも送信</span>
           </div>
+
+          <button
+            type="button"
+            onClick={submit}
+            disabled={!canSubmit}
+            className="h-11 w-full rounded-lg bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] text-white text-sm font-bold shadow-[0px_2px_2px_rgba(51,51,51,0.24)] disabled:shadow-none"
+          >
+            送信する
+          </button>
 
           {notice && (
             <p role="status" className="rounded-lg bg-[#e6f5ec] px-3 py-2 text-xs font-bold text-[var(--semantic-brand-primary)]">
@@ -810,16 +898,6 @@ function FeedbackPanel({
                 );
               })}
             </div>
-            <div className="flex-1" />
-            <button
-              type="button"
-              onClick={copyAll}
-              disabled={entries.length === 0}
-              title="すべてのフィードバックを Markdown でコピー"
-              className="h-7 px-2.5 rounded-md border border-[#ddd] text-xs font-normal text-[var(--semantic-text-primary)] hover:bg-[#f8f8f8] disabled:text-[var(--semantic-text-disabled)] disabled:hover:bg-transparent"
-            >
-              コピー
-            </button>
           </div>
 
           {visible.length === 0 ? (
@@ -843,7 +921,7 @@ function FeedbackPanel({
           )}
 
           <p className="pt-1 text-[11px] font-normal leading-relaxed text-[var(--semantic-text-secondary)]">
-            保存先はこのブラウザ（localStorage）です。他の人に渡すときは「コピー」で Markdown にして共有してください。
+            保存先はこのブラウザ（localStorage）です。
           </p>
         </section>
       </div>
@@ -884,8 +962,11 @@ function FeedbackCard({
             {n}
           </span>
         )}
+        <span className="shrink-0 text-[11px] font-bold text-[var(--semantic-text-secondary)]">No.{entry.no}</span>
+        <span className={`shrink-0 h-5 px-2 rounded-full text-[11px] font-bold flex items-center ${STATUS_CHIP_CLASS[entry.status]}`}>
+          {STATUS_LABELS[entry.status]}
+        </span>
         <span className={`shrink-0 h-5 px-2 rounded-full text-[11px] font-bold flex items-center ${KIND_STYLES[entry.kind]}`}>{KIND_LABELS[entry.kind]}</span>
-        {done && <span className="shrink-0 h-5 px-2 rounded-full bg-[#e6f5ec] text-[var(--semantic-brand-primary)] text-[11px] font-bold flex items-center">対応済み</span>}
         {showScreen && (
           <span className="flex-1 min-w-0 truncate text-[11px] font-normal text-[var(--semantic-text-secondary)]" title={entry.pathname}>
             {entry.screenCategory} › {entry.screenTitle}
@@ -900,12 +981,21 @@ function FeedbackCard({
           </span>
         </div>
       )}
-      <p className={`text-sm font-normal leading-relaxed whitespace-pre-wrap break-words ${done ? "text-[var(--semantic-text-secondary)]" : "text-[var(--semantic-text-primary)]"}`}>
-        {entry.body}
+      <p className={`text-sm leading-relaxed break-words ${done ? "text-[var(--semantic-text-secondary)]" : "text-[var(--semantic-text-primary)]"}`}>
+        {feedbackHeadline(entry)}
       </p>
+      {feedbackDetail(entry) && (
+        <p className="text-xs font-normal leading-relaxed whitespace-pre-wrap break-words text-[var(--semantic-text-secondary)]">
+          {feedbackDetail(entry)}
+        </p>
+      )}
       <div className="flex items-center gap-2 text-[11px] font-normal text-[var(--semantic-text-secondary)]">
         <span className="flex-1 min-w-0 truncate">
-          {entry.author && <span className="mr-1">{entry.author}</span>}
+          {[companyLabel(entry.company), entry.author].filter(Boolean).map((t) => (
+            <span key={t} className="mr-1">
+              {t}
+            </span>
+          ))}
           {formatFeedbackTime(entry.createdAt)}
         </span>
         {/* 操作はアイコンで。何のボタンかは title / aria-label で補う */}

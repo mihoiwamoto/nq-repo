@@ -7,6 +7,7 @@ import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { floors } from "../../../app/features/glass-plastic/mockData";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { countByStatus } from "./types";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { downloadElementAsPdf } from "../../utils/pdf";
@@ -51,7 +52,9 @@ const COLUMNS = [
 
 export function DataListPage() {
   const { factoryId, floorId } = useParams<{ factoryId: string; floorId: string }>();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
   const floorName = floors.find((f) => f.id === floorId)?.name ?? "点検場所";
   const basePath = `/admin/data-search/glass-plastic/factories/${factoryId}/floors/${floorId}`;

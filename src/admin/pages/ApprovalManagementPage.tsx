@@ -4,6 +4,7 @@ import { approvalRequests, type ApprovalStatus } from "../data/approvals";
 import { ledgerCategories } from "../../data/ledgers";
 import { ApprovalStatusBadge } from "../components/ApprovalStatusBadge";
 import { Toast } from "../components/Toast";
+import { useDemoList } from "../../components/demo/demoStore";
 
 const TABS: { status: ApprovalStatus; label: string }[] = [
   { status: "pending", label: "承認待ち" },
@@ -15,8 +16,10 @@ export function ApprovalManagementPage() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<ApprovalStatus>("pending");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const items = approvalRequests.filter((item) => item.status === activeTab);
-  const pendingCount = approvalRequests.filter((item) => item.status === "pending").length;
+  // 動作デモ「データが無い」のときは申請そのものが 1 件も無い
+  const requests = useDemoList(approvalRequests);
+  const items = requests.filter((item) => item.status === activeTab);
+  const pendingCount = requests.filter((item) => item.status === "pending").length;
 
   useEffect(() => {
     const statusChanged = (location.state as any)?.statusChanged as ApprovalStatus | undefined;

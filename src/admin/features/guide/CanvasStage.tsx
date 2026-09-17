@@ -6,6 +6,9 @@ export const STAGE_PADDING = 48;
 /** After と Before の端末枠のあいだ（画面上の px。ズームしても変わらない） */
 export const FRAME_GAP = 48;
 
+/** Claude が変えた箇所の枠（座標は iframe の表示領域基準） */
+export type ChangeRect = { key: string; rect: Rect; label: string; active: boolean };
+
 /** キャンバスに立てるコメントピン（座標は iframe の表示領域基準） */
 export type CommentPin = { id: string; n: number; x: number; y: number; resolved: boolean; active: boolean };
 
@@ -25,10 +28,13 @@ export function CanvasStage({
   onZoomBy,
   dropIndicator,
   editedRects,
+  changeRects,
+  diffRects,
   pins,
   draftPin,
   onPinClick,
   beforeSrc,
+  beforeImage,
   beforeFrameRef,
 }: {
   stageRef: RefObject<HTMLDivElement | null>;
@@ -48,12 +54,21 @@ export function CanvasStage({
   dropIndicator: DropIndicator | null;
   /** 編集した要素の位置（赤枠で囲む） */
   editedRects: Rect[];
+  /** Claude が変えた箇所（オレンジ枠 + 名前。押した部分は濃く出す） */
+  changeRects: ChangeRect[];
+  /** 撮影したピクセル差分の位置（マゼンタの破線。差分を出しているときだけ） */
+  diffRects: Rect[];
   pins: CommentPin[];
   /** 立てたばかりで、まだ書いていないピン */
   draftPin: { x: number; y: number } | null;
   onPinClick: (id: string) => void;
-  /** 編集前の画面を右に並べて出すときの URL（出さないときは null） */
+  /** 編集前の画面を右に並べて出すときの URL（キャンバス編集との見比べ用。出さないときは null） */
   beforeSrc: string | null;
+  /**
+   * 右に並べる「撮影済みの画像」。Claude が編集する前に撮ったスクリーンショット（変更前）や
+   * ピクセル差分の画像を出すのに使う。offsetY は編集後の画面のスクロールに合わせる量。
+   */
+  beforeImage: { src: string; label: string; offsetY: number } | null;
   beforeFrameRef: RefObject<HTMLIFrameElement | null>;
 }) {
   const size = DEVICE_SIZES[device];
@@ -90,7 +105,8 @@ export function CanvasStage({
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
   }
 
-  const frames = beforeSrc ? 2 : 1;
+  const showBefore = !!beforeSrc || !!beforeImage;
+  const frames = showBefore ? 2 : 1;
   const beforeLeft = STAGE_PADDING + size.width * zoom + FRAME_GAP;
   const frameBottom = STAGE_PADDING + size.height * zoom;
 
@@ -142,9 +158,9 @@ export function CanvasStage({
             {size.width}×{size.height}
           </span>
         </div>
-        {beforeSrc && cornerLabel(STAGE_PADDING, "After（編集後）", "bg-[var(--semantic-brand-primary)]")}
-        {beforeSrc && cornerLabel(beforeLeft, "Before（編集前）", "bg-[#6b6b6b]")}
-        {beforeSrc && (
+        {showBefore && cornerLabel(STAGE_PADDING, "After（今の画面）", "bg-[var(--semantic-brand-primary)]")}
+        {showBefore && cornerLabel(beforeLeft, beforeImage?.label ?? "Before（編集前）", "bg-[#6b6b6b]")}
+        {showBefore && (
           <>
             <div
               data-stage-bg="1"
@@ -167,14 +183,25 @@ export function CanvasStage({
                 outline: `${8 / zoom}px solid #6b6b6b`,
               }}
             >
-              <iframe
-                key={`before-${iframeKey}`}
-                ref={beforeFrameRef}
-                src={beforeSrc}
-                title={`${title}（編集前）`}
-                className="block border-0 bg-white pointer-events-none"
-                style={{ width: size.width, height: size.height }}
-              />
+              {beforeImage ? (
+                // 撮影済みの画像（変更前 / 差分）。編集後の画面のスクロールに合わせて上下にずらす
+                <img
+                  src={beforeImage.src}
+                  alt={beforeImage.label}
+                  draggable={false}
+                  className="block select-none pointer-events-none"
+                  style={{ width: size.width, transform: `translateY(${-beforeImage.offsetY}px)` }}
+                />
+              ) : (
+                <iframe
+                  key={`before-${iframeKey}`}
+                  ref={beforeFrameRef}
+                  src={beforeSrc ?? "about:blank"}
+                  title={`${title}（編集前）`}
+                  className="block border-0 bg-white pointer-events-none"
+                  style={{ width: size.width, height: size.height }}
+                />
+              )}
             </div>
           </>
         )}
@@ -213,6 +240,49 @@ export function CanvasStage({
                 background: "rgba(220,53,69,0.06)",
               }}
             />
+          ))}
+          {diffRects.map((r, i) => (
+            <div
+              key={`diff-${i}`}
+              className="absolute pointer-events-none"
+              style={{
+                left: r.x,
+                top: r.y,
+                width: r.width,
+                height: r.height,
+                outline: `${outlineWidth}px dashed #d6329b`,
+                outlineOffset: outlineWidth,
+              }}
+            />
+          ))}
+          {changeRects.map((c) => (
+            <div
+              key={c.key}
+              className="absolute pointer-events-none"
+              style={{
+                left: c.rect.x,
+                top: c.rect.y,
+                width: c.rect.width,
+                height: c.rect.height,
+                outline: `${outlineWidth}px solid #e0651a`,
+                outlineOffset: outlineWidth,
+                background: c.active ? "rgba(224,101,26,0.18)" : "rgba(224,101,26,0.07)",
+              }}
+            >
+              {c.active && (
+                <span
+                  className="absolute left-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-bold text-white bg-[#e0651a]"
+                  style={{
+                    bottom: "100%",
+                    transform: `scale(${labelScale})`,
+                    transformOrigin: "left bottom",
+                    ...(c.rect.y < 24 / zoom ? { bottom: "auto", top: "100%", transformOrigin: "left top" } : {}),
+                  }}
+                >
+                  {c.label}
+                </span>
+              )}
+            </div>
           ))}
           {hoverRect && (
             <div

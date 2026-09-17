@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { useDemoList } from "../../../components/demo/demoStore";
 
 interface SpecimenItem {
   id: string;
@@ -27,6 +28,8 @@ const SPECIMEN_ENTRIES: SpecimenItem[] = [
 
 export function SpecimenListPage() {
   const navigate = useNavigate();
+  // 動作デモの「データが無い」を試している間は、検体が 1 件も無い状態にする
+  const specimens = useDemoList(SPECIMEN_ENTRIES);
 
   function handleConfirm(item: SpecimenItem) {
     navigate(`/app/ledger-list/specimen-management/specimens/${item.id}/confirm`, {
@@ -53,7 +56,12 @@ export function SpecimenListPage() {
         <div className="w-full max-w-[480px]">
           <h2 className="text-lg font-semibold text-[#333] mb-4">検体一覧</h2>
           <div className="flex flex-col gap-3">
-            {SPECIMEN_ENTRIES.map((item) => (
+            {specimens.length === 0 && (
+              <p className="text-base text-[#808080] text-center py-6">
+                保管中の検体はまだありません
+              </p>
+            )}
+            {specimens.map((item) => (
               <div
                 key={item.id}
                 className="bg-white p-4 rounded-lg border border-[#d0d0d0] flex flex-col gap-2"

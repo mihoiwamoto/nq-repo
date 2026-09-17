@@ -5,6 +5,7 @@ import { todayString } from "../../utils/date";
 import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
 import { AppHeader } from "../../layout/AppHeader";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { ACTORS } from "./mockData";
 
 const COLUMNS = [
@@ -22,7 +23,9 @@ export function RecordsListPage() {
   const location = useLocation();
   const inspectorName =
     (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
-  const { additives, records } = useAdditiveManagement();
+  const { additives, records: allRecords } = useAdditiveManagement();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
 
   const additive = additives.find((a) => a.id === productId);
   // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）

@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useDemoEmpty } from "../../components/demo/demoStore";
 import type { ProgressStatus } from "../features/progress/mockData";
 
 /**
@@ -21,10 +22,16 @@ export function fillFromProgressStatus(status: ProgressStatus): RecordFill {
  * 進捗一覧から遷移してきたときだけ RecordFill を返す（それ以外は null）。
  * 各帳票の画面は `useProgressRecordFill() ?? 自分のモックの status から求めた値` で
  * 記録の出し分けを決める。
+ *
+ * 動作デモの「データが無い」を試しているときは、どこから来ても "none"（記録なし）。
+ * 一覧のステータスが全部「未点検」なのに、開いた先には記録が入っている、という
+ * 食い違いを防ぐため、全帳票が通るここで一括して落としている。
  */
 export function useProgressRecordFill(): RecordFill | null {
   const location = useLocation();
+  const demoEmpty = useDemoEmpty();
   const state = location.state as { progressStatus?: ProgressStatus } | null;
+  if (demoEmpty) return "none";
   return state?.progressStatus ? fillFromProgressStatus(state.progressStatus) : null;
 }
 
@@ -56,6 +63,8 @@ export function fillRecordMap<T>(
  */
 export function useProgressConfirmed(): boolean {
   const location = useLocation();
+  const demoEmpty = useDemoEmpty();
   const state = location.state as { progressStatus?: ProgressStatus } | null;
-  return state?.progressStatus === "confirmed";
+  // 「データが無い」ときは確認まで通った記録も無い
+  return !demoEmpty && state?.progressStatus === "confirmed";
 }

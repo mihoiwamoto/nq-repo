@@ -6,6 +6,7 @@ import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
 import { ConfirmStatusBadge } from "../../components/ConfirmStatusBadge";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { countByStatus, type ConfirmStatus } from "./types";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { getFactoryName } from "../../../data/factories";
@@ -44,7 +45,9 @@ function formatDateShort(date: string) {
 
 export function RecordsListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/confirmations/glass-plastic/factories/${factoryId}`;
 

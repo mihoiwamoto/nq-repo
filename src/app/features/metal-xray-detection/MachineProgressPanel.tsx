@@ -1,9 +1,12 @@
 import { MACHINES, MACHINE_RECORDS, MACHINE_INSPECTED_AT, MACHINE_STATUS_LABELS, type Machine } from "./mockData";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import { useDemoUninspected } from "../../../components/demo/demoStore";
 
 export function MachineProgressPanel({ onClose }: { onClose: () => void }) {
-  const inspectedMachines = MACHINES.filter((m) => m.status === "inspected");
-  const total = MACHINES.length;
+  // 一覧と同じく、動作デモ「データが無い」のときは全機械が未点検
+  const machines = useDemoUninspected(MACHINES);
+  const inspectedMachines = machines.filter((m) => m.status === "inspected");
+  const total = machines.length;
   const inspectedCount = inspectedMachines.length;
   const progressPercent = total === 0 ? 0 : (inspectedCount / total) * 100;
 

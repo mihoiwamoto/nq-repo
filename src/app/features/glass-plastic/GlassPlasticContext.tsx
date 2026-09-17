@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import { floors as initialFloors, type Floor, type FloorStatus, type RoomItemRecord } from "./mockData";
 
@@ -12,7 +13,8 @@ type GlassPlasticContextValue = {
 const GlassPlasticContext = createContext<GlassPlasticContextValue | null>(null);
 
 export function GlassPlasticProvider({ children }: { children: ReactNode }) {
-  const [floors, setFloors] = useState<Floor[]>(initialFloors);
+  // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
+  const [floors, setFloors] = useDemoInspectionState<Floor>(initialFloors);
   const [currentFloorRecords, setCurrentFloorRecords] = useState<Record<string, RoomItemRecord> | null>(null);
 
   const value = useMemo<GlassPlasticContextValue>(

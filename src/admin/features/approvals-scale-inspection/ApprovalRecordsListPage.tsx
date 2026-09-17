@@ -5,6 +5,7 @@ import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { RepairStatusSection } from "./RepairStatusSection";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
@@ -106,7 +107,9 @@ const COLUMNS = [
 export function ApprovalRecordsListPage() {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
 
   const request = approvalRequests.find((r) => r.id === requestId);
@@ -152,6 +155,11 @@ export function ApprovalRecordsListPage() {
                     </div>
                   ))}
                 </div>
+                {batchRecords.length === 0 && (
+                  <p className="text-sm text-[var(--semantic-text-secondary)] text-center py-6">
+                    該当するデータがありません
+                  </p>
+                )}
                 {batchRecords.map((record, index) => (
                   <div
                     key={record.id}

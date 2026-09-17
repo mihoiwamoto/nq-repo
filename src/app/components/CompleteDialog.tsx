@@ -1,3 +1,8 @@
+import { useEffect } from "react";
+import { useAnnouncementBar } from "../layout/AnnouncementBarContext";
+import { useDemoSendOutcome } from "../../components/demo/demoStore";
+import { ErrorDialog } from "./ErrorDialog";
+
 type CompleteDialogProps = {
   /** 見出し（例: 提出が完了しました） */
   title: string;
@@ -11,6 +16,10 @@ type CompleteDialogProps = {
 /**
  * 提出・確認などの完了を知らせるポップアップ。
  * 画面遷移ではなく、元の画面の上にオーバーレイで重ねて表示する。
+ *
+ * 動作デモで「送信エラー」を試しているときは、エラーのポップアップに差し替える
+ * （呼ぶ側は今まで通りで、書き分けは要らない）。
+ * オフラインのときは差し替えない。未送信であることは上の帯が知らせる。
  */
 export function CompleteDialog({
   title,
@@ -18,6 +27,35 @@ export function CompleteDialog({
   buttonLabel,
   onButtonClick,
 }: CompleteDialogProps) {
+  const outcome = useDemoSendOutcome();
+  const { notifySendResult, notifySendErrorDialog } = useAnnouncementBar();
+
+  // 完了ポップアップが出た＝送信したところ。結果を上の帯にも反映する
+  useEffect(() => {
+    notifySendResult(outcome);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outcome]);
+
+  // 送信エラーのポップアップを出している間は、後ろの帯を出さない
+  useEffect(() => {
+    if (outcome !== "failed") return;
+    notifySendErrorDialog(true);
+    return () => notifySendErrorDialog(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outcome]);
+
+  // 送信エラーのときだけ Figma「エラー画面 > エラー表示_ダイアログ」の形に差し替える。
+  // オフライン（unsent）はふだんの完了ポップアップのまま
+  if (outcome === "failed") {
+    return (
+      <ErrorDialog
+        title="送信エラーが発生しました"
+        message="内容は未送信のまま端末に保存されています。時間をおいて、もう一度送信してください。"
+        onClose={onButtonClick}
+      />
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" />

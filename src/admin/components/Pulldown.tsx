@@ -56,7 +56,8 @@ export function Pulldown({
   const triggerLabel = selectedLabel ?? placeholder ?? "";
 
   return (
-    <div ref={containerRef} className="relative">
+    // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が入力欄の 1 つとして数えるための印。見た目には影響しない
+    <div ref={containerRef} data-nq-part="pulldown" className="relative">
       <button
         type="button"
         disabled={disabled}

@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 
-export function NqProductCompletePage() {
+export function NqProductCompletePage({ message }: { message: string }) {
   const location = useLocation();
   const productName = (location.state as { productName?: string } | null)?.productName;
-  const message = productName ? `${productName}の新規登録が完了しました` : "製品の削除が完了しました";
+  // 新規登録の直後だけ製品名を添える。URL を直接開いたときは state が無いのでルートの文言のまま
+  const text = productName ? `${productName}の新規登録が完了しました` : message;
 
   return (
     <div>
@@ -27,7 +28,7 @@ export function NqProductCompletePage() {
               strokeLinejoin="round"
             />
           </svg>
-          <p className="text-2xl text-[var(--semantic-text-primary)]">{message}</p>
+          <p className="text-2xl text-[var(--semantic-text-primary)]">{text}</p>
         </div>
         <Link
           to="/admin/products?tab=nq"

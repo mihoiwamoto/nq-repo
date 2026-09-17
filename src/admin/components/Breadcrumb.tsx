@@ -8,7 +8,8 @@ export type BreadcrumbItem = {
 
 export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   return (
-    <div className="flex items-center gap-2 px-6 py-4">
+    // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「パンくず」を見つけるための印。見た目には影響しない
+    <div data-nq-part="breadcrumb" className="flex items-center gap-2 px-6 py-4">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
         return (

@@ -5,11 +5,11 @@
  *   node .claude/capture-screens.cjs --baseline    全画面を撮って「変更前」として保存
  *   node .claude/capture-screens.cjs               変更のあった画面だけ撮り直して差分を出す
  *   node .claude/capture-screens.cjs --all         全画面を撮り直して差分を出す
- *   node .claude/capture-screens.cjs --only <文字列>  画面名/パスの部分一致で絞る
+ *   node .claude/capture-screens.cjs --only <文字列>  画面名/パスの部分一致で絞る（カンマ区切りで複数可）
  *
  * オプション:
  *   --port <n>        dev サーバーのポート（省略時は自動検出）
- *   --width <n>       ビューポート幅（既定 1280）
+ *   --width <n>       ビューポート幅（既定 1280。アプリ画面は常にタブレット縦 768×1024）
  *   --concurrency <n> 同時に開くタブ数（既定 4）
  *
  * 依存パッケージなし。すでに入っている Google Chrome をヘッドレスで使う。
@@ -32,6 +32,22 @@ const DIRS = {
   thumb: path.join(SHOTS, "thumb"),
 };
 const INDEX_PATH = path.join(__dirname, "shots-index.json");
+
+/**
+ * アプリ（src/app）はタブレット縦（768×1024）に収まる画面なので、管理画面と同じ PC 幅で撮ると
+ * 実際の見え方と違う絵になる（AppViewport が枠を中央に置くだけで、周りが余白になる）。
+ * 変更履歴キャンバスや画面遷移図はアプリをタブレット枠で出すため、絵の形が合わないと
+ * 「変更前」が縮んで枠の上半分にしか入らない。撮影の側をその画面の実寸に合わせる。
+ * src/admin/features/guide/canvasTypes.ts の DEVICE_SIZES.tablet と合わせること。
+ */
+const APP_VIEWPORT = { width: 768, height: 1024 };
+
+/** その画面を撮るビューポート。アプリだけタブレット縦にする */
+function viewportFor(screen, args) {
+  return screen.filePath.startsWith("src/app/")
+    ? { width: APP_VIEWPORT.width, height: APP_VIEWPORT.height }
+    : { width: args.width, height: args.height };
+}
 
 /* ------------------------------------------------------------------ */
 /* 引数                                                                */
@@ -56,9 +72,9 @@ function parseArgs(argv) {
 /* dev サーバーの検出                                                   */
 /* ------------------------------------------------------------------ */
 
-function probe(port) {
+function probe(port, timeout) {
   return new Promise((resolve) => {
-    const req = http.get({ host: "localhost", port, path: "/", timeout: 1500 }, (res) => {
+    const req = http.get({ host: "localhost", port, path: "/", timeout }, (res) => {
       let body = "";
       res.on("data", (c) => (body += c));
       res.on("end", () => resolve(res.statusCode === 200 && body.includes("/src/main.tsx")));
@@ -69,8 +85,12 @@ function probe(port) {
 }
 
 async function findDevServer(preferred) {
-  const ports = preferred ? [preferred] : [5173, 5174, 5175, 5176, 5177, 5178, 3000, 4173];
-  for (const p of ports) if (await probe(p)) return p;
+  // --port で名指しされたポートは「そこにあるはず」なので長めに待つ。
+  // 候補を総当たりするときは、無い方が普通なので短く切り上げる。
+  if (preferred) return (await probe(preferred, 8000)) ? preferred : null;
+  for (const p of [5173, 5174, 5175, 5176, 5177, 5178, 3000, 4173]) {
+    if (await probe(p, 1500)) return p;
+  }
   return null;
 }
 
@@ -118,16 +138,26 @@ const BLANK_ROOT_CHARS = 2000; // DOM にこれだけ中身があるなら白い
 const SETTLE_TIMEOUT = 15000; // 描画待ちの上限
 const SETTLE_QUIET = 400;     // DOM がこの時間変化しなければ「落ち着いた」とみなす
 
-/** ページ内で実行され、描画が落ち着くまで待つ */
+/**
+ * ページ内で実行され、描画が落ち着くまで待つ。
+ *
+ * 時間は必ず performance.now() で測る。
+ * DETERMINISM_SCRIPT が Date.now() を固定値に差し替えているので、
+ * Date.now() で測ると経過時間がいつまでも 0 のままになり、
+ * 下の打ち切り条件がどれも成立しない。
+ * 実際それで「#root に中身が入るまで」のループが永久に回り、
+ * Runtime.evaluate が返らず CDP タイムアウト → 真っ白な絵が残っていた。
+ */
 const SETTLE_FN = /* js */ `
 async (timeout, quiet) => {
   const root = document.getElementById("root") || document.body;
-  const started = Date.now();
+  const now = () => performance.now();
+  const started = now();
 
   const rootReady = () => (root.innerHTML || "").length > 200;
 
   // 1. #root に中身が入るまで
-  while (!rootReady() && Date.now() - started < timeout) {
+  while (!rootReady() && now() - started < timeout) {
     await new Promise(r => setTimeout(r, 100));
   }
 
@@ -136,11 +166,11 @@ async (timeout, quiet) => {
     let timer = setTimeout(resolve, quiet);
     const obs = new MutationObserver(() => {
       clearTimeout(timer);
-      if (Date.now() - started > timeout) return resolve();
+      if (now() - started > timeout) return resolve();
       timer = setTimeout(resolve, quiet);
     });
     obs.observe(root, { childList: true, subtree: true, attributes: true, characterData: true });
-    setTimeout(resolve, Math.max(0, timeout - (Date.now() - started)));
+    setTimeout(resolve, Math.max(0, timeout - (now() - started)));
   });
 
   // 3. フォント（永久に解決しないことがあるので時間で打ち切る）
@@ -156,7 +186,7 @@ async (timeout, quiet) => {
     ok: rootReady(),
     rootSize: (root.innerHTML || "").length,
     fonts: document.fonts ? document.fonts.status : "なし",
-    waitedMs: Date.now() - started,
+    waitedMs: Math.round(now() - started),
   };
 }
 `;
@@ -165,12 +195,19 @@ async (timeout, quiet) => {
 /* 1 画面ぶんのキャプチャ                                                */
 /* ------------------------------------------------------------------ */
 
-async function preparePage(browser, { width, height }) {
-  const page = await browser.newPage();
-  await page.send("Page.addScriptToEvaluateOnNewDocument", { source: DETERMINISM_SCRIPT });
+/** 画面ごとにビューポートを切り替える（同じタブを使い回すので、変わるときだけ送る） */
+async function setViewport(page, { width, height }) {
+  if (page.viewport && page.viewport.width === width && page.viewport.height === height) return;
   await page.send("Emulation.setDeviceMetricsOverride", {
     width, height, deviceScaleFactor: 1, mobile: false,
   });
+  page.viewport = { width, height };
+}
+
+async function preparePage(browser, { width, height }) {
+  const page = await browser.newPage();
+  await page.send("Page.addScriptToEvaluateOnNewDocument", { source: DETERMINISM_SCRIPT });
+  await setViewport(page, { width, height });
 
   // 画面が白いとき、それが「撮影が早すぎた」のか「JS エラーで描画できていない」のか
   // 区別できないと原因調査に時間がかかるので、例外を拾って記録する。
@@ -306,10 +343,14 @@ async function main() {
     targets = targets.filter((s) => ids.has(s.id));
   }
   if (args.only) {
-    const q = args.only.toLowerCase();
-    targets = targets.filter(
-      (s) => s.displayName.toLowerCase().includes(q) || s.filePath.toLowerCase().includes(q),
-    );
+    // カンマ区切りで複数指定できる（どれかに一致すれば対象）。
+    // 白紙になった画面だけをまとめて撮り直したいときに使う。
+    const qs = args.only.split(",").map((q) => q.trim().toLowerCase()).filter(Boolean);
+    targets = targets.filter((s) => {
+      const name = s.displayName.toLowerCase();
+      const file = s.filePath.toLowerCase();
+      return qs.some((q) => name.includes(q) || file.includes(q));
+    });
   }
 
   if (!targets.length) {
@@ -367,6 +408,7 @@ async function main() {
       const screen = queue.shift();
       const route = resolveRoute(screen.routes[0], screen);
       const url = origin + route;
+      const viewport = viewportFor(screen, args);
       try {
         // 中身があるはずなのに真っ白な絵が撮れることがある（描画待ちを抜けても
         // コンポジタが描き終わっていないケース）。白い基準画像は後の比較で
@@ -374,20 +416,28 @@ async function main() {
         let png = null;
         let jsErrors = [];
         let unstable = false;
+        let isBlank = false;
         for (let attempt = 1; attempt <= 3; attempt++) {
-          const r = await withTimeout(capture(page, url, args), 60000, screen.displayName);
+          await setViewport(page, viewport);
+          const r = await withTimeout(capture(page, url, viewport), 60000, screen.displayName);
           png = r.png;
           jsErrors = r.jsErrors;
           unstable = !r.stable;
           const bytes = Buffer.byteLength(png, "base64");
           // JS エラーで落ちている画面は撮り直しても白いままなので、粘らない
           if (jsErrors.length) {
+            isBlank = bytes < BLANK_BYTES;
             blanks.push({ screen: screen.displayName, url, bytes, jsErrors });
             break;
           }
-          const looksBlank = bytes < BLANK_BYTES && r.rootSize > BLANK_ROOT_CHARS;
+          // 以前は「DOM に中身があるのに白い」ときだけ撮り直していたが、
+          // ルート直下がまだ差し替わっていない（rootSize が小さい）状態でも
+          // 白い絵は撮れる。白さの判断は絵のバイト数だけで足りるので、
+          // DOM の量は「原因を記録するための情報」に留める。
+          const looksBlank = bytes < BLANK_BYTES;
           if (!looksBlank) break;
           if (attempt === 3) {
+            isBlank = true;
             blanks.push({ screen: screen.displayName, url, bytes, rootSize: r.rootSize, jsErrors });
             break;
           }
@@ -400,6 +450,8 @@ async function main() {
         entry.filePath = screen.filePath;
         entry.url = route;
         entry.capturedAt = new Date().toISOString();
+        // 画面ごとに撮った幅（アプリは 768）。表示側が「絵と枠の幅が合っているか」を見るのに使う
+        entry.viewportWidth = viewport.width;
         entry.jsErrors = jsErrors.length ? jsErrors : undefined;
         entry.unstable = unstable || undefined;
         if (unstable) unstables.push(screen.displayName);
@@ -411,9 +463,14 @@ async function main() {
           entry.hasAfter = true;
         }
 
-        // サムネイル（グリッド用）は常に最新の絵から作る
-        const thumb = await makeThumb(canvas, png, 360);
-        fs.writeFileSync(path.join(DIRS.thumb, `${screen.id}.jpg`), Buffer.from(thumb, "base64"));
+        // サムネイル（グリッド用）は最新の絵から作る。
+        // ただし撮り直しても白いままだったときは作り直さない。
+        // 画面説明の一覧に真っ白なカードが並ぶより、前回の絵が残っている方がましなので。
+        const thumbPath = path.join(DIRS.thumb, `${screen.id}.jpg`);
+        if (!isBlank || !fs.existsSync(thumbPath)) {
+          const thumb = await makeThumb(canvas, png, 360);
+          fs.writeFileSync(thumbPath, Buffer.from(thumb, "base64"));
+        }
       } catch (e) {
         failures.push({ screen: screen.displayName, url, error: e.message });
         // 固まったページは以降も応答しないので、作り直す

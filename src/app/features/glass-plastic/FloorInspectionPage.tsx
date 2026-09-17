@@ -129,6 +129,7 @@ export function FloorInspectionPage() {
 
   const visibleRooms = activeRoomId === "all" ? rooms : rooms.filter((room) => room.id === activeRoomId);
 
+  // 異常にした項目は内容・原因・対応まで入っていること
   const allItemsComplete = rooms.every((room) =>
     room.items.every((item) => {
       if (item.badge) return true;
@@ -137,6 +138,10 @@ export function FloorInspectionPage() {
       return Boolean(record.content && record.cause && record.actionType);
     })
   );
+  // まだ 1 項目も点検していないうちは確認画面へ進めない
+  // （allItemsComplete は「異常の項目に不足が無いか」しか見ないので、空でも true になる）
+  const hasInput = Object.keys(records).length > 0;
+  const canProceed = allItemsComplete && hasInput;
 
   function setStatus(
     roomName: string,
@@ -403,10 +408,10 @@ export function FloorInspectionPage() {
           </button>
           <button
             type="button"
-            disabled={!allItemsComplete}
+            disabled={!canProceed}
             onClick={goToConfirm}
             className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
-              allItemsComplete ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+              canProceed ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
             }`}
           >
             確認画面へ

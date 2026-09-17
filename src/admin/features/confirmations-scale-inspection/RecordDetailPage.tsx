@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { RecordTimestamp } from "../../components/RecordTimestamp";
+import { seedTimestamp } from "../../utils/recordTimestamps";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -55,6 +57,9 @@ export function RecordDetailPage() {
   }
 
   const isNg = !record.skipped && record.operationCheck === "ng";
+  // アプリで秤ごとに打ったスタンプ。項目ごとの時刻はモックに無いので実施日から組み立てる
+  // （データ検索の同じ画面と同じ時刻を使う）
+  const stampAt = (time: string) => seedTimestamp(record?.date, time);
 
   function handleAddComment() {
     if (!record || !newComment.trim()) return;
@@ -159,40 +164,56 @@ export function RecordDetailPage() {
                     <p className="font-normal">対応：{record.operationAction}</p>
                   </div>
                 )}
+                <RecordTimestamp inspector={record.implementer} timestamp={stampAt("09:30")} />
               </div>
               <HLine />
               {isNg ? (
                 <>
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-xl text-[var(--semantic-text-primary)]">水平点検</p>
-                    <CheckStatusTag status="ok" />
-                  </div>
-                  <HLine />
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-xl text-[var(--semantic-text-primary)]">汚れ</p>
-                    <CheckStatusTag status="ok" />
-                  </div>
-                  <HLine />
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex flex-col gap-2 items-start">
-                      <p className="text-xl text-[var(--semantic-text-primary)]">秤の表示値(g)</p>
-                      <p className="text-base text-[var(--semantic-text-secondary)] font-normal">
-                        使用分銅(g)：{record.referenceWeight}
-                      </p>
+                  <div className="flex flex-col gap-2 items-start w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-xl text-[var(--semantic-text-primary)]">水平点検</p>
+                      <CheckStatusTag status="ok" />
                     </div>
-                    <p className="text-xl text-[var(--semantic-text-primary)]">100</p>
+                    <RecordTimestamp inspector={record.implementer} timestamp={stampAt("09:45")} />
+                  </div>
+                  <HLine />
+                  <div className="flex flex-col gap-2 items-start w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-xl text-[var(--semantic-text-primary)]">汚れ</p>
+                      <CheckStatusTag status="ok" />
+                    </div>
+                    <RecordTimestamp inspector={record.implementer} timestamp={stampAt("09:50")} />
+                  </div>
+                  <HLine />
+                  <div className="flex flex-col gap-2 items-start w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex flex-col gap-2 items-start">
+                        <p className="text-xl text-[var(--semantic-text-primary)]">秤の表示値(g)</p>
+                        <p className="text-base text-[var(--semantic-text-secondary)] font-normal">
+                          使用分銅(g)：{record.referenceWeight}
+                        </p>
+                      </div>
+                      <p className="text-xl text-[var(--semantic-text-primary)]">100</p>
+                    </div>
+                    <RecordTimestamp inspector={record.implementer} timestamp={stampAt("10:00")} />
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-xl text-[var(--semantic-text-primary)]">水平点検</p>
-                    <CheckStatusTag status={record.levelCheck ?? "ok"} />
+                  <div className="flex flex-col gap-2 items-start w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-xl text-[var(--semantic-text-primary)]">水平点検</p>
+                      <CheckStatusTag status={record.levelCheck ?? "ok"} />
+                    </div>
+                    <RecordTimestamp inspector={record.implementer} timestamp={stampAt("09:45")} />
                   </div>
                   <HLine />
-                  <div className="flex items-center justify-between w-full">
-                    <p className="text-xl text-[var(--semantic-text-primary)]">汚れ</p>
-                    <CheckStatusTag status={record.dirtCheck ?? "ok"} />
+                  <div className="flex flex-col gap-2 items-start w-full">
+                    <div className="flex items-center justify-between w-full">
+                      <p className="text-xl text-[var(--semantic-text-primary)]">汚れ</p>
+                      <CheckStatusTag status={record.dirtCheck ?? "ok"} />
+                    </div>
+                    <RecordTimestamp inspector={record.implementer} timestamp={stampAt("09:50")} />
                   </div>
                   <HLine />
                   <div className="flex flex-col gap-2 items-start w-full">
@@ -216,6 +237,7 @@ export function RecordDetailPage() {
                         原因：{record.weightCause}
                       </p>
                     )}
+                    <RecordTimestamp inspector={record.implementer} timestamp={stampAt("10:00")} />
                   </div>
                 </>
               )}

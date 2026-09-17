@@ -6,6 +6,7 @@ import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import type { WaterCheckResult, WaterSearchRecord } from "./types";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
@@ -126,7 +127,9 @@ const COLUMNS = [
 
 export function DataListPage() {
   const { factoryId, pointId } = useParams<{ factoryId: string; pointId: string }>();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
   const location = pointId ? decodeURIComponent(pointId) : "";
   const basePath = `/admin/data-search/water-inspection/factories/${factoryId}/points/${pointId}`;

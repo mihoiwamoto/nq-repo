@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
   chemicals as initialChemicals,
@@ -21,7 +22,8 @@ type ChemicalManagementContextValue = {
 const ChemicalManagementContext = createContext<ChemicalManagementContextValue | null>(null);
 
 export function ChemicalManagementProvider({ children }: { children: ReactNode }) {
-  const [chemicals, setChemicals] = useState<Chemical[]>(initialChemicals);
+  // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
+  const [chemicals, setChemicals] = useDemoInspectionState<Chemical>(initialChemicals);
   const [records, setRecords] = useState<ChemicalRecord[]>(initialRecords);
 
   const value = useMemo<ChemicalManagementContextValue>(

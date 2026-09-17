@@ -6,6 +6,7 @@ import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
 import { ConfirmStatusBadge } from "../../components/ConfirmStatusBadge";
 import { useRecords } from "./RecordsContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { getFactoryName } from "../../../data/factories";
 import type { ConfirmStatus, WaterCheckResult } from "./types";
@@ -113,7 +114,9 @@ function isRecordAbnormal(record: { taste: WaterCheckResult; smell: WaterCheckRe
 
 export function RecordsListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/confirmations/water-inspection/factories/${factoryId}`;
 

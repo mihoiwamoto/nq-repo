@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
   additives as initialAdditives,
@@ -21,7 +22,8 @@ type AdditiveManagementContextValue = {
 const AdditiveManagementContext = createContext<AdditiveManagementContextValue | null>(null);
 
 export function AdditiveManagementProvider({ children }: { children: ReactNode }) {
-  const [additives, setAdditives] = useState<Additive[]>(initialAdditives);
+  // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
+  const [additives, setAdditives] = useDemoInspectionState<Additive>(initialAdditives);
   const [records, setRecords] = useState<AdditiveRecord[]>(initialRecords);
 
   const value = useMemo<AdditiveManagementContextValue>(

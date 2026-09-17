@@ -1,6 +1,6 @@
 export type DeviceMode = "pc" | "tablet";
 
-/** 管理画面は PC、現場アプリはタブレットで確認する */
+/** 管理画面は PC、アプリはタブレットで確認する */
 export const DEVICE_SIZES: Record<DeviceMode, { label: string; width: number; height: number }> = {
   pc: { label: "PC", width: 1280, height: 800 },
   tablet: { label: "タブレット", width: 768, height: 1024 },

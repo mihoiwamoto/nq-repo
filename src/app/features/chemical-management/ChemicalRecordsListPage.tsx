@@ -6,6 +6,7 @@ import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/p
 import { AppHeader } from "../../layout/AppHeader";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import { useChemicalManagement } from "./ChemicalManagementContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { ACTORS } from "./mockData";
 
 const COLUMNS = [
@@ -23,7 +24,9 @@ export function ChemicalRecordsListPage() {
   const location = useLocation();
   const state = location.state as { date?: string; inspectorName?: string } | null;
   const inspectorName = state?.inspectorName ?? ACTORS[0].name;
-  const { chemicals, records } = useChemicalManagement();
+  const { chemicals, records: allRecords } = useChemicalManagement();
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(allRecords);
 
   const chemical = chemicals.find((c) => c.id === chemicalId);
   // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
