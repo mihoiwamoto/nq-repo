@@ -22,6 +22,10 @@ dist-kit が無い／サーバーを使わずダブルクリックで開いた�
 `import.meta.env.BASE_URL` を頭に付けること（`src/data/ledgers.ts` の帳票アイコン、`src/admin/features/guide/screenShots.tsx` の撮影済みスクリーンショットを直した）。
 `.claude/.shots` は dist に入らないので、`serve.cjs` が `/react/.claude/…` を React のフォルダから直に配る。
 
+**Vercel（nq-repo.vercel.app）での公開（2026-09-25）。** このリポジトリの `main` は Vercel が静的ファイルのまま配る（`vercel.json`：ビルド無し、`/` → 画面設計へ転送、`/react/*` は SPA として `react/index.html`、`snapshots/images/*` → `images/*`）。
+Vercel にはリポジトリの外のフォルダが無いので、**React の dist-kit を `react/` に写してコミットする**。React 側を直したら `npm run build:kit` のあと `rm -rf react && cp -R "../other/NQrepo（old）/dist-kit" react` してコミット・プッシュ。
+画面説明の撮影済みスクリーンショット（`.claude/.shots`、69MB）は Vercel に載せていないので、そこだけ画像が出ない。
+
 **画面が正しく出るかの一括点検。** 画面設計の全画面（304 枚）を順にめくって、白い画面・壊れた画像・JS エラー・行き先違いを調べる仕掛けを使った。
 `/react/` は画面設計と同じオリジンなので、iframe の中（`contentDocument`）をそのまま読める。hash が React のルートに無いと `*` で `/admin/login` に飛ぶので、「行き先が hash と違う」で見つけられる。
 画面や hash を足したあとは同じやり方で一度めくると早い（作業用の HTML は使い終わったら消す）。

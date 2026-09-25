@@ -1,0 +1,6 @@
+.vite
+.claude/*.py
+.claude/*.cjs
+.claude/settings.json
+.claude/launch.json
+CLAUDE.md

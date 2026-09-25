@@ -1,0 +1,14 @@
+{
+  "framework": null,
+  "installCommand": "echo skip",
+  "buildCommand": "echo static",
+  "outputDirectory": ".",
+  "cleanUrls": false,
+  "redirects": [
+    { "source": "/", "destination": "/nqrepo-screen-design.html", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/snapshots/images/:path*", "destination": "/images/:path*" },
+    { "source": "/react/:path*", "destination": "/react/index.html" }
+  ]
+}

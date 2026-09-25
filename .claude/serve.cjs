@@ -4,7 +4,9 @@ const port=Number(process.env.PORT||8791);
 /* React 実装（npm run build:kit で作った dist-kit）を同じサーバーの /react/ の下で配る。画面設計はこれを iframe で映す（PROJECT.demo.href）。
    同じオリジンにするのは、別ポートだと Chrome が別プロセスの iframe として扱い、描画が止まる画面があったため（2026-09-25）。
    dist-kit が無ければ配らず、画面設計はプロトタイプ HTML（PROJECT.demo.fallback）に戻る。置き場は REACT_DIST で変えられる */
-const rdist=process.env.REACT_DIST||path.join(root,'..','other','NQrepo（old）','dist-kit');
+/* 無ければ、Vercel 用にこのフォルダへ写した react/（React の dist-kit の写し）を使う */
+const rdistSrc=path.join(root,'..','other','NQrepo（old）','dist-kit');
+const rdist=process.env.REACT_DIST||(fs.existsSync(path.join(rdistSrc,'index.html'))?rdistSrc:path.join(root,'react'));
 const hasReact=fs.existsSync(path.join(rdist,'index.html'));
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.json':'application/json','.md':'text/markdown; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon','.woff':'font/woff','.woff2':'font/woff2','.ttf':'font/ttf'};
 const ctype=f=>({'Content-Type':mime[path.extname(f).toLowerCase()]||'application/octet-stream','Cache-Control':'no-store'});
