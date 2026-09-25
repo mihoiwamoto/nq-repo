@@ -1700,6 +1700,8 @@ const FREQ = ['毎日','毎週','毎月','毎年'];
 const PRODUCT_OPTS = ['マンゴープリン　ストレート　1kg','厚焼き玉子（本）　500g','たまごサラダ　200g','だし巻き玉子　厚焼き　300g','仕出しだし巻き玉子 冷凍','茶碗蒸しの素（濃縮）','ふわとろスクランブルエッグ','玉子と野菜のテリーヌ','フレンチトーストベース'];
 const STORAGE_OPTS = STORAGES.map(s=>s[0]);
 const POSTS = ['添加物','プリン','トッピング','アイス','カタラーナ'];
+/* scale-inspection/mockData.ts の initialScaleInspectionPosts と同じ id */
+const POST_ITEMS = () => POSTS.map((name,i)=>({id:'post-'+['additive','pudding','topping','ice','catalana'][i], name}));
 const NM = (n, i) => ({id:`${n}${i+1}`});
 const ITEMS = (pre, names, extra={}) => names.map((name,i)=>Object.assign({id:`${pre}${i+1}`, name}, typeof extra==='function' ? extra(name,i) : extra));
 /* 登録するもの 1 種類ぶんの定義（既定値を埋める） */
@@ -1712,7 +1714,7 @@ const schedOf = o => Object.assign({title:'点検予定', dateLb:'日付', rowLb
 const LX = {
   'glass-plastic': {
     main: ent({seg:'floors', noun:'フロア', title:'ガラスプラスチック管理', listTitle:'点検場所選択', crumb:'点検場所選択', tabs:true, cards:true, doneSeg:'registered',
-      items: ITEMS('fl', ['フロアA','フロアB']),
+      items: ITEMS('f', ['フロアA','フロアB']),   /* glass-plastic/mockData.ts の f1・f2 */
       fields:[['フロア名','text','例）フロアC',1],['アプリ表示期間','range','',0],['配置図','file','PNG / JPEG、5MB まで、660×1096px',1],['配置レイアウト','plan','',0]],
       rows: it => [['フロア名',it.name],['アプリ表示期間',RANGE_NONE],['配置図','floor-plan.png（660×1096）']],
       sections: it => [['修理状況', `<p class="tb cm">現在、対応が必要な箇所はありません</p>`]],
@@ -1725,7 +1727,7 @@ const LX = {
       rows: it => [['アプリ表示期間', it.from ? `${it.from} 〜 ${it.to}` : RANGE_NONE],['秤No.(ラベル名)',it.name],['持ち場',it.post||'プリン']],
       done:['秤点検記録設定の新規登録が完了しました','秤点検記録設定一覧に戻る'], delDone:['秤点検記録設定の削除が完了しました','秤点検記録設定一覧に戻る'], delTitle:'秤点検記録設定を削除'}),
     subnav:['秤、持ち場の新規登録/編集はこちらから', [['秤管理','scale-management'],['持ち場管理','post-management']]],
-    extra:[ent({seg:'posts', noun:'持ち場', title:'秤点検記録設定', doneSeg:null, del:false, store:'posts', items: ITEMS('po', POSTS),
+    extra:[ent({seg:'posts', noun:'持ち場', title:'秤点検記録設定', doneSeg:null, del:false, store:'posts', items: POST_ITEMS(),
       fields:[['持ち場名','text','例）プリン製造ライン',1]], rows: it => [['持ち場名',it.name]]})],
     subs:[
       ent({seg:'scale-management', noun:'秤', title:'秤管理', cols:[['表示順',80],['秤No.(ラベル名)','f1'],['シリアルナンバー','f1'],['秤量(kg)',100],['持ち場','f1'],['修理状況',120],['操作',120]],
@@ -1737,14 +1739,14 @@ const LX = {
         sections: it => [['秤の持ち場割り当て', lxKv([['持ち場', it.post||'プリン']])], ['修理状況', `<p class="tb cm">現在、対応が必要な箇所はありません</p>`]],
         done:['秤管理の新規登録が完了しました','秤管理一覧に戻る'], delDone:['秤管理の削除が完了しました','秤管理一覧に戻る'], delTitle:'秤管理を削除'}),
       ent({seg:'post-management', noun:'持ち場', title:'持ち場管理', store:'posts', edit:false, cols:[['表示順',80],['持ち場','f1'],['操作',120]], cells:(it,i)=>[String(i+1), esc(it.name)],
-        filter:[['持ち場名で探す','text']], items: ITEMS('po', POSTS),
+        filter:[['持ち場名で探す','text']], items: POST_ITEMS(),
         fields:[['持ち場名','text','例）プリン製造ライン',1]], rows: it => [['持ち場名',it.name]],
         done:['持ち場管理の新規登録が完了しました','持ち場管理一覧に戻る'], delDone:['持ち場管理の削除が完了しました','持ち場管理一覧に戻る'], delTitle:'持ち場管理を削除'}),
     ],
   },
   'sensory-inspection': {
     main: ent({seg:'products', noun:'検査製品', title:'検査製品選択', listTitle:'検査製品選択', crumb:'検査製品選択', cards:true, wide:true, section:'検査製品一覧', empty:'登録された製品がありません',
-      items: ITEMS('sp', PRODUCT_OPTS.slice(0,4)), cardSub: () => '味・形・色・食感・香り・とろみ',
+      items: ITEMS('stp', PRODUCT_OPTS.slice(0,4)), cardSub: () => '味・形・色・食感・香り・とろみ',
       fields:[['検査製品名','select',PRODUCT_OPTS,1],['味','toggle','',1],['形','toggle','',1],['色','toggle','',1],['食感','toggle','',1],['香り','toggle','',1],['とろみ','toggle','',1]],
       rows: it => [['検査製品名',it.name],['味','記録する'],['形','記録する'],['色','記録する'],['食感','記録する'],['香り','記録する'],['とろみ','記録する']],
       done:['検査対象製品の新規登録が完了しました','検査製品選択に戻る'], delDone:['製品の削除が完了しました','検査製品選択に戻る'], delTitle:'検査製品を削除'}),
@@ -1761,21 +1763,21 @@ const LX = {
     subnav:['金属探知機、X線探知機、ウェイトチェッカーの新規登録/編集はこちらから', [['金属探知機管理','metal-detectors'],['X線探知機管理','xray-detectors'],['ウェイトチェッカー管理','weight-checkers']]],
     subs:[
       ent({seg:'metal-detectors', noun:'金属探知機', title:'金属探知機管理', checkLink:'動作確認項目の編集はこちら', cols:[['表示順',80],['金属探知機名','f1'],['操作',120]], cells:(it,i)=>[String(i+1), esc(it.name)], empty:'登録された金属探知機がありません',
-        items: ITEMS('md', ['金属探知機1号機','金属探知機2号機','金属探知機3号機']),
+        items: ITEMS('u', ['金属探知機1号機','金属探知機2号機','金属探知機3号機']),
         fields:[['金属探知機名','text','例）金属探知機4号機',1],['設定番号/テストピース設定','table',['製品名/規格','設定番号','Fe','Sus'],0]],
         rows: it => [['金属探知機名',it.name]],
         sections: it => [['設定番号/テストピース設定', lxMiniTable(['製品名/規格','設定番号','Fe','Sus'], [['プリン 3種6個セット 85g6入','1','φ1.0','φ1.5'],['さつま揚げ 10枚入','2','φ1.2','φ2.0']])]],
         check: checkOf('動作確認項目設定', ['電源ON','コンベア・プーリー・モーター','設定','はね板（フリッパー）'], [['電源ON','電源を入れ、正常に起動するか'],['コンベア・プーリー・モーター','異音・異常振動が無いか'],['はね板（フリッパー）','排除動作が正常か']]),
         done:['金属探知機の新規登録が完了しました','金属探知機管理一覧に戻る'], delDone:['金属探知機管理の削除が完了しました','金属探知機管理一覧に戻る'], delTitle:'金属探知機を削除'}),
       ent({seg:'xray-detectors', noun:'X線探知機', title:'X線探知機管理', checkLink:'動作確認項目の編集はこちら', cols:[['表示順',80],['X線探知機名','f1'],['操作',120]], cells:(it,i)=>[String(i+1), esc(it.name)], empty:'登録されたX線探知機がありません',
-        items: ITEMS('xr', ['X線探知機1号機','X線探知機2号機','X線探知機3号機']),
+        items: ITEMS('xu', ['X線探知機1号機','X線探知機2号機','X線探知機3号機']),
         fields:[['X線探知機名','text','例）X線探知機4号機',1],['設定番号/テストピース設定','table',['製品名/規格','設定番号','Sus球','Sus線','ガラス球','セラミック','ゴム球'],0]],
         rows: it => [['X線探知機名',it.name]],
         sections: it => [['設定番号/テストピース設定', lxMiniTable(['製品名/規格','設定番号','Sus球','Sus線','ガラス球','セラミック','ゴム球'], [['プリン 3種6個セット 85g6入','1','φ1.0','φ0.8','φ2.0','φ2.0','φ3.0']])]],
         check: checkOf('動作確認項目設定', ['電源ON','コンベア・センサー','はね板（フリッパー）'], [['電源ON','電源を入れ、正常に起動するか'],['コンベア・センサー','センサーの反応に遅れが無いか'],['はね板（フリッパー）','排除動作が正常か']]),
         done:['X線探知機の新規登録が完了しました','X線探知機管理一覧に戻る'], delDone:['X線探知機管理の削除が完了しました','X線探知機管理一覧に戻る'], delTitle:'X線探知機を削除'}),
       ent({seg:'weight-checkers', noun:'ウェイトチェッカー', title:'ウェイトチェッカー管理', checkLink:'動作確認項目の編集はこちら', cols:[['表示順',80],['ウェイトチェッカー名','f1'],['操作',120]], cells:(it,i)=>[String(i+1), esc(it.name)], empty:'登録されたウェイトチェッカーがありません',
-        items: ITEMS('wc', ['ウェイトチェッカー1号機','ウェイトチェッカー2号機','ウェイトチェッカー3号機']),
+        items: ITEMS('wu', ['ウェイトチェッカー1号機','ウェイトチェッカー2号機','ウェイトチェッカー3号機']),
         fields:[['ウェイトチェッカー名','text','例）ウェイトチェッカー4号機',1]], rows: it => [['ウェイトチェッカー名',it.name]],
         check: checkOf('動作確認項目設定', ['電源ON','キャリブレーション','精度確認'], [['電源ON','電源を入れ、正常に起動するか'],['キャリブレーション','基準分銅でゼロ点が合うか'],['精度確認','規定重量の製品が通過するか']]),
         done:['ウェイトチェッカーの新規登録が完了しました','ウェイトチェッカー管理一覧に戻る'], delDone:['ウェイトチェッカー管理の削除が完了しました','ウェイトチェッカー管理一覧に戻る'], delTitle:'ウェイトチェッカーを削除'}),
@@ -1812,7 +1814,7 @@ const LX = {
   },
   'chemical-management': {
     main: ent({seg:'chemicals', noun:'薬品', title:'薬品管理', listTitle:'薬品管理', crumb:'薬品選択', cards:true, wide:true, section:'薬品一覧', doneSeg:'registered', empty:'登録された薬品がありません',
-      items: ITEMS('ch', ['次亜塩素酸ナトリウム','ジオキシー','塩酸','次亜塩素酸ソーダ'], (n,i) => ({spec:['1000 g','500 ml','',''][i], place:['小型物置','薬品庫','',''][i]})),   /* src/data/chemicals.ts */
+      items: ITEMS('c', ['次亜塩素酸ナトリウム','ジオキシー','塩酸','次亜塩素酸ソーダ'], (n,i) => ({spec:['1000 g','500 ml','',''][i], place:['小型物置','薬品庫','',''][i]})),   /* src/data/chemicals.ts */
       fields:[['薬品名','text','例）次亜塩素酸ナトリウム',1],['規格','unit','例）1000|例）g',1],['保管場所','select',STORAGE_OPTS,1]],
       rows: it => [['薬品名',it.name],['規格',it.spec||'—'],['保管場所',it.place||'—']],
       done:['薬品の新規登録が完了しました','薬品一覧に戻る'], delDone:['薬品の削除が完了しました','薬品一覧に戻る'], delTitle:'薬品を削除'}),
@@ -1820,7 +1822,7 @@ const LX = {
   },
   'additive-management': {
     main: ent({seg:'additives', noun:'添加物', title:'添加物管理', listTitle:'添加物管理', crumb:'添加物選択', cards:true, wide:true, section:'添加物一覧', doneSeg:'registered', empty:'登録された添加物がありません',
-      items: ITEMS('ad', ['ソルビン酸','にがり（塩化マグネシウム）','グルコノデルタラクトン','消泡剤（シリコーン樹脂）'], (n,i) => ({spec:['1000 ml','','',''][i], place:['小型物置','','',''][i]})),   /* src/data/additives.ts */
+      items: ITEMS('a', ['ソルビン酸','にがり（塩化マグネシウム）','グルコノデルタラクトン','消泡剤（シリコーン樹脂）'], (n,i) => ({spec:['1000 ml','','',''][i], place:['小型物置','','',''][i]})),   /* src/data/additives.ts */
       fields:[['添加物名','text','例）ソルビン酸',1],['規格','unit','例）1000|例）ml',1],['保管場所','select',STORAGE_OPTS,1]],
       rows: it => [['添加物名',it.name],['規格',it.spec||'—'],['保管場所',it.place||'—']],
       done:['添加物の新規登録が完了しました','添加物一覧に戻る'], delDone:['添加物の削除が完了しました','添加物一覧に戻る'], delTitle:'添加物を削除'}),
@@ -2123,9 +2125,9 @@ function rxApplyHash(a, slug, rest){
 }
 function rxHash(){
   const x = S.ad.rx, K = RX_KIND[x.kind]; let h = `admin/${K.a}/${x.slug}`;
-  if (x.kind==='appr'){ if (x.slug==='scale-inspection') h += '/req1'; return x.page==='detail' ? `${h}/records/${S.ad.rid}` : h; }
+  if (x.kind==='appr'){ if (x.slug==='scale-inspection') h += '/2'; return x.page==='detail' ? `${h}/records/${S.ad.rid}` : h; }
   if (x.page==='fac') return h;
-  h += `/${FAC}`; if (x.kind==='search' && x.slug==='glass-plastic') h += '/floors/fl1';
+  h += `/${FAC}`; if (x.kind==='search' && x.slug==='glass-plastic') h += '/floors/f1';
   return x.page==='detail' ? `${h}/records/${S.ad.rid}` : h;
 }
 function rxView(){
@@ -3010,7 +3012,7 @@ window.addEventListener('message', e => {
 });
 const SS = 'nqrepo-demo-state';
 /* サンプルデータの版。SEED の中身を変えたらここを上げる（古い保存を捨てるため） */
-const SEED_V = 8;
+const SEED_V = 9;
 const W = 'water-inspection';
 const FAC = `factories/${FACTORY_ID}`;
 function locHash(){
@@ -3049,7 +3051,7 @@ function syncHash(){
   const h = '#' + locHash();
   if (FRAME){   /* 画面設計の中：親の履歴を汚さず、現在地だけ知らせる */
     if (location.hash !== h){ try{ history.replaceState(null, '', h); }catch(e){} }
-    try{ parent.postMessage({nvideo:'loc', hash:locHash()}, '*'); }catch(e){}
+    try{ let lh = locHash(); try{ lh = decodeURIComponent(lh); }catch(e){} parent.postMessage({nvideo:'loc', hash:lh}, '*'); }catch(e){}   /* 親には日本語のまま（画面設計の hash と同じ書き方）で返す */
     return;
   }
   if (location.hash === h) return;
@@ -3174,6 +3176,11 @@ document.addEventListener('keydown', e => {
 if (!FRAME) loadState();
 applyHash();
 if (FRAME) applyFlags(Object.fromEntries(QS));
+/* 画面設計の「プロトタイプで開く」から来たとき（?kit=1&empty=1&role=…）。状態とロールを写してから、URL は hash だけにする。
+   入力中の内容は、画面設計が押す直前に sessionStorage へ保存させたものを上の loadState() が読んでいる */
+else if (QS.has('kit')){ applyFlags(Object.fromEntries(QS));
+  try{ sessionStorage.setItem('nqKit', JSON.stringify({doc:QS.get('doc')||'画面設計', n:+QS.get('n')||0, demo:QS.get('demo')||'プロトタイプ', demoDesc:QS.get('demoDesc')||''})); }catch(e){}
+  try{ history.replaceState(null, '', location.pathname + location.hash); }catch(e){} }
 render();
 
 /* ---------- 右下の切替 ---------- */
@@ -3190,7 +3197,25 @@ document.addEventListener('keydown', e=>{
 }, true);
 var NVDEV=[['admin','管理画面'],['app','アプリ']];
 var NVSTATE=[['off','オフライン','送信できず未送信のまま残る'],['empty','データが無い','記録がまだ 1 件も無い'],['err','送信エラー','送信に失敗した状態'],['session','セッション終了','放置して自動ログアウトされた']];
+/* 画面設計の「プロトタイプで開く」から来たとき（sessionStorage の nqKit）は、右下を画面設計の右下と同じ中身にする：
+   資料（画面設計へ戻る／いま見ているもの）と 権限（管理画面のロール。画面設計の PROJECT.roles と同じ並び・説明） */
+const KIT = (()=>{ try{ return JSON.parse(sessionStorage.getItem('nqKit') || 'null'); }catch(e){ return null; } })();
+const KIT_ROLES = [['administrator','管理者','全画面にアクセスできる'],['approver','承認者','確認者が確認した確認済みの帳票を承認する'],
+  ['checker','確認者','実施者が提出した帳票を確認する'],['approver_checker','承認者・確認者兼任','確認と承認の両方を行う']];
+function kitSync(){
+  const st = ['off','empty','err','session'].find(k => S[k]);
+  const back = 'nqrepo-screen-design.html?' + new URLSearchParams(Object.assign({role:S.role}, st ? {state:st} : {})) + '#' + locHash();
+  const it = (t1, t2, cur, attr) => `<${attr ? attr : 'span'} class="nvit" aria-current="${cur}"><span class="nvr"></span><span class="tx"><b class="t1">${esc(t1)}</b><span class="t2">${esc(t2)}</span></span></${attr ? attr.split(' ')[0] : 'span'}>`;
+  document.querySelector('#nvPanel .nvbody').innerHTML =
+    `<div class="nvsec"><p class="nvh">資料</p>${it(KIT.doc, KIT.n ? `全${KIT.n}画面と決めること` : '全画面と決めること', false, `a href="${esc(back)}"`)}${it(KIT.demo, KIT.demoDesc, true)}</div>
+     <div class="nvsec"><p class="nvh">権限（管理画面のロール）</p><div>${KIT_ROLES.map(([k,n,d]) => it(n, d, S.role===k, `button type="button" onclick="event.stopPropagation();setRole('${k}')"`)).join('')}</div></div>`;
+  document.querySelector('#nvPanel .nvfoot').innerHTML = '<span class="nvkey" style="margin-left:0"><b>Esc</b> で閉じる</span>';
+  document.getElementById('nvX').hidden = true;
+  document.querySelector('.nvfab .lb').textContent = KIT.demo;
+  const sb = document.getElementById('nvSub'); if (sb) sb.remove();
+}
 function nvSync(){
+  if (KIT) return kitSync();
   const st = document.getElementById('nvState');
   if (st) st.innerHTML = NVSTATE.map(([k,l,d])=>
     `<button class="nvit" aria-current="${!!S[k]}" onclick="S.${k}=!S.${k};render()"><span class="nvr"></span><span class="tx"><b class="t1">${l}</b><span class="t2">${d}</span></span></button>`).join('');
@@ -3201,12 +3226,12 @@ function nvSync(){
   if (dev) dev.innerHTML = NVDEV.map(([k,l])=>`<button class="nvit" aria-current="${S.dev===k}" onclick="setDev('${k}')"><span class="nvr"></span><span class="tx"><b class="t1">${l}</b></span></button>`).join('');
   const sb=document.getElementById('nvSub'); if(sb) sb.textContent = (NVDEV.find(d=>d[0]===S.dev)||[])[1]||'';
 }
-document.getElementById('nvReset').onclick = () => {
+if (document.getElementById('nvReset')) document.getElementById('nvReset').onclick = () => {
   if (!confirm('操作した内容をすべて元に戻します。よろしいですか？')) return;
   resetAll(); nvOpen(false); say('最初の状態に戻しました');
 };
 nvSync();
-try{ if(!FRAME && !sessionStorage.getItem('nqSeen')){ nvOpen(true); sessionStorage.setItem('nqSeen','1'); setTimeout(()=>nvOpen(false), 6000); } }catch(e){}
+try{ if(!FRAME && !KIT && !sessionStorage.getItem('nqSeen')){ nvOpen(true); sessionStorage.setItem('nqSeen','1'); setTimeout(()=>nvOpen(false), 6000); } }catch(e){}
 </script>
 </body>
 </html>

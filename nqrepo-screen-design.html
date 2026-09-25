@@ -286,13 +286,16 @@ button.pill.g:hover{border-color:var(--g)}
 .cmph .cmpnote{flex:none;font-size:11.5px;font-weight:700;color:var(--warn);background:var(--warn-l);border-radius:6px;padding:2px 8px}
 .cmph .cmpoff{margin-left:auto;flex:none;font:inherit;font-size:11.5px;color:var(--mute);background:none;border:0;padding:2px 4px;cursor:pointer}
 .cmph .cmpoff:hover{color:var(--g-d)}
-.demolink{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:6px 11px;border-radius:9px;border:0;
-  color:var(--ink);text-decoration:none;background:none;white-space:nowrap;flex:none;transition:background .14s,color .14s}
+/* 画面バーでいちばん押してほしい操作なので、ほかの項目と高さ・文字の大きさを揃えたうえで緑の面にする */
+.demolink{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;line-height:1;height:32px;padding:0 10px 0 11px;
+  border-radius:9px;border:0;margin-left:2px;color:var(--g-d);background:var(--g-l);text-decoration:none;
+  white-space:nowrap;flex:none;transition:background .14s,color .14s}
+.demolink svg{flex:none}
 /* 中央の列が狭くなったら、画面バーの飾りから順に落とす。
    列の幅で効かせたいので画面幅ではなくコンテナクエリで判定する */
-@container stage (max-width:520px){ .demolink .dlt{display:none} .demolink{padding:6px 9px} .dim .nm{display:none} .stw .sl{display:none} }
+@container stage (max-width:520px){ .demolink .dlt{display:none} .demolink{padding:0 9px} .dim .nm{display:none} .stw .sl{display:none} }
 @container stage (max-width:360px){ .tbar{gap:0;padding:4px} .tbar .sep{margin:0} }
-.demolink:hover{background:var(--surface-2);color:var(--g-d)}
+.demolink:hover{background:var(--g);color:#fff}
 
 /* ---------- フロー（画面の遷移図） ---------- */
 .vsw{display:flex;gap:2px;background:var(--surface-2);border-radius:9px;padding:2px;margin-left:18px}
@@ -778,7 +781,7 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
       <label class="stw" id="stStateWrap"><span class="sl">状態</span>
         <select id="stState" aria-label="画面の状態を切り替える"></select></label>
       <span class="sep" id="stSep2"></span>
-      <a class="demolink" id="openDemo" href="nqrepo-demo.html" target="_blank" rel="noopener" title="この画面をプロトタイプ本体で開く"><span class="dlt">プロトタイプで開く</span> ↗</a>
+      <a class="demolink" id="openDemo" href="nqrepo-demo.html" target="_blank" rel="noopener" title="この画面をプロトタイプ本体で開く"><span class="dlt">プロトタイプで開く</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
     </div>
   </main>
 
@@ -840,10 +843,11 @@ const PROJECT = {
 
   /* 端末の枡。画面定義の pf がこのキーを指す。増やしても減らしてもよい */
   platforms: {
-    /* アプリはタブレット 768×1024 固定（React 側の .app-viewport-frame と同じ）。
-       枠の中の座標は常に 768×1024 なので、レイアウトは実機と同じになる */
+    /* アプリの標準はタブレット 768×1024（React 側の .app-viewport-frame と同じ）。
+       画面設計の枠の中では React が枠いっぱいに広がるので、大きさを変えるとレイアウトもその大きさで組み直される。
+       横向き（1024×768）が選べるよう、高さの下限は 768 より下にしておく */
     app: {label:'アプリ', device:'tablet', w:768, h:1024,
-      min:[600,800], max:[1200,1400],
+      min:[600,600], max:[1200,1400],
       sizes:[['タブレット（標準）',768,1024], ['iPad mini',744,1133], ['大きめのタブレット',834,1194], ['横向き',1024,768]]},
     /* 管理画面はブラウザの表示領域。1280×760＝13インチのノートでバーを引いたおおよその高さ */
     admin: {label:'管理画面', device:'browser', w:1280, h:760, url:'nqrepo.example.jp/admin',
@@ -2072,9 +2076,13 @@ const RELEASES = [
 ];
 
 const LOG_DOC = [
+  ['2026-09-25','予備のプロトタイプ HTML が、画面設計の hash と違う ID の画面を開いていた 21 画面を直した。帳票管理の登録物の ID を React の mockData に揃えた（フロア f1・持ち場 post-pudding など・検査製品 stp1・金属探知機 u1・X線探知機 xu1・ウェイトチェッカー wu1・薬品 c1・添加物 a1）。データ検索のガラスプラスチックは floors/f1、承認申請の秤点検は /2。日本語の点検場所名は親へ日本語のまま返すようにした','18:40'],
   ['2026-09-25','フローの凡例から「画面の遷移／動画の状態」の切替を外した。NVIDEO キットから持ってきたままの「動画の状態」の図で、この案件の記録の一生とは別物だったため。フローは画面の遷移だけになり、凡例は 帳票 → ユースケース → 線の見かた の並び。STATES（記録の一生）の定義は残してある','18:10'],
   ['2026-09-25','フロー（画面の遷移）を帳票ごとに切り替えられるようにした。これまで図に出ていたのは 使用水の点検 の枝だけで、他の 9 帳票（M2-2〜M5-10・A1-2〜A1-10）は noflow で隠れていた。凡例に「帳票」のプルダウンを置き、選んだ 1 帳票の枝だけを骨組み（M0〜M15・A0〜A7）に差し込んで出す。使用水のつながりは FLOW に手で書いたものをそのまま使い、他の帳票は画面の数も並びも違うので画面名から親を決めて組み立てる（一覧・管理・点検予定 は根から出る枝、新規登録・詳細はその一覧から、編集は詳細から、提出完了は提出内容の確認から、完了は元の一覧へ戻る）。ユースケースのプルダウンは 6 本 × 10 帳票の 60 本を帳票ごとにまとめて出す検索つきの一覧にした。帳票名・ユースケース名・説明のどれかで絞り込め、別の帳票のものを選ぶとその帳票へ切り替わる。経路は帳票ごとに読み替える（使用水の 記録入力・提出内容の確認・提出完了 と同じ役どころの画面を名前から探し、間に画面が挟まる帳票では途中の画面も経路に入れる）','17:30'],
   ['2026-09-25','10 帳票の提出完了（保存完了）を Figma「Ver.1.0_初期開発 › 使用水の点検_保存完了」の形に揃えた。React 側はこの形が 進捗一覧から入ったときの完了画面（ProgressSubmitComplete）にだけ入っていて、ふだんの完了画面は古い形（中央寄せ・線のチェック印・「提出が完了しました！」）のままで、帳票ごとにも文言が揃っていなかった（使用水は「ご協力ありがとうございます。」「使用水の点検を終わる」、ガラス・プラスチック管理は「保存完了／検査データが正常に保存されました／ガラス・プラスチック管理に戻る」の 1 ボタン）。共通部品 src/app/components/SubmitComplete.tsx を作り、10 帳票ぜんぶをこれに載せ替えた：上詰め・丸を塗ったチェック印・見出し「保存が完了しました！」・本文「ご記入ありがとうございます。」・360×64 のボタンを縦に 2 つ（「○○を続ける」→「帳票一覧に戻る」）。進捗一覧から入ったときの完了画面も同じ部品を使う（ボタンは「進捗一覧に戻る」1 つ）。ガラス・プラスチック管理には「ガラス・プラスチック管理を続ける」を足した。添加物管理の「続ける」はこれまでどおりその添加物の記録一覧へ、薬品管理は実施者を引き継ぐ','16:45'],
+  ['2026-09-25','中央下の「状態」で オフライン／未送信の記録がある／送信エラー を選んだときのアナウンスを、元のプロトタイプ HTML と React の文言どおりに出すようにした。未送信の記録がある … アプリのどの画面でも上に赤い「未送信のデータがあります。送信ボタンを押してください。」の帯（進捗一覧は未送信のマークと注意書きも）。オフライン … ログイン画面に「オフライン状態です。通信環境をご確認ください。」の帯、提出完了の画面に未送信の帯。送信エラー … 提出完了の画面に「送信エラーが発生しました」のポップアップ。これまでは React を映した枠の中で提出しないと帯が出ず、前に開いた画面の帯が残ることもあった（状態を選び直すたびに出し直す）','18:10'],
+  ['2026-09-25','「プロトタイプで開く」で開いた先の右下のフローティングを、画面設計の右下と同じ中身にした（資料：画面設計／React 実装、権限：管理画面の 4 ロール。見た目も同じ）。React の「動作デモ」ピルの代わりに出る。資料の「画面設計」を押すと、いま見ている画面・状態・ロールのまま画面設計へ戻る','17:40'],
+  ['2026-09-25','「プロトタイプで開く」で、画面設計で見ていた内容をそのまま引き継ぐようにした（管理画面・アプリとも）。開くのは画面定義の最初の画面ではなく枠の中で移動した先。中央下の「状態」（データが無い・オフライン・送信エラー・セッション終了）と右下の「権限」のロールも ?kit=1&… で渡す。枠と同じ sessionStorage を新しいタブへ写すので、入力の途中や進行中の点検もそのまま続きから触れる（予備のプロトタイプ HTML は押す直前に中身を保存させる）','17:00'],
   ['2026-09-25','React 実装を映すようにしたあとの不具合を洗い出して直した。304 画面を自動でめくり、白い画面・壊れた画像・エラー・行き先違いを調べた結果を反映（いまは 0 件）。(1) 帳票一覧のアイコンが出なかった：React が public のアイコンを絶対パス（/icons/…）で引いていて、/react/ の下だと見つからない。base を付けるようにした。(2) 承認申請管理 › ガラス・プラスチック管理 の詳細（M3-2-2）がログイン画面になっていた：React はこの帳票だけ一覧が無く詳細 1 画面（approvals/glass-plastic の index）なので、hash を実ルートに合わせた。(3) ガイド（M14）がログイン画面になっていた：React に admin/guide の頁は無い（枝の URL だけ）ので、画面説明（admin/guide/descriptions）を映すようにした。(4) 設定 › ログアウト（A7-1）がログイン画面になっていた：React ではダイアログで URL が無いので、設定（app/settings）を映す。(5) 画面説明のサムネイル（.claude/.shots）が 404 だった：base を付け、serve.cjs が React のフォルダから配るようにした。(6) 「プロトタイプで開く」が画面に飛ばなかった：?frame=1 が無いと hash を読み替えていなかったので、いつでも読み替えるようにした','16:10'],
   ['2026-09-25','ガラス・プラスチック管理の 提出内容の確認（A1-2-3）と 保存完了（A1-2-4）を、記録入力から進んだときと同じ中身にした。React の FloorInspectionConfirmPage は記録入力から navigate の state で 実施者・実施日・記録 を受け取る作りで、画面設計のように URL を直接開くと「未設定」「2025/03/24」の埋め草が出ていた。state が無いときはフロアの mockData（ステータス・実施者・実施日）から同じ記録を組み立て、実施者は記録入力と同じ既定の実施者（高橋和子）にした。保存完了もフロア名を URL のフロアから出す。React 側（src/app/features/glass-plastic）を直して npm run build 済み','15:35'],
   ['2026-09-25','画面の実体を React 実装そのものにした。これまでは単体 HTML のプロトタイプ（nqrepo-demo.html）を映していたが、配置図・室内タブ・秤の追加ポップアップ・一括破棄・絞り込み条件など「プロトタイプでは省いています」の箇所があり、見本データも React と食い違いやすかった。React（Documents/other/NQrepo（old））に src/frameBridge.tsx を足して CLAUDE.md §3 の 5 つの約束（?frame=1・hash・loc・go・flags）を満たし、node .claude/serve.cjs が npm run build:kit の dist-kit を同じサーバーの /react/ で配る（別ポートだと Chrome が別プロセスの iframe として扱い、配置図のある画面が白いままになったので同じオリジンにした）。画面設計は起動時に react/ が返るかを見て、返らなければ従来のプロトタイプ HTML に戻る。状態カタログ（S1）だけは常にプロトタイプ。hash の id は React の mockData の id（floors/f1、scales/scale1、lines/l8、records/wr1 など）に揃えた','15:20'],
@@ -2122,6 +2130,8 @@ const isFresh = id => (logOf(id)[0]||[])[0] === LATEST;
    HTML は同じフォルダに置く前提。相対パス＋#id で該当画面が直接開く。
    画面の実体はプロトタイプ。?frame=1 で枡と切替を消した表示にし、#hash で画面、flags で端末状態を指定する。 */
 const SURVEY_HREF = PROJECT.asIs ? PROJECT.asIs.href : '';
+let bootLoc = '';                 /* プロトタイプから戻ってきたとき（#admin/… の形の hash）、最初の枠に映す画面 */
+let liveLoc = '';                 /* 枠の中のいまの画面（loc で届いた hash）。「プロトタイプで開く」で使う */
 let DEMO_HREF   = PROJECT.demo ? PROJECT.demo.href : '';   /* 起動時に pickDemo() が届くほうに決める */
 /* 読み込みごとに変わる印を付けて、プロトタイプを直したのに古いものが表示される事故を防ぐ */
 const DEMO_V = String(Date.now());
@@ -2143,7 +2153,8 @@ function demoSrc(s){
   const q = new URLSearchParams({frame:'1', v:DEMO_V, ...stateFlags(s)});
   /* 状態カタログ（states）は React に無いので、常にプロトタイプ HTML */
   const base = PROJECT.demo.fallback && (s.proto || s.hash==='states') ? PROJECT.demo.fallback : DEMO_HREF;
-  return `${base}?${q}#${s.hash}`;
+  const h = bootLoc || s.hash; bootLoc = '';
+  return `${base}?${q}#${h}`;
 }
 /* React 実装が配られているかを見て、無ければプロトタイプ HTML に切り替える（起動時に 1 回） */
 async function pickDemo(){
@@ -2206,7 +2217,7 @@ window.addEventListener('message', e => {
   /* 変更前（右）からの知らせは、説明を動かさない。この時点に同じ画面があるかを見るだけ */
   if (snap && e.source === snap.contentWindow){ snap.dataset.ready = '1'; markMiss('old', snapWant, m.hash); return; }
   if (live && e.source !== live.contentWindow) return;   /* 作り直す前の iframe から遅れて届いたもの */
-  if (live) live.dataset.ready = '1';
+  if (live){ live.dataset.ready = '1'; liveLoc = m.hash; }
   /* 左が変更後の控えのとき、頼んだ画面への最初の返事を見る。その時点に無い画面なら、説明は動かさず印だけ出す */
   if (liveWant){
     const want = liveWant; liveWant = '';
@@ -2218,6 +2229,28 @@ window.addEventListener('message', e => {
   if (hit && hit[1] !== cur.id) go(hit[1], {fromFrame:true});
 });
 const xhref = (base, id) => base + (id ? '#' + id : '');
+
+/* 「プロトタイプで開く」。押した時点の枠の中身を、そのまま新しいタブで開く。
+   ・画面 … 枠の中で移動した先（loc で届いた hash）。まだ届いていなければ画面定義の hash
+   ・状態とロール … 中央下の「状態」と右下の「権限」を ?kit=1&empty=1&role=… で渡す（frame は付けないので普通の画面として開く）
+   ・入力中の内容 … 枠と画面設計は同じオリジンなので sessionStorage を共有している。window.open（noopener なし）は
+     sessionStorage を新しいタブへ写すので、React の途中の状態（進行中の点検・状態を試す・認証）はそのまま引き継がれる。
+     予備のプロトタイプ HTML は frame のとき保存しないので、押す直前に S を保存させてから開く */
+function openProto(e){
+  const s = cur; if (!s || !DEMO_HREF || !s.hash) return;
+  e.preventDefault();
+  const live = document.querySelector('#fit iframe.live');
+  let base = PROJECT.demo.fallback && (s.proto || s.hash==='states') ? PROJECT.demo.fallback : DEMO_HREF;
+  if (live && live.src) base = live.src.replace(/[?#].*$/, '');   /* 控え（変更後）を映しているときはその控えを開く */
+  try{ const w = live && live.contentWindow; if (w && w.eval("typeof SEED_V !== 'undefined' && typeof S === 'object'")) w.eval("sessionStorage.setItem(SS, JSON.stringify(Object.assign({_v:SEED_V}, S)))"); }catch(err){}
+  const q = new URLSearchParams({kit:'1', ...stateFlags(s)});
+  if (ROLE_LIST.length && !q.has('role')) q.set('role', roleNow());   /* 右下の「権限」を開いた先でも同じに見せる */
+  /* 開いた先の右下のフローティングを、この資料の右下と同じ中身（資料・権限）にするための材料 */
+  q.set('doc', PROJECT.doc); q.set('n', String(SCREENS.length)); const isMain = base.replace(/\/$/, '').endsWith(PROJECT.demo.href.replace(/\/$/, ''));
+  q.set('demo', isMain ? PROJECT.demo.label || '' : 'プロトタイプ'); q.set('demoDesc', isMain ? PROJECT.demo.desc || '' : '触って動かせる（React 実装が映らないときの予備）');
+  window.open(`${base}?${q}#${liveLoc || s.hash}`, '_blank');
+}
+document.getElementById('openDemo').addEventListener('click', openProto);
 
 /* 現行システムとの対応。この案件は React 実装（NQrepo）そのものが現行なので、
    対応表は持たない（PROJECT.asIs = null）。各画面の note に実装ファイルを書いてある */
@@ -2304,15 +2337,18 @@ const treeHTML = (list, forceOpen) => list.filter(s => !list.includes(parentOf(s
   return rowHTML(p, {kids: kids.length, open, fixed: forceOpen}) +
     `<div class="sub"${open ? '' : ' hidden'}>${treeHTML(list.filter(k => isUnder(k, p)), forceOpen)}</div>`;
 }).join('');
-/* 一覧の行を押す。山形なら開閉、それ以外は移動 */
+/* 一覧の行を押す。下に画面を持つ親の行は、行のどこを押しても開閉する（その画面へも移る）。
+   山形だけを押したときは移らずに開閉だけ */
 const rowClick = (b, after) => e => {
-  if (e.target.closest('.tg')){
-    const id = b.dataset.s;
-    subOn.has(id) ? subOn.delete(id) : subOn.add(id);
-    LS.set('subOn', [...subOn]); buildRail(); return;
+  const id = b.dataset.s;
+  if (b.querySelector('.tg')){
+    const wasOpen = b.getAttribute('aria-expanded') === 'true';
+    wasOpen ? subOn.delete(id) : subOn.add(id);
+    LS.set('subOn', [...subOn]);
+    if (e.target.closest('.tg')){ buildRail(); return; }
   }
   if (after) after();
-  go(b.dataset.s);
+  go(id);
 };
 
 function buildRail(){
@@ -2355,6 +2391,7 @@ function buildFrame(s){
   const fit = document.getElementById('fit');
   fit.className = `fitwrap pf-${s.pf}`;
   snapWant = s.hash || '';
+  liveLoc = '';
   const pair = cmpOn() && DEMO_HREF && s.hash;
   liveWant = pair && cmpA ? s.hash : '';
   fit.innerHTML = pair ? compareHTML(s) : frameHTML(s);
@@ -3856,6 +3893,20 @@ window.addEventListener('hashchange', () => {
   if (view !== 'screen') setView('screen', {fromHash:true});
   if (id !== cur.id) go(id, {fromHash:true});
 });
+/* プロトタイプの右下「資料 › 画面設計」から戻ってきたとき：?role=…&state=…#admin/approvals/… の形。
+   hash は画面IDではなくプロトタイプの画面なので、対応する画面IDを開き、枠にはその画面そのものを映す */
+function takeReturn(){
+  const q = new URLSearchParams(location.search), h = rawHash();
+  if (q.get('role') && ROLE_LIST.some(r => r.key === q.get('role'))){ curRole = q.get('role'); LS.set('role', curRole); paintRole(); }
+  if (q.has('state') && (PROJECT.screenStates || []).some(x => x.key === q.get('state'))) curState = q.get('state');
+  let id = '';
+  if (!IDX[hashId()] && /^(admin|app)(\/|$)/.test(h)){
+    const hit = HASH2ID_AUTO.find(([re]) => re.test(h)) || HASH2ID.find(([re]) => re.test(h));
+    if (hit){ id = hit[1]; bootLoc = h; }
+  }
+  if (location.search || id){ try{ history.replaceState(null, '', location.pathname + '#' + (id || rawHash())); }catch(e){} }
+}
+takeReturn();
 pickDemo().then(() => {
   go(IDX[hashId()] ? hashId() : SCREENS[0].id, {fromHash:true});
   setView(isFlowHash() ? 'flow' : isRefHash() ? 'ref' : isRelHash() ? 'release' : 'screen', {fromHash:true});

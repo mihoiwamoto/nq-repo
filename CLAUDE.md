@@ -30,6 +30,11 @@ Vercel にはリポジトリの外のフォルダが無いので、**React の d
 `/react/` は画面設計と同じオリジンなので、iframe の中（`contentDocument`）をそのまま読める。hash が React のルートに無いと `*` で `/admin/login` に飛ぶので、「行き先が hash と違う」で見つけられる。
 画面や hash を足したあとは同じやり方で一度めくると早い（作業用の HTML は使い終わったら消す）。
 
+**「プロトタイプで開く」は枠の中身を引き継ぐ（2026-09-25）。** `openProto()` が 枠の中のいまの画面（`liveLoc`）＋ `?kit=1&<状態>&role=…` で `window.open` する（noopener なし＝sessionStorage が新しいタブへ写る）。
+受け手は React の `installFrameBridge()` と `nqrepo-demo.html` の `QS.has('kit')`。どちらも印を写したあと URL を hash だけに戻す。
+開いた先の右下は画面設計の右下と同じ中身（資料・権限）。React は `src/components/demo/KitSwitch.tsx`（sessionStorage の `nq_kit_info` があれば動作デモのピルの代わりに出る。CSS は画面設計の `.nvsw` の写しなので、画面設計側を直したら写し直す）、プロトタイプ HTML は `kitSync()`。
+「資料 › 画面設計」は `nqrepo-screen-design.html?role=…&state=…#admin/…` で戻り、画面設計の `takeReturn()` が画面IDに読み替えて、枠にはその画面そのもの（`bootLoc`）を映す。予備のプロトタイプ HTML は frame で保存しないので、押す直前に親が `S` を sessionStorage へ保存させている。
+
 - 画面設計 … `nqrepo-screen-design.html`（#M3 のように画面IDで直接開ける。`#flow` `#ref` `#release` で フロー・前提・リリース）
 - 画面の実体 … React 実装の dist-kit（`http://127.0.0.1:8791/react/?frame=1#admin/approvals` のように単体でも開ける）。ブリッジは React 側の `src/frameBridge.tsx`（`main.tsx` と `App.tsx` から呼ぶ）
 - プロトタイプ（予備） … `nqrepo-demo.html`（右下の切替で 管理画面／アプリ、ロール、状態を変える。`1` `2` キーで端末切替）
@@ -95,7 +100,7 @@ React 側のデザインが変わったら、変わった画面の className を
 **2026-09-25 に、React 実装そのものを画面設計に映す形へ切り替えた。** やったことは次の 3 つ（プロトタイプ HTML は予備として残す）。
 
 1. `nqrepo-screen-design.html` の `PROJECT.demo` を `{href:'react/', fallback:'nqrepo-demo.html'}` にした。起動時の `pickDemo()` が href を取れなければ fallback に切り替える
-2. React の `src/frameBridge.tsx` が §3 の5つの約束を満たす（`?frame=1` で `html.frame`・Basic 認証を通す・`#hash` を `/hash` に読み替える／画面が変わるたび `{nvideo:'loc', hash}` を親へ／親の `{nvideo:'go', hash, flags}` で `navigate()`／flags を demoStore の「状態を試す」（off・unsent→offline、empty、err→error、session）と roleStore のロールに写す）。`App.tsx` は frame のとき動作デモのピルを出さない
+2. React の `src/frameBridge.tsx` が §3 の5つの約束を満たす（`?frame=1` で `html.frame`・Basic 認証を通す・`#hash` を `/hash` に読み替える／画面が変わるたび `{nvideo:'loc', hash}` を親へ／親の `{nvideo:'go', hash, flags}` で `navigate()`／flags を demoStore の「状態を試す」（off→offline、empty、err→error、session）と roleStore のロールに写す。unsent（未送信の記録がある）は状態を試すに無いので `frameBridge` の `kitUnsent` で持ち、`AppLayout` がどの画面でも未送信の帯を出す。状態が届くたびに帯を出し直す（`KIT_FLAGS_EVENT`）。枠の中でオフラインのときはログイン画面の「オフライン状態です」の帯を最初から出す）。`App.tsx` は frame のとき動作デモのピルを出さない
 3. `HASH2ID` はそのまま。ただし hash の中の id は React の mockData に実在する id にしておくこと（`LM_HASH`・`RX_ID`・`AL_IDS`・使用水の hash）。無い id だと React 側が空の画面になる
 
 以下（LX／RX／AX の仕組み）は予備のプロトタイプ HTML の話。React を映しているあいだは使わない。
