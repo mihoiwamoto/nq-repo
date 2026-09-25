@@ -22,6 +22,9 @@ dist-kit が無い／サーバーを使わずダブルクリックで開いた�
 `import.meta.env.BASE_URL` を頭に付けること（`src/data/ledgers.ts` の帳票アイコン、`src/admin/features/guide/screenShots.tsx` の撮影済みスクリーンショットを直した）。
 `.claude/.shots` は dist に入らないので、`serve.cjs` が `/react/.claude/…` を React のフォルダから直に配る。
 
+**確認画面の中身（2026-09-25）。** アプリの確認画面は前の画面から `location.state` で入力内容を受け取るので、hash だけで開くと「点検内容が見つかりません」になる。
+`frameBridge.tsx` が枠の中（とプロトタイプで開いたタブ）で state の無い画面を開いたとき、React の画面遷移図と同じ見本（`src/admin/features/guide/screenPreviewState.ts` の `PREVIEW_STATE`、キーは画面のファイル）を差し込む。空の確認画面が出たらそこへ 1 件足す。
+
 **Vercel（nq-repo.vercel.app）での公開（2026-09-25）。** このリポジトリの `main` は Vercel が静的ファイルのまま配る（`vercel.json`：ビルド無し、`/` → 画面設計へ転送、`/react/*` は SPA として `react/index.html`、`snapshots/images/*` → `images/*`）。
 Vercel にはリポジトリの外のフォルダが無いので、**React の dist-kit を `react/` に写してコミットする**。React 側を直したら `npm run build:kit` のあと `rm -rf react && cp -R "../other/NQrepo（old）/dist-kit" react` してコミット・プッシュ。
 画面説明の撮影済みスクリーンショット（`.claude/.shots`、69MB）は Vercel に載せていないので、そこだけ画像が出ない。
