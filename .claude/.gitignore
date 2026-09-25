@@ -1,6 +1,0 @@
-# 編集追跡の一時データ（セッションごとに変わるのでコミットしない）
-.baseline/
-screen-data.js
-edited_screens.json
-.shots/
-shots-index.json
