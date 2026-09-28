@@ -28,3 +28,6 @@ dist-kit
 
 # Vite のキャッシュ
 .vite/
+
+# Vercel のビルド出力（.claude/build-vercel.sh）
+.vercel-out/

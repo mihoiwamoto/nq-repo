@@ -1,0 +1,33 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+<g id="Icon">
+<g id="container">
+
+<g id="Frame 13164">
+<g id="Frame 13163">
+<g id="Icon_2">
+<g id="Icon/factory">
+<g id="Rectangle 837">
+<mask id="path-2-inside-1_1453_67" fill="white">
+<rect x="1" y="9.80005" width="22" height="13.2" rx="1.1"/>
+</mask>
+<rect x="1" y="9.80005" width="22" height="13.2" rx="1.1" stroke="#333333" stroke-width="2.5" mask="url(#path-2-inside-1_1453_67)"/>
+</g>
+<path id="Rectangle 838" d="M3.2002 10.9V7.6C3.2002 6.99249 3.69268 6.5 4.3002 6.5H10.9002C11.5077 6.5 12.0002 6.99249 12.0002 7.6V10.9" stroke="#333333" stroke-width="1.25"/>
+<g id="Rectangle 839">
+<mask id="path-4-inside-2_1453_67" fill="white">
+<rect x="15.2998" y="1" width="4.4" height="9.9" rx="1.1"/>
+</mask>
+<rect x="15.2998" y="1" width="4.4" height="9.9" rx="1.1" stroke="#333333" stroke-width="2.5" mask="url(#path-4-inside-2_1453_67)"/>
+</g>
+<path id="Vector 131" d="M1.5498 13.1001H22.4498" stroke="#333333"/>
+<path id="Vector 132" d="M6 16V20" stroke="#333333" stroke-linecap="round"/>
+<path id="Vector 133" d="M12 16V20" stroke="#333333" stroke-linecap="round"/>
+<path id="Vector 134" d="M18 16V20" stroke="#333333" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

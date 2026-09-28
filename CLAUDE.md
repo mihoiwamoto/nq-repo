@@ -13,20 +13,21 @@ node .claude/serve.cjs
 ```
 
 `http://127.0.0.1:8791/nqrepo-screen-design.html` が開きます（`PORT` で変えられる）。
-**2026-09-25 から、画面設計の枠に映るのは React 実装そのもの**（`../other/NQrepo（old）/dist-kit` を同じサーバーが `/react/` の下で配る。置き場は `REACT_DIST` で変えられる）。
-React 側を直したら、React のフォルダで `npm run build:kit`（`vite build --base=/react/ --outDir=dist-kit`）して dist-kit を作り直す（画面設計はリロードするだけ）。
+**画面設計の枠と「プロトタイプで開く」に映るのは React 実装そのもの。** React のソースは **このリポジトリの `react-src/`**（2026-09-28 に `Documents/other/NQrepo（old）` から移した。ビルド後のファイルはコミットしない）。
+`react-src/dist-kit` を同じサーバーが `/react/` の下で配る（置き場は `REACT_DIST` で変えられる）。
+画面を直すときは `react-src/src` を直し、`cd react-src && npm run build:kit`（`vite build --base=/react/ --outDir=dist-kit`）で dist-kit を作り直す（画面設計はリロードするだけ）。初めての環境では先に `cd react-src && npm ci`。
 dist-kit が無い／サーバーを使わずダブルクリックで開いたときは、従来どおり単体 HTML のプロトタイプ `nqrepo-demo.html` が映る（起動時に `react/` が返るかを見て切り替える。`PROJECT.demo.fallback`）。
 別ポートで配らず同じオリジンにしているのは、別ポートだと Chrome が別プロセスの iframe として扱い、配置図のある画面（ガラス・プラスチック管理）が白いままになったため。
 
 **React を /react/ の下で配るときの注意（2026-09-25）。** React 側で `/…` の絶対パスを書くと、`/react/` の下では見つからない。
 `import.meta.env.BASE_URL` を頭に付けること（`src/data/ledgers.ts` の帳票アイコン、`src/admin/features/guide/screenShots.tsx` の撮影済みスクリーンショットを直した）。
-`.claude/.shots` は dist に入らないので、`serve.cjs` が `/react/.claude/…` を React のフォルダから直に配る。
+`react-src/.claude/.shots` は dist に入らないので、`serve.cjs` が `/react/.claude/…` を `react-src/` から直に配る。
 
 **確認画面の中身（2026-09-25）。** アプリの確認画面は前の画面から `location.state` で入力内容を受け取るので、hash だけで開くと「点検内容が見つかりません」になる。
 `frameBridge.tsx` が枠の中（とプロトタイプで開いたタブ）で state の無い画面を開いたとき、React の画面遷移図と同じ見本（`src/admin/features/guide/screenPreviewState.ts` の `PREVIEW_STATE`、キーは画面のファイル）を差し込む。空の確認画面が出たらそこへ 1 件足す。
 
-**Vercel（nq-repo.vercel.app）での公開（2026-09-25）。** このリポジトリの `main` は Vercel が静的ファイルのまま配る（`vercel.json`：ビルド無し、`/` → 画面設計へ転送、`/react/*` は SPA として `react/index.html`、`snapshots/images/*` → `images/*`）。
-Vercel にはリポジトリの外のフォルダが無いので、**React の dist-kit を `react/` に写してコミットする**。React 側を直したら `npm run build:kit` のあと `rm -rf react && cp -R "../other/NQrepo（old）/dist-kit" react` してコミット・プッシュ。
+**Vercel（nq-repo.vercel.app）での公開（2026-09-28 から）。** このリポジトリの `main` を Vercel がビルドして配る（`vercel.json`：`react-src` で `npm ci` → `.claude/build-vercel.sh` が React をビルドし、画面設計・プロトタイプ・`images/`・`snapshots/` と一緒に `.vercel-out/` へまとめる。`/` → 画面設計へ転送、`/react/*` は SPA として `react/index.html`、`snapshots/images/*` → `images/*`）。
+React を直したらソースをコミット・プッシュするだけでよい（ビルド後のファイルはコミットしない）。手元で同じものを作るなら `sh .claude/build-vercel.sh`。
 画面説明の撮影済みスクリーンショット（`.claude/.shots`、69MB）は Vercel に載せていないので、そこだけ画像が出ない。
 
 **画面が正しく出るかの一括点検。** 画面設計の全画面（304 枚）を順にめくって、白い画面・壊れた画像・JS エラー・行き先違いを調べる仕掛けを使った。
@@ -39,10 +40,10 @@ Vercel にはリポジトリの外のフォルダが無いので、**React の d
 「資料 › 画面設計」は `nqrepo-screen-design.html?role=…&state=…#admin/…` で戻り、画面設計の `takeReturn()` が画面IDに読み替えて、枠にはその画面そのもの（`bootLoc`）を映す。予備のプロトタイプ HTML は frame で保存しないので、押す直前に親が `S` を sessionStorage へ保存させている。
 
 - 画面設計 … `nqrepo-screen-design.html`（#M3 のように画面IDで直接開ける。`#flow` `#ref` `#release` で フロー・前提・リリース）
-- 画面の実体 … React 実装の dist-kit（`http://127.0.0.1:8791/react/?frame=1#admin/approvals` のように単体でも開ける）。ブリッジは React 側の `src/frameBridge.tsx`（`main.tsx` と `App.tsx` から呼ぶ）
+- 画面の実体 … `react-src/` をビルドした dist-kit（`http://127.0.0.1:8791/react/?frame=1#admin/approvals` のように単体でも開ける）。ブリッジは React 側の `src/frameBridge.tsx`（`main.tsx` と `App.tsx` から呼ぶ）
 - プロトタイプ（予備） … `nqrepo-demo.html`（右下の切替で 管理画面／アプリ、ロール、状態を変える。`1` `2` キーで端末切替）
 - デザインガイド … `../NQrepoDesignSystem/nqrepo-design-guide.html`（別フォルダ）
-- React 実装 … `../NQrepo`（`npm run dev` で `http://localhost:5173`）
+- React 実装 … `react-src/`（`cd react-src && npm run dev` で `http://localhost:5173`。`.claude/launch.json` の `react-dev`。React 側の決まりは `react-src/CLAUDE.md`）
 
 ---
 
@@ -60,18 +61,18 @@ Vercel にはリポジトリの外のフォルダが無いので、**React の d
 |---|---|---|
 | `nqrepo-demo.html` | プロトタイプ本体。**見た目と挙動の実体はここだけ** | 高い |
 | `nqrepo-screen-design.html` | 画面設計。プロトタイプを iframe で表示し、説明と決めることを持つ | 高い |
-| `images/` | 実アイコン。`../NQrepo/src/assets/figma` の nav・rail・ledger・common とロゴを写したもの | 低い |
+| `images/` | 実アイコン。`react-src/src/assets/figma` の nav・rail・ledger・common とロゴを写したもの | 低い |
 | `.claude/serve.cjs` `.claude/launch.json` | ローカル確認用の静的サーバー | 低い |
 | `.claude/snapshot.py` `.claude/settings.json` | プロトタイプの控えを取る道具と、Claude Code のフック | 低い |
 | `snapshots/` | プロトタイプの控え。画面設計の更新履歴から変更の前後を並べる。**手で直さない** | 自動 |
-| `../NQrepo/src/index.css` | 色の元（`--semantic-*`）。プロトタイプの `:root` はこれの写し | 低い |
+| `react-src/src/index.css` | 色の元（`--semantic-*`）。プロトタイプの `:root` はこれの写し | 低い |
 | `../NQrepoDesignSystem/` | デザインガイド。禁止パターンと部品の使い方 | 低い |
 
 **画面の見た目を画面設計側に実装しないこと。** 2つ作ると必ずズレます。
 
 ### 2-0. 見本データは React 実装の mockData そのもの（2026-09-25）
 
-プロトタイプに出るデータは **React 実装（`Documents/other/NQrepo（old）`）の mockData を写したもの**で、勝手に作らない。
+プロトタイプに出るデータは **React 実装（`react-src/`）の mockData を写したもの**で、勝手に作らない。
 `nqrepo-demo.html` の `const MK = {…}` が管理画面（`src/admin/data`・`src/admin/features/<機能>/mockData.ts`・`mockRecords.ts`）と 確認待ち（`src/app/data/pendingReviews.ts`）・使用水（`src/app/features/water-inspection/mockData.ts`）の写し。
 `.claude/mk-gen.py` が React の mockData を esbuild で JSON にしてから `MK` に変換する（scratchpad の `mocks/*.json` を読む。作り方はスクリプト先頭のコメント）。React 側が変わったら手で直さず作り直す。
 アプリの 9 帳票は `AX_APP`／`AX_ROWS`（`src/app/features/<slug>/mockData.ts`）。
@@ -82,7 +83,7 @@ Vercel にはリポジトリの外のフォルダが無いので、**React の d
 
 ### 2-1. プロトタイプと React 実装の関係
 
-この案件には React 実装（`../NQrepo`、約 300 画面）が既にあります。プロトタイプ `nqrepo-demo.html` はそれとは別の単体 HTML で、
+この案件には React 実装（`react-src/`、約 300 画面）が既にあります。プロトタイプ `nqrepo-demo.html` はそれとは別の単体 HTML で、
 **見た目は React 実装の Tailwind クラスを CSS に写したもの**（`.f .ic .g4 .p6 .tb .txl` のように Tailwind と同じ寸法のユーティリティを持つ）。
 React 側のデザインが変わったら、変わった画面の className を読んで同じ値に直す。ヘッダーの文言（Design Spec）や 工場選択→点検場所選択 の導線も React に揃えてある。
 **使用水の点検 1 帳票だけを、アプリで提出 → 管理画面で確認 → 承認 → データ検索 まで 1 つの状態でつなげて**動かします。
@@ -95,7 +96,7 @@ React 側のデザインが変わったら、変わった画面の className を
 提出した記録は RX の行として増えるので、管理画面の 確認管理 › その帳票 に「点検済み」で並びます（管理画面の月の初期値は 2025-04 なので、月送りで今月へ）。
 **アプリの一覧に並ぶ対象・ステータス・記録は `AX_APP`／`AX_ROWS`（React の `src/app/features/<slug>/mockData.ts` を写したもの。id も React と同じ）から出します。** 帳票管理（LX）の登録物と管理画面の記録（RX）は admin 側の mockData で、アプリの見本とは別物なので混ぜないこと（2026-09-25）。
 記録入力は一覧のステータスに合わせて開きます（`axSeed`。使用水の `openPoint` と同じ考え）。点検済み・確認完了・差し戻しの対象は React の mockData と同じ元の記録（`AX_SEED`。値・実施者・入力時刻・備考）が入った状態、未点検は空（実施日は今日）、見送りは備考に理由だけ。プロトタイプで提出した記録は RX の行に `form` として持たせ、次に開いたときそのまま戻します。薬品・添加物・金属は「記録を 1 件足す」画面なので常に空です（2026-09-25）。
-画面名・項目・選択肢・ボタンの文言・見本データは React 実装の `src/app/features/<slug>/` の各ページと mockData.ts から写した（React の実体は `Documents/other/NQrepo（old）`。括弧は全角）。配置図・室内タブ・秤の追加ポップアップ・一括破棄など細かい仕掛けは省いてあり、押すと「省いています」の吹き出しが出る。React 側が変わったら同じページを読んで `fields` を直す。
+画面名・項目・選択肢・ボタンの文言・見本データは React 実装の `src/app/features/<slug>/` の各ページと mockData.ts から写した（React の実体は `react-src/`）。配置図・室内タブ・秤の追加ポップアップ・一括破棄など細かい仕掛けは省いてあり、押すと「省いています」の吹き出しが出る。React 側が変わったら同じページを読んで `fields` を直す。
 画面設計側は `AL_LEDGERS`（画面の並び。React の app 側ルート順）と `AL_IDS`（hash の `:floorId` などを埋める見本の ID）。hash は `alLedgerScreens()` がルートから自動で作る。
 アプリの 点検予定（カレンダーと 機械器具点検・官能検査記録 の設定画面）・ヘルプ・設定・ライセンス情報・テキストサイズ変更 はプロトタイプにあります。文言と見本データは React の `src/app/features` から写したもので、React 側が変わったら同じ場所を直します。
 画面を足すときは `LX`／`RX`／`AX` の定義と、画面設計側の `LM_HASH`（帳票管理の hash の並び。steps と同じ順・同じ数）・`AL_LEDGERS` のルートを合わせます。

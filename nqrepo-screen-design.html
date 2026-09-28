@@ -532,6 +532,14 @@ body[data-view="release"] .stage,body[data-view="release"] .insp{display:none}
 .sec{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
 .ib > .sec:first-child{margin-top:0;padding-top:16px;border-top:0}
 .sec>h4{font-size:11px;letter-spacing:.14em;color:var(--mute);font-weight:500;margin-bottom:10px}
+/* 誰が使えるか（管理画面の画面だけ。確認者・承認者・管理者の 3 枠） */
+.whocan{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.whocan>div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border-radius:10px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--mute);font-size:13px;font-weight:600}
+.whocan>div i{font-style:normal;font-size:16px;line-height:1}
+.whocan>div.ok{background:var(--g-l);border-color:var(--g-l);color:var(--g-d)}
+.whocan>div.mid{background:var(--surface);border-color:var(--g-line);color:var(--g-d)}
+.whonote{margin-top:8px;font-size:12px;color:var(--mute);line-height:1.6}
 .lead{margin:0;font-size:13.5px;line-height:1.85;color:var(--ink)}
 .lead.top{font-size:14px;font-weight:500}
 .lead + .lead{margin-top:9px}
@@ -834,7 +842,7 @@ const PROJECT = {
   /* 画面の実体。プロトタイプの HTML を ?frame=1#hash で埋め込む。
      React 実装（NQrepo）を直接映すときは href を 'http://localhost:5173' に替え、
      src/ に CLAUDE.md §3 の5つの約束を満たすブリッジを1ファイル足す */
-  /* 2026-09-25：React 実装（Documents/other/NQrepo（old）、npm run build:kit の dist-kit）そのものを映す。node .claude/serve.cjs が同じサーバーの /react/ で配る。
+  /* 2026-09-25：React 実装そのものを映す。2026-09-28 からソースはこのリポジトリの react-src/（cd react-src && npm run build:kit の dist-kit）。node .claude/serve.cjs が同じサーバーの /react/ で配る。
      配られていなければ fallback（単体の HTML のプロトタイプ）に戻る。'states'（状態カタログ）だけは常にプロトタイプ */
   demo: {href:'react/', fallback:'nqrepo-demo.html', label:'React 実装', desc:'React 実装そのもの。省略なし・データも React のまま（配られていないときはプロトタイプ HTML）'},
   /* 現行システムの調査資料。この案件では React 実装そのものが現行なので、資料は持たない */
@@ -2077,7 +2085,29 @@ const RELEASES = [
    aim:'使用水の点検。最初のリリース。'},
 ];
 
+/* Ver.2.0 までにリリース済みの帳票の画面は「この打合せで決めること」を出さない（2026-09-28）。
+   帳票の番号 n（M2-n〜M5-n・A1-n）で見る。1 が使用水の点検、2〜 は DS_LEDGERS の順 */
+const OLD_LEDGER_NO = (() => {
+  const i = RELEASES.findIndex(r => r.ver === 'Ver.2.0');
+  const names = RELEASES.slice(i).flatMap(r => r.ledgers);
+  return new Set(['使用水の点検', ...DS_LEDGERS.map(d => d[1])].map((nm, k) => names.includes(nm) ? k + 1 : 0).filter(Boolean));
+})();
+/* サイドメニューの次の画面も出さない（2026-09-28）。枝（M2-5 など）は帳票ごとの決まりに従う */
+const NO_DECIDE = new Set(['M2','M3','M4','M5','M6','M9','M10','M11','M14','M13']);
+function pendingDecide(s){
+  if (NO_DECIDE.has(s.id)) return [];
+  const m = /^(?:M[2-5]|A1)-(\d+)(?:-|$)/.exec(s.id || '');
+  if (m && OLD_LEDGER_NO.has(+m[1])) return [];
+  return (s.decide || []).filter(d => !d[2]);
+}
+
 const LOG_DOC = [
+  ['2026-09-28','React 実装のソースをこのリポジトリの react-src/ に移した。枠の中と「プロトタイプで開く」は react-src をビルドした画面を映す。これまでコミットしていたビルド後のファイル（react/）は消し、Vercel はプッシュのたびに React をビルドして配る','10:50'],
+  ['2026-09-28','右パネルから「対応する要件」と「近い画面」の節を外した','10:45'],
+  ['2026-09-28','右パネルの「この画面のねらい」から「React 実装は ○○。」の一文を全画面で外した','10:35'],
+  ['2026-09-28','管理画面の画面の右パネルに「誰が使えるか」を足した。確認者・承認者・管理者の 3 枠で、中身は ④ ACCESS（前提の権限表と同じ）。△ は条件つきで、条件はその下に出す','10:20'],
+  ['2026-09-28','サイドメニューの データ検索・承認申請管理・確認管理・帳票管理・製品管理・保管場所管理・職員管理・ログ管理・ガイド・ヘルプ（M2〜M6・M9〜M11・M13・M14）の画面で「この打合せで決めること」を出さないようにした','10:05'],
+  ['2026-09-28','Ver.1.0〜2.0 でリリース済みの帳票（使用水の点検・ガラスプラスチック管理・秤点検管理・官能検査記録）の画面では「この打合せで決めること」を出さないようにした。決まったことは残す','09:50'],
   ['2026-09-25','予備のプロトタイプ HTML が、画面設計の hash と違う ID の画面を開いていた 21 画面を直した。帳票管理の登録物の ID を React の mockData に揃えた（フロア f1・持ち場 post-pudding など・検査製品 stp1・金属探知機 u1・X線探知機 xu1・ウェイトチェッカー wu1・薬品 c1・添加物 a1）。データ検索のガラスプラスチックは floors/f1、承認申請の秤点検は /2。日本語の点検場所名は親へ日本語のまま返すようにした','18:40'],
   ['2026-09-25','フローの凡例から「画面の遷移／動画の状態」の切替を外した。NVIDEO キットから持ってきたままの「動画の状態」の図で、この案件の記録の一生とは別物だったため。フローは画面の遷移だけになり、凡例は 帳票 → ユースケース → 線の見かた の並び。STATES（記録の一生）の定義は残してある','18:10'],
   ['2026-09-25','フロー（画面の遷移）を帳票ごとに切り替えられるようにした。これまで図に出ていたのは 使用水の点検 の枝だけで、他の 9 帳票（M2-2〜M5-10・A1-2〜A1-10）は noflow で隠れていた。凡例に「帳票」のプルダウンを置き、選んだ 1 帳票の枝だけを骨組み（M0〜M15・A0〜A7）に差し込んで出す。使用水のつながりは FLOW に手で書いたものをそのまま使い、他の帳票は画面の数も並びも違うので画面名から親を決めて組み立てる（一覧・管理・点検予定 は根から出る枝、新規登録・詳細はその一覧から、編集は詳細から、提出完了は提出内容の確認から、完了は元の一覧へ戻る）。ユースケースのプルダウンは 6 本 × 10 帳票の 60 本を帳票ごとにまとめて出す検索つきの一覧にした。帳票名・ユースケース名・説明のどれかで絞り込め、別の帳票のものを選ぶとその帳票へ切り替わる。経路は帳票ごとに読み替える（使用水の 記録入力・提出内容の確認・提出完了 と同じ役どころの画面を名前から探し、間に画面が挟まる帳票では途中の画面も経路に入れる）','17:30'],
@@ -2531,16 +2561,28 @@ function specHTML(){
   </div><div class="ib">`;
 
   /* 一行説明とねらいは同じ役目なので、ここにまとめる（中央の画面バーには出さない） */
-  if (s.sub || s.note){
+  /* 「React 実装は ○○。」の一文は出さない（2026-09-28。ファイルの在り処は資料の読み手に要らない） */
+  const noSrc = x => (x || '').replace(/React 実装は[^。]*。/g, '').trim();
+  const sub = noSrc(s.sub), note = noSrc(s.note);
+  if (sub || note){
     h += `<div class="sec"><h4>この画面のねらい</h4>`;
-    if (s.sub)  h += `<p class="lead top">${esc(s.sub)}</p>`;
-    if (s.note) h += `<p class="lead">${esc(s.note)}</p>`;
+    if (sub)  h += `<p class="lead top">${esc(sub)}</p>`;
+    if (note) h += `<p class="lead">${esc(note)}</p>`;
     h += `</div>`;
+  }
+  /* 管理画面の画面は、誰が使えるかを ACCESS から出す（実施者は管理画面に入らないので外す） */
+  const acc = /^M/.test(s.id) && ACCESS[s.id];
+  if (acc){
+    const cols = [1, 2, 3];
+    h += `<div class="sec"><h4>誰が使えるか</h4><div class="whocan">${cols.map(i => {
+      const v = acc[i] || '－';
+      return `<div class="${v === '○' ? 'ok' : v === '△' ? 'mid' : ''}">${esc(ROLES[i].name)}<i>${v === '○' ? '◯' : v === '△' ? '△' : '—'}</i></div>`;
+    }).join('')}</div>${acc[ROLES.length] ? `<p class="whonote">${esc(acc[ROLES.length])}</p>` : ''}</div>`;
   }
   /* 決まったことは残す。開発中の「なぜこうなったか」はここを見れば足りる。
      decide は [問い, なぜ, 決めたこと, 日付]。3つ目が入ったら決定済みとして上に出す */
   const decided = (s.decide || []).filter(d => d[2]);
-  const pending = (s.decide || []).filter(d => !d[2]);
+  const pending = pendingDecide(s);
   if (decided.length){
     h += `<div class="sec"><h4>決まったこと</h4><ul class="alist">${
       decided.map(([q, why, ans, date]) => `<li>
@@ -2578,8 +2620,6 @@ function specHTML(){
     </tbody></table></div>`;
   if (s.elements?.length) h += `<div class="sec"><h4>主な要素</h4><ul class="bul">${
     s.elements.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`;
-  if (s.req?.length) h += `<div class="sec"><h4>対応する要件</h4><div class="fchips">${
-    s.req.map(r=>`<span class="fchip">${esc(r)}</span>`).join('')}</div></div>`;
 
   /* 現行システムの調査資料が無いプロジェクトでは、この節ごと出さない */
   if (PROJECT.asIs){
@@ -2597,10 +2637,6 @@ function specHTML(){
     h += `</div>`;
   }
 
-  const links = SCREENS.filter(x=>x!==s && (x.grp===s.grp)).slice(0,4);
-  h += `<div class="sec"><h4>近い画面</h4><div class="links">
-    ${links.map(x=>`<button type="button" data-go="${x.id}">${x.id} ${esc(x.name)}</button>`).join('')}
-  </div></div>`;
   return h + `</div>`;
 }
 
@@ -3388,7 +3424,7 @@ function openHelp(){
     ['版',  PROJECT.ver],
     ['準拠', PROJECT.basis],
     ['画面', SCREENS.length + ' 面'],
-    ['確認事項', SCREENS.reduce((n,s)=>n+(s.decide?.length||0), 0) + ' 件'],
+    ['確認事項', SCREENS.reduce((n,s)=>n+pendingDecide(s).length, 0) + ' 件'],
   ].filter(r => r[1]);
   openSheet('使い方', `
     <div class="hsec"><h4>この資料</h4>${about.map(([k,v])=>

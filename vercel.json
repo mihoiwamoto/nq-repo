@@ -1,8 +1,8 @@
 {
   "framework": null,
-  "installCommand": "echo skip",
-  "buildCommand": "echo static",
-  "outputDirectory": ".",
+  "installCommand": "cd react-src && npm ci",
+  "buildCommand": "sh .claude/build-vercel.sh",
+  "outputDirectory": ".vercel-out",
   "cleanUrls": false,
   "redirects": [
     { "source": "/", "destination": "/nqrepo-screen-design.html", "permanent": false }
