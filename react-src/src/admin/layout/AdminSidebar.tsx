@@ -5,7 +5,6 @@ import iconArrowDown from "@images/Icon/arrow_down.svg";
 import iconArrowUp from "@images/Icon/arrow_up.svg";
 import { filterNavByRole, primaryNav, secondaryNav, type AdminNavItem } from "../navigation";
 import { useCurrentRole } from "../../data/useCurrentRole";
-import { useCanvasEditTotal } from "../features/guide/useCanvasEdits";
 import { useDemoCount } from "../../components/demo/demoStore";
 
 /** 赤い件数バッジ（承認申請管理の「10」と同じ見た目） */
@@ -20,12 +19,6 @@ function CountBadge({ count, compact }: { count: number; compact?: boolean }) {
       {compact ? count : String(count).padStart(2, "0")}
     </span>
   );
-}
-
-/** 画面説明キャンバスの状態から決まるバッジ。画面説明 = まだコードに反映していない編集の件数 */
-function useGuideBadges(): Record<string, number> {
-  const edits = useCanvasEditTotal();
-  return { "/admin/guide/screens": edits };
 }
 
 function NavIcon({ src, active }: { src: string; active: boolean }) {
@@ -78,7 +71,6 @@ function NavItem({ item }: { item: AdminNavItem }) {
 
 function NavAccordion({ item }: { item: AdminNavItem }) {
   const { pathname } = useLocation();
-  const dynamicBadges = useGuideBadges();
   const hasActiveChild = (item.children ?? []).some(
     (child) => pathname === child.path || pathname.startsWith(`${child.path}/`)
   );
@@ -130,7 +122,6 @@ function NavAccordion({ item }: { item: AdminNavItem }) {
                   >
                     {child.label}
                   </span>
-                  {dynamicBadges[child.path] ? <CountBadge count={dynamicBadges[child.path]} compact /> : null}
                 </>
               )}
             </NavLink>

@@ -11,12 +11,19 @@
  *
  * 画面説明キャンバスが iframe に画面を埋め込んでいるときは、中のボタンは出さない
  * （外側のキャンバスに自分のコメント機能があるので二重になる）。
+ *
+ * 画面設計の枠の中（?frame=1）では、右から出るパネルは出さない。入力欄と一覧は画面設計の右パネルに出し、
+ * ここは「データ・場所選び・ピン」だけを受け持つ。やり取りは postMessage（キット共通の nvideo キー）:
+ *   親 → 枠 … {nvideo:'feedback'}（開く。frameBridge が openFeedbackPanel を呼ぶ）
+ *              {nvideo:'fb', op:'close'|'pick'|'unpick'|'clearSpot'|'submit'|'toggle'|'remove'|'active', …}
+ *   枠 → 親 … {nvideo:'fb-state', open, target, trail, spot, picking, canPick, activeId, entries, screenIds, pins, author, company}
  */
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { CATEGORY_LABELS, findScreenByPathname } from "../../admin/features/guide/screenCatalog";
 import { screenBreadcrumb } from "./screenBreadcrumb";
+import { FRAME } from "../../frameBridge";
 import { isRootElement, resolveSelector, selectorFor, targetLabel } from "../../admin/features/guide/domInspector";
 import {
   COMPANY_LABELS,
@@ -55,6 +62,8 @@ const OWN_ATTR = "data-nq-feedback";
 const own = { [OWN_ATTR]: "" } as Record<string, string>;
 
 function loadOpen(): boolean {
+  // 画面設計の枠の中では開いたままにしない（画面を開き直すたびに毎回閉じた状態から）
+  if (FRAME) return false;
   try {
     return sessionStorage.getItem(OPEN_KEY) === "1";
   } catch {
@@ -212,8 +221,8 @@ export function FeedbackWidget({ showButton = true }: FeedbackWidgetProps = {}) 
   /** 端末枠の中の画面を対象にしているときは、この画面上で場所を選んでも意味が無いので選ばせない */
   const canPick = targetPath === null;
 
-  // 画面説明キャンバス（iframe）の中では出さない
-  const embedded = typeof window !== "undefined" && window.self !== window.top;
+  // 画面説明キャンバス（iframe）の中では出さない。画面設計の枠（?frame=1）は右下の「フィードバック」から開くので出す
+  const embedded = !FRAME && typeof window !== "undefined" && window.self !== window.top;
 
   // 開閉状態を覚えておく（ウィジェットは Routes の外にあるので画面遷移では消えないが、リロードにも耐えるように）
   useEffect(() => saveOpen(open), [open]);
@@ -286,6 +295,90 @@ export function FeedbackWidget({ showButton = true }: FeedbackWidgetProps = {}) 
   }, []);
   const endPicking = useCallback(() => setPicking(false), []);
 
+  const submitEntry = useCallback(
+    (kind: FeedbackKind, title: string, body: string, author: string, company: FeedbackCompany) => {
+      add({
+        kind,
+        title: title || undefined,
+        body,
+        author,
+        company,
+        spot: spot ?? undefined,
+        pathname: target.pathname,
+        screenId: target.id,
+        screenTitle: target.title,
+        screenCategory: target.category,
+        // 不具合の再現環境の手がかり（管理画面の詳細ポップアップに出す）
+        ua: navigator.userAgent,
+      });
+      setSpot(null);
+      setPicking(false);
+    },
+    [add, spot, target]
+  );
+
+  /* ── 画面設計の枠の中：パネルは親（画面設計の右パネル）に出す ── */
+  // 親からの指示
+  const remote = useRef({ submitEntry, setStatus, remove, entries });
+  remote.current = { submitEntry, setStatus, remove, entries };
+  useEffect(() => {
+    if (!FRAME) return;
+    const onMsg = (e: MessageEvent) => {
+      const m = e.data;
+      if (!m || m.nvideo !== "fb" || e.source !== window.parent) return;
+      const r = remote.current;
+      if (m.op === "close") setOpen(false);
+      else if (m.op === "pick") setPicking(true);
+      else if (m.op === "unpick") setPicking(false);
+      else if (m.op === "clearSpot") setSpot(null);
+      else if (m.op === "active") setActiveId(typeof m.id === "string" ? m.id : null);
+      else if (m.op === "submit") {
+        const author = String(m.author ?? "").trim();
+        const company = COMPANY_ORDER.includes(m.company) ? (m.company as FeedbackCompany) : initialCompany();
+        r.submitEntry(KIND_ORDER.includes(m.kind) ? m.kind : "improvement", String(m.title ?? "").trim(), String(m.body ?? "").trim(), author, company);
+        saveFeedbackAuthor(author);
+        saveFeedbackCompany(company);
+      } else if (m.op === "toggle") {
+        const hit = r.entries.find((x) => x.id === m.id);
+        if (hit) r.setStatus(hit.id, hit.status === "done" ? "open" : "done");
+      } else if (m.op === "remove" && typeof m.id === "string") r.remove(m.id);
+    };
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+  // 親へいまの中身を知らせる（開いている間は変わるたび。閉じたら 1 回だけ open:false）
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (!FRAME || window.parent === window) return;
+    if (!open && !wasOpen.current) return;
+    wasOpen.current = open;
+    window.parent.postMessage(
+      {
+        nvideo: "fb-state",
+        open,
+        target,
+        trail: screenBreadcrumb(target.pathname, target.title),
+        spot: spot ? { ...spot, display: spotDisplay(spot) } : null,
+        picking,
+        canPick,
+        activeId,
+        entries: sortNewestFirst(entries).map((x) => ({
+          ...x,
+          headline: feedbackHeadline(x),
+          detail: feedbackDetail(x),
+          spotText: x.spot ? spotDisplay(x.spot) : "",
+          time: formatFeedbackTime(x.createdAt),
+          companyName: companyLabel(x.company),
+        })),
+        screenIds: screenEntries.map((x) => x.id),
+        pins: [...pinNumbers.entries()],
+        author: initialAuthor(),
+        company: initialCompany(),
+      },
+      "*"
+    );
+  }, [open, target, spot, picking, canPick, activeId, entries, screenEntries, pinNumbers]);
+
 
   if (embedded) return null;
 
@@ -323,7 +416,8 @@ export function FeedbackWidget({ showButton = true }: FeedbackWidgetProps = {}) 
 
       {/* 背景は暗くしない。パネルを開いたまま画面を操作・遷移できる（対象画面は遷移先に追従する）。
           場所を選んでいる間も消さない（覆いはパネルより下の層に置くので、パネルはそのまま触れる） */}
-      {open && (
+      {/* 画面設計の枠の中では、パネルは画面設計の右パネルに出す（上の fb-state） */}
+      {open && !FRAME && (
         <FeedbackPanel
           target={target}
           entries={entries}
@@ -337,24 +431,7 @@ export function FeedbackWidget({ showButton = true }: FeedbackWidgetProps = {}) 
           onPickEnd={endPicking}
           onClearSpot={() => setSpot(null)}
           onClose={() => setOpen(false)}
-          onSubmit={(kind, title, body, author, company) => {
-            add({
-              kind,
-              title: title || undefined,
-              body,
-              author,
-              company,
-              spot: spot ?? undefined,
-              pathname: target.pathname,
-              screenId: target.id,
-              screenTitle: target.title,
-              screenCategory: target.category,
-              // 不具合の再現環境の手がかり（管理画面の詳細ポップアップに出す）
-              ua: navigator.userAgent,
-            });
-            setSpot(null);
-            setPicking(false);
-          }}
+          onSubmit={submitEntry}
           onToggleStatus={(e) => setStatus(e.id, e.status === "done" ? "open" : "done")}
           onRemove={remove}
         />

@@ -10,12 +10,6 @@ import iconStorage from "../assets/figma/icons/nav/storage.svg";
 import iconStaff from "../assets/figma/icons/nav/staff.svg";
 import iconLog from "../assets/figma/icons/nav/log.svg";
 import iconDevice from "../assets/figma/icons/nav/device.svg";
-import iconGuide from "../assets/figma/icons/nav/guide.svg";
-import iconScreenGuide from "../assets/figma/icons/nav/screen-guide.svg";
-import iconScreenFlow from "../assets/figma/icons/nav/screen-flow.svg";
-import iconScreenDescription from "../assets/figma/icons/nav/screen-description.svg";
-import iconDevVersion from "../assets/figma/icons/nav/dev-version.svg";
-import iconFeedback from "../assets/figma/icons/nav/feedback.svg";
 import iconHelp from "../assets/figma/icons/nav/help.svg";
 import type { PrototypeRoleId } from "../data/roleStore";
 import { approvalRequests } from "./data/approvals";
@@ -51,22 +45,10 @@ export const primaryNav: AdminNavItem[] = [
   { label: "職員管理", icon: iconStaff, path: "/admin/staff" },
   { label: "ログ管理", icon: iconLog, path: "/admin/logs" },
   { label: "ログイン端末管理", icon: iconDevice, path: "/admin/devices" },
-  {
-    label: "ガイド",
-    icon: iconGuide,
-    path: "/admin/guide",
-    children: [
-      { label: "変更履歴", icon: iconScreenGuide, path: "/admin/guide/screens" },
-      { label: "画面遷移図", icon: iconScreenFlow, path: "/admin/guide/flow" },
-      { label: "画面説明", icon: iconScreenDescription, path: "/admin/guide/descriptions" },
-      { label: "開発Ver管理", icon: iconDevVersion, path: "/admin/guide/versions" },
-      { label: "フィードバック管理", icon: iconFeedback, path: "/admin/guide/feedback" },
-    ],
-  },
   { label: "ヘルプ", icon: iconHelp, path: "/admin/help" },
 ];
 
-/** サイドメニュー下部の固定枠。現在は空（ヘルプはガイドの直下に単独項目として配置）。 */
+/** サイドメニュー下部の固定枠。現在は空（ヘルプはサイドメニューのいちばん下に単独項目として配置。フィードバック管理はメニューに出さず、URL で直接開く）。 */
 export const secondaryNav: AdminNavItem[] = [];
 
 /** 確認者に表示するサイドメニュー（これ以外は非表示） */
@@ -79,7 +61,6 @@ const CHECKER_NAV_PATHS = [
   "/admin/storage",
   "/admin/staff",
   "/admin/logs",
-  "/admin/guide",
   "/admin/help",
 ];
 
@@ -93,7 +74,6 @@ const APPROVER_NAV_PATHS = [
   "/admin/storage",
   "/admin/staff",
   "/admin/logs",
-  "/admin/guide",
   "/admin/help",
 ];
 
@@ -108,7 +88,6 @@ const APPROVER_CHECKER_NAV_PATHS = [
   "/admin/storage",
   "/admin/staff",
   "/admin/logs",
-  "/admin/guide",
   "/admin/help",
 ];
 

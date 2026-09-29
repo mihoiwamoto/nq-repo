@@ -136,6 +136,9 @@ kbd{font-size:10.5px;line-height:1;background:var(--surface-2);border:1px solid 
 .rh .gi{flex:none;width:14px;height:14px;display:grid;place-items:center;margin-right:1px}
 .rh .cv{flex:none;margin-left:auto;transition:transform .15s}
 .rh[aria-expanded="true"] .cv{transform:rotate(180deg)}
+/* 2026-09-28：グループの見出し（開閉）は出さない。タブで切り替えた中身は全部開いたまま。
+   帯（data-rail="0"）のときだけ、フライアウトを出す入口のアイコンとして残す */
+body:not([data-rail="0"]) .rail .rh{display:none}
 .logwrap .fact{display:flex!important}
 .rail section+section{margin-top:20px}
 .slist{display:flex;flex-direction:column;gap:2px}
@@ -321,7 +324,39 @@ body[data-view="screen"] .flowview{display:none}
 body[data-view="ref"] .rail,body[data-view="ref"] .g-rail,body[data-view="ref"] .g-insp,
 body[data-view="ref"] .stage,body[data-view="ref"] .insp,
 body[data-view="release"] .rail,body[data-view="release"] .g-rail,body[data-view="release"] .g-insp,
-body[data-view="release"] .stage,body[data-view="release"] .insp{display:none}
+body[data-view="release"] .stage,body[data-view="release"] .insp,
+body[data-view="feedback"] .rail,body[data-view="feedback"] .g-rail,body[data-view="feedback"] .g-insp,
+body[data-view="feedback"] .stage,body[data-view="feedback"] .insp{display:none}
+/* フィードバック管理（ヘッダーのタブ）。前提と同じ器（.refview）に、全画面のフィードバックを新しい順に並べる */
+/* 幅いっぱいの白地に出す（前提・リリースのような灰色の地に浮かべたカードにしない） */
+.fbmview{background:var(--surface)}
+.fbmview{overflow:hidden}
+/* 左に絞り込みのメニュー、右に一覧。左右それぞれでスクロールする */
+.fbmgrid{display:grid;grid-template-columns:248px minmax(0,1fr);height:100%}
+.fbmside{border-right:1px solid var(--line);background:var(--surface-2);overflow:auto;padding:20px 14px 40px;display:flex;flex-direction:column;gap:20px}
+.fbmside input{width:100%;height:34px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;padding:0 10px}
+.fbmside h4{font-size:11px;color:var(--mute);letter-spacing:.06em;margin:0 0 6px 8px}
+.fbmside ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.fbmside li button{width:100%;display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--ink);font:inherit;font-size:13px;cursor:pointer;text-align:left}
+.fbmside li button:hover{background:var(--surface)}
+.fbmside li button[aria-pressed="true"]{background:var(--g-l);color:var(--g-d);font-weight:700}
+.fbmside li button i{flex:none;width:8px;height:8px;border-radius:99px}
+.fbmside li button .n{margin-left:auto;font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.fbmside li button[aria-pressed="true"] .n{color:inherit}
+.fbmmain{overflow:auto;padding:26px 36px 80px}
+.fbmmain h2{font-size:26px;line-height:1.35;margin:0 0 8px}
+.fbmcnt{font-size:12px;color:var(--mute);margin:18px 0 8px}
+@media (max-width:1000px){
+  .fbmview{overflow:auto}
+  .fbmgrid{grid-template-columns:1fr;height:auto}
+  .fbmside{border-right:0;border-bottom:1px solid var(--line);overflow:visible}
+  .fbmmain{overflow:visible;padding:20px 16px 60px}
+}
+.fbcard .sc button{border:0;background:none;padding:0;font:inherit;color:var(--g-d);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.fbcard .ft select{height:27px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);font:inherit;font-size:11px;padding:0 6px}
+.fbcard .cm{margin:2px 0 0;padding:8px 10px;list-style:none;border-radius:8px;background:var(--surface-2);display:grid;gap:6px}
+.fbcard .cm li{font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.fbcard .cm .w{display:block;font-size:11px;color:var(--mute)}
 /* リリース（開発 Ver）。前提と同じ器（.refview）に、Ver ごとのカードを新しい順に並べる */
 .relhd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .vchip{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 11px;border-radius:999px;font-size:13px;font-weight:700;
@@ -401,6 +436,7 @@ body[data-view="release"] .stage,body[data-view="release"] .insp{display:none}
 .ftbl tr.hd td{color:var(--mute);padding-top:9px}
 .ftbl .rq.must{color:var(--warn)}
 .ftbl tr.dt td{padding:0 0 9px;border-bottom:1px solid var(--line)}
+.ftbl tbody tr.dt:last-child td{border-bottom:0}   /* 表の最後の線は、次の節の上の線と重なって 2 本に見えるので引かない */
 .ftbl .sp{display:block;font-size:11.5px;color:var(--mute);line-height:1.75}
 .ftbl .src{display:block;font-size:11px;color:var(--mute);margin-top:2px}
 .ftbl .src::before{content:"";display:inline-block;width:5px;height:5px;border-radius:9px;
@@ -522,13 +558,90 @@ body[data-view="release"] .stage,body[data-view="release"] .insp{display:none}
 
 /* ---------- inspector ---------- */
 .insp{grid-column:3;grid-row:2;background:var(--surface);border-left:1px solid var(--line);overflow-y:auto;overscroll-behavior:contain}
+/* ---------- 右パネルのフィードバック（右下の「フィードバック」から開く）----------
+   データ・場所選び・ピンは枠の中の React（FeedbackWidget）が持ち、ここは入力欄と一覧だけ */
+.fbwait{font-size:12.5px;color:var(--mute);padding:18px 0}
+.fbf{display:grid;gap:14px;padding-top:18px}
+.fbf .lb{display:block;font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.fbf .lb .op{font-weight:400;color:var(--mute)}
+.fbf .lb .rq{color:var(--danger)}
+.fbtg{background:var(--surface-2);border-radius:10px;padding:9px 12px}
+.fbtg .k{display:block;font-size:11px;color:var(--mute)}
+.fbtg .v{display:block;font-size:13px;font-weight:700;color:var(--ink);line-height:1.5;margin-top:1px}
+.fbtg .v .tr{font-weight:400;color:var(--mute)}
+.fbpick{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:36px;border:1px dashed var(--line-s);border-radius:9px;
+  background:none;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.fbpick:hover{border-color:var(--g);background:var(--g-l)}
+.fbpin{width:15px;height:15px;flex:none;color:var(--g)}
+.fbspot{display:flex;align-items:center;gap:6px;border:1px solid var(--g);background:var(--g-l);border-radius:9px;padding:5px 5px 5px 11px}
+.fbspot .t{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbspot.ing{flex-direction:column;align-items:stretch;border:2px dashed var(--g);padding:8px 10px;gap:6px}
+.fbspot.ing .row{display:flex;align-items:center;gap:7px}
+.fbspot.ing .msg{flex:1;min-width:0;font-size:12px;color:var(--ink);line-height:1.5}
+.fbspot.ing .msg b{color:var(--g-d)}
+.fbspot.ing .now{display:flex;align-items:center;gap:6px;background:var(--surface);border-radius:7px;padding:4px 4px 4px 8px}
+.fbspot.ing .now .k{font-size:11px;color:var(--mute);flex:none}
+.fbmini{flex:none;height:27px;padding:0 9px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
+.fbmini.ln{border-color:transparent;background:none;color:var(--g-d)}
+.fbmini:hover{background:var(--surface-2)}
+.fbx{flex:none;width:27px;height:27px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:7px;background:none;color:var(--mute);cursor:pointer}
+.fbx:hover{background:var(--surface);color:var(--ink)}
+.fbnote{font-size:11px;color:var(--mute);line-height:1.6;background:var(--surface-2);border-radius:9px;padding:8px 11px}
+.fbkinds{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.fbkinds button{height:34px;border-radius:9px;border:1px solid var(--line);background:none;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.fbkinds button:hover{background:var(--surface-2)}
+.fbkinds button[aria-checked="true"]{background:var(--g);border-color:var(--g);color:#fff;font-weight:700}
+.fbin{width:100%;height:36px;border:1px solid var(--line);border-radius:9px;padding:0 11px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;outline:none}
+textarea.fbin{height:auto;min-height:96px;padding:8px 11px;resize:vertical;line-height:1.6}
+.fbin:focus{border-color:var(--g)}
+.fbin::placeholder{color:#A9AEAB}
+.fbname{display:flex;align-items:center;gap:8px}
+.fbname .lb{margin:0;flex:none}
+.fbname select.fbin{width:128px;flex:none;padding-right:6px}
+.fbname input.fbin{flex:1;min-width:0}
+.fbsend{height:42px;border:0;border-radius:9px;background:var(--g);color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.fbsend:disabled{background:var(--surface-3);color:var(--mute);cursor:default}
+.fbok{font-size:12px;font-weight:700;color:var(--g-d);background:var(--g-l);border-radius:9px;padding:8px 11px}
+.fbok[hidden]{display:none}
+.fbls{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.fbseg{display:inline-flex;border:1px solid var(--line);border-radius:9px;padding:2px;margin-bottom:10px}
+.fbseg button{height:27px;padding:0 11px;border:0;border-radius:7px;background:none;color:var(--ink);font:inherit;font-size:12px;cursor:pointer}
+.fbseg button .n{color:var(--mute);margin-left:3px}
+.fbseg button[aria-selected="true"]{background:var(--ink);color:var(--surface);font-weight:700}
+.fbseg button[aria-selected="true"] .n{color:inherit;opacity:.8}
+.fbcards{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fbcard{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:6px;background:var(--surface)}
+.fbcard.done{background:var(--surface-2)}
+.fbcard.on{border-color:#c8322b;box-shadow:0 0 0 2px rgba(200,50,43,.18)}
+.fbcard .hd{display:flex;align-items:center;gap:6px;min-width:0}
+.fbcard .no{font-size:11px;font-weight:700;color:var(--mute);flex:none}
+.fbcard .pn{flex:none;width:19px;height:19px;border-radius:99px;background:#c8322b;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.fbcard.done .pn{background:#bbb}
+.fbchip{flex:none;height:19px;padding:0 8px;border-radius:99px;font-size:11px;font-weight:700;display:inline-flex;align-items:center}
+.fbcard .sc{flex:1;min-width:0;font-size:11px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbcard .sp{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mute);min-width:0}
+.fbcard .sp span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbcard .sp .fbpin{color:var(--mute);width:13px;height:13px}
+.fbcard .h{font-size:13.5px;line-height:1.6;color:var(--ink);word-break:break-word}
+.fbcard.done .h{color:var(--mute)}
+.fbcard .d{font-size:12px;line-height:1.65;color:var(--mute);white-space:pre-wrap;word-break:break-word}
+.fbcard .ft{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mute)}
+.fbcard .ft .who{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fbcard .ft .fbx:hover{background:var(--surface-2)}
+.fbcard .ft .fbx.del:hover{background:var(--danger-l);color:var(--danger)}
+.fbcard .ft .fbx.ok{color:var(--g-d)}
+.fbempty{font-size:12px;color:var(--mute);line-height:1.7;padding:6px 0}
+.fbfoot{font-size:11px;color:var(--mute);margin-top:10px}
 .ih{position:sticky;top:0;z-index:3;background:var(--surface);border-bottom:1px solid var(--line);padding:17px 22px 14px}
 .ih .r1{display:flex;align-items:center;gap:8px;margin-bottom:4px;min-height:26px}
 .ih .r1 .loglink{margin-left:auto;flex:none}   /* 更新履歴は右端に寄せる */
+.ih .r1 .fbmlink{flex:none}                     /* フィードバック管理は更新履歴の右隣。押すたびに 仕様／この画面のフィードバック を切り替える */
+.ih .r1 .fbmlink[aria-pressed="true"]{background:var(--g-l);color:var(--g-d);border-color:var(--g-line)}
+.ih .fbmsub{font-size:12px;color:var(--mute);margin-top:2px}
 .ih h3{font-size:19px;line-height:1.4}
 .ih .id{font-size:13px;color:var(--mute);font-weight:700;letter-spacing:.04em}
 /* 節は細い線で区切る。余白だけだと全部が1本の長い柱に見えて、どこが変わったか追えない */
-.ib{padding:0 22px 34px}
+.ib{padding:0 22px 96px}   /* 下は右下のフローティング（下から 20px・高さ約 44px）に最後の行が隠れないだけ空ける */
 .sec{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
 .ib > .sec:first-child{margin-top:0;padding-top:16px;border-top:0}
 .sec>h4{font-size:11px;letter-spacing:.14em;color:var(--mute);font-weight:500;margin-bottom:10px}
@@ -609,9 +722,11 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
 .nvfab .dt{width:8px;height:8px;border-radius:99px;background:var(--na);flex:none}
 .nvfab .lb{font-weight:700;white-space:nowrap}
 .nvfab .sb{color:var(--nm);white-space:nowrap;border-left:1px solid var(--nl);padding-left:9px}
+.nvfab .sb[hidden]{display:none}
 .nvfab .cr{color:var(--nm);transition:transform .18s}
 .nvsw.open .nvfab .cr{transform:rotate(180deg)}
-.nvpanel{position:absolute;right:0;bottom:calc(100% + 10px);width:312px;background:var(--nb);
+/* 画面より背が高くなったらパネルの中で縦に送る（React の KitSwitch.tsx と同じ値） */
+.nvpanel{position:absolute;right:0;bottom:calc(100% + 10px);width:312px;background:var(--nb);max-height:calc(100vh - 90px);overflow-y:auto;overscroll-behavior:contain;
   border:1px solid var(--nl);border-radius:16px;box-shadow:var(--nsh);padding:14px;
   animation:nvup .18s cubic-bezier(.2,1,.3,1)}
 /* display を指定しているので、hidden 属性だけでは消えない。明示的に閉じる */
@@ -633,12 +748,37 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
 .nvgrid .nvit .t1{font-size:12.5px}
 .nvflow{margin:9px 4px 0;font-size:11px;color:var(--nm);line-height:1.65}
 .nvflow b{color:var(--nt);font-weight:500}
-.nvfoot{display:flex;align-items:center;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid var(--nl)}
+.nvfoot{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid var(--nl)}
 .nvbtn{font-size:12px;border:1px solid var(--nl);border-radius:8px;padding:6px 12px;color:var(--nm);background:none;cursor:pointer;font-family:inherit}
 .nvbtn:hover{border-color:var(--na);color:var(--nad)}
+/* 緑地に白文字（暗い配色でも同じ緑。白文字が読めるように --na は使わない） */
+/* 右下の中の 管理画面／アプリ。左の一覧のタブ（.ptab）と同じ動き */
+.nvtabs{display:flex;gap:2px;background:var(--ns);border-radius:9px;padding:2px;margin:0 0 12px}
+.nvtab{flex:1;font-size:12.5px;padding:6px 10px;border-radius:7px;color:var(--nm);text-align:center;background:none;border:0;cursor:pointer;font-family:inherit}
+.nvtab:hover{color:var(--nt)}
+.nvtab[aria-selected="true"]{background:var(--nb);color:var(--nt);font-weight:500;box-shadow:0 1px 2px rgba(20,26,30,.12)}
+.nvbtn.pri{background:#009E5E;border-color:#009E5E;color:#fff}
+.nvbtn.pri:hover{background:#1E7A4C;border-color:#1E7A4C;color:#fff}
 .nvkey{margin-left:auto;font-size:10.5px;color:var(--nm);text-align:right;line-height:1.6}
+html.demo-fallback #nvFb,html.demo-fallback .fbmlink{display:none}
+/* 「状態」の ? と吹き出し。見出しのすぐ下に差し込む（重ねるとパネルの下にはみ出して見切れる）。入場は transform だけ。opacity は使わない */
+.nvqsec{position:relative}
+.nvqsec>.nvh{display:flex;align-items:center}
+.nvh .nvq{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;margin-left:4px;
+  border-radius:99px;border:1px solid var(--nl);background:var(--nb);color:var(--nm);font:600 10px/1 system-ui,sans-serif;letter-spacing:0;cursor:pointer;padding:0}
+.nvh .nvq:hover,.nvh .nvq[aria-expanded="true"]{border-color:var(--na);color:var(--nad);background:var(--nal)}
+.nvtip{position:relative;margin:4px 0 10px;background:var(--nb);border:1px solid var(--nl);border-radius:12px;
+  box-shadow:var(--nsh);padding:10px 12px;transform-origin:34px -6px;animation:nvpop .16s cubic-bezier(.2,1.3,.4,1)}
+.nvtip[hidden]{display:none}
+.nvtip::before{content:"";position:absolute;left:34px;top:-6px;width:10px;height:10px;background:var(--nb);
+  border-left:1px solid var(--nl);border-top:1px solid var(--nl);transform:rotate(45deg)}
+.nvtip dl{margin:0;display:grid;gap:8px}
+.nvtip dt{font-size:12px;font-weight:500;color:var(--nt);line-height:1.5}
+.nvtip dd{margin:1px 0 0;font-size:11px;color:var(--nm);line-height:1.65}
+.nvtip dd.q{color:var(--nt)}
+@keyframes nvpop{from{transform:scale(.9) translateY(-4px)}to{transform:none}}
 @media (max-width:700px){ .nvfab .sb{display:none} .nvpanel{width:min(300px,calc(100vw - 40px))} }
-@media (prefers-reduced-motion:reduce){.nvfab,.nvpanel,.nvfab .cr{transition:none!important;animation:none!important}}
+@media (prefers-reduced-motion:reduce){.nvfab,.nvpanel,.nvfab .cr,.nvtip{transition:none!important;animation:none!important}}
 
 
 
@@ -710,7 +850,7 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
      狭い画面でも2列目に置かれて段組みが壊れる */
   .flowview,body[data-view="flow"] .flowview{grid-column:1;grid-row:3;height:calc(100dvh - 58px)}
   .refview{grid-column:1;grid-row:3}
-  body[data-view="ref"] .panetabs,body[data-view="release"] .panetabs{display:none}
+  body[data-view="ref"] .panetabs,body[data-view="release"] .panetabs,body[data-view="feedback"] .panetabs{display:none}
   .refwrap{padding:16px 14px 40px;gap:18px}
   .dlist{grid-template-columns:1fr;gap:2px 0}
   .dlist dd{margin-bottom:8px}
@@ -734,7 +874,7 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
   @page{margin:12mm}
   html,body{background:#fff}
   .shell{display:block;height:auto}
-  .rail,.panetabs,.grip,.nvsw,.tbar,.sizepop,.fzoom,.vsw,.pill.loglink,.pill.back,.insp .seg,.links{display:none!important}
+  .rail,.panetabs,.grip,.nvsw,.tbar,.sizepop,.fzoom,.vsw,.pill.loglink,.pill.fbmlink,.pill.back,.insp .seg,.links{display:none!important}
   .topbar{border-bottom:1px solid #ccc;padding:0 0 8px}
   .stage,.insp{display:block;border:0;overflow:visible}
   .canvas{overflow:visible;padding:0;background:#fff}
@@ -759,6 +899,7 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
       <button type="button" data-view="flow" aria-pressed="false">フロー</button>
       <button type="button" data-view="ref" aria-pressed="false">前提</button>
       <button type="button" data-view="release" aria-pressed="false">リリース</button>
+      <button type="button" data-view="feedback" aria-pressed="false">フィードバック管理</button>
     </div>
     <div class="grow"></div>
   </header>
@@ -799,17 +940,27 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
   <section class="flowview" id="flowview" hidden><div class="fwrap" id="fwrap"></div></section>
   <section class="refview" id="refview" hidden></section>
   <section class="refview relview" id="relview" hidden></section>
+  <section class="refview fbmview" id="fbmview" hidden></section>
 
   <button class="grip g-rail" type="button" data-side="rail" aria-label="画面一覧の幅を変える（←→で調整）" title="ドラッグで幅を変える（下限で止まります）"><i></i></button>
   <button class="grip g-insp" type="button" data-side="insp" aria-label="仕様パネルの幅を変える（←→で調整）" title="ドラッグで幅を変える（下限で止まります）"><i></i></button>
 <div class="nvsw" id="nvSw">
   <div class="nvpanel" id="nvPanel" hidden>
+    <div class="nvtabs" role="tablist" aria-label="端末の切り替え">
+      <button class="ptab nvtab" type="button" role="tab" data-pf="admin" aria-selected="true">管理画面</button>
+      <button class="ptab nvtab" type="button" role="tab" data-pf="app" aria-selected="false">アプリ</button>
+    </div>
     <div class="nvsec" id="nvDocs"><p class="nvh">資料</p></div>
-    <div class="nvsec" id="nvRoleSec" hidden><p class="nvh">権限（管理画面のロール）</p><div id="nvRole"></div></div>
-    <div class="nvfoot"><span class="nvkey" style="margin-left:0"><b>Esc</b> で閉じる</span></div>
+    <div class="nvsec" id="nvRoleSec" hidden><p class="nvh">権限</p><div class="nvgrid" id="nvRole"></div></div>
+    <div class="nvsec nvqsec" id="nvStateSec" hidden>
+      <p class="nvh">状態<button class="nvq" id="nvStQ" type="button" aria-expanded="false" aria-controls="nvStTip" aria-label="それぞれの状態の説明">?</button></p>
+      <div class="nvtip" id="nvStTip" role="tooltip" hidden></div>
+      <div class="nvgrid" id="nvState"></div>
+    </div>
+    <div class="nvfoot"><button class="nvbtn pri" id="nvFb" type="button" title="枠に出ているいまの画面へのフィードバックを書く">フィードバック</button></div>
   </div>
   <button class="nvfab" id="nvFab" type="button" aria-expanded="false" aria-controls="nvPanel">
-    <span class="dt"></span><span class="lb">画面設計</span>
+    <span class="dt"></span><span class="lb">画面設計</span><span class="sb" id="nvFabSb" hidden></span>
     <svg class="cr" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg>
   </button>
 </div>
@@ -843,8 +994,8 @@ const PROJECT = {
      React 実装（NQrepo）を直接映すときは href を 'http://localhost:5173' に替え、
      src/ に CLAUDE.md §3 の5つの約束を満たすブリッジを1ファイル足す */
   /* 2026-09-25：React 実装そのものを映す。2026-09-28 からソースはこのリポジトリの react-src/（cd react-src && npm run build:kit の dist-kit）。node .claude/serve.cjs が同じサーバーの /react/ で配る。
-     配られていなければ fallback（単体の HTML のプロトタイプ）に戻る。'states'（状態カタログ）だけは常にプロトタイプ */
-  demo: {href:'react/', fallback:'nqrepo-demo.html', label:'React 実装', desc:'React 実装そのもの。省略なし・データも React のまま（配られていないときはプロトタイプ HTML）'},
+     配られていなければ fallback（単体の HTML のプロトタイプ）に戻る。*/
+  demo: {href:'react/', fallback:'nqrepo-demo.html', label:'プロトタイプ', desc:'触って動かせる画面。見本データのまま、画面を行き来して操作を試せる'},
   /* 現行システムの調査資料。この案件では React 実装そのものが現行なので、資料は持たない */
   asIs: null,
   /* プロトタイプの控えの置き場（.claude/snapshot.py が作る）。更新履歴の行を押すと、その変更の前後を並べる。
@@ -1146,11 +1297,7 @@ const SCREENS = [
  req:['共通'],
  note:'Ver.2.1 までは承認者と管理者だけが入る画面だった。Ver.3.0 で確認者もログインできるようにする（企業管理と承認作業は不可）。ロールはログイン時に決まる。React 実装は src/admin/features/login/AdminLoginPage.tsx。',
  elements:['ロゴ（緑のヘッダー）','社員番号','パスワード（表示切替つき）','ログイン','パスワードを忘れた方は情報システム部へ の案内'],
- decide:[
-  ['確認者が入ったとき最初に開く画面（ホーム／確認管理）','ホームの導線はロールで絞られる。確認者は確認管理へ直行のほうが早いか'],
-  ['パスワードの再設定を自己解決にするか','いまは情報システム部へ連絡。工場数 21・職員数が増えると負荷が読めない'],
-  ['ログイン状態の保持期間','現行は未確認。共有 PC で使う工場があるなら短くする'],
- ],
+ decide:[],
  hash:'admin/login', src:'src/admin/features/login/AdminLoginPage.tsx'},
 
 {id:'M1', pf:'admin', grp:'管理画面', name:'ホーム',
@@ -1158,10 +1305,8 @@ const SCREENS = [
  req:['共通'],
  note:'ホームの行と左メニューは同じ navigation.ts から出ている。確認者・承認者・兼任・管理者で見える行が変わる。状態の切替で「確認者で見る」を選ぶと違いが分かる。React 実装は src/admin/pages/AdminHomePage.tsx。',
  elements:['左メニュー（ロールで絞られる・承認待ち／確認待ちの件数バッジ）','ヘッダー（アカウント名 → アカウント情報・ログアウト）','機能の行（アイコン・名前・説明）'],
- decide:[
-  ['管理者に「製品管理・企業管理・工場管理・保管場所管理・ログイン端末管理」を全部見せてよいか','いまは管理者＝全画面。品質管理部と情報システム部で分けていた時期があり、統合の是非は要確認'],
-  ['件数バッジを承認待ち・確認待ち以外にも付けるか','フィードバック・端末の承認待ちにも付けたい声がある'],
- ],
+ decide:[],
+
  hash:'admin/home', src:'src/admin/pages/AdminHomePage.tsx'},
 
 {id:'M2', pf:'admin', grp:'管理画面', pin:true, name:'データ検索',
@@ -1169,15 +1314,13 @@ const SCREENS = [
  req:['共通'],
  note:'監査や保健所対応で「去年のこの日の記録」を出すための画面。承認済みだけが並ぶ。React 実装は src/admin/pages/DataSearchPage.tsx。',
  elements:['帳票カード 10 枚'],
- decide:[
-  ['帳票をまたいだ横断検索（日付や実施者で全帳票を引く）が要るか','いまは帳票→工場→月の縦の導線だけ'],
- ],
+ decide:[],
+
  hash:'admin/data-search', src:'src/admin/pages/DataSearchPage.tsx'},
 
 {id:'M2-1', pf:'admin', grp:'管理画面', name:'使用水の点検',
  sub:'データ検索の帳票カード。押すと使用水の点検のデータ検索（M2-1-1）へ。帳票ごとにこの 3 画面が並ぶ。',
  req:['Ver.1.0'],
- note:'帳票のまとまり。React ではカードから直接データ検索の表に入るので、この画面自体に固有の見た目は無い。プロトタイプでも表（M2-1-1）が出る。他の 9 帳票（M2-2〜M2-10）も同じ形にする想定。',
  elements:['帳票カード'],
  decide:[
   ['帳票カードに直近の記録件数や最終更新を出すか','いまは名前だけ。監査前に「今月は何件あるか」を見たい声がある'],
@@ -1214,16 +1357,13 @@ const SCREENS = [
  req:['共通'],
  note:'確認者が確認を終えた帳票だけがここに並ぶ。カードを押すと帳票ごとのデータ一覧（M3-1-1）へ。プロトタイプでは使用水の点検だけが本当に動き、他の帳票は顔つきだけ。React 実装は src/admin/pages/ApprovalManagementPage.tsx。',
  elements:['タブ（承認待ち・承認済み・差し戻し）＋承認待ちの件数','カード（状態・工場名・帳票名・点検分の説明）','空のとき「対象の申請はありません」'],
- decide:[
-  ['★ カードの単位（帳票×工場×月 か、申請1件ずつか）','いまは帳票ごとに1枚。承認待ちが 10 件を超えると1枚に何件入っているか分からない'],
-  ['承認者が複数の工場を持つときの絞り込み','工場のプルダウンをこの画面に置くか、データ一覧側に置くか'],
- ],
+ decide:[],
+
  hash:'admin/approvals', src:'src/admin/pages/ApprovalManagementPage.tsx'},
 
 {id:'M3-1', pf:'admin', grp:'管理画面', name:'使用水の点検',
  sub:'承認申請管理の帳票カード。押すと使用水の点検のデータ一覧（M3-1-1）へ。帳票ごとにこの 3 画面が並ぶ。',
  req:['Ver.1.0'],
- note:'帳票のまとまり。React ではカードから直接データ一覧の表に入るので、この画面自体に固有の見た目は無い。プロトタイプでも表（M3-1-1）が出る。他の 9 帳票（M3-2〜M3-10）も同じ形にする想定。',
  elements:['帳票カード（使用水の点検だけ件数と連動）'],
  decide:[
   ['帳票カードに件数バッジ以外の情報（最終提出日など）を出すか','いまは件数だけ'],
@@ -1262,16 +1402,13 @@ const SCREENS = [
  req:['Ver.3.0'],
  note:'確認者の入口。Ver.3.0 で確認者が管理画面に入れるようになるのに合わせた画面。データ検索・帳票管理と同じカード並びで、確認待ちのある帳票だけに印が付く。React 実装は src/admin/pages/ConfirmationManagementPage.tsx。',
  elements:['帳票カード 10 枚（Ver.5.0 で 13 枚になる予定）','確認待ちの赤い点'],
- decide:[
-  ['赤い点だけで足りるか、件数を出すか','左メニューには件数が出ている。カードにも出すと二重になる'],
-  ['確認者が担当する帳票だけに絞れるか','職員管理に「担当帳票」の項目が無い。要るなら M10 に項目が増える'],
- ],
+ decide:[],
+
  hash:'admin/confirmations', src:'src/admin/pages/ConfirmationManagementPage.tsx'},
 
 {id:'M4-1', pf:'admin', grp:'管理画面', name:'使用水の点検',
  sub:'確認管理の帳票カード。押すと使用水の点検のデータ一覧（M4-1-1）へ。帳票ごとにこの 3 画面が並ぶ。',
  req:['Ver.1.0'],
- note:'帳票のまとまり。React ではカードから直接データ一覧の表に入るので、この画面自体に固有の見た目は無い。プロトタイプでも表（M4-1-1）が出る。他の 9 帳票（M4-2〜M4-10）も同じ形にする想定。',
  elements:['帳票カード（使用水の点検だけ件数と連動）'],
  decide:[
   ['帳票カードに件数バッジ以外の情報（最終提出日など）を出すか','いまは件数だけ'],
@@ -1308,10 +1445,8 @@ const SCREENS = [
  req:['共通'],
  note:'帳票ごとに登録するものが違う（使用水＝点検場所、機械器具点検＝ライン＋点検箇所＋点検項目＋予定、金属探知機＝機器＋点検構成…）。Ver.4.0 の4帳票はここが最も画面数を増やす。React 実装は src/admin/pages/LedgerManagementPage.tsx。',
  elements:['帳票カード 10 枚'],
- decide:[
-  ['★ 点検項目の追加・変更をいつから効かせるか（翌日から／即時）','変えた日の途中から項目が増えると、その日の記録が揃わない'],
-  ['帳票テンプレートの変更を承認制にするか','品質管理部が握るべき変更。工場の職員が勝手に項目を消せると困る'],
- ],
+ decide:[],
+
  hash:'admin/ledger-management', src:'src/admin/pages/LedgerManagementPage.tsx'},
 
 /* 帳票管理の帳票（M5-1〜M5-10）。使用水の点検だけプロトタイプが動く */
@@ -1322,10 +1457,8 @@ const SCREENS = [
  req:['Ver.2.0'],
  note:'タブで 基幹システム／NQリポ を切り替える。基幹システム側は読み取りのみ、NQリポ側はここで登録する。React 実装は src/admin/features/product-management/ProductListPage.tsx。',
  elements:['タブ（基幹システム／NQリポ）','絞り込み（キーワード・製品コード・工場）','表（製品コード・製品名・内容量・内容量単位・工場名・賞味期限）','新規登録（NQリポのみ）'],
- decide:[
-  ['基幹システムとの同期の頻度（日次／随時）','製品が増えた日に点検できないと困る'],
-  ['NQリポ独自の製品を基幹システムに登録する運用にするか','二重管理を避けたいが、基幹側の登録は別部署'],
- ],
+ decide:[],
+
  hash:'admin/products', src:'src/admin/features/product-management/ProductListPage.tsx'},
 
 {id:'M7', pf:'admin', grp:'管理画面', pin:true, name:'企業管理',
@@ -1333,9 +1466,8 @@ const SCREENS = [
  req:['共通'],
  note:'Ver.3.0 の決定で、確認者は企業管理に触れない。企業の下に工場、工場の下に職員と端末がぶら下がる。React 実装は src/admin/features/company-management/CompanyListPage.tsx。',
  elements:['絞り込み（企業名）','表（企業名・住所・操作）','新規登録'],
- decide:[
-  ['企業を削除できる条件（工場や職員が残っているとき）','削除ではなく無効化に寄せる案'],
- ],
+ decide:[],
+
  hash:'admin/company', src:'src/admin/features/company-management/CompanyListPage.tsx'},
 
 {id:'M8', pf:'admin', grp:'管理画面', pin:true, name:'工場管理',
@@ -1343,10 +1475,8 @@ const SCREENS = [
  req:['共通'],
  note:'アプリのログイン単位は工場（A0）。ここで登録した工場が、職員の所属・点検場所・製品・保管場所の親になる。React 実装は src/admin/features/factory-management/FactoryListPage.tsx。',
  elements:['絞り込み（工場名）','表（工場名・工場住所・企業名・操作）','新規登録'],
- decide:[
-  ['工場IDとパスワードの発行・再発行をここで行うか','いまは画面に無い。A0 と対で決める'],
-  ['工場をまたぐ職員の所属を工場側からも見せるか','職員管理（M10）と二重になる'],
- ],
+ decide:[],
+
  hash:'admin/factory', src:'src/admin/features/factory-management/FactoryListPage.tsx'},
 
 {id:'M9', pf:'admin', grp:'管理画面', pin:true, name:'保管場所管理',
@@ -1354,11 +1484,8 @@ const SCREENS = [
  req:['Ver.4.0'],
  note:'添加物管理・薬品管理・検体管理の3帳票で同じ保管場所を選ぶ。帳票ごとに持たせず、ここで一元管理する。React 実装は src/admin/features/storage-management/StorageListPage.tsx。',
  elements:['絞り込み（保管場所・工場）','表（保管場所・工場名・操作）','新規登録'],
- decide:[
-  ['保管場所を独立したメニューにするか、帳票ごとに持たせるか','添加物・薬品・検体で同じ場所を使う','帳票をまたいで使えるよう独立ページにする','2026-06-26'],
-  ['保管場所に「置けるもの」の制約を持たせるか','添加物専用保管庫に薬品は置けない、のような決まりを画面で守らせるか'],
-  ['工場をまたぐ保管場所（共同倉庫）を許すか',''],
- ],
+ decide:[],
+
  hash:'admin/storage', src:'src/admin/features/storage-management/StorageListPage.tsx'},
 
 {id:'M10', pf:'admin', grp:'管理画面', pin:true, name:'職員管理',
@@ -1366,11 +1493,8 @@ const SCREENS = [
  req:['共通'],
  note:'職員は1人が複数の工場に所属でき、工場ごとに権限が違う（assignments）。アプリの「実施者を選ぶ」ポップアップに出る名前もここが元。React 実装は src/admin/features/staff-management/StaffListPage.tsx。',
  elements:['絞り込み（名前・工場・権限）','表（名前・社員番号・工場・権限チップ・メール）','ページ送り','新規登録'],
- decide:[
-  ['★ 退職者の扱い（削除／無効化／記録上の名前は残す）','記録の実施者名が消えると監査に耐えない。無効化にして名前は残す案'],
-  ['実施者の登録をアプリからもできるようにするか','工場で人が入るたびに本社の管理画面を通すのは遅い'],
-  ['権限の種類を 実施者／確認者／承認者 の3つで固定するか','管理画面のロールには別に「管理者」がある。職員の権限と管理画面のロールの関係を整理する'],
- ],
+ decide:[],
+
  hash:'admin/staff', src:'src/admin/features/staff-management/StaffListPage.tsx'},
 
 {id:'M11', pf:'admin', grp:'管理画面', pin:true, name:'ログ管理',
@@ -1378,10 +1502,8 @@ const SCREENS = [
  req:['共通'],
  note:'監査で「いつ誰が変えたか」を答える場所。前提の「残す操作ログ」の一覧がここに出る想定。プロトタイプでは記録の提出・確認・承認がそのまま行になる。React 実装は src/admin/features/log-management/LogListPage.tsx。',
  elements:['絞り込み（期間・画面種別・工場・帳票・キーワード）','表（記録日時・画面種別・工場名・職員名・権限・操作内容）'],
- decide:[
-  ['★ 何を記録に残すか（前提「残す操作ログ」の 8 種で足りるか）','テンプレートの変更履歴と端末の承認は、いまの React 実装では残っていない'],
-  ['保持期間と CSV 出力',''],
- ],
+ decide:[],
+
  hash:'admin/logs', src:'src/admin/features/log-management/LogListPage.tsx'},
 
 {id:'M12', pf:'admin', grp:'管理画面', pin:true, name:'ログイン端末管理',
@@ -1389,53 +1511,25 @@ const SCREENS = [
  req:['共通'],
  note:'工場の共有タブレットが初めてログインすると「保留」で並び、ここで認証済みにするとアプリが使える。紛失した端末を止める場所でもある。React 実装は src/admin/features/device-management/DeviceListPage.tsx。',
  elements:['絞り込み（工場・端末名）','表（工場名・端末名・登録日・ステータス・操作）','ステータスの切替（保留／認証済み）'],
- decide:[
-  ['★ 端末の承認を誰が行うか（情報システム部／工場の承認者）','初回ログインのたびに本社を待つと現場が止まる'],
-  ['紛失した端末を止める手順（認証取り消し・強制ログアウト）',''],
- ],
+ decide:[],
+
  hash:'admin/devices', src:'src/admin/features/device-management/DeviceListPage.tsx'},
 
 {id:'M13', pf:'admin', grp:'管理画面', pin:true, name:'ヘルプ',
- sub:'利用者向けの FAQ。キーワード検索とカテゴリ（8つ）で絞る。サイドメニューではガイドの直下に単独で並ぶ。',
+ sub:'利用者向けの FAQ。キーワード検索とカテゴリ（8つ）で絞る。サイドメニューのいちばん下に並ぶ。',
  req:['共通'],
- note:'ガイド（M14）は設計チーム向け、ヘルプは利用者向けで読者が違うので、ガイドのアコーディオンには入れず独立させた。ホームの「ヘルプ」の行からもここに来る。プロトタイプは検索とカテゴリの顔つきだけ。React 実装は src/admin/features/help/HelpPage.tsx（FAQ の本文は mockData.ts、詳細は HelpFaqDetailPage.tsx）。',
+ note:'ホームの「ヘルプ」の行からもここに来る。プロトタイプは検索とカテゴリの顔つきだけ。React 実装は src/admin/features/help/HelpPage.tsx（FAQ の本文は mockData.ts、詳細は HelpFaqDetailPage.tsx）。',
  elements:['キーワード検索','カテゴリ 8 枚（帳票管理・企業管理・工場管理・職員管理・アカウント・権限・データ検索・承認申請・その他）','FAQ のアコーディオン（質問を押すと回答が開く）'],
- decide:[
-  ['FAQ の本文を誰が書き、どこで更新するか（コードに埋め込む／管理画面から編集）','いまは mockData.ts に直書き。運用開始後に品質管理部が直せる形にするか'],
-  ['アプリのヘルプ（レールの「ヘルプ」）と内容を共通にするか','アプリは実施者向け、管理画面は確認者・承認者向けで問いが違う'],
- ],
+ decide:[],
  hash:'admin/help', src:'src/admin/features/help/HelpPage.tsx'},
 
-{id:'M14', pf:'admin', grp:'管理画面', pin:true, name:'ガイド',
- sub:'設計チーム向けの道具のまとまり。2026-09-24 にサイドメニューから外したので、URL（admin/guide/…）で直接開く。まとまり自体の頁は無いので、枠には 画面説明（admin/guide/descriptions）を出している。枝はフィードバック管理（M14-1）だけ。',
- req:['共通'],
- note:'ガイドはこの画面設計と同じ役割を React 実装の中で担っている道具。2026-09-24 に 変更履歴 と 開発Ver管理 をガイドから外した。変更履歴はこの画面設計の「更新履歴」（右パネル）が、開発Ver管理はヘッダーの「リリース」が引き受ける。画面遷移図・画面説明は React の道具そのものなので画面としては数えない。ヘルプ（M13）は利用者向けなので、ガイドの中には入れず直下の単独項目にしてある。React 実装は src/admin/features/guide/ と feedback/。',
- elements:['メニュー項目は無し（URL で直接開く）','枝はフィードバック管理（M14-1）'],
- decide:[
-  ['★ ガイドを本番ビルドに含めるか、開発中だけ出すか','現場の職員には不要。ヘルプ（M13）は本番向けなので巻き込まない'],
-  ['ヘルプをガイドの中に置くか、独立させるか','2026-09-24 に独立させた。ヘルプは利用者向け、ガイドは設計チーム向けで読者が違うため'],
-  ['変更履歴・開発Ver管理を React 実装に残すか','2026-09-24 にガイドから外した。画面設計側（更新履歴・リリース）に一本化し、二重管理をやめる'],
- ],
- hash:'admin/guide/descriptions', src:'src/admin/navigation.ts'},
-
-{id:'M14-1', pf:'admin', grp:'管理画面', name:'ガイド › フィードバック管理',
- sub:'画面上から送られたフィードバックの受信箱。状態（未対応・対応中・完了）で絞る。',
- req:['共通'],
- note:'React 実装は src/admin/features/feedback/FeedbackManagementPage.tsx。ガイド（admin/guide）を開くとまずこの画面が出る。プロトタイプは見本 6 件の一覧で、状態とキーワードの絞り込みが動く。状態の変更と返信は React 実装側。2026-09-24 に M14-3 から番号を詰めた（変更履歴・開発Ver管理を外したため）。',
- elements:['フィードバックの一覧（内容は 20 文字を超えたら「…」で省略。全文はマウスを載せると出る）','状態の絞り込み','詳細と返信'],
- decide:[
-  ['フィードバックの受け口を本番でも残すか','残すなら受信箱を見る担当を決める'],
- ],
- hash:'admin/guide/feedback', src:'src/admin/features/feedback/FeedbackManagementPage.tsx'},
-
-{id:'M15', pf:'admin', grp:'管理画面', pin:true, name:'アカウント情報',
+{id:'M14', pf:'admin', grp:'管理画面', pin:true, name:'アカウント情報',
  sub:'自分の情報と権限。閲覧のみで、この画面から変えられるものは無い。',
  req:['共通'],
  note:'権限はログイン時に決まり、ここでは表示するだけ。プロトタイプでロールを切り替えるときは、右下の切替（プロトタイプ）の「管理画面のロール」か、この資料の「状態」プルダウンを使う。切り替えると左メニューとホームの行が即座に変わるので、打合せで「確認者にはこれが見える」を示すのに使う。React 実装は src/admin/features/account/AccountPage.tsx。',
  elements:['名前・社員番号・企業・工場・権限・メール・パスワード'],
- decide:[
-  ['管理者ロールを「品質管理部」「情報システム部」に分け直すか','過去に2つあったものを管理者に統合した。分ける理由が残っているか'],
- ],
+ decide:[],
+
  hash:'admin/account', src:'src/admin/features/account/AccountPage.tsx'},
 
 /* ===== アプリ（タブレット） ===== */
@@ -1444,11 +1538,7 @@ const SCREENS = [
  req:['共通'],
  note:'アプリは工場の共有タブレットで使う。誰が点検したかは、ログインではなく帳票を開くときの「実施者を選ぶ」で決まる。オフラインでログインを押すと上に赤い帯が出て進めない。初回ログインの端末は「ログイン端末管理」で承認待ちになる。React 実装は src/app/features/login/AppLoginPage.tsx。',
  elements:['工場ID','パスワード','ログイン','オフラインの帯（押したときだけ）','西原商会グループ向けの注記'],
- decide:[
-  ['★ 工場IDでのログインを続けるか、個人ログインにするか','共有端末の前提。個人ログインにすると「実施者を選ぶ」が要らなくなるが、端末の貸し借りで破綻する'],
-  ['セッションの長さ（いまは 15 分放置で終了）','点検の途中で切れると入力が消える。未送信と同じく端末に残す設計にするか'],
-  ['端末の承認を誰が行うか（情報システム部／工場の承認者）',''],
- ],
+ decide:[],
  hash:'app/login', src:'src/app/features/login/AppLoginPage.tsx'},
 
 {id:'A1', pf:'app', grp:'アプリ', name:'帳票一覧',
@@ -1628,19 +1718,6 @@ const SCREENS = [
  ],
  hash:'app/settings/license', src:'src/app/features/settings/LicensePage.tsx'},
 
-/* ===== 共通 ===== */
-{id:'S1', pf:'admin', grp:'共通', name:'状態カタログ',
- sub:'帯・ポップアップ・状態チップ・空表示を実物の部品で一覧。文言はすべて仮。',
- req:[],
- note:'React 側の AnnouncementBar・SessionExpiredDialog・ErrorDialog・StatusChip・ApprovalStatusBadge・ConfirmStatusBadge を1画面に並べたもの。「オフラインの帯は出さず、未送信の帯だけ出す」「送信エラーはポップアップだけで帯は出さない」の決まりをここで確認する。',
- elements:['帯 4 種（未送信・送信失敗・送信成功・オフライン）','状態チップ（点検・承認・確認・職員の権限・ロール）','ポップアップ 3 種（セッション終了・送信エラー・承認）','空の文言 4 種','OK/NG の3状態','未送信の印'],
- decide:[
-  ['★ 「点検済み」という言葉が、アプリ（提出済み・未確認）と確認管理（未確認）で同じ意味か','確認管理の「点検済み」チップはグレー、アプリでは黄色。同じ言葉で色が違う'],
-  ['「承認待ち」を確認管理では緑、承認申請管理ではグレーで出している','意味は同じ「確認済み・承認前」。色を揃えるか、片方の名前を変えるか'],
-  ['空の文言を「まだありません」系で統一するか',''],
- ],
- open:'状態の名前と色が帳票ごとに少しずつ違う。Ver.4.0 の4帳票を足す前に揃えたい。',
- hash:'states'},
 ];
 
 
@@ -1692,8 +1769,7 @@ const FLOW = [
   ['M1','M11','','tab'],
   ['M1','M12','','tab'],
   ['M1','M13','','tab'],
-  ['M14','M14-1','','tab'],
-  ['M1','M15','アカウント名'],
+  ['M1','M14','アカウント名'],
   ['M2','M2-1','帳票を選ぶ'],
   ['M2-1','M2-1-1','','tab'],
   ['M2-1-1','M2-1-2','詳細'],
@@ -1742,12 +1818,11 @@ const ACCESS = {
   M3:['－','－','○','○'], 'M3-1':['－','－','○','○'], 'M3-1-1':['－','－','○','○'], 'M3-1-2':['－','－','○','○'],
   M4:['－','○','－','○'], 'M4-1':['－','○','－','○'], 'M4-1-1':['－','○','－','○'], 'M4-1-2':['－','○','－','○', '兼任ロールは確認と承認の両方が見える'],
   M2:['－','○','○','○'], 'M2-1':['－','○','○','○'], 'M2-1-1':['－','○','○','○'], 'M2-1-2':['－','○','○','○'],
-  M5:['－','○','○','○', '確認者・承認者がテンプレートを変えてよいかは要確認'], 'M5-1':['－','△','△','○', 'いまは見えるが、変更は管理者に寄せる案'],
+  M5:['－','○','○','○', '確認者・承認者がテンプレートを変えてよいかは要確認'], 'M5-1':['－','○','○','○', 'いまは見えるが、変更は管理者に寄せる案'],
   M6:['－','○','○','○'], M7:['－','－','－','○', '確認者は企業管理に触れない（Ver.3.0）。承認者も同じにする案'], M8:['－','－','－','○'], M9:['－','○','○','○'],
-  M10:['－','○','○','○', '確認者・承認者は閲覧のみにする案'], M11:['－','○','○','○'], M12:['－','－','－','○'], M14:['－','○','○','○'], 'M14-1':['－','○','○','○'], M13:['－','○','○','○'], M15:['－','○','○','○'],
+  M10:['－','○','○','○', '確認者・承認者は閲覧のみにする案'], M11:['－','○','○','○'], M12:['－','－','－','○'], M13:['－','○','○','○'], M14:['－','○','○','○'],
   A0:['○','○','○','○'], A1:['○','○','○','○'], 'A1-1':['○','○','○','○'], 'A1-1-1':['○','○','○','○'], 'A1-1-2':['○','○','○','○'], 'A1-1-3':['○','○','○','○'], 'A1-1-4':['○','○','○','○'],
   A2:['○','○','○','○'], A3:['－','○','△','○', '承認者にも見せるかは要確認'], A4:['○','○','○','○'], 'A4-1':['○','○','○','○'], 'A4-2':['○','○','○','○'], A5:['○','○','○','○'], A6:['○','○','○','○'], A7:['○','○','○','○'], 'A7-1':['○','○','○','○'], 'A7-2':['○','○','○','○'],
-  S1:['','','','', '資料用の画面。製品には出ない'],
 };
 
 /* =========================================================================
@@ -1757,7 +1832,7 @@ const ACCESS = {
    ========================================================================= */
 /* データ検索・承認・確認の他の帳票（{親}-2〜）は、その親の使用水の点検と同じ権限 */
 ['M2','M3','M4'].forEach(pre => DS_LEDGERS.forEach((_, i) => ['', '-1', '-2'].forEach(t => { ACCESS[`${pre}-${i + 2}${t}`] = ACCESS[`${pre}-1`].slice(0, 4); })));
-/* 帳票管理の帳票（M5-1〜）は M5-1 と同じ権限（条件つき） */
+/* 帳票管理の帳票（M5-1〜）は M5-1 と同じ権限 */
 LM_LEDGERS.forEach(([,,, steps], i) => { const n = i + 1; if (n !== 1) ACCESS[`M5-${n}`] = ACCESS['M5-1'].slice(0, 4); steps.forEach((_, j) => { ACCESS[`M5-${n}-${j + 1}`] = ACCESS['M5-1'].slice(0, 4); }); });
 /* アプリの他の帳票（A1-2〜）は使用水の点検（A1-1）と同じ権限 */
 AL_LEDGERS.forEach(([,, steps], i) => { const n = i + 2; ACCESS[`A1-${n}`] = ACCESS['A1-1'].slice(0, 4); steps.forEach((_, j) => { ACCESS[`A1-${n}-${j + 1}`] = ACCESS['A1-1'].slice(0, 4); }); });
@@ -1899,79 +1974,326 @@ const FIELDS = {
   ],
 };
 
+/* 工場選択の画面（データ検索・確認管理の帳票カードの先、帳票管理の 工場選択）は、画面概要を同じ文にそろえる（2026-09-28） */
+const FACTORY_SELECT = s => /FactorySelectionPage\.tsx$/.test(s.src || '') || /工場選択$/.test(s.name) || s.id === 'M4-1';
+SCREENS.filter(FACTORY_SELECT).forEach(s => {
+  s.sub  = '工場カードを押すことで該当画面へ遷移する。';
+  s.note = '工場名の絞り込み検索に対応しており、複数選択は不可で、対象の工場を1つだけ選択可能です。';
+});
+
 /* =========================================================================
    ⑨ プロトタイプで動く範囲 — 「動くから完成」と読まれないように
-     [印, 説明]。印は 動く／一部／見た目だけ
+     [印, 説明]。印は 動く／一部／見た目だけ。枠に映る React 実装（react-src）で実際にできることを画面ごとに書く
+     （2026-09-28 に全 303 画面を React のコードから見直した。帳票ごとの生成はやめ、1 画面 1 行で持つ）
    ========================================================================= */
 const BUILT = {
-  M0:['一部','デモ用のボタンでロールを選んで入れる。社員番号 123456 ＋パスワードでも入れる。実際の認証は無い'],
-  M1:['動く','ロールで行が変わる。左メニューの件数バッジは記録の状態と連動'],
-  M3:['動く','使用水の点検のカードは記録の状態と連動。他の帳票のカードからも一覧・詳細に入れる'],
-  'M3-1':['動く','帳票のまとまり。押すとデータ一覧（M3-1-1）が出る'],
-  'M3-1-1':['動く','月送り・絞り込み・行の承認／詳細が動く。異常の赤いセルも記録から出る'],
-  'M3-1-2':['動く','承認・差し戻し（理由必須）・コメントが動き、アプリ側の状態も変わる'],
-  M4:['動く','確認待ちのある帳票に赤い点。10 帳票すべて中に入れる'],
-  'M4-1':['動く','帳票のまとまり。押すとデータ一覧（M4-1-1）が出る'],
-  'M4-1-1':['動く','点検済み／承認待ち の表。確認すると承認申請管理に回る'],
-  'M4-1-2':['動く','確認済みにする → 承認待ち。コメントも残る'],
-  M2:['動く','10 帳票すべて中に入れる。使用水以外は帳票ごとの列とサンプル 4 件'],
-  'M2-1':['動く','帳票のまとまり。押すとデータ検索の表（M2-1-1）が出る'],
-  'M2-1-1':['動く','年月タブ。承認済みだけが出る。承認した記録がすぐ現れる'],
-  'M2-1-2':['動く','承認済みの 1 件を開く。閲覧のみ'],
-  M5:['動く','10 帳票すべて中に入れる。使用水以外は登録・詳細・編集・削除・点検予定・確認項目の設定まで'],
-  'M5-1':['動く','帳票のまとまり。押すと工場選択（M5-1-1）が出る'],
-  'M5-1-1':['一部','本社工場だけ押せる。他の工場は「省いています」'],
-  'M5-1-2':['動く','点検場所の登録・編集・削除が動き、アプリの一覧に即反映する'],
-  'M5-1-3':['一部','一覧の上のダイアログで登録する'],
-  'M5-1-4':['動く','登録すると完了の画面が出て、ボタンで一覧へ戻る'],
-  'M5-1-5':['動く','記録する項目の一覧。編集・削除へ'],
-  'M5-1-6':['動く','点検場所名の変更がアプリ側と記録にも反映する。項目のトグルは演出'],
-  M6:['一部','タブ・絞り込み・ページ送りが動く。登録は演出'],
-  M7:['一部','企業名の絞り込みが動く'],
-  M8:['一部','工場名の絞り込みが動く'],
-  M9:['一部','保管場所名・工場の絞り込みが動く'],
-  M10:['一部','名前・権限の絞り込みとページ送りが動く。新規登録・詳細は演出'],
-  M11:['動く','記録の提出・確認・承認がそのまま履歴の行になる。絞り込みも動く'],
-  M12:['一部','ステータスの切替（保留→認証済み）が動く'],
-  M14:['見た目だけ','サイドメニューには出ない。hash で開くとフィードバック管理（M14-1）が出る'],
-  'M14-1':['見た目だけ','見本 6 件の一覧。状態とキーワードの絞り込みが動く。状態の変更・返信は React 実装側'],
-  M13:['見た目だけ','検索とカテゴリの顔つきだけ。FAQ の本文は React 実装にある'],
-  M15:['動く','権限の表示。ロール切替は右下の切替と「状態」プルダウンから'],
-  A0:['一部','デモ用のボタンで入れる。オフラインで押すと帯が出る。端末の承認は無い'],
-  A1:['動く','実施者を選ぶポップアップが動く。使用水だけ中に入れる'],
-  'A1-1':['動く','帳票のまとまり。押すと点検場所の一覧（A1-1-1）が出る'],
-  'A1-1-1':['動く','状態チップは記録から決まる。点検済み n/N も連動'],
-  'A1-1-2':['動く','OK/NG・NG の原因と対応・数値・トグル・入力時刻・全て異常なし・UV 8,000h の注意まで動く。差し戻しの理由も出る'],
-  'A1-1-3':['動く','入力内容の見直しと提出ダイアログ'],
-  'A1-1-4':['動く','オフラインなら未送信の帯、送信エラーならポップアップ。帯の「送信」で送れる'],
-  A2:['動く','記録から進捗が組み上がる。未送信の印も出る。使用水以外の行は固定'],
-  A3:['一部','使用水の点検済みが並ぶ。確認の操作は管理画面へ誘導する文言だけ'],
-  A4:['動く','月送り・日を選ぶ・新規登録（帳票を選ぶ）・登録済みの案内。予定は React の見本データと同じ 2025-04-01'],
-  'A4-1':['動く','見る → 編集 → 追加（タブ・検索・チェック）→ 削除 → 保存 → 完了。持ち場／ラインは React の mockData の 18 本'],
-  'A4-2':['動く','見る → 編集 → 商品追加 → 比較商品の切替・製造日 → 削除 → 保存 → 完了。商品 4 つと検査項目の色は React と同じ'],
-  A5:['動く','小・中・大を選ぶと全画面が 87.5%／100%／112.5% に伸び縮みする。他の画面へ移っても保たれる'],
-  A6:['動く','キーワード検索・カテゴリ・Q&A の開閉・パンくず・更新。FAQ 12 件は React の mockData と同じ'],
-  A7:['動く','ログアウト（確認ダイアログ）とライセンス情報'],
-  'A7-1':['動く','キャンセルで戻る。ログアウトでログイン画面へ'],
-  'A7-2':['動く','React と同じく本文は空。戻るだけ'],
-  S1:['見た目だけ','部品を並べた資料用の画面'],
+  M0:['動く','見本の社員番号とパスワードが合うとホームへ進み、違うと赤枠とエラー文が出る。パスワードの表示切替も動く。実際の認証は無い'],
+  M1:['動く','10 個の入口から各画面へ移れる。並びはロールで変わらない（左メニューはロールで絞られる）'],
+  M2:['動く','10 帳票のカードから、それぞれの帳票のデータ検索へ進める'],
+  'M2-1':['動く','工場名の絞り込みが動き、工場を押すと点検場所選択 → データ一覧（M2-1-1）へ進む'],
+  'M2-1-1':['動く','月送り・年月の選択・日付／点検場所／異常ありの絞り込み、CSV・PDF のダウンロードが動く。行の詳細から M2-1-2 へ'],
+  'M2-1-2':['見た目だけ','見本の記録 1 件の中身とコメントを表示するだけ。操作は無い'],
+  'M2-2':['動く','工場名で絞り込み、工場を押すとフロア選択へ'],
+  'M2-2-1':['動く','月送り（2025年4月から）と日付・実施者・異常のみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-2-2':['動く','配置図の拡大縮小と状態での絞り込みができ、「点検場所詳細へ」で帳票管理へ。コメントは読むだけ'],
+  'M2-3':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-3-1':['動く','月送り（2025年4月から）と日付・秤No.・持ち場・異常のみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-3-2':['見た目だけ','点検結果の表示のみ。異常ありの記録は「秤管理へ」で帳票管理へ移れる。コメントは読むだけ'],
+  'M2-4':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-4-1':['動く','月送り（2025年4月から）と日付・検査製品名・異常のみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-4-2':['動く','点数一覧と平均・検査結果を表示し、「詳細」で検査員ごとの点数へ。コメントは読むだけ'],
+  'M2-5':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-5-1':['動く','月送りと日付・点検構成名・通過製品・異常のみで絞り込み、「詳細」で点検内容一覧へ。ダウンロードは無い'],
+  'M2-5-2':['動く','点検内容一覧。「詳細」でテストピース・製品通過・異常反応などの内容へ移る。コメントは読むだけ'],
+  'M2-6':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-6-1':['動く','月送り（2025年4月から）と日付・製品名・差し戻しのみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-6-2':['見た目だけ','検体の内容と検体状況（状態・破棄日）の表示のみ。コメントは読むだけ'],
+  'M2-7':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-7-1':['動く','月送り（2025年4月から）と日付・持ち場/ライン名・異常のみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-7-2':['見た目だけ','点検箇所・点検項目と備考の表示のみ。コメントは読むだけ'],
+  'M2-8':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-8-1':['動く','月送り（2025年4月から）と日付・持ち場/ライン名・異常のみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-8-2':['見た目だけ','清掃箇所・清掃項目と備考の表示のみ。コメントは読むだけ'],
+  'M2-9':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-9-1':['動く','月送り（2025年4月から）と日付・薬品名・保管場所・差し戻しのみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-9-2':['見た目だけ','在庫の増減（元在庫数・数量・現在庫数）の表示のみ。コメントは読むだけ'],
+  'M2-10':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M2-10-1':['動く','月送り（2025年4月から）と日付・添加物名・保管場所・差し戻しのみで絞り込み、「詳細」で記録へ。CSV・PDF で出力できる'],
+  'M2-10-2':['見た目だけ','在庫の増減（元在庫数・数量・現在庫数）の表示のみ。コメントは読むだけ'],
+  M3:['動く','承認待ち／承認済み／差し戻しのタブが動く。カードから帳票ごとの一覧へ進め、承認するとカードが承認済みへ移る'],
+  'M3-1':['動く','帳票のまとまり。使用水の点検のカードを押すとデータ一覧（M3-1-1）が出る'],
+  'M3-1-1':['動く','月送り・日付／点検場所／差し戻しの絞り込みと行の詳細が動く。「承認する」で帳票ごと承認し、承認申請管理へ戻る'],
+  'M3-1-2':['一部','承認・差し戻し（理由必須）とコメントが動く。変更はこの帳票の画面を離れると戻り、差し戻しの理由は残らない'],
+  'M3-2':['動く','一覧を挟まず承認待ちの 1 件の詳細が開く。ステータスを承認／差し戻しにすると申請ごと変わり承認申請管理へ'],
+  'M3-2-1':['一部','データ一覧は未実装で、開くと詳細画面がそのまま出る'],
+  'M3-2-2':['動く','ステータスで承認／差し戻し（理由必須・理由は保存しない）、配置図の拡大縮小と絞り込み、コメント追加'],
+  'M3-3':['動く','申請（No.2）の点検内容一覧。「詳細」で記録へ。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-3-1':['動く','申請に含まれる秤の点検記録とステータスを一覧。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-3-2':['動く','承認待ちならステータスで承認／差し戻し（理由は保存しない）でき一覧に反映。コメントも足せる。異常ありなら修理状況も変えられる'],
+  'M3-4':['動く','承認申請された官能検査の一覧。「詳細」で点数一覧へ。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-4-1':['動く','検査製品ごとの記録を一覧。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-4-2':['動く','点数一覧。承認待ちならステータスで承認／差し戻し（理由は保存しない）、「詳細」で点数へ。コメントも足せる'],
+  'M3-5':['動く','機械ごとの記録とステータスを一覧し「詳細」で点検内容一覧へ。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-5-1':['動く','機械ごとの記録を一覧。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-5-2':['動く','点検内容一覧。承認待ちならステータスで承認／差し戻し（理由は保存しない）、「詳細」で各点検へ。コメントも足せる'],
+  'M3-6':['動く','検体の記録を一覧、CSV・PDF で出力できる。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-6-1':['動く','検体の記録とステータスを一覧し「詳細」で記録へ。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-6-2':['動く','承認待ちならステータスで承認／差し戻し（理由は保存しない）でき一覧に反映。コメントも足せる'],
+  'M3-7':['動く','持ち場/ラインごとの記録を一覧し「詳細」で記録へ。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-7-1':['動く','記録とステータスを一覧。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-7-2':['一部','見本は全件承認済みのためステータスは変えられず、コメントの追加だけできる'],
+  'M3-8':['動く','清掃の記録を一覧し「詳細」で記録へ。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-8-1':['動く','記録を一覧（ステータスは承認済みで固定表示）。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-8-2':['一部','ステータスは承認済みで固定され変えられない。コメントの追加だけできる'],
+  'M3-9':['動く','月送りと日付・薬品名・区分・差し戻しのみで絞り込める。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-9-1':['動く','入出庫の記録を月送り・絞り込みで一覧。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-9-2':['動く','承認待ちならステータスで承認／差し戻し（理由は保存しない）でき一覧に反映。コメントも足せる（開く記録 ch1 は差し戻し済みで変更不可）'],
+  'M3-10':['動く','月送りと日付・添加物名・区分・差し戻しのみで絞り込める。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-10-1':['動く','入出庫の記録を月送り・絞り込みで一覧。「承認する」で申請ごと承認し承認申請管理へ（再読み込みまで保持）'],
+  'M3-10-2':['一部','見本は全件承認済みのためステータスは変えられず、コメントの追加だけできる'],
+  M4:['動く','確認待ちのある帳票に赤い点が出る。10 帳票のカードから工場選択へ進める'],
+  'M4-1':['動く','工場名の絞り込みが動き、工場を押すとデータ一覧（M4-1-1）へ進む'],
+  'M4-1-1':['動く','月送り・年月の選択・ステータス／日付／点検場所／異常ありの絞り込みと行の詳細が動く。一覧からの確認操作は無い'],
+  'M4-1-2':['一部','ステータス（点検済み⇔承認待ち）の切替とコメントが動く。変更は画面を離れると戻り、承認申請管理には回らない'],
+  'M4-2':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-2-1':['動く','月送り（2025年4月から）とステータス・日付・点検場所・異常のみで絞り込み、「詳細」で記録へ'],
+  'M4-2-2':['動く','ステータスの切替（一覧に反映）、配置図の拡大縮小と絞り込み、コメント追加。承認申請には載らない'],
+  'M4-3':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-3-1':['動く','月送り（2025年4月から）とステータス・日付・秤No.・持ち場・異常のみで絞り込み、「詳細」で記録へ'],
+  'M4-3-2':['動く','ステータスを点検済み／承認待ちに切り替えると一覧に反映し、コメントも足せる。承認申請には載らない'],
+  'M4-4':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-4-1':['動く','月送り（2025年4月から）とステータス・日付・検査製品名・異常のみで絞り込み、「詳細」で記録へ'],
+  'M4-4-2':['動く','点数一覧。ステータスの切替（一覧に反映）と「詳細」で点数へ、コメント追加。承認申請には載らない'],
+  'M4-5':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-5-1':['動く','月送り（2025年4月から）とステータス・日付・点検構成名・異常のみで絞り込み、「詳細」で記録へ'],
+  'M4-5-2':['一部','金属・X線の点検結果を表示し、コメントだけ足せる。ステータスの切替は無い'],
+  'M4-6':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-6-1':['動く','月送り（2025年4月から）とステータス・日付・製品名・異常のみで絞り込み、「詳細」で記録へ'],
+  'M4-6-2':['動く','ステータスを点検済み／承認待ちに切り替えると一覧に反映し、コメントも足せる。承認申請には載らない'],
+  'M4-7':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-7-1':['動く','月送り（2025年4月から）とステータス・日付・持ち場/ライン名・異常のみで絞り込み、「詳細」で記録へ'],
+  'M4-7-2':['動く','ステータスを点検済み／承認待ちに切り替えると一覧に反映し、コメントも足せる。承認申請には載らない'],
+  'M4-8':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-8-1':['動く','月送り（2025年4月から）とステータス・日付・持ち場/ライン名・異常のみで絞り込み、「詳細」で記録へ'],
+  'M4-8-2':['動く','ステータスを点検済み／承認待ちに切り替えると一覧に反映し、コメントも足せる。承認申請には載らない'],
+  'M4-9':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-9-1':['動く','月送り（2025年4月から）とステータス・日付・薬品名・保管場所で絞り込み、「詳細」で記録へ'],
+  'M4-9-2':['動く','ステータスを点検済み／承認待ちに切り替えると一覧に反映し、コメントも足せる。承認申請には載らない'],
+  'M4-10':['動く','工場名で絞り込み、工場を押すとデータ一覧へ'],
+  'M4-10-1':['動く','月送り（2025年4月から）とステータス・日付・添加物名・保管場所で絞り込み、「詳細」で記録へ'],
+  'M4-10-2':['動く','ステータスを点検済み／承認待ちに切り替えると一覧に反映し、コメントも足せる。承認申請には載らない'],
+  M5:['動く','10 帳票のカードから、それぞれの帳票管理へ進める'],
+  'M5-1':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-1-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-1-2':['動く','アプリ表示中／非表示のタブで点検場所を切り替え、押すと詳細へ。見本は本社工場の 2 か所だけ'],
+  'M5-1-3':['動く','点検場所名の必須チェックと 10 項目の記録する／しないが動き、登録すると一覧に増えて完了画面へ'],
+  'M5-1-4':['動く','点検場所の登録の完了表示。ボタンで点検場所の一覧へ戻る'],
+  'M5-1-5':['動く','記録する項目を一覧で表示。編集へ進め、削除は確認ダイアログのあと一覧から消えて一覧へ戻る'],
+  'M5-1-6':['動く','登録時と同じ入力欄に今の値が入り、保存すると詳細へ戻って「更新されました」が出る'],
+  'M5-2':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-2-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-2-2':['動く','アプリ表示中／非表示のタブでフロアを切り替え、押すと詳細へ。どの工場でも同じフロアが並ぶ'],
+  'M5-2-3':['動く','フロア名の必須チェック、配置図画像の選択、アイテムの配置・削除が動き、登録で一覧に増える。配置図の必須は未チェック'],
+  'M5-2-4':['動く','フロアの登録の完了表示。ボタンでフロアの一覧へ戻る'],
+  'M5-2-5':['動く','修理状況のステータスをプルダウンで変えられ、配置図を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-2-6':['一部','フロア名と表示期間を直して保存でき、詳細に反映。配置図は表示だけで差し替え・配置し直しはできない'],
+  'M5-2-7':['動く','フロアの削除の完了表示。ボタンでフロアの一覧へ戻る'],
+  'M5-3':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-3-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-3-2':['動く','秤管理・持ち場管理へ進め、表示中／非表示のタブで秤と持ち場を一覧。押すと秤の詳細へ'],
+  'M5-3-3':['動く','登録済みの秤No.と持ち場をプルダウンで選ぶ（必須チェックあり）。登録で一覧に増えて完了画面へ'],
+  'M5-3-4':['動く','秤の登録の完了表示。ボタンで秤点検記録設定へ戻る'],
+  'M5-3-5':['動く','表示期間・秤No.・持ち場を表示。編集へ進め、削除は確認のあと一覧から消えて一覧へ戻る'],
+  'M5-3-6':['動く','秤No.・持ち場・運用期間を直して保存でき、詳細へ戻って「更新されました」が出る'],
+  'M5-3-7':['動く','持ち場名の必須チェックが動き、登録で持ち場管理の一覧に増えて完了画面へ'],
+  'M5-3-8':['動く','持ち場名を表示。編集へ進め、削除は確認のあと一覧から消えて完了画面へ'],
+  'M5-3-9':['動く','持ち場名を直して保存でき、詳細へ戻って「更新されました」が出る'],
+  'M5-3-10':['動く','シリアル・秤量・持ち場で絞り込み、▲▼で並べ替え、修理状況の変更ができる。詳細へ進める'],
+  'M5-3-11':['動く','6 つの必須入力と 4 項目の記録する／しないが動き、登録で一覧に増える。持ち場はここでは付かない'],
+  'M5-3-12':['動く','秤管理の登録の完了表示。ボタンで秤管理の一覧へ戻る'],
+  'M5-3-13':['動く','秤の設定と持ち場を表示し、修理状況を変えられる。編集へ進め、削除すると一覧から消える'],
+  'M5-3-14':['動く','登録時と同じ入力欄に今の値が入り、保存すると詳細へ戻って「更新されました」が出る'],
+  'M5-3-15':['動く','持ち場名で絞り込み、▲▼で並べ替えができる。「詳細」で持ち場の詳細へ'],
+  'M5-3-16':['動く','持ち場名の必須チェックが動き、登録で一覧に増えて完了画面へ'],
+  'M5-3-17':['動く','持ち場の登録の完了表示。ボタンで持ち場管理の一覧へ戻る'],
+  'M5-4':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-4-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-4-2':['動く','検査製品の一覧から詳細へ、点検予定へ進める。どの工場でも同じ 4 製品が並ぶ'],
+  'M5-4-3':['動く','製品名は手入力か候補から選べ、必須チェックあり。6 項目の記録する／しないを選び、登録で一覧に増える'],
+  'M5-4-4':['動く','製品の登録の完了表示。ボタンで検査製品の一覧へ戻る'],
+  'M5-4-5':['動く','製品名と 6 項目の設定を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-4-6':['動く','製品名と 6 項目を直して保存でき、詳細へ戻って「更新されました」が出る'],
+  'M5-4-7':['動く','製品の削除の完了表示。ボタンで検査製品の一覧へ戻る'],
+  'M5-4-8':['一部','月送りと日付の選択ができ、選んだ日の予定の編集・複製・削除ができる。見本の予定は無く、予定のある日に印も出ない'],
+  'M5-4-9':['動く','日付と製品（ダイアログで複数選択）の必須チェックが動き、個別・全削除もできる。登録で予定に入る'],
+  'M5-4-10':['動く','点検予定の登録の完了表示。ボタンで点検予定へ戻る'],
+  'M5-5':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-5-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-5-2':['一部','表示中／非表示のタブで機器を切り替え、詳細と 3 つの機器管理へ進める。カードの機器名欄は空で出る'],
+  'M5-5-3':['動く','点検構成名と、記録する機器の機器名の必須チェックが動く。通過製品はダイアログで選び、登録で一覧に増える'],
+  'M5-5-4':['動く','機器の登録の完了表示。ボタンで機器の一覧へ戻る'],
+  'M5-5-5':['動く','記録する機器・機器名・シーリング・通過製品を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-5-6':['動く','登録時と同じ入力欄に今の値が入り、保存すると詳細へ戻って「更新されました」が出る'],
+  'M5-5-7':['動く','機器の削除の完了表示。ボタンで機器の一覧へ戻る'],
+  'M5-5-8':['動く','金属探知機を一覧し、▲▼で並べ替えられる。詳細と動作確認項目設定へ進める'],
+  'M5-5-9':['動く','機器名の必須チェックと、テストピース設定の行追加・削除が動き、登録で一覧に増える'],
+  'M5-5-10':['動く','金属探知機の登録の完了表示。ボタンで金属探知機管理へ戻る'],
+  'M5-5-11':['動く','機器名とテストピース設定を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-5-12':['動く','機器名とテストピース設定を直して保存でき、詳細へ戻って「更新されました」が出る'],
+  'M5-5-13':['動く','金属探知機の削除の完了表示。ボタンで金属探知機管理へ戻る'],
+  'M5-5-14':['一部','項目の選択・説明の入力・行の追加と削除はできるが、保存しても残らず一覧へ戻るだけ'],
+  'M5-5-15':['動く','X線探知機を一覧し、▲▼で並べ替えられる。詳細と動作確認項目設定へ進める'],
+  'M5-5-16':['動く','機器名の必須チェックと、テストピース 5 種の設定行の追加・削除が動き、登録で一覧に増える'],
+  'M5-5-17':['動く','X線探知機の登録の完了表示。ボタンでX線探知機管理へ戻る'],
+  'M5-5-18':['動く','機器名とテストピース設定を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-5-19':['動く','機器名とテストピース設定を直して保存でき、詳細へ戻って「更新されました」が出る'],
+  'M5-5-20':['動く','X線探知機の削除の完了表示。ボタンでX線探知機管理へ戻る'],
+  'M5-5-21':['一部','項目の選択・説明の入力・行の追加と削除はできるが、保存しても残らず一覧へ戻るだけ'],
+  'M5-5-22':['動く','ウェイトチェッカーを一覧し、▲▼で並べ替えられる。詳細と動作確認項目設定へ進める'],
+  'M5-5-23':['動く','機器名だけの入力で必須チェックが動き、登録で一覧に増えて完了画面へ'],
+  'M5-5-24':['動く','ウェイトチェッカーの登録の完了表示。ボタンでウェイトチェッカー管理へ戻る'],
+  'M5-5-25':['動く','機器名を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-5-26':['動く','機器名を直して保存でき、詳細へ戻って「更新されました」が出る'],
+  'M5-5-27':['動く','ウェイトチェッカーの削除の完了表示。ボタンでウェイトチェッカー管理へ戻る'],
+  'M5-5-28':['一部','項目の選択・説明の入力・行の追加と削除はできるが、保存しても残らず一覧へ戻るだけ'],
+  'M5-6':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-6-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-6-2':['動く','検体対象製品の一覧から詳細へ、点検予定へ進める。どの工場でも同じ 5 製品が並ぶ'],
+  'M5-6-3':['動く','製品名は手入力か候補から選べ、必須チェックあり。登録で一覧に増えて完了画面へ'],
+  'M5-6-4':['動く','製品の登録の完了表示。ボタンで検体の一覧へ戻る'],
+  'M5-6-5':['動く','製品名を表示し、削除すると一覧から消えて削除完了へ。編集は無い'],
+  'M5-6-6':['動く','製品の削除の完了表示。ボタンで検体の一覧へ戻る'],
+  'M5-6-7':['一部','月送りと日付の選択ができ、選んだ日の予定の編集・複製・削除ができる。見本の予定は無く、予定のある日に印も出ない'],
+  'M5-6-8':['動く','日付と製品（ダイアログで複数選択）の必須チェックが動き、個別・全削除もできる。登録で予定に入る'],
+  'M5-6-9':['動く','点検予定の登録の完了表示。ボタンで点検予定へ戻る'],
+  'M5-7':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-7-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-7-2':['動く','表示中／非表示と頻度（毎日〜毎年）のタブでラインを絞り、詳細・点検予定・確認項目の設定へ進める'],
+  'M5-7-3':['動く','ライン名と最初の点検箇所の必須チェック、点検箇所・項目の追加が動き、登録で一覧に増える'],
+  'M5-7-4':['動く','ラインの登録の完了表示。ボタンでラインの一覧へ戻る'],
+  'M5-7-5':['見た目だけ','表示期間・頻度・点検箇所と項目を表示するだけ。編集・削除のボタンは無い'],
+  'M5-7-6':['動く','確認内容の書き換えと行追加ができ、保存で点検予定へ。行の削除は確認のあとすぐ反映して完了画面へ'],
+  'M5-7-7':['動く','確認項目の削除の完了表示。ボタンで確認項目の設定へ戻る'],
+  'M5-7-8':['動く','月送りと日付の選択ができ、予定のある日に印が付く。選んだ日の予定の編集・複製・削除ができる'],
+  'M5-7-9':['動く','点検日とライン（ダイアログで頻度別に複数選択）の必須チェックが動き、登録で予定に入る'],
+  'M5-7-10':['動く','点検予定の登録の完了表示。ボタンで点検予定へ戻る'],
+  'M5-8':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-8-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-8-2':['動く','表示中／非表示と頻度（毎日〜毎年）のタブでラインを絞り、詳細・点検予定へ進める'],
+  'M5-8-3':['動く','ライン名と最初の清掃箇所の必須チェック、清掃箇所・項目の追加が動き、登録で一覧に増える'],
+  'M5-8-4':['動く','ラインの登録の完了表示。ボタンでラインの一覧へ戻る'],
+  'M5-8-5':['見た目だけ','表示期間・頻度・清掃箇所と項目を表示するだけ。編集・削除のボタンは無い'],
+  'M5-8-6':['動く','月送りと日付の選択ができ、選んだ日の予定の編集・複製・削除ができる。予定のある日に印は出ない'],
+  'M5-8-7':['動く','点検日とライン（ダイアログで頻度別に複数選択）の必須チェックが動き、登録で予定に入る'],
+  'M5-8-8':['動く','点検予定の登録の完了表示。ボタンで点検予定へ戻る'],
+  'M5-9':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-9-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-9-2':['動く','薬品の一覧から詳細へ進める。保管場所管理（共通の保管場所画面）へも移れる。どの工場でも同じ薬品が並ぶ'],
+  'M5-9-3':['動く','薬品名・規格・単位・保管場所の必須チェックが動き、登録で一覧に増える。保管場所の候補は本社工場だけ'],
+  'M5-9-4':['動く','薬品の登録の完了表示。ボタンで薬品の一覧へ戻る'],
+  'M5-9-5':['動く','薬品名・規格・保管場所を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-9-6':['動く','登録時と同じ入力欄に今の値が入り、保存すると詳細へ戻って「更新されました」が出る'],
+  'M5-9-7':['動く','薬品の削除の完了表示。ボタンで薬品の一覧へ戻る'],
+  'M5-10':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
+  'M5-10-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
+  'M5-10-2':['動く','添加物の一覧から詳細へ進める。保管場所管理（共通の保管場所画面）へも移れる。どの工場でも同じ添加物が並ぶ'],
+  'M5-10-3':['動く','添加物名・規格・単位・保管場所の必須チェックが動き、登録で一覧に増える。保管場所の候補は本社工場だけ'],
+  'M5-10-4':['動く','添加物の登録の完了表示。ボタンで添加物の一覧へ戻る'],
+  'M5-10-5':['動く','添加物名・規格・保管場所を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
+  'M5-10-6':['動く','登録時と同じ入力欄に今の値が入り、保存すると詳細へ戻って「更新されました」が出る'],
+  'M5-10-7':['動く','添加物の削除の完了表示。ボタンで添加物の一覧へ戻る'],
+  M6:['動く','基幹システム／NQリポのタブ・絞り込み・ページ送りが動く。NQリポ製品の登録・削除は一覧に反映する（製品管理を離れると戻る）'],
+  M7:['動く','企業名の絞り込み・ページ送りと新規登録・詳細への移動が動く。登録・編集・削除は一覧に反映する（企業管理を離れると戻る）'],
+  M8:['動く','工場名の絞り込み・ページ送りと新規登録・詳細への移動が動く。登録・編集・削除は一覧に反映する（工場管理を離れると戻る）'],
+  M9:['一部','保管場所名・工場の絞り込みと新規登録・詳細が動き、登録・編集は一覧に反映する（離れると戻る）。削除の入口は無い'],
+  M10:['動く','名前・工場・権限の絞り込みと新規登録・詳細が動く。登録・編集・削除は一覧に反映する（職員管理を離れると戻る）'],
+  M11:['一部','見本 25 件の固定の履歴。期間・画面・工場・帳票・キーワードの絞り込みとページ送りが動くが、他の画面の操作は行に増えない'],
+  M12:['動く','絞り込み・再読み込み・ステータスの切替・削除が動き、ブラウザに保存される。アプリで初めてログインした端末は認証ダイアログで出る'],
+  M13:['動く','キーワード検索とカテゴリの切替で FAQ を絞り込み、質問を押すと回答が開く'],
+  M14:['動く','アカウント情報の表示と、4 つのロールの切替が動く。切り替えたロールは保存され、左メニューの項目が変わる'],
+  A0:['動く','見本の工場ID・パスワードでログインでき、違うと赤枠とエラー文が出る。オフラインを試すと「オフライン状態です」の帯が出て進まない'],
+  A1:['動く','10 帳票どれを押しても実施者を選ぶポップアップが出て、「次へ」でその帳票の一覧へ進む'],
+  'A1-1':['動く','帳票一覧で使用水の点検を押し、実施者を選ぶと点検場所の一覧（A1-1-1）へ進む'],
+  'A1-1-1':['動く','点検場所ごとの状態チップと点検済み n/N、進捗パネルが動く。提出すると点検済みに変わるが、帳票一覧へ戻ると見本に戻る'],
+  'A1-1-2':['動く','OK/NG・NG の原因と対応のポップアップ・数値・塩素補充／UV交換・表示灯の入力と入力時刻が動く。何か 1 つ入れると確認へ進める'],
+  'A1-1-3':['動く','入力内容の見直しと「提出」ができ、提出した記録はその点検場所の記録に加わる。進捗・確認待ち・管理画面には反映されない'],
+  'A1-1-4':['動く','続ける／帳票一覧に戻るが動く。オフラインを試すと未送信の帯、送信エラーを試すとエラーのポップアップが出る'],
+  'A1-2':['動く','タイルを押すと実施者を選ぶポップアップが出て、「次へ」でフロアの一覧へ進む。選んだ実施者は記録入力の項目ごとの記録者に引き継がれる'],
+  'A1-2-1':['動く','フロアが「未点検」「点検済み」のチップ付きで並び、押すとそのフロアの記録入力へ進む。右上の「点検済み n/m」で進み具合のパネルが開く'],
+  'A1-2-2':['動く','配置図の拡大・縮小、部屋タブの絞り込み、項目ごとの正常／異常ありができる。異常ありは内容・原因・対応を選ぶポップアップで入力する'],
+  'A1-2-3':['一部','配置図と部屋ごとの結果・実施者・入力時刻を確かめられる。「保存」で完了画面へ進むが、フロアの一覧のステータスは変わらない'],
+  'A1-2-4':['動く','保存の完了表示。「ガラス・プラスチック管理を続ける」でフロアの一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る'],
+  'A1-3':['一部','タイルを押すと実施者を選ぶポップアップが出て、「次へ」で持ち場の一覧へ進む。選んだ実施者は秤の記録へは引き継がれない'],
+  'A1-3-1':['動く','持ち場が「未点検」「点検済み」のチップ付きで並び、押すとその持ち場の秤の一覧へ進む。右上の「点検済み n/m」で進み具合のパネルが開く'],
+  'A1-3-2':['動く','実施日と秤ごとの結果が表で並び、「詳細」で秤の記録入力へ進む。「点検する秤を追加」で別の持ち場の秤か予備の秤を選んで足せる'],
+  'A1-3-3':['動く','動作確認・水平点検・汚れ・表示値を入力して保存すると秤の一覧に反映される。異常ありや基準外の表示値は原因のポップアップ、「点検見送り」は理由を入れて見送りにできる'],
+  'A1-3-4':['動く','秤ごとの結果・実施者・入力時刻を確かめ、「提出」で持ち場が「点検済み」になる。「戻る」は入力を破棄するかの確認が出る'],
+  'A1-3-5':['動く','提出の完了表示。「秤点検記録を続ける」で持ち場の一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る'],
+  'A1-3-6':['見た目だけ','持ち場の実施日・実施者と秤ごとの結果を表で見るだけ。「詳細」で秤ごとの記録へ、「編集」で秤の一覧へ移る'],
+  'A1-3-7':['見た目だけ','秤 1 台ぶんの動作確認・水平点検・汚れ・表示値・備考を、実施者と入力時刻付きで見るだけ'],
+  'A1-4':['一部','タイルを押すと実施者を選ぶポップアップが出て、「次へ」で検査製品の一覧へ進む。選んだ実施者は記録入力へは引き継がれない'],
+  'A1-4-1':['動く','製品が評価項目のタグとステータスのチップ付きで並び、商品名で絞り込める。押すとその製品の記録入力へ進む'],
+  'A1-4-2':['動く','製造日・比較商品と、味・形・色などを 1〜5 点で入力する。2 点以下は理由のポップアップが出て、全項目がそろうと確認画面へ進める'],
+  'A1-4-3':['動く','入力した点数と理由を確かめ、「提出」で製品が「点検済み」になり、その記録が保たれる'],
+  'A1-4-4':['動く','提出の完了表示。「官能検査記録を続ける」で検査製品の一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る'],
+  'A1-4-5':['見た目だけ','提出した製品の製造日・比較商品・項目ごとの点数を見るだけ。「編集」で記録入力へ移る'],
+  'A1-5':['動く','タイルを押すと実施者を選ぶポップアップが出て、「次へ」で機器の一覧へ進む。選んだ実施者は追加した記録の実施者に入る'],
+  'A1-5-1':['動く','機器が「未点検」「点検済み」のチップ付きで並び、押すとその機器の詳細へ進む。右上の「点検済み n/m」で進み具合のパネルが開く'],
+  'A1-5-2':['一部','機器の型式と実施日、記録の表が出る。「記録を追加」で点検内容を 4 種から選んで入力へ進めるが、「途中保存」は完了の表示が出るだけで何も残らない'],
+  'A1-5-3':['動く','点検内容ごとの項目を入力し、異常ありは原因・対応のポップアップ、製品通過は通過製品を選ぶポップアップで入れる。保存で記録が足され確認画面へ進む'],
+  'A1-5-4':['一部','記録の表を確かめ、「詳細」で 1 件ずつ見られる。「提出」で完了画面へ進むが、機器のステータスは変わらない'],
+  'A1-5-5':['見た目だけ','記録 1 件ぶんの内容を、点検内容（動作確認・テストピース・製品通過・異常反応）ごとの項目で見るだけ'],
+  'A1-5-6':['見た目だけ','機器の実施日と記録の表を見るだけ。表の「詳細」は押せず、「編集」で機器の詳細へ移る'],
+  'A1-5-7':['一部','提出の完了表示。帳票の一覧から来ても、ボタンは「進捗一覧に戻る」の 1 つだけ'],
+  'A1-6':['動く','タイルを押すと実施者を選ぶポップアップが出て、「次へ」で検体の一覧へ進む。選んだ実施者は点検画面の記録者に引き継がれる'],
+  'A1-6-1':['動く','「本日の点検」は製品名で検索でき、押すと点検へ進む。「保管検体」は絞り込み検索と、複数選んでの一括破棄ができる（破棄は画面を離れると戻る）'],
+  'A1-6-2':['一部','製造日・検体種別・数量・単位・保管場所を入れると確認画面へ進める。「途中保存」は完了の表示が出るだけで何も残らない'],
+  'A1-6-3':['一部','入力内容と実施者・入力時刻を確かめて提出できる。提出しても検体の一覧のステータスは変わらない'],
+  'A1-6-4':['動く','提出の完了表示。「検体管理を続ける」で検体の一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る'],
+  'A1-6-5':['一部','保管検体の記録を見て、破棄日と理由を入れて破棄できる。破棄すると保管検体の一覧から消えるが、画面を離れると元に戻る'],
+  'A1-7':['一部','タイルを押すと実施者を選ぶポップアップが出て、「次へ」でラインの一覧へ進む。選んだ実施者は点検へは引き継がれない'],
+  'A1-7-1':['動く','毎日・毎週・毎月・毎年のタブで切り替え、未点検〜見送りのチップ付きでラインが並ぶ。毎週は日付ごとにまとまり、押すとラインの点検へ進む'],
+  'A1-7-2':['見た目だけ','見送りで「明日に見送る：いいえ」を選んだ翌日の見本。毎週の点検予定が無くなった状態で、毎週のタブから開く'],
+  'A1-7-3':['一部','始業・終業のタブで項目ごとに異常なし／異常ありを付け、場所ごとに「全て異常なし」でまとめて付けられる。「途中保存」は完了の表示が出るだけ'],
+  'A1-7-4':['動く','始業・終業の結果と原因・対応・備考を確かめ、「提出」でラインが「点検済み」になる。オフラインのときは画面上に知らせの帯が出る'],
+  'A1-7-5':['一部','見送りの実施日・実施者・理由を確かめ、「提出」でラインが「見送り」になる。「明日に見送る」の選択はどこにも残らない'],
+  'A1-7-6':['動く','提出の完了表示。「機械器具点検を続ける」でラインの一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る'],
+  'A1-8':['動く','タイルを押すと実施者を選ぶポップアップが出て、「次へ」でラインの一覧へ進む。選んだ実施者は清掃の記録者に引き継がれる'],
+  'A1-8-1':['動く','毎日・毎週・毎月・毎年のタブで切り替え、未点検〜見送りのチップ付きでラインが並ぶ。毎週は日付ごとにまとまり、押すと清掃の記録入力へ進む'],
+  'A1-8-2':['見た目だけ','見送りで「明日に見送る：いいえ」を選んだ翌日の見本。毎週の清掃予定が無くなった状態で、毎週のタブから開く'],
+  'A1-8-3':['一部','項目ごとに清掃済みを付け、場所ごとに「全て清掃済み」でまとめて付けられる。全項目がそろうと確認画面へ進める。「途中保存」は完了の表示が出るだけ'],
+  'A1-8-4':['動く','清掃した項目と備考を確かめ、「提出」でラインが「点検済み」になる'],
+  'A1-8-5':['一部','見送りの実施日・実施者・理由を確かめ、「提出」でラインが「見送り」になる。「明日に見送る」の選択はどこにも残らない'],
+  'A1-8-6':['動く','提出の完了表示。「清掃記録を続ける」でラインの一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る'],
+  'A1-9':['動く','タイルを押すと実施者を選ぶポップアップが出て、「次へ」で薬品の一覧へ進む。選んだ実施者は追加した記録の実施者に入る'],
+  'A1-9-1':['動く','薬品が「未点検」「点検中」「点検済み」のチップ付きで並び、押すとその薬品の記録の一覧へ進む'],
+  'A1-9-2':['動く','実施日と入出庫の記録が表で並び、「詳細」で 1 件を見られる。「記録を追加」で入力へ、記録が 1 件以上あれば確認画面へ進める'],
+  'A1-9-3':['動く','区分（入庫・出庫）と数量を入れると現在庫数が自動で計算され、手で直すこともできる。保存で記録が一覧に足され、未点検の薬品は「点検中」になる'],
+  'A1-9-4':['見た目だけ','入出庫の記録 1 件ぶんの保管場所・区分・数量・現在庫数・備考を見るだけ'],
+  'A1-9-5':['動く','その薬品の記録を表で確かめ、「提出」で薬品が「点検済み」になる'],
+  'A1-9-6':['動く','提出の完了表示。「薬品管理記録を続ける」で薬品の一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る。実施者はそのまま引き継ぐ'],
+  'A1-10':['一部','タイルを押すと実施者を選ぶポップアップが出て、「次へ」で製品の一覧へ進む。選んだ実施者は記録へは引き継がれない'],
+  'A1-10-1':['動く','製品が「未点検」「点検中」「点検済み」のチップ付きで並び、押すとその製品の記録の一覧へ進む'],
+  'A1-10-2':['一部','実施日と入出庫の記録が表で並び、「詳細」「記録を追加」「確認画面へ」ができる。未点検の製品では、足した記録が一覧に出ない'],
+  'A1-10-3':['動く','区分（入庫・出庫）と数量を入れると現在庫数が自動で計算され、手で直すこともできる。「保存」でこの 1 件の確認画面へ進む'],
+  'A1-10-4':['動く','記録入力から来たときは 1 件を確かめて提出で記録が足され、一覧から来たときは全件を確かめて提出で製品が「点検済み」になる'],
+  'A1-10-5':['動く','提出の完了表示。「添加物管理記録を続ける」でその製品の記録の一覧へ、「帳票一覧に戻る」で帳票一覧へ戻る'],
+  'A1-10-6':['見た目だけ','入出庫の記録 1 件ぶんの保管場所・区分・数量・現在庫数・備考を見るだけ'],
+  A2:['動く','すべて／未点検のタブ・帳票の絞り込み・日付ごとの開閉・実施者選択から各帳票の入力へ進める。行は見本で、提出しても変わらない'],
+  A3:['一部','見本の確認待ち一覧と帳票の絞り込みが動き、行を押すと詳細へ進む。一覧の中身は見本で、提出した記録は並ばない'],
+  A4:['動く','月送り・日の選択・休業日の表示・新規登録（帳票を選ぶ）と登録済みの案内が動く。初期表示は 2025 年 4 月'],
+  'A4-1':['動く','見る → 編集 → 持ち場／ラインの追加（タブ・検索・チェック）→ 削除 → 保存 → 完了が動き、カレンダーにも反映される'],
+  'A4-2':['動く','見る → 編集 → 商品追加 → 比較商品・製造日の設定 → 削除 → 保存 → 完了が動き、カレンダーにも反映される'],
+  A5:['動く','小・中・大を選ぶとアプリの文字が 87.5%／100%／112.5% になり、他の画面へ移っても保たれる。再読み込みで中に戻る'],
+  A6:['動く','キーワード検索・カテゴリの絞り込み・Q&A の開閉・ヘルプTOP と更新で絞り込み解除が動く'],
+  A7:['動く','ログアウトの確認ダイアログとライセンス情報への移動が動く'],
+  'A7-1':['動く','キャンセルで閉じ、ログアウトでアプリのログイン画面へ戻る'],
+  'A7-2':['見た目だけ','本文は空で、「戻る」で前の画面へ戻るだけ'],
 };
 
 /* =========================================================================
    ⑩ 権限の方針・操作ログ・承認経路（いずれも案。打合せで確定させる）
    ========================================================================= */
-/* 使用水以外の 9 帳票（帳票管理 M5-2〜、データ検索・承認・確認の {親}-2〜）。プロトタイプの LX／RX（汎用の仕組み）で動く */
-const LM_KIND = nm => /工場選択/.test(nm) ? ['一部','本社工場だけ押せる'] : /完了/.test(nm) ? ['動く','完了の文言とボタンで一覧へ戻る'] : /新規登録|編集/.test(nm) ? ['一部','名前を入れて登録・保存できる。他の項目は顔つきだけ']
-  : /点検予定/.test(nm) ? ['動く','月のカレンダーと日ごとの予定。登録すると印が付く'] : /設定/.test(nm) && /項目/.test(nm) ? ['動く','行の追加・削除・保存'] : /詳細/.test(nm) ? ['動く','登録した内容。編集・削除へ'] : ['動く','一覧。登録したものがすぐ並ぶ'];
-LM_LEDGERS.forEach(([,,, steps], i) => { const n = i + 1; if (n === 1) return; BUILT[`M5-${n}`] = ['動く', '帳票カード。押すと工場選択へ']; steps.forEach(([nm], j) => { BUILT[`M5-${n}-${j + 1}`] = LM_KIND(nm); }); });
-/* アプリの他の帳票（A1-2〜）。プロトタイプの AX（帳票ごとの定義＋汎用の画面）で動く */
-AL_LEDGERS.forEach(([,, steps], i) => { const n = i + 2; BUILT[`A1-${n}`] = ['動く', 'タイル → 実施者を選ぶ → 一覧。提出した記録は管理画面の確認管理に並ぶ']; steps.forEach(([nm], j) => { BUILT[`A1-${n}-${j + 1}`] = ['動く', /確認$/.test(nm) && !/見送り/.test(nm) ? '入力した内容の一覧。提出で記録が増える' : /完了$/.test(nm) ? '完了。帳票を続ける／帳票一覧に戻る' : /一覧$/.test(nm) ? '登録したものが状態チップ付きで並ぶ' : /見直し|詳細/.test(nm) ? '提出した記録を読むだけ' : 'React と同じ項目・選択肢。項目ごとに実施者と入力時刻が残る']; }); });
-['M2','M3','M4'].forEach(pre => DS_LEDGERS.forEach((_, i) => {
-  BUILT[`${pre}-${i + 2}`] = ['動く', `帳票カード。押すと${pre==='M3' ? 'データ一覧' : '工場選択'}へ`];
-  BUILT[`${pre}-${i + 2}-1`] = ['動く', pre==='M2' ? '承認済みの行だけ。月送り・日付の絞り込み・CSV の形式選択' : pre==='M3' ? '承認待ち・承認済み・差し戻しの行。月送り・「承認する」でまとめて承認' : '点検済み・承認待ちの行。ステータスと日付で絞り込み'];
-  BUILT[`${pre}-${i + 2}-2`] = ['動く', pre==='M2' ? '閲覧のみ。コメントは読むだけ' : pre==='M3' ? '承認・差し戻し（理由必須）・コメント。使用水と同じ部品' : '確認済みにする → 承認待ち。コメントも残る'];
-}));
-
 const ACCESS_POLICY = '【案】職員の権限は 実施者／確認者／承認者 の3つを工場ごとに持つ（1人が複数の工場に所属できる）。'
   + '管理画面には「管理者」を足した4ロールで入り、ロールは職員の権限から自動で決まる。'
   + '確認者は Ver.3.0 から管理画面に入れるが、企業管理と承認作業はできない。帳票テンプレートの変更は管理者に寄せる。';
@@ -2030,10 +2352,8 @@ const LOG = {
   M10:[['2026-09-24','新設']],
   M11:[['2026-09-24','新設。記録の提出・確認・承認が履歴になる']],
   M12:[['2026-09-24','新設']],
-  M14:[['2026-09-25','枠がログイン画面になっていたのを直した。React に admin/guide の頁は無く、枝の URL（画面説明・画面遷移図・開発Ver管理・フィードバック管理）だけなので、画面説明（admin/guide/descriptions）を映すようにした。サムネイル（.claude/.shots）も出るようにした','16:10'],['2026-09-24','ガイドを開くとフィードバック管理（M14-1）が出るように。プロトタイプの一覧に見本 6 件を入れ、状態とキーワードで絞れる','16:55'],['2026-09-24','変更履歴と開発Ver管理をガイドから外した。プロトタイプでも 2 つのタブと中身を消し、ガイドを開くと画面遷移図（名前だけ）が出る。開発Ver管理の内容は画面設計のヘッダー「リリース」へ移した','16:50'],['2026-09-24','サイドメニューのアコーディオンを外した。ガイドの各画面は URL で直接開く'],['2026-09-24','新設'],['2026-09-24','ヘルプをアコーディオンから外し 5 項目に'],['2026-09-24','親（ガイド）と枝 4 画面（M14-1〜M14-4）に分けた'],['2026-09-24','画面遷移図を外して 3 画面に。開発Ver管理を M14-2、フィードバック管理を M14-3 に']],
-  'M14-1':[['2026-09-24','一覧の内容は 20 文字を超えたら「…」で省略。全文はマウスを載せると出る','17:05'],['2026-09-24','中身を作った。見本 6 件の一覧、状態（未対応・対応中・完了）とキーワードの絞り込み。ガイドを開くとまずこの画面が出る','16:55'],['2026-09-24','フィードバック管理を M14-3 から M14-1 に詰めた（変更履歴・開発Ver管理を外したため）'],['2026-09-24','新設。ガイドの枝として追加'],['2026-09-24','M14-4 から番号を詰めた']],
-  M13:[['2026-09-24','新設。ヘルプをガイドの中からサイドメニューのガイド直下へ移した']],
-  M15:[['2026-09-24','ロール切替の 4 枚を画面から外し、右下の切替（プロトタイプ）に一本化した'],['2026-09-24','新設。ロール切替をプロトタイプにも実装']],
+  M13:[['2026-09-28','フィードバック管理（M13）を削除したので、番号を M14 から M13 に詰めた','16:50'],['2026-09-28','フィードバック管理をヘルプの上に置いたので、番号を M13 から M14 に','13:00'],['2026-09-24','新設。ヘルプをガイドの中からサイドメニューのガイド直下へ移した']],
+  M14:[['2026-09-28','フィードバック管理（M13）を削除したので、番号を M15 から M14 に詰めた','16:50'],['2026-09-24','ロール切替の 4 枚を画面から外し、右下の切替（プロトタイプ）に一本化した'],['2026-09-24','新設。ロール切替をプロトタイプにも実装']],
   A0: [['2026-09-24','新設。オフラインの帯']],
   A1: [['2026-09-25','帳票一覧の 10 個のアイコンが出ていなかったのを直した。React が public のアイコンを絶対パス（/icons/…）で引いていて、画面設計の /react/ の下だと見つからなかった（React 側 src/data/ledgers.ts に base を付けた）','16:10'],['2026-09-24','新設。実施者を選ぶポップアップ']],
   'A1-1': [['2026-09-25','見本データを React 実装の mockData そのものに揃えた（全体の更新履歴を参照）','15:00'],['2026-09-24','新設。使用水の点検の 4 画面を帳票の下にまとめた']],
@@ -2054,7 +2374,6 @@ const LOG = {
   A7: [['2026-09-24','テキストサイズを A5 に入れたので A6 → A7 に'],['2026-09-24','項目を React に揃えた（ログアウト・ライセンス情報の 2 つ）。文字サイズは A5 へ'],['2026-09-24','新設'],['2026-09-24','アプリのメニュー順に番号を A8 → A6 に']],
   'A7-1': [['2026-09-25','枠がログイン画面になっていたのを直した。React ではログアウトの確認はダイアログで、画面としての URL が無い。枠には設定（app/settings）を出す','16:10'],['2026-09-24','新設。設定の中の並び（ログアウト → ライセンス情報）に合わせて、ログアウトの確認を画面として置いた']],
   'A7-2': [['2026-09-24','ログアウトを A7-1 に入れたので A7-1 → A7-2 に'],['2026-09-24','A6-1 → A7-1 に'],['2026-09-24','新設。React の /app/settings/license を反映']],
-  S1: [['2026-09-24','新設。帯・チップ・ポップアップ・空表示を集約']],
 };
 /* データ検索・承認・確認の他の帳票（{親}-2〜）の履歴 */
 LM_LEDGERS.forEach(([,,, steps], i) => { const n = i + 1; if (n !== 1) LOG[`M5-${n}`] = [['2026-09-24','新設。帳票管理の枝として追加']]; steps.forEach((_, j) => { LOG[`M5-${n}-${j + 1}`] = LOG[`M5-${n}-${j + 1}`] || [['2026-09-24', n === 1 ? '新設。旧 M5-1「帳票管理 › 点検場所」を遷移順の画面に分けた' : '新設。React のルートの並び（遷移順）で追加']]; }); });
@@ -2093,7 +2412,7 @@ const OLD_LEDGER_NO = (() => {
   return new Set(['使用水の点検', ...DS_LEDGERS.map(d => d[1])].map((nm, k) => names.includes(nm) ? k + 1 : 0).filter(Boolean));
 })();
 /* サイドメニューの次の画面も出さない（2026-09-28）。枝（M2-5 など）は帳票ごとの決まりに従う */
-const NO_DECIDE = new Set(['M2','M3','M4','M5','M6','M9','M10','M11','M14','M13']);
+const NO_DECIDE = new Set(['M2','M3','M4','M5','M6','M9','M10','M11','M13','A1','A2','A3','A4','A5','A6','A7']);
 function pendingDecide(s){
   if (NO_DECIDE.has(s.id)) return [];
   const m = /^(?:M[2-5]|A1)-(\d+)(?:-|$)/.exec(s.id || '');
@@ -2102,6 +2421,39 @@ function pendingDecide(s){
 }
 
 const LOG_DOC = [
+  ['2026-09-28','ヘッダーの「フィードバック管理」の検索欄と 対応状況・種類 の絞り込みを左のメニューにまとめ、見出しを大きくした','17:20'],
+  ['2026-09-28','ヘッダーの「フィードバック管理」を幅いっぱいの白地にした（灰色の地とカードの枠を無くした）','17:10'],
+  ['2026-09-28','ヘッダーの「リリース」の右に「フィードバック管理」のタブを足した（#feedback）。全画面のフィードバックを新しい順に並べ、対応状況・種類・キーワードで絞れる。行から書いた画面を開ける。対応状況の変更と削除もここでできる','17:00'],
+  ['2026-09-28','M13 を削除した欠番を詰めた。ヘルプを M14 から M13、アカウント情報を M15 から M14 に','16:50'],
+  ['2026-09-28','画面設計から フィードバック管理（M13）を削除した。フィードバックは各画面の右パネルの「フィードバック管理」で見る。ヘルプ（M14）・アカウント情報（M15）の番号はそのまま','16:40'],
+  ['2026-09-28','右パネルの見出しの「更新履歴」の右に「フィードバック管理」を足した。押すと右パネルがその画面へのフィードバックの一覧に切り替わり（書く欄は出さない）、もう一度押すと仕様に戻る。対応済みにする・削除もここでできる','16:30'],
+  ['2026-09-28','帳票管理の帳票の画面（M5-1〜）の「誰が使えるか」で、確認者・承認者を △ から ○ にした（いまは見えるため）','16:10'],
+  ['2026-09-28','右下の「フィードバック」を押したときの入力欄と一覧を、枠の中（画面の上に重なるパネル）ではなく右パネル（画面説明の場所）に出すようにした。場所選びとピンはこれまでどおり枠の画面の上で行う'],
+  ['2026-09-28','右下のフローティングの「資料 › 画面設計」の説明を「全○画面と決めること」から「画面ごとの仕様・画面のつながり・打合せで決めることをまとめた資料。全○画面」に改めた（プロトタイプで開いた先も同じ）'],
+  ['2026-09-28','アプリのサイドメニューの画面（帳票一覧・進捗・確認待ち・点検予定・テキストサイズ変更・ヘルプ・設定、A1〜A7）の「この打合せで決めること」を消した。枝の画面（A1-1 など）はそのまま','16:00'],
+  ['2026-09-28','右下のフローティングを「プロトタイプで開く」の先の右下と同じ中身にそろえた。権限を説明なしの 2 列にし、その下に「状態」（押すと切り替わる）を足し、ボタンの横にいまの状態を出す。「状態」の横の ? を押すと、それぞれの状態で画面がどう出るかの吹き出しが出る'],
+  ['2026-09-28','工場選択の画面概要の 1 行目から「確認したい」を外した','15:50'],
+  ['2026-09-28','工場選択の画面（データ検索・確認管理・帳票管理の 30 画面）の画面概要を同じ文にそろえた','15:45'],
+  ['2026-09-28','右パネルの「プロトタイプで動く範囲」を全 303 画面で見直した。以前の手作りのプロトタイプ向けの文（本社工場だけ押せる・顔つきだけ など）をやめ、枠に映る React 実装でその画面で実際にできること・保存されないことを画面ごとに書いた','15:30'],
+  ['2026-09-28','右パネルの見出し「この画面のねらい」を「画面概要」に変えた（全画面）','14:55'],
+  ['2026-09-28','右パネルの下に余白を足した。いちばん下までスクロールしても、最後の行が右下のフローティングに隠れない（全画面）','14:45'],
+  ['2026-09-28','右パネルの「項目定義」の表の最後の線が、次の節の上の線と並んで 2 本に見えていたので 1 本にした','14:35'],
+  ['2026-09-28','右下のフローティングの「Esc で閉じる」の文言を消した（Esc で閉じる動きはそのまま）','14:25'],
+  ['2026-09-28','「プロトタイプで開く」のタブの右下のボタンに、いま選んでいる状態（通常・未送信の記録がある など）を並べて出すようにした','14:15'],
+  ['2026-09-28','「プロトタイプで開く」のタブの右下に、権限の下へ「状態」を足した（中身は中央下の「状態」と同じ。アプリは 6 つ、管理画面は 通常・データが無い）。画面設計の右下には足していない','14:05'],
+  ['2026-09-28','右下のフローティングの見出し「権限（管理画面のロール）」を「権限」にした','13:55'],
+  ['2026-09-28','右下のフローティングの「資料」の上に 管理画面／アプリ のタブを足した。左の画面一覧のタブと同じで、押すとその端末で最後に見ていた画面へ移る（プロトタイプで開いたタブでも同じ）','13:45'],
+  ['2026-09-28','右下のフローティングの「フィードバック」を緑地に白文字にした','13:30'],
+  ['2026-09-28','プロトタイプのサイドメニューからフィードバック管理を外した。画面設計の M13 は残す（URL で直接開く画面として）','13:20'],
+  ['2026-09-28','アカウント情報（M15）の「この打合せで決めること」を消した','13:10'],
+  ['2026-09-28','サイドメニューのガイドを無くし、フィードバック管理だけを切り出してヘルプの上に置いた。フィードバック管理が M13、ヘルプが M14 になった（旧 M14 ガイド・M14-1 は無くした）','13:00'],
+  ['2026-09-28','ホームとサイドメニューの大見出し（M1〜M14）の「この打合せで決めること」を消した','12:50'],
+  ['2026-09-28','管理画面とアプリのログイン（M0・A0）の「この打合せで決めること」を消した','12:40'],
+  ['2026-09-28','画面一覧の「管理画面」「アプリ」の見出しの開閉をやめた。タブで切り替えると、その中の画面がすべて開いたまま並ぶ','12:30'],
+  ['2026-09-28','右下のフローティングの一番下に「フィードバック」を足した。押すと枠に出ている画面へのフィードバックを書くパネルが枠の中に開く（プロトタイプで開いたタブでも同じ）。書いたものはガイド › フィードバック管理に並ぶ','12:10'],
+  ['2026-09-28','画面一覧の「共通」と、その中の 状態カタログ（S1）を外した','11:50'],
+  ['2026-09-28','右下のフローティングの「資料」で「React 実装」としていた項目を「プロトタイプ」に改め、説明も触って動かせる画面としての言い方にした','11:10'],
+  ['2026-09-28','管理画面のサイドメニューのガイドから 変更履歴・画面遷移図・画面説明・開発Ver管理 を外した','11:00'],
   ['2026-09-28','React 実装のソースをこのリポジトリの react-src/ に移した。枠の中と「プロトタイプで開く」は react-src をビルドした画面を映す。これまでコミットしていたビルド後のファイル（react/）は消し、Vercel はプッシュのたびに React をビルドして配る','10:50'],
   ['2026-09-28','右パネルから「対応する要件」と「近い画面」の節を外した','10:45'],
   ['2026-09-28','右パネルの「この画面のねらい」から「React 実装は ○○。」の一文を全画面で外した','10:35'],
@@ -2190,8 +2542,7 @@ function stateFlags(s){
 }
 function demoSrc(s){
   const q = new URLSearchParams({frame:'1', v:DEMO_V, ...stateFlags(s)});
-  /* 状態カタログ（states）は React に無いので、常にプロトタイプ HTML */
-  const base = PROJECT.demo.fallback && (s.proto || s.hash==='states') ? PROJECT.demo.fallback : DEMO_HREF;
+  const base = PROJECT.demo.fallback && s.proto ? PROJECT.demo.fallback : DEMO_HREF;
   const h = bootLoc || s.hash; bootLoc = '';
   return `${base}?${q}#${h}`;
 }
@@ -2235,11 +2586,10 @@ const HASH2ID = [
   [/^admin\/data-search\/water-inspection\/factories\/[^/]+\/points\/[^/]+\/records\//,'M2-1-2'],[/^admin\/data-search\/water-inspection\/factories\/[^/]+\/points\//,'M2-1-1'],[/^admin\/data-search\/water-inspection/,'M2-1'],[/^admin\/data-search$/,'M2'],
   [/^admin\/ledger-management\/water-inspection\/factories\/[^/]+\/points\//,'M5-1-5'],[/^admin\/ledger-management\/water-inspection\/factories\//,'M5-1-2'],[/^admin\/ledger-management\/water-inspection$/,'M5-1-1'],[/^admin\/ledger-management$/,'M5'],
   [/^admin\/products$/,'M6'],[/^admin\/company$/,'M7'],[/^admin\/factory$/,'M8'],[/^admin\/storage$/,'M9'],
-  [/^admin\/staff$/,'M10'],[/^admin\/logs$/,'M11'],[/^admin\/devices$/,'M12'],[/^admin\/guide\/feedback/,'M14-1'],[/^admin\/guide/,'M14'],[/^admin\/help$/,'M13'],[/^admin\/account$/,'M15'],
+  [/^admin\/staff$/,'M10'],[/^admin\/logs$/,'M11'],[/^admin\/devices$/,'M12'],[/^admin\/help$/,'M13'],[/^admin\/account$/,'M14'],
   [/^app\/login$/,'A0'],[/^app\/ledger-list$/,'A1'],[/^app\/ledger-list\/water-inspection$/,'A1-1-1'],
   [/\/points\/[^/]+\/new$/,'A1-1-2'],[/\/points\/[^/]+\/new\/confirm$/,'A1-1-3'],[/\/water-inspection\/complete$/,'A1-1-4'],
-  [/^app\/progress$/,'A2'],[/^app\/pending-review$/,'A3'],[/^app\/schedule\/equipment-inspection\//,'A4-1'],[/^app\/schedule\/sensory-inspection\//,'A4-2'],[/^app\/schedule$/,'A4'],[/^app\/settings\/logout$/,'A7-1'],[/^app\/settings\/license$/,'A7-2'],[/^app\/text-size$/,'A5'],[/^app\/help$/,'A6'],[/^app\/settings$/,'A7'],
-  [/^states$/,'S1']];
+  [/^app\/progress$/,'A2'],[/^app\/pending-review$/,'A3'],[/^app\/schedule\/equipment-inspection\//,'A4-1'],[/^app\/schedule\/sensory-inspection\//,'A4-2'],[/^app\/schedule$/,'A4'],[/^app\/settings\/logout$/,'A7-1'],[/^app\/settings\/license$/,'A7-2'],[/^app\/text-size$/,'A5'],[/^app\/help$/,'A6'],[/^app\/settings$/,'A7']];
 /* 画面定義の hash から自動で作る対応表。ID の段（factories/f1・floors/fl1・records/r2 …）はどの ID でも合うようにする。
    同じ hash を持つ画面が複数あるときは SCREENS で先に書いたほうが勝つ。上の HASH2ID は、ここで拾えなかったときの後ろ盾 */
 const HASH_KEYS = new Set(['new','registered','deleted','complete','edit','check-items','schedule','register','records','factories','floors','points']);
@@ -2256,7 +2606,11 @@ window.addEventListener('message', e => {
   /* 変更前（右）からの知らせは、説明を動かさない。この時点に同じ画面があるかを見るだけ */
   if (snap && e.source === snap.contentWindow){ snap.dataset.ready = '1'; markMiss('old', snapWant, m.hash); return; }
   if (live && e.source !== live.contentWindow) return;   /* 作り直す前の iframe から遅れて届いたもの */
-  if (live){ live.dataset.ready = '1'; liveLoc = m.hash; }
+  if (live){
+    /* 枠を作り直した直後（最初の loc）。右パネルでフィードバックを開いていたら、新しい枠にも開いてもらう */
+    if (!live.dataset.ready && inspView === 'feedback') live.contentWindow.postMessage({nvideo:'feedback'}, '*');
+    live.dataset.ready = '1'; liveLoc = m.hash;
+  }
   /* 左が変更後の控えのとき、頼んだ画面への最初の返事を見る。その時点に無い画面なら、説明は動かさず印だけ出す */
   if (liveWant){
     const want = liveWant; liveWant = '';
@@ -2279,7 +2633,7 @@ function openProto(e){
   const s = cur; if (!s || !DEMO_HREF || !s.hash) return;
   e.preventDefault();
   const live = document.querySelector('#fit iframe.live');
-  let base = PROJECT.demo.fallback && (s.proto || s.hash==='states') ? PROJECT.demo.fallback : DEMO_HREF;
+  let base = PROJECT.demo.fallback && s.proto ? PROJECT.demo.fallback : DEMO_HREF;
   if (live && live.src) base = live.src.replace(/[?#].*$/, '');   /* 控え（変更後）を映しているときはその控えを開く */
   try{ const w = live && live.contentWindow; if (w && w.eval("typeof SEED_V !== 'undefined' && typeof S === 'object'")) w.eval("sessionStorage.setItem(SS, JSON.stringify(Object.assign({_v:SEED_V}, S)))"); }catch(err){}
   const q = new URLSearchParams({kit:'1', ...stateFlags(s)});
@@ -2327,7 +2681,6 @@ const groupIcon = g => {
 
 /* ---------- レール ---------- */
 let railQ = '';
-let grpOff = new Set(LS.get('grp', []));   /* 折りたたんだグループ */
 let railPf = LS.get('ptab', 'admin');          /* 上のタブで選んだ端末（admin／app）。共通は管理画面側に出す */
 let lastPfId = LS.get('lastPfId', {});         /* 端末ごとに最後に見ていた画面。タブを押したとき、そこへ戻るため */
 const railPfHit = s => mini() || s.pf === railPf;
@@ -2399,21 +2752,12 @@ function buildRail(){
   const groups = [...new Set(shown.map(s=>s.grp))];
   box.innerHTML = groups.map(g=>{
     const list = shown.filter(s=>s.grp===g);
-    const open = searching || !grpOff.has(g);
-    /* 閉じていても、いま見ている画面だけは出す。畳んでも現在地を見失わない */
-    const rows = open ? list : list.filter(s => s === cur);
-    return `<section><button class="rh" type="button" data-g="${esc(g)}" aria-expanded="${open}">
-      ${groupIcon(g)}<span class="gname">${esc(g)}</span>
-      <svg class="cv" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="slist"${rows.length?'':' hidden'}>${treeHTML(rows, searching)}</div></section>`;
+    /* グループは畳まない（見出しは帯のときのフライアウトの入口だけ） */
+    return `<section><button class="rh" type="button" data-g="${esc(g)}" tabindex="-1">
+      ${groupIcon(g)}<span class="gname">${esc(g)}</span></button>
+      <div class="slist">${treeHTML(list, searching)}</div></section>`;
   }).join('');
   box.querySelectorAll('[data-s]').forEach(b => b.onclick = rowClick(b));
-  box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => {
-    if (mini()) return;            /* 帯のときは開閉しない。中身はフライアウトで見る */
-    const g = b.dataset.g;
-    grpOff.has(g) ? grpOff.delete(g) : grpOff.add(g);
-    LS.set('grp', [...grpOff]); buildRail();
-  });
   /* 帯のとき、カテゴリに乗せたらそのカテゴリの中身だけを右に出す */
   box.querySelectorAll('section').forEach(sec => {
     sec.addEventListener('mouseenter', () => { if (mini()) openFly(sec); });
@@ -2518,17 +2862,19 @@ if (window.ResizeObserver) new ResizeObserver(() => applyFit()).observe(document
 /* ---------- 右パネル ----------
    仕様と更新履歴の2表示。履歴は画面ごとに溜まり続けるので仕様の下には置かず、
    上部の「更新履歴」ボタンで右パネルごと切り替える。 */
-let inspView = 'spec';    /* 'spec' | 'log' */
+let inspView = 'spec';    /* 'spec' | 'log' | 'feedback'（右下の「フィードバック」から） */
 let logScope = 'screen';  /* 'screen'（いま見ている画面）｜ 'all'（資料全体） */
 
 function renderInsp(){
   const box = document.getElementById('insp');
-  box.innerHTML = inspView === 'log' ? logHTML() : specHTML();
+  box.innerHTML = inspView === 'log' ? logHTML() : inspView === 'feedback' ? fbHTML() : specHTML();
+  if (inspView === 'feedback'){ fbBind(box); return; }
   /* 画面へ飛ぶボタンは履歴の中にもある。飛んだ先ではまず仕様を見せる */
   box.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { inspView = 'spec'; go(b.dataset.go); });
   /* 仕様から開いたときは、まずその画面ぶんを出す（資料全体は中の切替で） */
   const toLog  = box.querySelector('[data-log]');  if (toLog)  toLog.onclick  = () => { logScope = 'screen'; setInspView('log'); };
   const toSpec = box.querySelector('[data-spec]'); if (toSpec) toSpec.onclick = () => setInspView('spec');
+  const toFbm  = box.querySelector('[data-fbman]'); if (toFbm) toFbm.onclick = () => openFbManage();
   box.querySelectorAll('[data-scope]').forEach(b => b.onclick = () => {
     logScope = b.dataset.scope; renderInsp(); box.scrollTop = 0;
   });
@@ -2543,10 +2889,170 @@ function renderInsp(){
 }
 /* 切り替えるときは、閉じてある／タブで隠れている右パネルを先に開く */
 function setInspView(v){
+  if (inspView === 'feedback' && v !== 'feedback') fbSend('close');   /* 枠の中のピン・場所選びも閉じる */
   inspView = v;
   if (narrow()) setTab('insp');
   renderInsp();
   document.getElementById('insp').scrollTop = 0;
+}
+
+/* ---------- フィードバック（右パネル） ----------
+   右下の「フィードバック」を押すと、枠の中の React に {nvideo:'feedback'} を送る。
+   React（FeedbackWidget）は枠の中では自分のパネルを出さず、中身を {nvideo:'fb-state'} で返してくるので、それを右パネルに描く。
+   保存・場所選び・画面上のピンは React が受け持ち、ここからは {nvideo:'fb', op} で頼むだけ（保存先は同じオリジンの localStorage）。
+   入力中の文字は FBF に持ち、fb-state が届いても入力欄は描き直さない（打っている途中で消えないように） */
+let FB = null;
+const FBF = {kind:'improvement', title:'', body:'', author:null, company:null, scope:'screen', manage:false};
+/* 右パネルの見出しの「フィードバック管理」（2026-09-28）。書く欄は出さず、この画面へのフィードバックだけを並べる。
+   中身は右下の「フィードバック」と同じく枠の中の React から fb-state でもらう */
+function openFbManage(){
+  const live = document.querySelector('#fit iframe.live');
+  if (!live || !live.contentWindow) return;
+  FBF.manage = true;
+  setInspView('feedback');
+  live.contentWindow.postMessage({nvideo:'feedback'}, '*');
+}
+const FB_KIND = [['bug','不具合','#fdecec','#c8322b'], ['improvement','改善案','#e6f5ec','#1E7A4C'], ['question','質問','#e8f1fd','#2f6fc4'], ['other','その他','#eeeeee','#666E6B']];
+const FB_STATUS = {open:['未対応','#e7f1fe','#2f7fd4'], investigating:['調査中','#fdefe0','#c2703a'], inProgress:['対応中','#ececec','#333333'],
+  waiting:['確認待ち','#f1ebfd','#7c4dcc'], done:['完了','#e6f4ec','#1E7A4C'], onHold:['保留','#f0f0f0','#808080']};
+const FB_COMPANY = [['nishihara','西原商会'], ['lanstech','ランステック']];
+const FB_PIN = '<svg class="fbpin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0113 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>';
+const FB_X = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const FB_CHECK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const FB_UNDO = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 010 11H11"/></svg>';
+const FB_TRASH = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 002 2h6a2 2 0 002-2l1-12M9 7V4h6v3"/></svg>';
+function fbSend(op, extra){
+  const live = document.querySelector('#fit iframe.live');
+  if (live && live.contentWindow) live.contentWindow.postMessage(Object.assign({nvideo:'fb', op}, extra || {}), '*');
+}
+window.addEventListener('message', e => {
+  const m = e.data;
+  if (!m || m.nvideo !== 'fb-state') return;
+  const live = document.querySelector('#fit iframe.live');
+  if (!live || e.source !== live.contentWindow) return;
+  if (!m.open){ FB = null; if (inspView === 'feedback'){ inspView = 'spec'; renderInsp(); } return; }
+  FB = m;
+  if (FBF.author === null) FBF.author = m.author || '';
+  if (FBF.company === null) FBF.company = m.company || 'nishihara';
+  if (inspView !== 'feedback') setInspView('feedback'); else fbPaint();
+});
+function fbHTML(){
+  if (FBF.manage) return `<div class="ih">
+    <div class="r1"><span class="id">${cur.id}</span>
+      <button type="button" class="pill loglink" data-fblog title="右パネルを更新履歴に切り替える">更新履歴</button>
+      <button type="button" class="pill fbmlink" data-fbclose aria-pressed="true"
+        title="フィードバック管理を閉じて、この画面の仕様に戻る">フィードバック管理</button></div>
+    <h3>フィードバック管理</h3>
+    <p class="fbmsub" id="fbmTarget">${esc(cur.name)}</p>
+  </div><div class="ib">${!FB ? `<p class="fbwait">読み込み中…</p>` : `<div class="fbls" id="fbList"></div>`}</div>`;
+  return `<div class="ih">
+    <div class="r1"><button type="button" class="pill back" data-fbclose title="フィードバックを閉じて、この画面の仕様に戻る">← この画面の仕様</button></div>
+    <h3>フィードバック</h3>
+  </div><div class="ib">${!FB ? `<p class="fbwait">読み込み中…</p>` : `
+    <div class="fbf">
+      <div class="fbtg" id="fbTarget"></div>
+      <div><span class="lb">場所 <span class="op">（省略可）</span></span><div id="fbSpot"></div></div>
+      <div><span class="lb">種類</span>
+        <div class="fbkinds" role="radiogroup" aria-label="フィードバックの種類">${FB_KIND.map(([k, n]) =>
+          `<button type="button" role="radio" data-kind="${k}" aria-checked="${FBF.kind === k}">${n}</button>`).join('')}</div></div>
+      <label><span class="lb">件名 <span class="rq">*</span></span>
+        <input class="fbin" id="fbTitle" type="text" placeholder="ひとことで言うと？" value="${esc(FBF.title)}"></label>
+      <label><span class="lb">内容 <span class="rq">*</span></span>
+        <textarea class="fbin" id="fbBody" rows="4" placeholder="気になったこと・直してほしいことを書いてください">${esc(FBF.body)}</textarea></label>
+      <div class="fbname"><span class="lb">名前</span>
+        <select class="fbin" id="fbCompany" aria-label="所属">${FB_COMPANY.map(([k, n]) => `<option value="${k}"${FBF.company === k ? ' selected' : ''}>${n}</option>`).join('')}</select>
+        <input class="fbin" id="fbAuthor" type="text" aria-label="名前" placeholder="未入力可" value="${esc(FBF.author || '')}"></div>
+      <button type="button" class="fbsend" id="fbSend">送信する</button>
+      <p class="fbok" id="fbOk" role="status" hidden>フィードバックを送信しました</p>
+    </div>
+    <div class="fbls" id="fbList"></div>`}
+  </div>`;
+}
+function fbBind(box){
+  box.querySelector('[data-fbclose]').onclick = () => setInspView('spec');
+  const toLog = box.querySelector('[data-fblog]'); if (toLog) toLog.onclick = () => { logScope = 'screen'; setInspView('log'); };
+  if (!FB) return;
+  if (FBF.manage){ fbPaint(); return; }
+  box.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => {
+    FBF.kind = b.dataset.kind; box.querySelectorAll('[data-kind]').forEach(x => x.setAttribute('aria-checked', String(x === b)));
+  });
+  const t = box.querySelector('#fbTitle'), bd = box.querySelector('#fbBody'), co = box.querySelector('#fbCompany'), au = box.querySelector('#fbAuthor');
+  t.oninput = () => { FBF.title = t.value; fbCanSend(); };
+  bd.oninput = () => { FBF.body = bd.value; fbCanSend(); };
+  co.onchange = () => { FBF.company = co.value; };
+  au.oninput = () => { FBF.author = au.value; };
+  const key = e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') fbSubmit(); };
+  t.onkeydown = key; bd.onkeydown = key;
+  box.querySelector('#fbSend').onclick = fbSubmit;
+  fbPaint();
+}
+const fbCanSend = () => { const b = document.getElementById('fbSend'); if (b) b.disabled = !(FBF.title.trim() && FBF.body.trim()); };
+let fbOkTimer = 0;
+function fbSubmit(){
+  if (!(FBF.title.trim() && FBF.body.trim())) return;
+  fbSend('submit', {kind:FBF.kind, title:FBF.title, body:FBF.body, author:FBF.author || '', company:FBF.company});
+  FBF.title = ''; FBF.body = '';
+  const t = document.getElementById('fbTitle'), bd = document.getElementById('fbBody'), ok = document.getElementById('fbOk');
+  if (t) t.value = ''; if (bd){ bd.value = ''; bd.focus(); }
+  fbCanSend();
+  if (ok){ ok.hidden = false; clearTimeout(fbOkTimer); fbOkTimer = setTimeout(() => { ok.hidden = true; }, 2500); }
+}
+/* 届いた中身で、入力欄以外（対象画面・場所・一覧）を描き直す */
+function fbPaint(){
+  if (inspView !== 'feedback' || !FB) return;
+  const tr = FB.trail || [];
+  if (FBF.manage){
+    if (!document.getElementById('fbList')){ renderInsp(); return; }   /* 読み込み中の表示から一覧へ */
+    document.getElementById('fbmTarget').textContent = tr.join(' › ') || cur.name;
+  } else {
+  const tg = document.getElementById('fbTarget');
+  if (!tg){ renderInsp(); return; }   /* 読み込み中の表示から入力欄のある表示へ */
+  tg.innerHTML = `<span class="k">対象画面</span><span class="v"><span class="tr">${esc(tr.slice(0, -1).join(' › '))}${tr.length > 1 ? ' › ' : ''}</span>${esc(tr[tr.length - 1] || '')}</span>`;
+  const sp = document.getElementById('fbSpot'), s = FB.spot;
+  sp.innerHTML = FB.picking
+    ? `<div class="fbspot ing"><div class="row">${FB_PIN}<span class="msg"><b>選択中</b> 左の画面で、気になる場所をクリックしてください</span>
+        <button type="button" class="fbmini" data-fb="unpick">中止</button></div>
+        ${s ? `<div class="now"><span class="k">今の場所</span><span class="t" title="${esc(s.display)}">${esc(s.display)}</span>
+          <button type="button" class="fbx" data-fb="clearSpot" aria-label="場所の選択を解除">${FB_X}</button></div>` : ''}</div>`
+    : s ? `<div class="fbspot">${FB_PIN}<span class="t" title="${esc(s.display)}">${esc(s.display)}</span>
+        <button type="button" class="fbmini ln" data-fb="pick">選び直す</button>
+        <button type="button" class="fbx" data-fb="clearSpot" aria-label="場所の選択を解除">${FB_X}</button></div>`
+    : FB.canPick ? `<button type="button" class="fbpick" data-fb="pick">${FB_PIN}画面上の場所を選ぶ</button>`
+    : `<p class="fbnote">この画面には場所を指定できません。場所を伝えたいときは本文に書いてください。</p>`;
+  sp.querySelectorAll('[data-fb]').forEach(b => b.onclick = () => fbSend(b.dataset.fb));
+  fbCanSend();
+  }
+  const ids = new Set(FB.screenIds || []), pins = new Map(FB.pins || []);
+  const all = FB.entries || [], mine = all.filter(x => ids.has(x.id));
+  const scope = FBF.manage ? 'screen' : FBF.scope;
+  const list = scope === 'screen' ? mine : all;
+  const chip = (bg, fg, tx) => `<span class="fbchip" style="background:${bg};color:${fg}">${esc(tx)}</span>`;
+  const ls = document.getElementById('fbList');
+  ls.innerHTML = `${FBF.manage ? '' : `<div class="fbseg" role="tablist" aria-label="一覧の範囲">
+      <button type="button" role="tab" data-fbscope="screen" aria-selected="${FBF.scope === 'screen'}">この画面<span class="n">${mine.length}</span></button>
+      <button type="button" role="tab" data-fbscope="all" aria-selected="${FBF.scope === 'all'}">すべて<span class="n">${all.length}</span></button></div>`}
+    ${!list.length ? `<p class="fbempty">${scope === 'screen' ? 'この画面へのフィードバックはまだありません。' : 'フィードバックはまだありません。'}</p>`
+    : `<ul class="fbcards">${list.map(x => {
+        const done = x.status === 'done', st = FB_STATUS[x.status] || FB_STATUS.open, kd = FB_KIND.find(k => k[0] === x.kind) || FB_KIND[3];
+        const n = ids.has(x.id) ? pins.get(x.id) : null;
+        return `<li class="fbcard${done ? ' done' : ''}${x.id === FB.activeId ? ' on' : ''}" data-fbid="${esc(x.id)}">
+          <div class="hd">${n ? `<span class="pn" title="画面上のピン番号">${n}</span>` : ''}<span class="no">No.${x.no}</span>
+            ${chip(st[1], st[2], st[0])}${chip(kd[2], kd[3], kd[1])}
+            ${scope === 'all' ? `<span class="sc" title="${esc(x.pathname)}">${esc(x.screenCategory)} › ${esc(x.screenTitle)}</span>` : ''}</div>
+          ${x.spotText ? `<div class="sp">${FB_PIN}<span title="${esc(x.spotText)}">${esc(x.spotText)}</span></div>` : ''}
+          <p class="h">${esc(x.headline)}</p>
+          ${x.detail ? `<p class="d">${esc(x.detail)}</p>` : ''}
+          <div class="ft"><span class="who">${esc([x.companyName, x.author, x.time].filter(Boolean).join(' '))}</span>
+            <button type="button" class="fbx${done ? ' ok' : ''}" data-fbtoggle="${esc(x.id)}" title="${done ? '未対応に戻す' : '対応済みにする'}" aria-label="${done ? '未対応に戻す' : '対応済みにする'}">${done ? FB_UNDO : FB_CHECK}</button>
+            <button type="button" class="fbx del" data-fbremove="${esc(x.id)}" title="削除する" aria-label="削除する">${FB_TRASH}</button></div></li>`;
+      }).join('')}</ul>`}
+    <p class="fbfoot">保存先はこのブラウザ（localStorage）です。ヘッダーの「フィードバック管理」にも並びます。</p>`;
+  ls.querySelectorAll('[data-fbscope]').forEach(b => b.onclick = () => { FBF.scope = b.dataset.fbscope; fbPaint(); });
+  ls.querySelectorAll('[data-fbtoggle]').forEach(b => b.onclick = () => fbSend('toggle', {id:b.dataset.fbtoggle}));
+  ls.querySelectorAll('[data-fbremove]').forEach(b => b.onclick = () => { if (confirm('このフィードバックを削除しますか？')) fbSend('remove', {id:b.dataset.fbremove}); });
+  /* 画面上のピンを押したら、その行が見えるところへ */
+  const on = ls.querySelector('.fbcard.on');
+  if (on){ const box = document.getElementById('insp'); box.scrollTop += on.getBoundingClientRect().top - box.getBoundingClientRect().top - 120; }
 }
 
 function specHTML(){
@@ -2556,7 +3062,9 @@ function specHTML(){
   let h = `<div class="ih">
     <div class="r1"><span class="id">${s.id}</span>
       <button type="button" class="pill loglink ${isFresh(s.id)?'g':''}" data-log
-        title="右パネルを更新履歴に切り替える">更新履歴</button></div>
+        title="右パネルを更新履歴に切り替える">更新履歴</button>
+      <button type="button" class="pill fbmlink" data-fbman aria-pressed="false"
+        title="右パネルを この画面へのフィードバックの一覧 に切り替える">フィードバック管理</button></div>
     <h3>${esc(s.name)}</h3>
   </div><div class="ib">`;
 
@@ -2565,7 +3073,7 @@ function specHTML(){
   const noSrc = x => (x || '').replace(/React 実装は[^。]*。/g, '').trim();
   const sub = noSrc(s.sub), note = noSrc(s.note);
   if (sub || note){
-    h += `<div class="sec"><h4>この画面のねらい</h4>`;
+    h += `<div class="sec"><h4>画面概要</h4>`;
     if (sub)  h += `<p class="lead top">${esc(sub)}</p>`;
     if (note) h += `<p class="lead">${esc(note)}</p>`;
     h += `</div>`;
@@ -2690,7 +3198,7 @@ const FNODE = {w:176, h:54, gx:92, gy:14, pad:26, top:22, lanePad:34, laneGap:16
 
 /* ---- 帳票ごとのフロー ------------------------------------------------------
    帳票の枝（M2-n・M3-n・M4-n・M5-n・A1-n。n は帳票の番号で、1 が使用水の点検）は
-   10 帳票ぶんあるので、選んだ 1 帳票だけを図に出す。骨組み（M0〜M15・A0〜A7）は共通。
+   10 帳票ぶんあるので、選んだ 1 帳票だけを図に出す。骨組み（M0〜M14・A0〜A7）は共通。
    使用水（n=1）のつながりは FLOW に手で書いてあるのでそのまま使う。
    他の 9 帳票は画面の数も並びも帳票ごとに違うので、画面名から「どこから来るか」を決めて組み立てる。
    -------------------------------------------------------------------------- */
@@ -3371,14 +3879,16 @@ function setView(v, opt){
   document.getElementById('flowview').hidden = v !== 'flow';
   document.getElementById('refview').hidden  = v !== 'ref';
   document.getElementById('relview').hidden  = v !== 'release';
+  document.getElementById('fbmview').hidden  = v !== 'feedback';
   document.querySelectorAll('.vsw [data-view]').forEach(b =>
     b.setAttribute('aria-pressed', String(b.dataset.view === v)));
   if (v === 'flow') renderFlow();
   if (v === 'ref')  renderRef();
   if (v === 'release') renderRelease();
+  if (v === 'feedback') renderFbManage();
   applyFit();     /* 枠の幅が変わるので、どの表示でも合わせ直す */
   if (!opt || !opt.fromHash){
-    const h = v === 'flow' ? '#flow' : v === 'ref' ? '#ref' : v === 'release' ? '#release' : '#' + cur.id;
+    const h = v === 'flow' ? '#flow' : v === 'ref' ? '#ref' : v === 'release' ? '#release' : v === 'feedback' ? '#feedback' : '#' + cur.id;
     if (location.hash !== h){ hashLock = true; location.hash = h; setTimeout(()=>{ hashLock = false; }, 0); }
   }
 }
@@ -3689,11 +4199,58 @@ function paintState(){
   /* 通常しか無い端末では出さない */
   const show = list.length > 1 && !!DEMO_HREF && !!cur.hash;
   stateWrap.hidden = !show; if (sep) sep.hidden = !show;
-  if (!show){ curState = ''; return; }
+  if (!show){ curState = ''; paintNvState(); return; }
   if (!list.some(x => x.key === curState)) curState = '';
   stateSel.innerHTML = list.map(x =>
     `<option value="${esc(x.key)}"${x.key === curState ? ' selected' : ''}>${esc(x.name)}</option>`).join('');
   stateWrap.classList.toggle('on', !!curState);
+  paintNvState();
+}
+/* 「状態」の ? で出す、それぞれの状態の説明。
+   「プロトタイプで開く」の先の右下（KitSwitch.tsx の STATE_HELP）に同じ文を写してあるので、直すときは両方直す */
+/* 1 つの状態につき「どんな時に出るか（一言）」と「表示文言」。texts は [出る場所, 文言]。文言は React の画面の文字そのまま */
+const STATE_HELP = {
+  app: {
+    '': { when: '見本データのまま動かしたいとき', texts: [] },
+    'empty': { when: '記録がまだ 1 件も無いとき', texts: [['記録の一覧', '確認待ちの記録はまだありません'], ['記録の一覧', '該当する点検はありません']] },
+    'off': { when: '通信できないとき', texts: [['ログイン画面', 'オフライン状態です。通信環境をご確認ください。'], ['提出したあとの上の帯', '未送信のデータがあります。送信ボタンを押してください。']] },
+    'unsent': { when: '送れていない記録が端末に残っているとき', texts: [['上の帯', '未送信のデータがあります。送信ボタンを押してください。']] },
+    'err': { when: '提出が送信に失敗したとき', texts: [['ポップアップ', '送信エラーが発生しました'], ['ポップアップ', '入力した内容は未送信のまま端末に保存されています。時間をおいて、もう一度送信してください。']] },
+    'session': { when: '一定時間さわらずにログアウトされたとき', texts: [['ポップアップ', 'セッションが終了しました'], ['ポップアップ', 'セキュリティ保護のため自動的にログアウトされました。再度ログインしてください。']] },
+  },
+  admin: {
+    '': { when: '見本データのまま動かしたいとき', texts: [] },
+    'empty': { when: '対象の記録が 1 件も無いとき', texts: [['確認・承認・データ検索の一覧', '該当するデータがありません'], ['承認申請管理', '対象の申請はありません']] },
+  },
+};
+const nvStQ = document.getElementById('nvStQ'), nvStTip = document.getElementById('nvStTip');
+function nvTip(o){ nvStTip.hidden = !o; nvStQ.setAttribute('aria-expanded', String(o)); if (o) nvTipShow(); }
+/* 開いたら「状態」の見出しがパネルのいちばん上に来るまで、パネルの中だけを送る。
+   scrollIntoView だと、吹き出しがパネルより高いとき下の端に合わせて上が切れ、ページごと動いてしまう */
+function nvTipShow(){
+  const p = document.getElementById('nvPanel'), h = document.querySelector('#nvStateSec .nvh');
+  p.scrollTop += h.getBoundingClientRect().top - p.getBoundingClientRect().top - 12;
+}
+nvStQ.addEventListener('click', e => { e.stopPropagation(); nvTip(nvStTip.hidden); });
+/* 吹き出しの外（パネルの中）を押したら閉じる。パネルの外を押したときはパネルごと閉じる */
+document.getElementById('nvPanel').addEventListener('click', e => { if (!e.target.closest('#nvStTip')) nvTip(false); });
+/* 右下の「状態」（2 列のボタン）とボタン横のいまの状態。
+   並びと中身は「プロトタイプで開く」の先の右下（React の KitSwitch.tsx）と同じにしてある。片方を直したらもう片方も直す */
+function paintNvState(){
+  const list = statesFor(cur.pf), sec = document.getElementById('nvStateSec'), grid = document.getElementById('nvState'), sb = document.getElementById('nvFabSb');
+  sec.hidden = sb.hidden = !(list.length > 1 && DEMO_HREF && cur.hash);
+  if (sec.hidden) return;
+  /* 押すと中身を組み直すので、押した要素が外れて「パネルの外を押した」と取られないよう、ここで止める */
+  const pick = e => { e.stopPropagation(); curState = e.currentTarget.dataset.st; paintState(); sendState(); };
+  grid.innerHTML = list.map(x => `<button type="button" class="nvit" data-st="${esc(x.key)}" aria-current="${x.key === curState}">
+    <span class="nvr"></span><span class="tx"><b class="t1">${esc(x.name)}</b></span></button>`).join('');
+  grid.querySelectorAll('[data-st]').forEach(b => b.onclick = pick);
+  sb.textContent = (list.find(x => x.key === curState) || list[0]).name;
+  const help = STATE_HELP[cur.pf] || {};
+  nvStTip.innerHTML = `<dl>${list.map(x => { const h = help[x.key] || {when:'未記入', texts:[]};
+    return `<div><dt>${esc(x.name)}</dt><dd>${esc(h.when)}</dd>${h.texts.length
+      ? h.texts.map(([at, t]) => `<dd class="q">表示文言（${esc(at)}）：「${esc(t)}」</dd>`).join('')
+      : `<dd class="q">表示文言：なし</dd>`}</div>`; }).join('')}</dl>`;
 }
 function sendState(){
   const fit = document.getElementById('fit'), live = fit.querySelector('iframe.live');
@@ -3842,7 +4399,7 @@ document.addEventListener('keydown', e => {
   if (e.key==='ArrowRight' || e.key==='j') step(1);
   else if (e.key==='ArrowLeft' || e.key==='k') step(-1);
   else if (e.key==='[') setRail(document.body.dataset.rail === '0');
-  else if (e.key==='Escape' && inspView==='log') setInspView('spec');
+  else if (e.key==='Escape' && (inspView==='log' || inspView==='feedback')) setInspView('spec');
   else if (e.key==='?') openHelp();
 });
 
@@ -3850,10 +4407,20 @@ document.addEventListener('keydown', e => {
 /* ---------- 右下の切替 ---------- */
 const nvSw=document.getElementById('nvSw'), nvFab=document.getElementById('nvFab'), nvPanel=document.getElementById('nvPanel');
 function nvOpen(v){ const o = v===undefined ? nvPanel.hidden : v;
-  nvPanel.hidden=!o; nvSw.classList.toggle('open',o); nvFab.setAttribute('aria-expanded',String(o)); }
+  nvPanel.hidden=!o; nvSw.classList.toggle('open',o); nvFab.setAttribute('aria-expanded',String(o)); if (!o) nvTip(false); }
 nvFab.addEventListener('click', e=>{ e.stopPropagation(); nvOpen(); });
+/* フィードバック：枠の中の React（frameBridge）に開くよう頼む。React は中身を fb-state で返し、それを右パネルに出す（fbPaint）。対象は枠に出ているいまの画面。
+   予備のプロトタイプ HTML には受け口が無いので、React が映っていないときは押せない */
+const nvFb = document.getElementById('nvFb');
+nvFb.addEventListener('click', () => {
+  const live = document.querySelector('#fit iframe.live');
+  if (!live || !live.contentWindow) return;
+  nvOpen(false); FBF.manage = false;
+  if (inspView === 'feedback') renderInsp();
+  live.contentWindow.postMessage({nvideo:'feedback'}, '*');
+});
 document.addEventListener('click', e=>{ if(!e.target.closest('#nvSw')) nvOpen(false); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !nvPanel.hidden){ e.stopPropagation(); nvOpen(false); } }, true);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !nvPanel.hidden){ e.stopPropagation(); if (!nvStTip.hidden) nvTip(false); else nvOpen(false); } }, true);
 
 /* ---------- 見出しと資料リンクは設定から作る ---------- */
 document.getElementById('pjTitle').textContent = [PROJECT.name, PROJECT.doc].filter(Boolean).join(' ');
@@ -3861,7 +4428,7 @@ document.title = [PROJECT.name, PROJECT.doc].filter(Boolean).join(' ');
 document.querySelector('.nvfab .lb').textContent = PROJECT.doc;
 document.getElementById('nvDocs').insertAdjacentHTML('beforeend', [
   PROJECT.asIs && [PROJECT.asIs.href, PROJECT.asIs.label, PROJECT.asIs.desc],
-  ['', PROJECT.doc, `全${SCREENS.length}画面と決めること`],
+  ['', PROJECT.doc, `画面ごとの仕様・画面のつながり・打合せで決めることをまとめた資料。全${SCREENS.length}画面`],
   PROJECT.demo && [PROJECT.demo.href, PROJECT.demo.label, PROJECT.demo.desc],
 ].filter(Boolean).map(([href, label, desc]) => {
   const inner = `<span class="nvr"></span><span class="tx"><b class="t1">${esc(label)}</b><span class="t2">${esc(desc)}</span></span>`;
@@ -3876,8 +4443,9 @@ function paintRole(){
   if (!sec || !box) return;
   sec.hidden = !(ROLE_LIST.length && DEMO_HREF);
   box.innerHTML = ROLE_LIST.map(r => `<button type="button" class="nvit" data-role="${esc(r.key)}" aria-current="${r.key === roleNow()}">
-    <span class="nvr"></span><span class="tx"><b class="t1">${esc(r.name)}</b><span class="t2">${esc(r.desc)}</span></span></button>`).join('');
-  box.querySelectorAll('[data-role]').forEach(b => b.onclick = () => {
+    <span class="nvr"></span><span class="tx"><b class="t1">${esc(r.name)}</b></span></button>`).join('');   /* 2 列。説明（desc）は出さない */
+  box.querySelectorAll('[data-role]').forEach(b => b.onclick = e => {
+    e.stopPropagation();   /* 描き直すと押した要素が外れ、「パネルの外を押した」と取られて閉じてしまうため */
     curRole = b.dataset.role; LS.set('role', curRole); paintRole();
     if (cur.pf === 'admin') sendState();   /* アプリの画面を見ているときは、次に管理画面を開いたときに効く */
   });
@@ -3922,17 +4490,95 @@ function renderRelease(){
   });
 }
 
+/* ---------- フィードバック管理（ヘッダーのタブ、#feedback） ----------
+   全画面のフィードバックを新しい順に並べる。React（FeedbackWidget）と同じオリジンなので、
+   保存先の localStorage（nq_feedback_v1）を直に読み書きする。枠の中の React には storage イベントで伝わる。
+   形は React の src/components/feedback/feedbackStore.ts と同じ（番号の振り方・ステータスの値も合わせる） */
+const FBM_KEY = 'nq_feedback_v1';
+const FBM = {status:'all', kind:'all', q:''};
+function fbmLoad(){
+  let list = [];
+  try{ list = JSON.parse(localStorage.getItem(FBM_KEY) || '[]'); }catch(e){}
+  if (!Array.isArray(list)) return [];
+  const old = [...list].sort((a, b) => a.createdAt - b.createdAt);
+  let next = old.reduce((m, e) => Math.max(m, typeof e.no === 'number' ? e.no : 0), 0);
+  const no = new Map(old.map(e => [e.id, typeof e.no === 'number' ? e.no : ++next]));
+  return list.map(e => Object.assign({}, e, {no:no.get(e.id), status: FB_STATUS[e.status] ? e.status : 'open', comments: Array.isArray(e.comments) ? e.comments : []}));
+}
+function fbmSave(list){ try{ localStorage.setItem(FBM_KEY, JSON.stringify(list)); }catch(e){} }
+const fbmHead = x => (x.title || '').trim() || (x.body || '').split('\n').find(l => l.trim())?.trim() || '(内容なし)';
+const fbmBody = x => { if ((x.title || '').trim()) return (x.body || '').trim(); const ls = (x.body || '').split('\n'); const i = ls.findIndex(l => l.trim()); return ls.slice(i + 1).join('\n').trim(); };
+const fbmTime = at => { const d = new Date(at), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+const fbmCo = k => (FB_COMPANY.find(c => c[0] === k) || [])[1] || '';
+/* 書いた画面の URL（/admin/data-search など）から画面設計の画面IDを引く */
+const fbmScreen = path => { const h = (path || '').replace(/^\//, ''); return ((HASH2ID_AUTO.find(([re]) => re.test(h)) || HASH2ID.find(([re]) => re.test(h))) || [])[1] || ''; };
+function renderFbManage(){
+  const box = document.getElementById('fbmview');
+  const all = fbmLoad().sort((a, b) => b.createdAt - a.createdAt);
+  const q = FBM.q.trim().toLowerCase();
+  const list = all.filter(x => (FBM.status === 'all' || x.status === FBM.status) && (FBM.kind === 'all' || x.kind === FBM.kind)
+    && (!q || [x.title, x.body, x.author, x.screenTitle, x.screenCategory, 'no.' + x.no].join(' ').toLowerCase().includes(q)));
+  const cnt = k => all.filter(x => x.status === k).length;
+  const chip = (bg, fg, tx) => `<span class="fbchip" style="background:${bg};color:${fg}">${esc(tx)}</span>`;
+  const keep = document.activeElement && document.activeElement.id === 'fbmQ';
+  const kcnt = k => all.filter(x => x.kind === k).length;
+  const item = (attr, key, on, dot, label, n) => `<li><button type="button" ${attr}="${key}" aria-pressed="${on}">${dot ? `<i style="background:${dot}"></i>` : ''}${esc(label)}<span class="n">${n}</span></button></li>`;
+  box.innerHTML = `<div class="fbmgrid">
+    <aside class="fbmside" aria-label="絞り込み">
+      <input type="search" id="fbmQ" placeholder="件名・内容・名前・画面名で検索" value="${esc(FBM.q)}" aria-label="キーワードで絞る">
+      <div><h4>対応状況</h4><ul>
+        ${item('data-fbmst', 'all', FBM.status === 'all', '', 'すべて', all.length)}
+        ${Object.entries(FB_STATUS).map(([k, v]) => item('data-fbmst', k, FBM.status === k, v[2], v[0], cnt(k))).join('')}</ul></div>
+      <div><h4>種類</h4><ul>
+        ${item('data-fbmkd', 'all', FBM.kind === 'all', '', 'すべて', all.length)}
+        ${FB_KIND.map(([k, n, , fg]) => item('data-fbmkd', k, FBM.kind === k, fg, n, kcnt(k))).join('')}</ul></div>
+    </aside>
+    <div class="fbmmain"><h2>フィードバック管理</h2>
+      <p class="fbmcnt">${list.length} 件</p>
+      ${!list.length ? `<p class="fbempty">${all.length ? '条件に合うフィードバックはありません。' : 'フィードバックはまだありません。'}</p>`
+      : `<ul class="fbcards">${list.map(x => {
+          const st = FB_STATUS[x.status], kd = FB_KIND.find(k => k[0] === x.kind) || FB_KIND[3], sid = fbmScreen(x.pathname), d = fbmBody(x);
+          return `<li class="fbcard${x.status === 'done' ? ' done' : ''}">
+            <div class="hd"><span class="no">No.${x.no}</span>${chip(st[1], st[2], st[0])}${chip(kd[2], kd[3], kd[1])}
+              <span class="sc" title="${esc(x.pathname)}">${sid ? `<button type="button" data-fbmgo="${sid}" title="${esc(sid)} を画面設計で開く">${esc(sid)} ${esc(x.screenCategory)} › ${esc(x.screenTitle)}</button>` : `${esc(x.screenCategory)} › ${esc(x.screenTitle)}`}</span></div>
+            ${x.spot ? `<div class="sp">${FB_PIN}<span>${esc(x.spot.text ? '「' + x.spot.text + '」' : '選択した場所')}</span></div>` : ''}
+            <p class="h">${esc(fbmHead(x))}</p>
+            ${d ? `<p class="d">${esc(d)}</p>` : ''}
+            ${x.comments.length ? `<ul class="cm">${x.comments.map(c => `<li><span class="w">${esc([fbmCo(c.company), c.author, fbmTime(c.createdAt)].filter(Boolean).join(' '))}</span>${esc(c.body)}</li>`).join('')}</ul>` : ''}
+            <div class="ft"><span class="who">${esc([fbmCo(x.company), x.author, fbmTime(x.createdAt)].filter(Boolean).join(' '))}</span>
+              <select data-fbmset="${esc(x.id)}" aria-label="対応状況を変える">${Object.entries(FB_STATUS).map(([k, v]) => `<option value="${k}"${x.status === k ? ' selected' : ''}>${v[0]}</option>`).join('')}</select>
+              <button type="button" class="fbx del" data-fbmdel="${esc(x.id)}" title="削除する" aria-label="削除する">${FB_TRASH}</button></div></li>`;
+        }).join('')}</ul>`}
+    </div></div>`;
+  box.querySelectorAll('[data-fbmst]').forEach(b => b.onclick = () => { FBM.status = b.dataset.fbmst; renderFbManage(); });
+  box.querySelectorAll('[data-fbmkd]').forEach(b => b.onclick = () => { FBM.kind = b.dataset.fbmkd; renderFbManage(); });
+  const qi = box.querySelector('#fbmQ');
+  qi.oninput = () => { FBM.q = qi.value; renderFbManage(); };
+  if (keep){ qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
+  box.querySelectorAll('[data-fbmgo]').forEach(b => b.onclick = () => { setView('screen'); go(b.dataset.fbmgo); });
+  const edit = (id, f) => { let raw = []; try{ raw = JSON.parse(localStorage.getItem(FBM_KEY) || '[]'); }catch(e){} fbmSave(f(raw, id)); renderFbManage(); };
+  box.querySelectorAll('[data-fbmset]').forEach(sel => sel.onchange = () =>
+    edit(sel.dataset.fbmset, (raw, id) => raw.map(e => e.id === id ? Object.assign({}, e, {status:sel.value, updatedAt:Date.now()}) : e)));
+  box.querySelectorAll('[data-fbmdel]').forEach(b => b.onclick = () => {
+    if (confirm('このフィードバックを削除しますか？')) edit(b.dataset.fbmdel, (raw, id) => raw.filter(e => e.id !== id));
+  });
+}
+/* 枠の中（React）で書いた・直したときも一覧を合わせる */
+window.addEventListener('storage', e => { if (e.key === FBM_KEY && view === 'feedback') renderFbManage(); });
+
 /* ---------- 起動 ---------- */
 const rawHash = () => { try{ return decodeURIComponent(location.hash.replace(/^#/, '')); }catch(e){ return ''; } };
 const hashId = () => rawHash().toUpperCase();
 const isFlowHash = () => rawHash().toLowerCase() === 'flow';
 const isRefHash  = () => rawHash().toLowerCase() === 'ref';
 const isRelHash  = () => rawHash().toLowerCase() === 'release';
+const isFbmHash  = () => rawHash().toLowerCase() === 'feedback';
 window.addEventListener('hashchange', () => {
   if (hashLock) return;
   if (isFlowHash()){ setView('flow', {fromHash:true}); return; }
   if (isRefHash()){ setView('ref', {fromHash:true}); return; }
   if (isRelHash()){ setView('release', {fromHash:true}); return; }
+  if (isFbmHash()){ setView('feedback', {fromHash:true}); return; }
   const id = hashId();
   if (!IDX[id]) return;
   if (view !== 'screen') setView('screen', {fromHash:true});
@@ -3954,9 +4600,9 @@ function takeReturn(){
 takeReturn();
 pickDemo().then(() => {
   go(IDX[hashId()] ? hashId() : SCREENS[0].id, {fromHash:true});
-  setView(isFlowHash() ? 'flow' : isRefHash() ? 'ref' : isRelHash() ? 'release' : 'screen', {fromHash:true});
+  setView(isFlowHash() ? 'flow' : isRefHash() ? 'ref' : isRelHash() ? 'release' : isFbmHash() ? 'feedback' : 'screen', {fromHash:true});
   /* 起動時に hash が無ければ、いまの画面を書いておく（次のリロードで戻れる） */
-  if (!IDX[hashId()] && !isFlowHash() && !isRefHash() && !isRelHash()){ try{ history.replaceState(null, '', '#' + cur.id); }catch(e){} }
+  if (!IDX[hashId()] && !isFlowHash() && !isRefHash() && !isRelHash() && !isFbmHash()){ try{ history.replaceState(null, '', '#' + cur.id); }catch(e){} }
 });
 </script>
 

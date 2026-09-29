@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getDemoTrial, setDemoTrial, type DemoTrial } from "./components/demo/demoStore";
 import { saveCurrentRole, type PrototypeRoleId } from "./data/roleStore";
+import { openFeedbackPanel } from "./components/feedback/feedbackStore";
 
 /** 画面設計の「プロトタイプで開く」から来たときに、画面設計から受け取った資料名などを置く。あれば右下は KitSwitch になる */
 export const KIT_INFO_KEY = "nq_kit_info";
@@ -40,7 +41,16 @@ const FLAG_TRIAL: Record<string, DemoTrial> = {
 
 /** 画面設計で「未送信の記録がある」を選んでいるか。AppLayout が見て、どの画面でも上に「未送信のデータがあります」の帯を出す
  *  （プロトタイプ HTML の S.app.unsent と同じ）。親から状態が届くたびに KIT_FLAGS_EVENT で知らせる */
-let kitUnsent = false;
+const KIT_UNSENT_KEY = "nq_kit_unsent";
+let kitUnsent = (() => {
+  // 「プロトタイプで開く」のタブでは右下の「状態」から選ぶので、リロードしても残す（枠の中は毎回きれいな状態から）
+  if (FRAME) return false;
+  try {
+    return sessionStorage.getItem(KIT_UNSENT_KEY) === "1";
+  } catch {
+    return false;
+  }
+})();
 export const KIT_FLAGS_EVENT = "nq-kit-flags";
 export const getKitUnsent = () => kitUnsent;
 const ROLES: PrototypeRoleId[] = ["approver_checker", "approver", "checker", "administrator"];
@@ -54,7 +64,25 @@ function applyFlags(flags: Record<string, unknown>) {
   const role = flags.role;
   if (typeof role === "string" && (ROLES as string[]).includes(role)) saveCurrentRole(role as PrototypeRoleId);
   kitUnsent = !!flags.unsent && flags.unsent !== "0";
+  if (!FRAME) {
+    try {
+      if (kitUnsent) sessionStorage.setItem(KIT_UNSENT_KEY, "1");
+      else sessionStorage.removeItem(KIT_UNSENT_KEY);
+    } catch {
+      /* 無視 */
+    }
+  }
   window.dispatchEvent(new CustomEvent(KIT_FLAGS_EVENT));
+}
+
+/** 画面設計の状態のキー（''／empty／off／unsent／err／session）。「プロトタイプで開く」のタブの右下「状態」が使う */
+export function getKitState(): string {
+  if (kitUnsent) return "unsent";
+  const t = getDemoTrial();
+  return (t && Object.keys(FLAG_TRIAL).find((k) => FLAG_TRIAL[k] === t)) || "";
+}
+export function setKitState(key: string) {
+  applyFlags(key ? { [key]: 1 } : {});
 }
 
 function postLoc(pathname: string) {
@@ -154,6 +182,8 @@ export function FrameBridge() {
     if (!FRAME) return;
     const onMessage = (e: MessageEvent) => {
       const m = e.data as { nvideo?: string; hash?: unknown; flags?: Record<string, unknown> } | null;
+      // 画面設計の右下 › フィードバック。枠の中のいまの画面を対象にパネルを開く
+      if (m && m.nvideo === "feedback") return openFeedbackPanel();
       if (!m || m.nvideo !== "go" || typeof m.hash !== "string") return;
       applyFlags(m.flags || {});
       const to = "/" + m.hash.replace(/^\//, "");

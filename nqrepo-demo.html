@@ -302,7 +302,7 @@ html.frame .nvsw{display:none}
    <div class="nvbody">
     <div class="nvsec"><p class="nvh">資料</p>
       <div class="nvgrid c3">
-        <a class="nvit" href="nqrepo-screen-design.html" aria-current="false" title="全画面と決めること"><span class="tx"><b class="t1">画面設計</b></span></a>
+        <a class="nvit" href="nqrepo-screen-design.html" aria-current="false" title="画面ごとの仕様・画面のつながり・打合せで決めることをまとめた資料"><span class="tx"><b class="t1">画面設計</b></span></a>
         <a class="nvit" href="nqrepo-demo.html" aria-current="true" title="触って動かせる"><span class="tx"><b class="t1">プロトタイプ</b></span></a>
       </div></div>
     <div class="nvsec"><p class="nvh">画面</p>
@@ -3207,9 +3207,9 @@ function kitSync(){
   const back = 'nqrepo-screen-design.html?' + new URLSearchParams(Object.assign({role:S.role}, st ? {state:st} : {})) + '#' + locHash();
   const it = (t1, t2, cur, attr) => `<${attr ? attr : 'span'} class="nvit" aria-current="${cur}"><span class="nvr"></span><span class="tx"><b class="t1">${esc(t1)}</b><span class="t2">${esc(t2)}</span></span></${attr ? attr.split(' ')[0] : 'span'}>`;
   document.querySelector('#nvPanel .nvbody').innerHTML =
-    `<div class="nvsec"><p class="nvh">資料</p>${it(KIT.doc, KIT.n ? `全${KIT.n}画面と決めること` : '全画面と決めること', false, `a href="${esc(back)}"`)}${it(KIT.demo, KIT.demoDesc, true)}</div>
-     <div class="nvsec"><p class="nvh">権限（管理画面のロール）</p><div>${KIT_ROLES.map(([k,n,d]) => it(n, d, S.role===k, `button type="button" onclick="event.stopPropagation();setRole('${k}')"`)).join('')}</div></div>`;
-  document.querySelector('#nvPanel .nvfoot').innerHTML = '<span class="nvkey" style="margin-left:0"><b>Esc</b> で閉じる</span>';
+    `<div class="nvsec"><p class="nvh">資料</p>${it(KIT.doc, KIT.n ? `画面ごとの仕様・画面のつながり・打合せで決めることをまとめた資料。全${KIT.n}画面` : '画面ごとの仕様・画面のつながり・打合せで決めることをまとめた資料', false, `a href="${esc(back)}"`)}${it(KIT.demo, KIT.demoDesc, true)}</div>
+     <div class="nvsec"><p class="nvh">権限</p><div>${KIT_ROLES.map(([k,n,d]) => it(n, d, S.role===k, `button type="button" onclick="event.stopPropagation();setRole('${k}')"`)).join('')}</div></div>`;
+  document.querySelector('#nvPanel .nvfoot').style.display = 'none';   /* 画面設計から来たときは足元に出すものが無い（display:flex なので hidden は効かない） */
   document.getElementById('nvX').hidden = true;
   document.querySelector('.nvfab .lb').textContent = KIT.demo;
   const sb = document.getElementById('nvSub'); if (sb) sb.remove();
