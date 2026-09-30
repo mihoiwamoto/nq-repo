@@ -1,10 +1,13 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import type { ApprovalStatus } from "../../data/approvals";
 import type { GlassPlasticRecord } from "./types";
 import { glassPlasticRecords } from "./mockRecords";
+import { CURRENT_ACCOUNT } from "../account/mockData";
 
 type RecordsContextValue = {
   records: GlassPlasticRecord[];
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
   addComment: (id: string, comment: string) => void;
 };
 
@@ -16,8 +19,28 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
   const value = useMemo<RecordsContextValue>(
     () => ({
       records,
-      addComment: (id, comment) => {
-        setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, comment } : r)));
+      setApprovalStatus: (id, status) => {
+        setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, approvalStatus: status } : r)));
+      },
+      addComment: (id, text) => {
+        setRecords((prev) =>
+          prev.map((r) =>
+            r.id === id
+              ? {
+                  ...r,
+                  comments: [
+                    ...(r.comments ?? []),
+                    {
+                      id: `${id}-${Date.now()}`,
+                      author: CURRENT_ACCOUNT.name,
+                      timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                      text,
+                    },
+                  ],
+                }
+              : r
+          )
+        );
       },
     }),
     [records]

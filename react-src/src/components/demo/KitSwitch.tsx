@@ -33,12 +33,6 @@ const ROLES: { key: PrototypeRoleId; name: string; desc: string }[] = [
     name: "承認者",
     desc: "確認者が確認した確認済みの帳票を承認する",
   },
-  { key: "checker", name: "確認者", desc: "実施者が提出した帳票を確認する" },
-  {
-    key: "approver_checker",
-    name: "承認者・確認者兼任",
-    desc: "確認と承認の両方を行う",
-  },
 ];
 /** 状態。画面設計の PROJECT.screenStates と同じキー・名前・並び・端末 */
 const STATES: { key: string; name: string; pf: ("admin" | "app")[] }[] = [
@@ -317,7 +311,7 @@ export function KitSwitch() {
             <span className="tx">
               <b className="t1">{info.doc}</b>
               <span className="t2">
-                {info.n ? `画面ごとの仕様・画面のつながり・打合せで決めることをまとめた資料。全${info.n}画面` : "画面ごとの仕様・画面のつながり・打合せで決めることをまとめた資料"}
+                {info.n ? `画面ごとの仕様・画面のつながりをまとめた資料。全${info.n}画面` : "画面ごとの仕様・画面のつながりをまとめた資料"}
               </span>
             </span>
           </a>

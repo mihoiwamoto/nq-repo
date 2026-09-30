@@ -89,8 +89,13 @@ const searchList = (ledger: string, columns: string, extra: string[] = []): Scre
 
 /** データ検索の詳細 */
 const searchDetail = (ledger: string, fields: string, extra: string[] = []): ScreenDescription => ({
-  summary: `${ledger}の記録 1 件の内容を確認する画面です（データ検索）。閲覧専用です。`,
-  points: [`実施日・実施者・確認者と、${fields}を表示`, ...extra, "コメント欄で、確認・承認時のやり取りを読める"],
+  summary: `${ledger}の記録 1 件の内容を確認する画面です（データ検索）。承認申請管理の詳細と同じ画面です。`,
+  points: [
+    `実施日・実施者・確認者と、${fields}を表示`,
+    ...extra,
+    "承認待ちのときは右上のステータスから承認・差し戻しができる",
+    "コメントを読み、書き足せる",
+  ],
 });
 
 /** 承認申請管理の一覧 */
@@ -150,7 +155,7 @@ const complete = (what: string, back: string): ScreenDescription => ({
 const appConfirm = (ledger: string, fields: string, extra: string[] = []): ScreenDescription => ({
   summary: `${ledger}で入力した内容を、提出する前に見直す画面です。`,
   points: [`実施日・実施者と、${fields}を一覧で確認する`, ...extra, "間違いがあれば戻って修正する", "「提出」で確認者に送る"],
-  note: "提出した帳票は「進捗」で状態を追え、確認者側では確認管理に表示されます。",
+  note: "提出した帳票は「進捗」で状態を追えます。",
 });
 
 /** アプリの「提出完了」画面 */
@@ -185,7 +190,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/login/AdminLoginPage.tsx": {
     summary: "管理画面にログインする画面です。職員ごとの社員番号とパスワードで入ります。",
     points: ["社員番号とパスワードを入力して「ログイン」", "パスワードは目のアイコンで表示・非表示を切り替えられる", "一致しないときはエラー文が出る"],
-    note: "ログイン後は権限（管理者・承認者・確認者）に応じてサイドメニューの項目が変わります。",
+    note: "ログイン後は権限（管理者・承認者）に応じてサイドメニューの項目が変わります。",
   },
   "src/admin/features/login/LogoutCompletePage.tsx": {
     summary: "管理画面からログアウトしたことを知らせる画面です。",
@@ -196,7 +201,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     points: [
       "名前・社員番号・企業・工場・権限・メールアドレスを表示",
       "パスワード変更・メールアドレス変更へ進む",
-      "プロトタイプ用に権限（管理者・承認者・確認者・兼任）を切り替えて、メニューや操作の違いを試せる",
+      "プロトタイプ用に権限（管理者・承認者）を切り替えて、メニューや操作の違いを試せる",
     ],
   },
   "src/admin/features/account/PasswordChangePage.tsx": {
@@ -214,7 +219,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/pages/AdminHomePage.tsx": {
     summary: "管理画面のホームです。主な機能への入口が、それぞれの説明付きでカードとして並びます。",
     points: [
-      "データ検索・承認申請管理・確認管理・帳票管理の各カードから作業に入る",
+      "データ検索・承認申請管理・帳票管理の各カードから作業に入る",
       "企業・工場・職員・ログ・ログイン端末の管理へも進める",
       "権限によって表示されるカードが変わる",
     ],
@@ -334,7 +339,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/factory-management/FactoryListPage.tsx": {
     summary: "工場管理の一覧です。帳票の対象になる工場を登録・編集・削除します。",
     points: ["工場名で検索する", "一覧に工場名・住所・企業名が並ぶ", "操作列から詳細へ、「新規登録」で追加"],
-    note: "帳票管理・確認管理・データ検索の「工場選択」に並ぶのは、ここで登録した工場です。",
+    note: "帳票管理・データ検索の「工場選択」に並ぶのは、ここで登録した工場です。",
   },
   "src/admin/features/factory-management/FactoryDetailPage.tsx": {
     summary: "工場 1 件の詳細です。所属企業や、アプリのログインに使う工場 ID・パスワードの登録状況、休業日を確認できます。",
@@ -633,43 +638,74 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/equipment-inspection/LineSelectionPage.tsx": {
     summary: "機械器具点検の持ち場/ライン（豆乳ラインなど）を工場ごとに一覧する画面です。点検の事前準備（確認項目の設定・点検予定）への入口もここにあります。",
     points: [
-      "毎日・毎週・毎月・毎年の点検頻度タブで切り替える",
-      "「アプリ表示中」「アプリ非表示」で今アプリに出ているかを見分ける",
-      "ラインを押して詳細へ、「新規登録」で追加",
-      "「確認項目の設定」「点検予定」へ進む",
+      "上の「点検の事前準備」から、日ごとに点検する持ち場/ラインを組む「点検予定」と、毎回確かめる共通の確認内容を登録する「確認項目の設定」へ進む",
+      "「アプリ表示中」「アプリ非表示」のタブで、今日がアプリ表示期間に入っているか（期間の指定が無ければ常に表示中）で分けて見る",
+      "毎日・毎週・毎月・毎年の点検頻度タブで、その頻度で登録した持ち場/ラインだけに絞る（初期は「毎日」）",
+      "持ち場/ラインのカードを押して、点検箇所と点検項目の詳細へ",
+      "「+ 新規登録」で持ち場/ラインを足す。点検箇所（機械）と点検項目もその場で組む",
+      "条件に合うものが無いときは「該当する持ち場/ラインがありません」と出る",
     ],
+    note: "ここで「アプリ表示中」の持ち場/ラインが、点検予定に組んだ日にアプリの「機械器具点検」の同じ頻度のタブに並びます。",
   },
   "src/admin/features/equipment-inspection/LineDetailPage.tsx": {
-    summary: "持ち場/ライン 1 件の詳細です。点検箇所と点検項目、点検頻度、アプリ表示期間を確認します。",
-    points: ["持ち場/ライン名・点検頻度・アプリ表示期間を表示", "点検箇所ごとの点検項目を一覧", "「編集」でフォームへ、「削除」で削除"],
+    summary: "持ち場/ライン 1 件の詳細です。アプリ表示期間・点検頻度と、点検箇所（機械）ごとの点検項目を確認します。",
+    points: [
+      "アプリ表示期間を「開始日〜終了日」で表示。指定が無ければ「指定なし（常に表示）」",
+      "持ち場/ライン名と点検頻度（毎日・毎週・毎月・毎年）を表示",
+      "点検箇所ごとに、その下の点検項目を並べる。点検箇所が無ければ「点検箇所は登録されていません」",
+      "見るだけの画面で、編集・削除のボタンはまだ無い",
+    ],
   },
+
   "src/admin/features/equipment-inspection/LineRegistrationPage.tsx": {
     summary: "持ち場/ラインを新しく登録する画面です。点検箇所（機械）とその点検項目をここで組みます。",
-    points: ["必須: 持ち場/ライン名・点検箇所", "任意: アプリ表示期間・点検頻度", "点検箇所の追加・削除、箇所ごとの点検項目の追加ができる"],
+    points: [
+      "アプリ表示期間（任意）を開始日〜終了日で入れる。指定が無ければ常にアプリに出る",
+      "持ち場/ライン名（必須）と点検頻度（毎日・毎週・毎月・毎年、初期は毎日）を決める",
+      "点検箇所（例：エコスター）の下に点検項目（例：定量部）を「+ 追加」で並べ、「+ 点検の追加」で点検箇所を増やす",
+      "2 つ目以降の点検箇所は ✕ で外せる。空の欄は登録しない",
+      "持ち場/ライン名か 1 つ目の点検箇所が空だと「持ち場/ライン名と点検箇所は必須です」",
+    ],
   },
+
   "src/admin/features/equipment-inspection/LineRegistrationCompletePage.tsx": complete("持ち場/ラインの登録", "持ち場/ラインの一覧"),
   "src/admin/features/equipment-inspection/ChecklistSettingsPage.tsx": {
     summary: "機械器具点検の「確認項目の設定」です。アプリの点検で毎回確認する共通の確認内容を編集します。",
-    points: ["確認内容の追加・編集・削除", "「保存」で確定"],
+    points: [
+      "確認内容を 1 行ずつ書き換える。「+ 行追加」で行を足す",
+      "行のごみ箱を押すと確認のポップアップが出て、「削除」でその行を消す（すぐに保存され、削除完了へ）",
+      "「保存」で空の行を除いて保存し、点検予定へ移る",
+    ],
+    note: "ここの確認内容は、アプリの記録入力の上に【確認項目】としてそのまま並びます。",
   },
+
   "src/admin/features/equipment-inspection/ChecklistDeleteCompletePage.tsx": complete("確認項目の削除", "確認項目の設定"),
   "src/admin/features/equipment-inspection/CalendarPage.tsx": {
     summary: "機械器具点検の点検予定カレンダーです。どの日にどの持ち場/ラインを点検するかを月表示で確認・編集します。",
-    points: ["月を切り替えて予定を見る", "日付を押して予定の登録へ", "登録済みの予定は「編集」「削除」ができる"],
-    note: "ここで登録した予定が、アプリの点検予定に反映されます。",
+    points: [
+      "前の月・次の月で切り替える。予定のある日には印が付く",
+      "日付を押すと、その日に点検する持ち場/ラインが【頻度】付きで下に並ぶ",
+      "「編集」でその日の予定を直す。︙ から「この内容を複製して登録」「削除」",
+      "「+ 新規登録」で日付を決めて予定を足す",
+    ],
+    note: "ここで登録した予定が、アプリの機械器具点検の一覧に並びます。繰り返しの設定は無いので、点検する日ごとに登録します。",
   },
+
   "src/admin/features/equipment-inspection/NewRegistrationPage.tsx": {
     summary: "機械器具点検の点検予定を 1 件登録・編集する画面です。",
-    points: ["必須: 点検日・持ち場/ライン", "点検頻度（毎日・毎週・毎月・毎年）を選ぶ", "「登録」または「保存」で確定、「削除」で予定を消す"],
-    states: [
-      {
-        whenHeading: "持ち場/ライン名",
-        label: "持ち場/ライン名の選択",
-        summary: "点検する持ち場/ラインを選ぶポップアップです。登録済みの持ち場/ラインから探して選びます。",
-        points: ["持ち場/ライン名を入力して探す", "一覧から押して選ぶ", "「追加」で対象に加える", "「閉じる」で選ばずに戻る"],
-      },
+    points: [
+      "点検日を選び、「+ 追加」で点検する持ち場/ラインを選ぶ",
+      "選んだ持ち場/ラインは【頻度】付きで並び、ごみ箱で外せる",
+      "点検日か持ち場/ラインが空だと「点検日と持ち場/ラインは必須です」",
+      "予定のある日を開くと「点検予定の編集」になり、「保存」でカレンダーへ戻る",
     ],
+    states: [{
+      label: "持ち場/ライン名の選択",
+      summary: "点検する持ち場/ラインを選ぶポップアップです。登録済みの持ち場/ラインから探して選びます。",
+      points: ["持ち場/ライン名を入力して探す", "毎日・毎週・毎月・毎年のタブで切り替える（初期は毎週）", "チェックを付けて「追加」で対象に加える", "「閉じる」で選ばずに戻る"],
+    }],
   },
+
   "src/admin/features/equipment-inspection/ScheduleRegistrationCompletePage.tsx": complete("点検予定の登録", "点検予定カレンダー"),
 
   /* ===== 管理画面: 帳票管理 › 清掃記録 (Ver.4.0) ===== */
@@ -848,8 +884,8 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/data-search-sensory-inspection/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "官能検査記録", "データ一覧"),
   "src/admin/features/data-search-sensory-inspection/DataListPage.tsx": searchList("官能検査記録", "日付・検査製品名・検査結果・確認者"),
   "src/admin/features/data-search-sensory-inspection/RecordDetailPage.tsx": {
-    summary: "官能検査記録 1 件の点数一覧です（データ検索）。実施者ごとの点数と検査結果を振り返ります。閲覧専用です。",
-    points: ["検査製品名・製造日・賞味期限を表示", "実施者ごとの点数（5 点満点）と評価基準・検査結果・コメントを確認", "操作列から実施者ごとの詳細へ"],
+    summary: "官能検査記録 1 件の点数一覧です（データ検索）。承認申請管理の点数一覧と同じ画面です。",
+    points: ["検査製品名・製造日・賞味期限を表示", "実施者ごとの点数（5 点満点）と評価基準・検査結果を確認", "承認待ちのときは右上のステータスから承認・差し戻しができる", "コメントを読み、書き足せる", "操作列から実施者ごとの詳細へ"],
   },
   "src/admin/features/data-search-sensory-inspection/ScoreDetailPage.tsx": {
     summary: "官能検査記録で、実施者 1 人分の採点内容を見る画面です（データ検索）。",
@@ -859,8 +895,8 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/data-search-metal-xray-detection/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "金属/X線探知機記録", "データ一覧"),
   "src/admin/features/data-search-metal-xray-detection/DataListPage.tsx": searchList("金属/X線探知機記録", "実施日・点検構成名・結果（正常/異常あり）"),
   "src/admin/features/data-search-metal-xray-detection/RecordInspectionListPage.tsx": {
-    summary: "金属/X線探知機記録 1 日分の点検内容一覧です（データ検索）。機器ごとに、動作確認・テストピース・異常反応・製品通過の記録を時系列で見ます。",
-    points: ["金属探知機・X線探知機・ウェイトチェッカーのタブで機器を切り替える", "点検内容の種類（動作確認・テストピース・異常反応・製品通過）ごとに詳細へ", "コメントを確認"],
+    summary: "金属/X線探知機記録 1 日分の点検内容一覧です（データ検索）。承認申請管理の点検内容一覧と同じ画面です。",
+    points: ["実施日・確認者を表示", "点検内容の種類（動作確認・テストピース・異常反応・製品通過）ごとに詳細へ", "承認待ちのときは右上のステータスから承認・差し戻しができる", "コメントを読み、書き足せる"],
   },
   "src/admin/features/data-search-metal-xray-detection/RecordDetailPage.tsx": {
     summary: "金属/X線探知機記録の「動作確認」1 件の詳細です。電源・操作パネル・コンベア・ローラー・設定・はね板などの項目ごとの正常/異常を見ます。",

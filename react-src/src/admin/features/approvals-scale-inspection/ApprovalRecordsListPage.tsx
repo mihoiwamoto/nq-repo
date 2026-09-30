@@ -107,7 +107,7 @@ const COLUMNS = [
 export function ApprovalRecordsListPage() {
   const { requestId } = useParams<{ requestId: string }>();
   const navigate = useNavigate();
-  const { records: allRecords } = useRecords();
+  const { records: allRecords, setRepairStatus } = useRecords();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
   const records = useDemoList(allRecords);
   const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
@@ -168,7 +168,7 @@ export function ApprovalRecordsListPage() {
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
                       <Link
                         to={`${basePath}/records/${record.id}`}
-                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
                       >
                         詳細
                       </Link>
@@ -226,7 +226,7 @@ export function ApprovalRecordsListPage() {
           承認する
         </button>
 
-        <RepairStatusSection records={batchRecords} />
+        <RepairStatusSection records={batchRecords} setRepairStatus={setRepairStatus} />
       </div>
     </div>
   );

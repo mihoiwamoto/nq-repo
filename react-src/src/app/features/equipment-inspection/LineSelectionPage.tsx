@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { LineProgressPanel } from "./LineProgressPanel";
 import { LINE_STATUS_COLORS, LINE_STATUS_LABELS, type Frequency, type Line } from "./mockData";
@@ -22,7 +22,9 @@ const FREQUENCY_TABS: { key: Frequency; label: string }[] = [
  */
 export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {}) {
   const { lines: allLines } = useInspection();
-  const [frequency, setFrequency] = useState<Frequency>(nextDay ? "weekly" : "daily");
+  // 提出完了の「機械器具点検を続ける」からは、点検したラインの頻度のタブで開く
+  const initialFrequency = (useLocation().state as { frequency?: Frequency } | null)?.frequency;
+  const [frequency, setFrequency] = useState<Frequency>(initialFrequency ?? (nextDay ? "weekly" : "daily"));
   const [progressOpen, setProgressOpen] = useState(false);
 
   const lines = nextDay ? allLines.filter((line) => line.frequency !== "weekly") : allLines;
@@ -125,7 +127,7 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
               >
                 {tab.label}
                 {!active && (
-                  <span className="absolute -top-1.5 right-4 bg-[var(--semantic-brand-danger)] text-white text-[10px] rounded-full size-4 flex items-center justify-center">
+                  <span className="absolute -top-1.5 right-4 bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums rounded-full size-4 flex items-center justify-center">
                     {String(count).padStart(2, "0")}
                   </span>
                 )}

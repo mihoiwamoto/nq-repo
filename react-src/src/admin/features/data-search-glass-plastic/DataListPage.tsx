@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
@@ -41,6 +42,7 @@ const MONTH_LABELS = [
 
 const COLUMNS = [
   { label: "操作", width: "w-[96px]" },
+  { label: "ステータス", width: "w-[104px] shrink-0" },
   { label: "日付", width: "flex-1" },
   { label: "点検場所", width: "flex-1" },
   { label: "総点検箇所数", width: "flex-1" },
@@ -357,7 +359,7 @@ export function DataListPage() {
           </div>
 
           <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[900px]">
+            <div className="flex flex-col min-w-[1004px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
                   <div
@@ -387,6 +389,9 @@ export function DataListPage() {
                         >
                           詳細
                         </Link>
+                      </div>
+                      <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
+                        <ApprovalStatusBadge status={record.approvalStatus} />
                       </div>
                       <div className="flex-1 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                         {formatDateShort(record.date)}

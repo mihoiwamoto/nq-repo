@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -13,7 +13,12 @@ import floorMapImage from "../../../assets/figma/floorplans/floor-a.png";
 import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus, type ApprovalStatus } from "../../data/approvals";
-import { GLASS_PLASTIC_STATUS_COLORS, GLASS_PLASTIC_STATUS_LABELS, type GlassPlasticItemStatus } from "./types";
+import {
+  GLASS_PLASTIC_STATUS_COLORS,
+  GLASS_PLASTIC_STATUS_LABELS,
+  type GlassPlasticApprovalRecord,
+  type GlassPlasticItemStatus,
+} from "./types";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -31,6 +36,42 @@ function formatDate(date: string) {
 export function RecordDetailPage() {
   const navigate = useNavigate();
   const { records, setApprovalStatus, addComment } = useRecords();
+  const request = approvalRequests.find((r) => r.ledgerSlug === "glass-plastic");
+  return (
+    <RecordDetailView
+      record={records.find((r) => r.approvalStatus === "pending") ?? records[0]}
+      factoryName="㈱西原食品 本社工場"
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "詳細" },
+      ]}
+      setApprovalStatus={setApprovalStatus}
+      addComment={addComment}
+      onStatusFinalized={(status) => {
+        if (request) updateApprovalRequestStatus(request.id, status);
+        navigate("/admin/approvals", { state: { statusChanged: status } });
+      }}
+    />
+  );
+}
+
+/** 詳細の中身。データ検索の詳細（data-search-glass-plastic/RecordDetailPage）もこれを使う */
+export function RecordDetailView({
+  record,
+  factoryName,
+  breadcrumb,
+  setApprovalStatus,
+  addComment,
+  onStatusFinalized,
+}: {
+  record: GlassPlasticApprovalRecord | undefined;
+  factoryName: string;
+  breadcrumb: BreadcrumbItem[];
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
+  addComment: (id: string, text: string) => void;
+  /** 承認・差し戻しを確定したあと（承認申請管理では申請の状態を更新して一覧へ戻る） */
+  onStatusFinalized?: (status: ApprovalStatus) => void;
+}) {
   const {
     showConfirmDialog,
     showRejectDialog,
@@ -44,8 +85,6 @@ export function RecordDetailPage() {
     cancelRejection,
   } = useApprovalConfirm();
 
-  const request = approvalRequests.find((r) => r.ledgerSlug === "glass-plastic");
-  const record = records.find((r) => r.approvalStatus === "pending") ?? records[0];
   const [comment, setComment] = useState("");
   const [activeFilters, setActiveFilters] = useState<GlassPlasticItemStatus[]>([]);
   const [mapScale, setMapScale] = useState(1);
@@ -62,8 +101,7 @@ export function RecordDetailPage() {
     const status = value as ApprovalStatus;
     const finalize = () => {
       setApprovalStatus(record.id, status);
-      if (request) updateApprovalRequestStatus(request.id, status);
-      navigate("/admin/approvals", { state: { statusChanged: status } });
+      onStatusFinalized?.(status);
     };
     if (status === "approved") {
       requestApproval(finalize);
@@ -100,16 +138,11 @@ export function RecordDetailPage() {
       )}
       {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "詳細" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-            <p className="text-xl text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
           <Pulldown
             value={record.approvalStatus}

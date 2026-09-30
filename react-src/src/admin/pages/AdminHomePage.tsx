@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { PageTitleBar } from "../components/PageTitleBar";
+import { HIDDEN_NAV_PATHS } from "../navigation";
 import iconDataSearch from "../../assets/figma/icons/nav/data-search.svg";
 import iconApproval from "../../assets/figma/icons/nav/approval.svg";
 import iconConfirmation from "../../assets/figma/icons/nav/confirmation.svg";
@@ -80,7 +81,7 @@ export function AdminHomePage() {
       <PageTitleBar title="ホーム" />
       <div className="flex-1 flex flex-col justify-start p-6 overflow-auto">
         <div className="w-full flex flex-col gap-4">
-          {HOME_SHORTCUTS.map((item) => (
+          {HOME_SHORTCUTS.filter((item) => !HIDDEN_NAV_PATHS.includes(item.path)).map((item) => (
             <Link
               key={item.path}
               to={item.path}

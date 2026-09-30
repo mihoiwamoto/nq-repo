@@ -9,7 +9,6 @@ import { buildMonthGrid, formatDateLabel, formatMonthLabel, toDateKey, WEEKDAY_L
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconKebabMenu from "../../../assets/figma/icons/common/kebab-menu.svg";
-import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 const FREQUENCY_LABEL = { daily: "毎日", weekly: "毎週", monthly: "毎月", yearly: "毎年" } as const;
@@ -234,11 +233,9 @@ export function CalendarPage() {
                       <button
                         type="button"
                         onClick={handleDelete}
-                        className="flex h-12 items-center px-2 rounded-lg w-full hover:bg-[var(--semantic-background-page)]"
+                        className="flex h-12 items-center px-2 rounded-lg w-full text-left text-base text-[var(--semantic-brand-danger)] hover:bg-[var(--semantic-background-page)]"
                       >
-                        <span className="bg-white border border-[var(--semantic-brand-danger)] rounded-lg flex items-center justify-center size-8 shrink-0">
-                          <img src={iconTrash} alt="削除" className="size-5" />
-                        </span>
+                        削除
                       </button>
                     </div>
                   )}

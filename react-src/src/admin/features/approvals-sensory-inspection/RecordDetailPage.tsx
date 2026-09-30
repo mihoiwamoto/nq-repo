@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Comments } from "../../components/Comments";
 import { CommentInputBox } from "../../components/CommentInputBox";
@@ -11,7 +11,7 @@ import { Toast } from "../../components/Toast";
 import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
-import { CRITERIA, isAbnormalScore } from "./types";
+import { CRITERIA, isAbnormalScore, type SensoryApprovalRecord } from "./types";
 import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
@@ -24,13 +24,44 @@ function formatDate(date: string) {
   return date.replaceAll("-", "/");
 }
 
-const basePath = "/admin/approvals/sensory-inspection";
+const approvalsPath = "/admin/approvals/sensory-inspection";
 
 export function RecordDetailPage() {
   const { recordId } = useParams<{ recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
+  return (
+    <RecordDetailView
+      record={records.find((r) => r.id === recordId)}
+      factoryName="㈱西原食品 本社工場"
+      basePath={approvalsPath}
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "データ一覧", to: approvalsPath },
+        { label: "点数一覧" },
+      ]}
+      setApprovalStatus={setApprovalStatus}
+      addComment={addComment}
+    />
+  );
+}
 
-  const record = records.find((r) => r.id === recordId);
+/** 点数一覧の中身。データ検索（data-search-sensory-inspection/RecordDetailPage）もこれを使う。
+ *  basePath は点数の詳細へのリンクの頭（`${basePath}/records/:id/scores/:scoreId`） */
+export function RecordDetailView({
+  record,
+  factoryName,
+  basePath,
+  breadcrumb,
+  setApprovalStatus,
+  addComment,
+}: {
+  record: SensoryApprovalRecord | undefined;
+  factoryName: string;
+  basePath: string;
+  breadcrumb: BreadcrumbItem[];
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
+  addComment: (id: string, text: string) => void;
+}) {
   const [comment, setComment] = useState("");
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const {
@@ -81,17 +112,11 @@ export function RecordDetailPage() {
       )}
       {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="点数一覧" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "データ一覧", to: basePath },
-          { label: "点数一覧" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-            <p className="text-xl text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
           <div className="relative">
             <button

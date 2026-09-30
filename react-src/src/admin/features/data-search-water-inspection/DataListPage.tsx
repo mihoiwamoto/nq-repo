@@ -1,6 +1,7 @@
 import { useMemo, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
@@ -108,6 +109,7 @@ const MONTH_LABELS = [
 
 const COLUMNS = [
   { key: "action", label: "操作", width: 96 },
+  { key: "status", label: "ステータス", width: 104 },
   { key: "date", label: "日付", width: 80 },
   { key: "time", label: "点検時間", width: 72 },
   { key: "location", label: "点検場所", width: 80 },
@@ -174,7 +176,7 @@ export function DataListPage() {
   }
 
   function handleDownload() {
-    const header = COLUMNS.filter((c) => c.key !== "action").map((c) => c.label);
+    const header = COLUMNS.filter((c) => c.key !== "action" && c.key !== "status").map((c) => c.label);
     const rows = filtered.map((r) => [
       r.date,
       r.time,
@@ -438,7 +440,7 @@ export function DataListPage() {
         </div>
 
         <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-          <div className="flex flex-col min-w-[1216px]">
+          <div className="flex flex-col min-w-[1320px]">
             <div className="bg-[#f6f6f6] flex h-[50px] items-center">
               {COLUMNS.map((c) => (
                 <div
@@ -469,6 +471,9 @@ export function DataListPage() {
                     >
                       詳細
                     </Link>
+                  </div>
+                  <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
+                    <ApprovalStatusBadge status={record.approvalStatus} />
                   </div>
                   <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 80 }}>
                     {formatDateShort(record.date)}

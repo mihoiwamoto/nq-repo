@@ -38,7 +38,7 @@ export function AppRail() {
                   {item.badge !== undefined && (
                     <span
                       data-nq-part="badge"
-                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center"
+                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums flex items-center justify-center"
                     >
                       {String(item.badge).padStart(2, "0")}
                     </span>
@@ -83,7 +83,7 @@ export function AppRail() {
                   {item.badge !== undefined && (
                     <span
                       data-nq-part="badge"
-                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] flex items-center justify-center"
+                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums flex items-center justify-center"
                     >
                       {String(item.badge).padStart(2, "0")}
                     </span>

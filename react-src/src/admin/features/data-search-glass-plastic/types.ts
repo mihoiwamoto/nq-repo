@@ -1,3 +1,5 @@
+import type { ApprovalStatus } from "../../data/approvals";
+
 export type GlassPlasticItemStatus = "unchecked" | "normal" | "issue";
 
 export interface Comment {
@@ -42,6 +44,7 @@ export type GlassPlasticRecord = {
   implementer: string;
   confirmer: string;
   rooms: GlassPlasticRoomRecord[];
+  approvalStatus: ApprovalStatus;
   comment?: string;
   comments?: Comment[];
 };

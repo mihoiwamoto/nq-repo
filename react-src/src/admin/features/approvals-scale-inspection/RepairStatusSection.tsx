@@ -1,6 +1,5 @@
 import { type CSSProperties } from "react";
 import { Pulldown } from "../../components/Pulldown";
-import { useRecords } from "./RecordsContext";
 import {
   REPAIR_STATUS_COLORS,
   REPAIR_STATUS_LABELS,
@@ -9,8 +8,14 @@ import {
   type ScaleApprovalRecord,
 } from "./types";
 
-export function RepairStatusSection({ records }: { records: ScaleApprovalRecord[] }) {
-  const { setRepairStatus } = useRecords();
+/** 修理状況の更新はデータ検索の詳細からも使うので、呼び出し側の RecordsContext から受け取る */
+export function RepairStatusSection({
+  records,
+  setRepairStatus,
+}: {
+  records: ScaleApprovalRecord[];
+  setRepairStatus: (id: string, status: RepairStatus) => void;
+}) {
   const ngRecords = records.filter((r) => !r.skipped && r.operationCheck === "ng");
 
   if (ngRecords.length === 0) return null;

@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
@@ -372,14 +373,14 @@ export function DataListPage() {
           </div>
 
           <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1000px]">
+            <div className="flex flex-col min-w-[1104px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-                {["操作", "実施日", "持ち場名/ライン名", "点検結果", "備考", "実施者", "確認者"].map(
+                {["操作", "ステータス", "実施日", "持ち場名/ライン名", "点検結果", "備考", "実施者", "確認者"].map(
                   (h, i) => (
                     <div
                       key={h}
                       className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${
-                        i === 4 ? "flex-1 min-w-[200px]" : i === 2 ? "w-[240px]" : "w-[104px]"
+                        i === 5 ? "flex-1 min-w-[200px]" : i === 3 ? "w-[240px]" : "w-[104px]"
                       }`}
                     >
                       {h}
@@ -404,6 +405,9 @@ export function DataListPage() {
                     >
                       詳細
                     </Link>
+                  </div>
+                  <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
+                    <ApprovalStatusBadge status={record.approvalStatus} />
                   </div>
                   <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                     {formatDateShort(record.date)}

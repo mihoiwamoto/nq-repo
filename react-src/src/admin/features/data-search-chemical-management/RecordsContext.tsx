@@ -3,11 +3,12 @@ import { Outlet } from "react-router-dom";
 import type { ChemicalRecord } from "./types";
 import type { ApprovalStatus } from "../../data/approvals";
 import { chemicalRecords } from "./mockRecords";
+import { CURRENT_ACCOUNT } from "../account/mockData";
 
 type RecordsContextValue = {
   records: ChemicalRecord[];
   setApprovalStatus: (id: string, status: ApprovalStatus) => void;
-  addComment: (id: string, comment: string) => void;
+  addComment: (id: string, text: string) => void;
 };
 
 const RecordsContext = createContext<RecordsContextValue | null>(null);
@@ -21,8 +22,25 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
       setApprovalStatus: (id, status) => {
         setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, approvalStatus: status } : r)));
       },
-      addComment: (id, comment) => {
-        setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, comment } : r)));
+      addComment: (id, text) => {
+        setRecords((prev) =>
+          prev.map((r) =>
+            r.id === id
+              ? {
+                  ...r,
+                  comments: [
+                    ...(r.comments ?? []),
+                    {
+                      id: `${id}-${Date.now()}`,
+                      author: CURRENT_ACCOUNT.name,
+                      timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                      text,
+                    },
+                  ],
+                }
+              : r
+          )
+        );
       },
     }),
     [records]

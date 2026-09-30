@@ -35,6 +35,7 @@ export const glassPlasticRecords: GlassPlasticRecord[] = [
     date: "2025-04-01",
     implementer: "田中太郎",
     confirmer: "確認者01",
+    approvalStatus: "approved",
     rooms: buildRooms({
       "entrance|時計1": {
         status: "issue",
@@ -71,6 +72,7 @@ export const glassPlasticRecords: GlassPlasticRecord[] = [
     date: "2025-04-02",
     implementer: "田中太郎",
     confirmer: "確認者01",
+    approvalStatus: "pending",
     rooms: buildRooms(),
   },
   {
@@ -80,6 +82,7 @@ export const glassPlasticRecords: GlassPlasticRecord[] = [
     date: "2025-04-01",
     implementer: "実施者02",
     confirmer: "確認者02",
+    approvalStatus: "approved",
     rooms: buildRooms({
       "washing-room|窓ガラス1": {
         status: "issue",

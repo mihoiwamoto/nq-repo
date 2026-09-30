@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -12,6 +12,7 @@ import { Toast } from "../../components/Toast";
 import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
+import type { CleaningApprovalRecord } from "./mockData";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -26,9 +27,38 @@ function formatDate(date: string) {
 export function RecordDetailPage() {
   const { recordId } = useParams<{ recordId: string }>();
   const { records, addComment } = useRecords();
-  const record = records.find((r) => r.id === recordId);
-  const [comment, setComment] = useState("");
+  // 承認申請管理の見本は承認ステータスを持たないので画面の中だけで持つ
   const [status, setStatus] = useState<ApprovalStatus>("approved");
+  return (
+    <RecordDetailView
+      record={records.find((r) => r.id === recordId)}
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "データ一覧", to: "/admin/approvals/cleaning-record" },
+        { label: "詳細" },
+      ]}
+      approvalStatus={status}
+      setApprovalStatus={(_, next) => setStatus(next)}
+      addComment={addComment}
+    />
+  );
+}
+
+/** 詳細の中身。データ検索の詳細（data-search-cleaning-record/RecordDetailPage）もこれを使う */
+export function RecordDetailView({
+  record,
+  breadcrumb,
+  approvalStatus: status,
+  setApprovalStatus,
+  addComment,
+}: {
+  record: CleaningApprovalRecord | undefined;
+  breadcrumb: BreadcrumbItem[];
+  approvalStatus: ApprovalStatus;
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
+  addComment: (id: string, text: string) => void;
+}) {
+  const [comment, setComment] = useState("");
   const {
     showConfirmDialog,
     showRejectDialog,
@@ -50,13 +80,14 @@ export function RecordDetailPage() {
     );
   }
 
+  const locations = record.locations ?? [];
   const handleStatusChange = (value: string) => {
     if (value === "approved") {
-      requestApproval(() => setStatus(value as ApprovalStatus));
+      requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
     } else if (value === "rejected") {
-      requestRejection(() => setStatus(value as ApprovalStatus));
+      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
     } else {
-      setStatus(value as ApprovalStatus);
+      setApprovalStatus(record.id, value as ApprovalStatus);
     }
   };
 
@@ -70,13 +101,7 @@ export function RecordDetailPage() {
       )}
       {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "データ一覧", to: "/admin/approvals/cleaning-record" },
-          { label: "詳細" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
@@ -113,10 +138,10 @@ export function RecordDetailPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">{record.lineLabel}</p>
           </div>
 
-          {record.locations && record.locations.length > 0 && (
+          {locations.length > 0 && (
             <div className="flex flex-col items-start w-full border-t border-[#d0d0d0] pt-0">
-            {record.locations.map((location, locIdx) => (
-              <div key={location.name} className={`w-full ${locIdx < record.locations.length - 1 ? "mb-6" : ""}`}>
+            {locations.map((location, locIdx) => (
+              <div key={location.name} className={`w-full ${locIdx < locations.length - 1 ? "mb-6" : ""}`}>
                 <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-4 py-2 rounded-lg w-full">
                   <p className="text-xl text-white font-bold">清掃箇所</p>
                   <p className="text-xl text-white font-bold">{location.name}</p>

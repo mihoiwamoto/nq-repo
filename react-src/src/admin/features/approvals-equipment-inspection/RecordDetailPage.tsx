@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -12,7 +12,7 @@ import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
-import type { ApprovalStatus } from "./types";
+import type { ApprovalStatus, EquipmentApprovalRecord } from "./types";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -27,7 +27,35 @@ function formatDate(date: string) {
 export function RecordDetailPage() {
   const { factoryId, recordId } = useParams<{ factoryId?: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
-  const factoryName = getFactoryName(factoryId ?? "f1");
+  return (
+    <RecordDetailView
+      record={records.find((r) => r.id === recordId)}
+      factoryName={getFactoryName(factoryId ?? "f1")}
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "データ一覧", to: "/admin/approvals/equipment-inspection" },
+        { label: "詳細" },
+      ]}
+      setApprovalStatus={setApprovalStatus}
+      addComment={addComment}
+    />
+  );
+}
+
+/** 詳細の中身。データ検索の詳細（data-search-equipment/RecordDetailPage）もこれを使う */
+export function RecordDetailView({
+  record,
+  factoryName,
+  breadcrumb,
+  setApprovalStatus,
+  addComment,
+}: {
+  record: EquipmentApprovalRecord | undefined;
+  factoryName: string;
+  breadcrumb: BreadcrumbItem[];
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
+  addComment: (id: string, text: string) => void;
+}) {
   const {
     showConfirmDialog,
     showRejectDialog,
@@ -41,7 +69,6 @@ export function RecordDetailPage() {
     cancelRejection,
   } = useApprovalConfirm();
 
-  const record = records.find((r) => r.id === recordId);
   const [comment, setComment] = useState("");
 
   if (!record) {
@@ -72,13 +99,7 @@ export function RecordDetailPage() {
       )}
       {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "データ一覧", to: "/admin/approvals/equipment-inspection" },
-          { label: "詳細" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">

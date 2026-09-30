@@ -41,6 +41,11 @@ React を直したらソースをコミット・プッシュするだけでよ�
 
 **右下の「フィードバック」（2026-09-28）。** 画面設計の右下のボタンは、枠の中の React へ `{nvideo:'feedback'}` を送る。`?frame=1` の `FeedbackWidget` は自分のパネルを出さず、中身を `{nvideo:'fb-state'}` で親へ返し、画面設計が**右パネル**（`inspView='feedback'`、`fbHTML()`／`fbPaint()`）に入力欄と一覧を描く。保存・場所選び・画面上のピンは React のまま、画面設計からは `{nvideo:'fb', op:'submit'|'pick'|…}` で頼む（保存先は同じオリジンの localStorage `nq_feedback_v1`）。入力欄や項目を React 側で変えたら右パネルも直す。「プロトタイプで開く」の先は `KitSwitch.tsx` の同じボタンから開く。予備のプロトタイプ HTML には受け口が無いので、そのときはボタンを隠す。
 
+**右パネルの「この画面でできること」（2026-09-30）。** React の画面説明（`react-src/src/components/screen-description/screenDescriptions.ts`、キーは画面のファイル）を画面設計の `SCREEN_DESC` に写して出す（`SCREENS` の `src` で引く。`src` は実在するファイルにしておくこと）。React 側の説明を直したら手で写さず `node .claude/sd-gen.cjs`。「画面のつながり」「この画面を通るユースケース」は `ledgerFlow()`／`CASE_LIST` から自動で出るので書き足す場所は無い。
+「項目定義」「操作と結果」は ⑧-3 `SPEC`（画面IDごとの `fields`／`ops`。2026-09-30 に React のコードを読んで全画面ぶん起こした）。手で書いた ⑧ `FIELDS` がある画面はそちらが優先。React の画面を直したら、同じ画面の `SPEC` の行も直す。
+帳票管理の使用水以外の画面に sub・note・主な要素・決めることを書き足すときは `LM_OVER`（帳票の slug → 何番目の画面か。使用水は `LM_WATER_OVER`）。
+「画面概要」の本文は ⑧-4 `OVERVIEW`（2026-09-30 に Confluence「NQリポ」スペースの `[cms]`／`[app]` 画面仕様書から起こした。`lead` が一行説明の代わりに出て、`body` の段落、手書きの `note` の順。元のページ `pages` は取り直し用に持つだけで、2026-09-30 から画面には出さない）。仕様書と React が違うところは React に合わせて書いてある。Confluence の一覧 API は本文が大きいと「Body omitted」になるので、取り直すときはページごとに markdown で取る。
+
 - 画面設計 … `nqrepo-screen-design.html`（#M3 のように画面IDで直接開ける。`#flow` `#ref` `#release` で フロー・前提・リリース）
 - 画面の実体 … `react-src/` をビルドした dist-kit（`http://127.0.0.1:8791/react/?frame=1#admin/approvals` のように単体でも開ける）。ブリッジは React 側の `src/frameBridge.tsx`（`main.tsx` と `App.tsx` から呼ぶ）
 - プロトタイプ（予備） … `nqrepo-demo.html`（右下の切替で 管理画面／アプリ、ロール、状態を変える。`1` `2` キーで端末切替）

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -12,7 +12,7 @@ import { Toast } from "../../components/Toast";
 import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
-import type { WaterCheckResult } from "./types";
+import type { WaterApprovalRecord, WaterCheckResult } from "./types";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
@@ -81,6 +81,35 @@ function CheckRow({
 export function RecordDetailPage() {
   const { recordId } = useParams<{ recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
+  return (
+    <RecordDetailView
+      record={records.find((r) => r.id === recordId)}
+      factoryName="㈱西原食品 本社工場"
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "データ一覧", to: "/admin/approvals/water-inspection" },
+        { label: "詳細" },
+      ]}
+      setApprovalStatus={setApprovalStatus}
+      addComment={addComment}
+    />
+  );
+}
+
+/** 詳細の中身。データ検索の詳細（data-search-water-inspection/RecordDetailPage）もこれを使う */
+export function RecordDetailView({
+  record,
+  factoryName,
+  breadcrumb,
+  setApprovalStatus,
+  addComment,
+}: {
+  record: WaterApprovalRecord | undefined;
+  factoryName: string;
+  breadcrumb: BreadcrumbItem[];
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
+  addComment: (id: string, text: string) => void;
+}) {
   const {
     showConfirmDialog,
     showRejectDialog,
@@ -94,7 +123,6 @@ export function RecordDetailPage() {
     cancelRejection,
   } = useApprovalConfirm();
 
-  const record = records.find((r) => r.id === recordId);
   const [newComment, setNewComment] = useState("");
 
   if (!record) {
@@ -131,17 +159,11 @@ export function RecordDetailPage() {
       )}
       {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "データ一覧", to: "/admin/approvals/water-inspection" },
-          { label: "詳細" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-            <p className="text-xl text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
           <Pulldown
             value={record.approvalStatus}

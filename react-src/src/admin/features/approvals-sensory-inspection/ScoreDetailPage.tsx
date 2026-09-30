@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useRecords } from "./RecordsContext";
-import { CRITERIA, isAbnormalScore } from "./types";
+import { CRITERIA, isAbnormalScore, type ScoreEntry, type SensoryApprovalRecord } from "./types";
 
 const basePath = "/admin/approvals/sensory-inspection";
 
@@ -25,10 +25,31 @@ function ScoreTag({ score }: { score: number }) {
 export function ScoreDetailPage() {
   const { recordId, scoreId } = useParams<{ recordId: string; scoreId: string }>();
   const { records } = useRecords();
-
   const record = records.find((r) => r.id === recordId);
-  const entry = record?.scoreEntries.find((e) => e.id === scoreId);
+  return (
+    <ScoreDetailView
+      record={record}
+      entry={record?.scoreEntries.find((e) => e.id === scoreId)}
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "データ一覧", to: basePath },
+        { label: "点数一覧", to: `${basePath}/records/${recordId}` },
+        { label: "詳細" },
+      ]}
+    />
+  );
+}
 
+/** 点数の詳細の中身。データ検索（data-search-sensory-inspection/ScoreDetailPage）もこれを使う */
+export function ScoreDetailView({
+  record,
+  entry,
+  breadcrumb,
+}: {
+  record: SensoryApprovalRecord | undefined;
+  entry: ScoreEntry | undefined;
+  breadcrumb: BreadcrumbItem[];
+}) {
   if (!record || !entry) {
     return (
       <div className="p-6">
@@ -40,14 +61,7 @@ export function ScoreDetailPage() {
   return (
     <div>
       <PageTitleBar title="詳細" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "データ一覧", to: basePath },
-          { label: "点数一覧", to: `${basePath}/records/${record.id}` },
-          { label: "詳細" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
         <div className="bg-white flex flex-wrap gap-8 items-center p-4 rounded-lg w-full">
           <div className="flex flex-col gap-2 items-start">

@@ -8,7 +8,6 @@ import { getFactoryName } from "../../../data/factories";
 import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
-import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 export function CalendarPage() {
@@ -214,11 +213,9 @@ export function CalendarPage() {
                             setMenuOpen(false);
                             setDeleteDialogOpen(true);
                           }}
-                          className="w-full px-4 py-2 hover:bg-[var(--semantic-background-page)]"
+                          className="w-full text-left px-4 py-2 text-sm text-[var(--semantic-brand-danger)] hover:bg-[var(--semantic-background-page)]"
                         >
-                          <span className="bg-white border border-[var(--semantic-brand-danger)] rounded-lg flex items-center justify-center size-8 shrink-0">
-                            <img src={iconTrash} alt="削除" className="size-5" />
-                          </span>
+                          削除
                         </button>
                       </div>
                     )}

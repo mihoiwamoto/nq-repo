@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -12,6 +12,7 @@ import { Toast } from "../../components/Toast";
 import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
+import type { InspectionRecord, MachineApprovalRecord } from "./types";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -48,9 +49,44 @@ const COLUMNS = [
   { label: "実施者", width: "w-[100px]" },
 ];
 
+const approvalsPath = "/admin/approvals/metal-xray-detection";
+
 export function MachineDetailPage() {
   const { recordId } = useParams<{ recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
+  return (
+    <MachineDetailView
+      record={records.find((r) => r.id === recordId)}
+      factoryName="㈱西原食品 本社工場"
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "データ一覧", to: approvalsPath },
+        { label: "点検内容一覧" },
+      ]}
+      itemPath={(record, item) => `${approvalsPath}/records/${record.id}/items/${item.id}`}
+      setApprovalStatus={setApprovalStatus}
+      addComment={addComment}
+    />
+  );
+}
+
+/** 点検内容一覧の中身。データ検索（data-search-metal-xray-detection/RecordInspectionListPage）もこれを使う。
+ *  itemPath は各行の「詳細」の行き先 */
+export function MachineDetailView({
+  record,
+  factoryName,
+  breadcrumb,
+  itemPath,
+  setApprovalStatus,
+  addComment,
+}: {
+  record: MachineApprovalRecord | undefined;
+  factoryName: string;
+  breadcrumb: BreadcrumbItem[];
+  itemPath: (record: MachineApprovalRecord, item: InspectionRecord) => string;
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
+  addComment: (id: string, text: string) => void;
+}) {
   const {
     showConfirmDialog,
     showRejectDialog,
@@ -64,7 +100,6 @@ export function MachineDetailPage() {
     cancelRejection,
   } = useApprovalConfirm();
 
-  const record = records.find((r) => r.id === recordId);
   const [comment, setComment] = useState("");
 
   if (!record) {
@@ -95,17 +130,11 @@ export function MachineDetailPage() {
       )}
       {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="点検内容一覧" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "データ一覧", to: "/admin/approvals/metal-xray-detection" },
-          { label: "点検内容一覧" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-            <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+            <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
           <Pulldown
             value={record.approvalStatus}
@@ -148,7 +177,7 @@ export function MachineDetailPage() {
               >
                 <div className="w-[104px] flex items-center justify-center px-2 h-full">
                   <Link
-                    to={`/admin/approvals/metal-xray-detection/records/${record.id}/items/${item.id}`}
+                    to={itemPath(record, item)}
                     className="border border-[var(--semantic-brand-primary)] bg-white text-[var(--semantic-brand-primary)] text-base font-bold px-3 py-2 rounded-lg hover:bg-[var(--semantic-brand-primary)] hover:text-white transition-colors"
                   >
                     詳細

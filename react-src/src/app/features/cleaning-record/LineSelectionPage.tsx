@@ -129,7 +129,7 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
               >
                 {tab.label}
                 {!active && (
-                  <span className="absolute -top-1.5 right-4 bg-[var(--semantic-brand-danger)] text-white text-[10px] rounded-full size-4 flex items-center justify-center">
+                  <span className="absolute -top-1.5 right-4 bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums rounded-full size-4 flex items-center justify-center">
                     {String(count).padStart(2, "0")}
                   </span>
                 )}

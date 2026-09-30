@@ -2,7 +2,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { getCompanyName } from "../../../data/companies";
 import { ROLE_COLORS, ROLE_LABELS } from "../staff-management/types";
-import { saveCurrentRole } from "../../../data/roleStore";
+import { HIDDEN_ROLES, saveCurrentRole } from "../../../data/roleStore";
 import type { PrototypeRoleId } from "../../../data/roleStore";
 import { useCurrentRole } from "../../../data/useCurrentRole";
 import { CURRENT_ACCOUNT } from "./mockData";
@@ -72,7 +72,7 @@ function RoleSwitcher({
       </p>
 
       <div className="grid grid-cols-2 gap-4 w-full">
-        {PROTOTYPE_ROLES.map((option) => {
+        {PROTOTYPE_ROLES.filter((option) => !HIDDEN_ROLES.includes(option.id)).map((option) => {
           const selected = option.id === role;
           return (
             <button

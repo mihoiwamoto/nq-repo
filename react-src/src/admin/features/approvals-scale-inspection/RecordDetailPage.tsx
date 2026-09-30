@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
+import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
@@ -14,6 +14,7 @@ import { useRecords } from "./RecordsContext";
 import { RepairStatusSection } from "./RepairStatusSection";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
+import type { RepairStatus, ScaleApprovalRecord } from "./types";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -45,7 +46,40 @@ const HLine = () => <div className="border-t border-[#d0d0d0] w-full" />;
 
 export function RecordDetailPage() {
   const { requestId, recordId } = useParams<{ requestId: string; recordId: string }>();
-  const { records, setApprovalStatus, addComment } = useRecords();
+  const { records, setApprovalStatus, setRepairStatus, addComment } = useRecords();
+  const request = approvalRequests.find((r) => r.id === requestId);
+  return (
+    <RecordDetailView
+      record={records.find((r) => r.id === recordId)}
+      factoryName={request?.companyName ?? "工場"}
+      breadcrumb={[
+        { label: "承認申請管理", to: "/admin/approvals" },
+        { label: "点検内容一覧", to: `/admin/approvals/scale-inspection/${requestId}` },
+        { label: "詳細" },
+      ]}
+      setApprovalStatus={setApprovalStatus}
+      setRepairStatus={setRepairStatus}
+      addComment={addComment}
+    />
+  );
+}
+
+/** 詳細の中身。データ検索の詳細（data-search-scale-inspection/RecordDetailPage）もこれを使う */
+export function RecordDetailView({
+  record,
+  factoryName,
+  breadcrumb,
+  setApprovalStatus,
+  setRepairStatus,
+  addComment,
+}: {
+  record: ScaleApprovalRecord | undefined;
+  factoryName: string;
+  breadcrumb: BreadcrumbItem[];
+  setApprovalStatus: (id: string, status: ApprovalStatus) => void;
+  setRepairStatus: (id: string, status: RepairStatus) => void;
+  addComment: (id: string, text: string) => void;
+}) {
   const {
     showConfirmDialog,
     showRejectDialog,
@@ -59,8 +93,6 @@ export function RecordDetailPage() {
     cancelRejection,
   } = useApprovalConfirm();
 
-  const request = approvalRequests.find((r) => r.id === requestId);
-  const record = records.find((r) => r.id === recordId);
   const [comment, setComment] = useState("");
 
   if (!record) {
@@ -93,17 +125,11 @@ export function RecordDetailPage() {
       )}
       {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
-      <Breadcrumb
-        items={[
-          { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "点検内容一覧", to: `/admin/approvals/scale-inspection/${requestId}` },
-          { label: "詳細" },
-        ]}
-      />
+      <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-            <p className="text-xl text-[var(--semantic-text-primary)]">{request?.companyName ?? "工場"}</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
           <Pulldown
             value={record.approvalStatus}
@@ -284,7 +310,7 @@ export function RecordDetailPage() {
           </div>
         </div>
 
-        <RepairStatusSection records={[record]} />
+        <RepairStatusSection records={[record]} setRepairStatus={setRepairStatus} />
 
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>

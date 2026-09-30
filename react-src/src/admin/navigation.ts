@@ -101,10 +101,17 @@ const NAV_VISIBILITY: Partial<Record<PrototypeRoleId, { allow?: string[]; hide?:
   approver: { allow: APPROVER_NAV_PATHS },
 };
 
+/**
+ * 今回の開発では実装しないため、どのロールでもサイドメニューとホームのカードに出さないメニュー（2026-09-30）。
+ * 画面とルートは残してあるので URL で直接は開ける。実装することになったらここから外す。
+ */
+export const HIDDEN_NAV_PATHS = ["/admin/confirmations"];
+
 export function filterNavByRole(items: AdminNavItem[], role: PrototypeRoleId): AdminNavItem[] {
+  const shown = items.filter((item) => !HIDDEN_NAV_PATHS.includes(item.path));
   const rule = NAV_VISIBILITY[role];
-  if (!rule) return items;
-  return items.filter(
+  if (!rule) return shown;
+  return shown.filter(
     (item) => (!rule.allow || rule.allow.includes(item.path)) && !rule.hide?.includes(item.path)
   );
 }

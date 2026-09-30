@@ -15,6 +15,12 @@ const VALID_ROLES: PrototypeRoleId[] = [
   "administrator",
 ];
 
+/**
+ * 今回の開発では管理画面にログインできないロール（2026-09-30）。権限の切替に出さず、端末に残っていても使わない。
+ * 実装することになったらここから外す（画面設計の PROJECT.roles にも戻す）。
+ */
+export const HIDDEN_ROLES: PrototypeRoleId[] = ["checker", "approver_checker"];
+
 /** 情報システム部・品質管理部を「管理者」に統合したため、端末に残った旧値を読み替える */
 const LEGACY_ROLE_ALIASES: Record<string, PrototypeRoleId> = {
   information_system: "administrator",
@@ -25,7 +31,7 @@ const LEGACY_ROLE_ALIASES: Record<string, PrototypeRoleId> = {
 export function loadCurrentRole(fallback: PrototypeRoleId): PrototypeRoleId {
   try {
     const raw = localStorage.getItem(CURRENT_ROLE_KEY);
-    if (raw && VALID_ROLES.includes(raw as PrototypeRoleId)) return raw as PrototypeRoleId;
+    if (raw && VALID_ROLES.includes(raw as PrototypeRoleId) && !HIDDEN_ROLES.includes(raw as PrototypeRoleId)) return raw as PrototypeRoleId;
     if (raw && LEGACY_ROLE_ALIASES[raw]) return LEGACY_ROLE_ALIASES[raw];
   } catch {
     // 破損したデータは既定値扱いにする
