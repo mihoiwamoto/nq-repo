@@ -174,6 +174,20 @@ textarea::placeholder {
      ダイアログ（position: fixed）の基準も窓ではなくこの枠になり、枠の外まで広がらない */
 }
 
+/* 画面設計の「プロトタイプで開く」の先では、画面設計のアプリの枠（.phone.tablet）と同じ iPad の縁を付ける。
+   content-box なので縁の内側は 768×1024 のまま。余白・縁の太さは AppViewport.tsx の BEZEL_GAP・BEZEL と合わせる */
+.app-viewport--bezel {
+  padding: 24px;
+  box-sizing: border-box;
+}
+.app-viewport-frame--bezel {
+  box-sizing: content-box;
+  border: 11px solid #14181a;
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+}
+
 /* 画面設計キットの枠の中（?frame=1）は、枠の大きさ＝端末の大きさ。768×1024 に固定せず枠いっぱいに広げる */
 .app-viewport-frame--fill {
   width: 100%;

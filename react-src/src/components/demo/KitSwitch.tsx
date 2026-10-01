@@ -137,14 +137,15 @@ const CSS = `
   border-radius:10px;padding:9px 11px;color:var(--nt);border:0;background:none;cursor:pointer;font:inherit}
 .nvit:hover{background:var(--ns)}
 .nvit[aria-current="true"]{background:var(--nal)}
-.nvit .nvr{width:16px;height:16px;border-radius:99px;flex:none;box-shadow:inset 0 0 0 1.5px var(--nl)}
-.nvit[aria-current="true"] .nvr{background:var(--na);box-shadow:inset 0 0 0 3px var(--nb)}
 .nvit .tx{min-width:0;flex:1}
 .nvit .t1{display:block;font-size:13.5px;line-height:1.45;font-weight:500}
 .nvit .t2{display:block;font-size:11px;color:var(--nm);line-height:1.5}
 .nvgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.nvgrid .nvit{padding:8px 10px}
+/* 権限・状態は選択ボタン（枠つき。選んだものは緑地に白文字。フィードバックの種類と同じ形） */
+.nvgrid .nvit{justify-content:center;text-align:center;padding:7px 10px;border:1px solid var(--nl);border-radius:9px}
 .nvgrid .nvit .t1{font-size:12.5px}
+.nvgrid .nvit[aria-current="true"],.nvgrid .nvit[aria-current="true"]:hover{background:#009E5E;border-color:#009E5E;color:#fff}
+.nvgrid .nvit[aria-current="true"] .t1{font-weight:700}
 .nvflow{margin:9px 4px 0;font-size:11px;color:var(--nm);line-height:1.65}
 .nvflow b{color:var(--nt);font-weight:500}
 .nvfoot{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid var(--nl)}
@@ -307,7 +308,6 @@ export function KitSwitch() {
         <div className="nvsec">
           <p className="nvh">資料</p>
           <a className="nvit" href={back} aria-current="false">
-            <span className="nvr"></span>
             <span className="tx">
               <b className="t1">{info.doc}</b>
               <span className="t2">
@@ -316,7 +316,6 @@ export function KitSwitch() {
             </span>
           </a>
           <span className="nvit" aria-current="true">
-            <span className="nvr"></span>
             <span className="tx">
               <b className="t1">{info.demo}</b>
               <span className="t2">{info.demoDesc}</span>
@@ -334,7 +333,6 @@ export function KitSwitch() {
                 aria-current={r.key === role}
                 onClick={() => saveCurrentRole(r.key)}
               >
-                <span className="nvr"></span>
                 <span className="tx">
                   <b className="t1">{r.name}</b>
                 </span>
@@ -395,7 +393,6 @@ export function KitSwitch() {
                   setKitState(x.key);
                 }}
               >
-                <span className="nvr"></span>
                 <span className="tx">
                   <b className="t1">{x.name}</b>
                 </span>

@@ -84,12 +84,18 @@ const factorySelect = (menu: string, ledger: string, next: string): ScreenDescri
 /** データ検索の一覧 */
 const searchList = (ledger: string, columns: string, extra: string[] = []): ScreenDescription => ({
   summary: `${ledger}の過去の記録を、月ごとの一覧で振り返る画面です（データ検索）。閲覧専用で、内容の変更はできません。`,
-  points: ["年と月のタブで対象の月を切り替える", `一覧には${columns}が並ぶ`, "操作列のボタンで、その記録の詳細を開く", ...extra],
+  points: [
+    "年と月のタブで対象の月を切り替える",
+    `一覧には${columns}が並ぶ`,
+    "操作列のボタンで、その記録の詳細を開く",
+    "CSV・PDF で出力できる",
+    ...extra,
+  ],
 });
 
 /** データ検索の詳細 */
 const searchDetail = (ledger: string, fields: string, extra: string[] = []): ScreenDescription => ({
-  summary: `${ledger}の記録 1 件の内容を確認する画面です（データ検索）。承認申請管理の詳細と同じ画面です。`,
+  summary: `${ledger}の記録 1 件の内容を確認する画面です（データ検索）。`,
   points: [
     `実施日・実施者・確認者と、${fields}を表示`,
     ...extra,
@@ -884,7 +890,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/data-search-sensory-inspection/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "官能検査記録", "データ一覧"),
   "src/admin/features/data-search-sensory-inspection/DataListPage.tsx": searchList("官能検査記録", "日付・検査製品名・検査結果・確認者"),
   "src/admin/features/data-search-sensory-inspection/RecordDetailPage.tsx": {
-    summary: "官能検査記録 1 件の点数一覧です（データ検索）。承認申請管理の点数一覧と同じ画面です。",
+    summary: "官能検査記録 1 件の点数一覧です（データ検索）。",
     points: ["検査製品名・製造日・賞味期限を表示", "実施者ごとの点数（5 点満点）と評価基準・検査結果を確認", "承認待ちのときは右上のステータスから承認・差し戻しができる", "コメントを読み、書き足せる", "操作列から実施者ごとの詳細へ"],
   },
   "src/admin/features/data-search-sensory-inspection/ScoreDetailPage.tsx": {
@@ -895,7 +901,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/data-search-metal-xray-detection/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "金属/X線探知機記録", "データ一覧"),
   "src/admin/features/data-search-metal-xray-detection/DataListPage.tsx": searchList("金属/X線探知機記録", "実施日・点検構成名・結果（正常/異常あり）"),
   "src/admin/features/data-search-metal-xray-detection/RecordInspectionListPage.tsx": {
-    summary: "金属/X線探知機記録 1 日分の点検内容一覧です（データ検索）。承認申請管理の点検内容一覧と同じ画面です。",
+    summary: "金属/X線探知機記録 1 日分の点検内容一覧です（データ検索）。",
     points: ["実施日・確認者を表示", "点検内容の種類（動作確認・テストピース・異常反応・製品通過）ごとに詳細へ", "承認待ちのときは右上のステータスから承認・差し戻しができる", "コメントを読み、書き足せる"],
   },
   "src/admin/features/data-search-metal-xray-detection/RecordDetailPage.tsx": {
@@ -940,11 +946,11 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/data-search-cleaning-record/RecordDetailPage.tsx": searchDetail("清掃記録", "持ち場/ライン名と、清掃箇所ごとの清掃済み/未清掃・備考"),
 
   "src/admin/features/data-search-additive-management/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "添加物管理", "データ一覧"),
-  "src/admin/features/data-search-additive-management/DataListPage.tsx": searchList("添加物管理", "日付・添加物名・区分（入庫/出庫）・数量・現在庫数"),
+  "src/admin/features/data-search-additive-management/DataListPage.tsx": searchList("添加物管理", "日付・添加物名・区分（入庫/出庫）・数量・現在庫数・保管場所・備考・実施者・確認者"),
   "src/admin/features/data-search-additive-management/RecordDetailPage.tsx": searchDetail("添加物管理", "添加物名・保管場所・区分・元在庫数・数量・現在庫数・備考"),
 
   "src/admin/features/data-search-chemical-management/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "薬品管理", "データ一覧"),
-  "src/admin/features/data-search-chemical-management/DataListPage.tsx": searchList("薬品管理", "日付・薬品名・区分（入庫/出庫）・数量・現在庫数"),
+  "src/admin/features/data-search-chemical-management/DataListPage.tsx": searchList("薬品管理", "日付・薬品名・区分（入庫/出庫）・数量・現在庫数・保管場所・備考・実施者・確認者"),
   "src/admin/features/data-search-chemical-management/RecordDetailPage.tsx": searchDetail("薬品管理", "薬品名・保管場所・区分・元在庫数・数量・現在庫数・備考"),
 
   /* ===== アプリ: 共通 ===== */

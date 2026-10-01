@@ -48,14 +48,17 @@ export const STATUS_LABELS: Record<FeedbackStatus, string> = {
   onHold: "保留",
 };
 
-/** 絞り込みチップと状態変更メニューの並び順 */
-export const STATUS_ORDER: FeedbackStatus[] = ["open", "investigating", "inProgress", "waiting", "done", "onHold"];
+/**
+ * 絞り込みチップと状態変更メニューの並び順。
+ * 調査中（investigating）・確認待ち（waiting）は 2026-10-01 に選べなくした。型には古いデータのため残し、読み込み時に対応中へ寄せる
+ */
+export const STATUS_ORDER: FeedbackStatus[] = ["open", "inProgress", "done", "onHold"];
 
 /** チップの丸ポチの色 */
 export const STATUS_DOT_COLOR: Record<FeedbackStatus, string> = {
   open: "#2f7fd4",
   investigating: "#c2703a",
-  inProgress: "#333333",
+  inProgress: "#d93025",
   waiting: "#7c4dcc",
   done: "var(--semantic-brand-primary)",
   onHold: "#808080",
@@ -65,7 +68,7 @@ export const STATUS_DOT_COLOR: Record<FeedbackStatus, string> = {
 export const STATUS_CHIP_CLASS: Record<FeedbackStatus, string> = {
   open: "bg-[#e7f1fe] text-[#2f7fd4]",
   investigating: "bg-[#fdefe0] text-[#c2703a]",
-  inProgress: "bg-[#ececec] text-[#333333]",
+  inProgress: "bg-[#fdeceb] text-[#d93025]",
   waiting: "bg-[#f1ebfd] text-[#7c4dcc]",
   done: "bg-[#e6f4ec] text-[var(--semantic-brand-primary)]",
   onHold: "bg-[#f0f0f0] text-[#808080]",
@@ -193,7 +196,11 @@ function normalize(list: FeedbackEntry[]): FeedbackEntry[] {
   return list.map((e) => ({
     ...e,
     no: numbered.get(e.id) ?? 0,
-    status: STATUS_ORDER.includes(e.status) ? e.status : "open",
+    status: STATUS_ORDER.includes(e.status)
+      ? e.status
+      : e.status === "investigating" || e.status === "waiting"
+        ? "inProgress"
+        : "open",
     comments: Array.isArray(e.comments) ? e.comments : [],
   }));
 }

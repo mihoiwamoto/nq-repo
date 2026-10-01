@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
@@ -13,11 +13,13 @@ import { getDateStripeClasses } from "../../utils/tableStripe";
 import type { InspectionResult, MachineSearchRecord } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
+import { downloadElementAsPdf } from "../../utils/pdf";
 
 const RESULT_LABELS: Record<InspectionResult, string> = { OK: "正常", NG: "異常あり" };
 const RESULT_COLORS: Record<InspectionResult, string> = {
@@ -37,6 +39,17 @@ function ResultIcon({ result }: { result: InspectionResult }) {
     );
   }
   return null;
+}
+
+function downloadCsv(rows: string[][], filename: string) {
+  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
+  const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function formatDate(date: string) {
@@ -59,6 +72,9 @@ export function DataListPage() {
   const basePath = `/admin/data-search/metal-xray-detection/factories/${factoryId}`;
 
   const [filterOpen, setFilterOpen] = useState(true);
+  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
+  const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [machineFilter, setMachineFilter] = useState("");
   const [productFilter, setProductFilter] = useState("");
@@ -105,9 +121,40 @@ export function DataListPage() {
     setOnlyAbnormal(false);
   }
 
+  function handleDownload() {
+    const header = ["実施日", "点検構成名", "結果", "確認者"];
+    const rows = filtered.map((r) => [r.date, r.machineName, RESULT_LABELS[r.result], r.confirmer]);
+    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
+  }
+
   return (
     <div>
-      <PageTitleBar title="データ一覧" showBack />
+      <PageTitleBar
+        title="データ一覧"
+        showBack
+        action={
+          <button
+            type="button"
+            onClick={() => setDownloadDialogOpen(true)}
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)]"
+            title="CSVダウンロード"
+          >
+            <span
+              aria-hidden
+              className="inline-block size-5 shrink-0"
+              style={{
+                WebkitMaskImage: `url("${iconDownload}")`,
+                maskImage: `url("${iconDownload}")`,
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                backgroundColor: "currentColor",
+              }}
+            />
+          </button>
+        }
+      />
       <Breadcrumb
         items={[
           { label: "データ検索", to: "/admin/data-search" },
@@ -322,7 +369,7 @@ export function DataListPage() {
           )}
         </div>
 
-        <div className="w-full rounded-lg overflow-x-auto">
+        <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
           <div className="flex flex-col min-w-[1004px]">
             <div className="bg-[#f6f6f6] flex h-[50px] items-center">
               {COLUMNS.map((col) => (
@@ -387,6 +434,72 @@ export function DataListPage() {
 
         {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
       </div>
+
+      {downloadDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDownloadDialogOpen(false)} />
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[640px]">
+            <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+              ダウンロード形式選択
+            </h2>
+            <div className="flex flex-col gap-2 items-start w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">
+                ダウンロード形式を選択してください
+              </p>
+              <div className="flex w-full rounded-lg overflow-hidden border border-[#d0d0d0]">
+                <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-center px-6 py-4 text-white text-base w-[160px] shrink-0">
+                  ファイル形式
+                </div>
+                <div className="bg-white flex flex-col gap-3 justify-center px-6 py-4 flex-1">
+                  <label className="flex items-center gap-2 text-base text-[var(--semantic-text-primary)]">
+                    <input
+                      type="radio"
+                      name="downloadFormat"
+                      value="csv"
+                      checked={downloadFormat === "csv"}
+                      onChange={() => setDownloadFormat("csv")}
+                    />
+                    CSV形式
+                  </label>
+                  <label className="flex items-center gap-2 text-base text-[var(--semantic-text-primary)]">
+                    <input
+                      type="radio"
+                      name="downloadFormat"
+                      value="pdf"
+                      checked={downloadFormat === "pdf"}
+                      onChange={() => setDownloadFormat("pdf")}
+                    />
+                    PDF形式
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-6 items-center justify-center w-full">
+              <button
+                type="button"
+                onClick={() => setDownloadDialogOpen(false)}
+                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (downloadFormat === "csv") {
+                    handleDownload();
+                  } else if (tableRef.current) {
+                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                  }
+                  setDownloadDialogOpen(false);
+                }}
+                className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+              >
+                ダウンロード
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
