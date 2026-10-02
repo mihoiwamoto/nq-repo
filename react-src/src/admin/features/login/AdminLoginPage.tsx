@@ -5,7 +5,7 @@ import iconEye from "../../../assets/figma/icons/common/eye.svg?url";
 import iconEyeOff from "../../../assets/figma/icons/common/eye-off.svg?url";
 
 const DEMO_EMPLOYEE_NUMBER = "123456";
-const DEMO_PASSWORD = "Iwamoto1000@";
+const DEMO_PASSWORD = "N9MX8Wjywc6m5MxD";
 
 export function AdminLoginPage() {
   const navigate = useNavigate();

@@ -11,7 +11,7 @@ import iconEye from "../../../assets/figma/icons/common/eye.svg?url";
 import iconEyeOff from "../../../assets/figma/icons/common/eye-off.svg?url";
 
 const DEMO_FACTORY_ID = "123456";
-const DEMO_PASSWORD = "Iwamoto1000@";
+const DEMO_PASSWORD = "N9MX8Wjywc6m5MxD";
 const LOGIN_DELAY_MS = 600;
 const APP_DEVICE_REGISTERED_KEY = "nq_app_device_registered";
 const APP_DEVICE_FACTORY_ID = "f1";
