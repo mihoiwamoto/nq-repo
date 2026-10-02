@@ -49,8 +49,13 @@ export function RecordingPage() {
   const { lines } = useCleaningRecord();
   const navigate = useNavigate();
   const location = useLocation();
-  const inspectorName =
-    (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
+  const stateData = location.state as
+    | { inspectorName?: string; editReturn?: { to: string; state?: unknown } }
+    | null;
+  const inspectorName = stateData?.inspectorName ?? ACTORS[0].name;
+  // 確認待ちの差し戻しから「点検内容を修正する」で来たときの戻り先（機械器具点検と同じ）。
+  // このときは提出フローではなく、編集を保存して元の詳細画面に戻すだけにする。
+  const editReturn = stateData?.editReturn;
 
   const line = lines.find((l) => l.id === lineId);
   // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
@@ -61,7 +66,8 @@ export function RecordingPage() {
       : line?.status === "in_progress"
         ? "partial"
         : "full";
-  const fill = progressFill ?? lineFill;
+  // 差し戻しの編集は「提出済みの記録を直す」ので、記録は入り切った状態で開く
+  const fill = progressFill ?? (editReturn ? "full" : lineFill);
   const hasStarted = fill !== "none";
   // 見送りのラインは清掃自体を行っていないので、記録は空・備考に見送り理由だけを表示する
   const isSkipped = progressFill === null && line?.status === "skipped";
@@ -221,6 +227,28 @@ export function RecordingPage() {
           </div>
         </div>
 
+        {editReturn ? (
+          /* 差し戻しの編集モード。提出はせず、「編集を保存」で確認待ち詳細の元のステップに戻る */
+          <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-4 flex items-center justify-center gap-6">
+            <button
+              type="button"
+              onClick={() => navigate(editReturn.to, { state: editReturn.state })}
+              className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)] px-4"
+            >
+              戻る
+            </button>
+            <button
+              type="button"
+              disabled={!allDone}
+              onClick={() => navigate(editReturn.to, { state: editReturn.state })}
+              className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl px-4 ${
+                allDone ? "bg-[var(--semantic-brand-primary)] text-white" : "bg-[#d0d0d0] text-white"
+              }`}
+            >
+              編集を保存
+            </button>
+          </div>
+        ) : (
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-4 flex items-center justify-between">
           <button
             type="button"
@@ -249,6 +277,7 @@ export function RecordingPage() {
             </button>
           </div>
         </div>
+        )}
       </div>
 
       {saveDialogOpen && (

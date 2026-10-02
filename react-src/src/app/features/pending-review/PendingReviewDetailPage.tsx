@@ -32,6 +32,7 @@ import {
   lines as cleaningLines,
   pendingReviewRecords,
   initialRemarks as cleaningInitialRemarks,
+  CLEANING_REJECTION_COMMENTS,
 } from "../cleaning-record/mockData";
 import floorMapImage from "../../../assets/figma/floorplans/floor-a.png";
 import {
@@ -46,7 +47,13 @@ import {
 import {
   additives,
   initialRecords as initialAdditiveRecords,
+  ADDITIVE_REJECTION_COMMENTS,
 } from "../additive-management/mockData";
+import {
+  chemicals,
+  initialRecords as initialChemicalRecords,
+  CHEMICAL_REJECTION_COMMENTS,
+} from "../chemical-management/mockData";
 import {
   pendingReviewPost as scalePendingReviewPost,
   pendingReviewScales,
@@ -591,6 +598,7 @@ export function PendingReviewDetailPage() {
   const isScaleInspectionLedger = review?.ledgerSlug === "scale-inspection";
   const isSensoryLedger = review?.ledgerSlug === "sensory-inspection";
   const isMetalXrayLedger = review?.ledgerSlug === "metal-xray-detection";
+  const isChemicalLedger = review?.ledgerSlug === "chemical-management";
   const CONFIRMERS = isCleaningLedger
     ? CLEANING_CONFIRMERS
     : isGlassPlasticLedger
@@ -698,11 +706,17 @@ export function PendingReviewDetailPage() {
     : undefined;
   const sampleDetail = review.sampleId ? SAMPLE_REVIEW_DETAILS[review.sampleId] : undefined;
   const machine = review.machineId ? MACHINES.find((m) => m.id === review.machineId) : undefined;
+  const chemical = review.chemicalId
+    ? chemicals.find((c) => c.id === review.chemicalId)
+    : undefined;
 
   const isEquipment = review.ledgerSlug === "equipment-inspection" && !!line;
   // 差し戻しは確認者ではなく実施者が対応するので、入口のダイアログも実施者選択になる
   const isEquipmentRejected = isEquipment && review.status === "差し戻し";
   const isCleaning = isCleaningLedger && !!line;
+  // 清掃記録の差し戻しも機械器具点検と同じく、実施者が対応する（2026-10-02）
+  const isCleaningRejected = isCleaning && review.status === "差し戻し";
+  const isLineRejected = isEquipmentRejected || isCleaningRejected;
   const isWater = review.ledgerSlug === "water-inspection" && !!waterRecord;
   const isGlassPlastic = isGlassPlasticLedger && !!floor;
   const isAdditive = isAdditiveLedger && !!additive;
@@ -711,6 +725,11 @@ export function PendingReviewDetailPage() {
     review.ledgerSlug === "sample-management" && !!sampleDetail;
   const isSensory = isSensoryLedger;
   const isMetalXray = isMetalXrayLedger && !!machine;
+  // 薬品管理・添加物管理の差し戻しも機械器具点検と同じく、実施者が対応する（2026-10-02）
+  const isChemicalRejected = isChemicalLedger && !!chemical && review.status === "差し戻し";
+  const isAdditiveRejected = isAdditive && review.status === "差し戻し";
+  const isStockRejected = isChemicalRejected || isAdditiveRejected;
+  const isActorPicker = isLineRejected || isStockRejected;
 
   if (
     !isEquipment &&
@@ -722,6 +741,7 @@ export function PendingReviewDetailPage() {
     !isSample &&
     !isSensory &&
     !isMetalXray &&
+    !isChemicalRejected &&
     review?.ledgerSlug !== "sample-management"
   ) {
     return (
@@ -866,9 +886,9 @@ export function PendingReviewDetailPage() {
 
   if (step === "confirmer") {
     // 差し戻しは「記録を直す実施者」が入るので、確認者ではなく実施者を選んでもらう
-    const pickerPeople = isEquipmentRejected ? ACTORS : CONFIRMERS;
-    const pickerSelectedId = isEquipmentRejected ? equipmentActorId : confirmerId;
-    const selectPickerPerson = isEquipmentRejected ? setEquipmentActorId : setConfirmerId;
+    const pickerPeople = isActorPicker ? ACTORS : CONFIRMERS;
+    const pickerSelectedId = isActorPicker ? equipmentActorId : confirmerId;
+    const selectPickerPerson = isActorPicker ? setEquipmentActorId : setConfirmerId;
     return (
       <>
         <AppHeader title="確認待ち" />
@@ -877,7 +897,7 @@ export function PendingReviewDetailPage() {
             <div className="absolute inset-0 bg-black/50" onClick={() => navigate("/app/pending-review")} />
             <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
               <h2 className="text-2xl text-[var(--semantic-text-primary)]">
-                {isEquipmentRejected ? "実施者を選んでください" : "確認者を選んでください"}
+                {isActorPicker ? "実施者を選んでください" : "確認者を選んでください"}
               </h2>
               <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
                 {pickerPeople.map((c) => (
@@ -1263,6 +1283,205 @@ export function PendingReviewDetailPage() {
         {showComplete && (
           <CompleteDialog
             title="確認が完了しました"
+            message="ご確認ありがとうございます。"
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
+        )}
+      </>
+    );
+  }
+
+  // 薬品管理・添加物管理の差し戻し（機械器具点検の差し戻しと同じ流れ。2026-10-02）。
+  // 実施者が差し戻し理由を読み、必要なら記録を直してから「差し戻し対応完了」を押す。
+  if (isStockRejected) {
+    const actor = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
+    const item = isChemicalRejected ? chemical! : additive!;
+    const ledgerLabel = isChemicalRejected ? "薬品管理" : "添加物管理";
+    const rejection = isChemicalRejected
+      ? CHEMICAL_REJECTION_COMMENTS[item.id]
+      : ADDITIVE_REJECTION_COMMENTS[item.id];
+    const stockRecords = isChemicalRejected
+      ? initialChemicalRecords
+          .filter((r) => r.chemicalId === item.id)
+          .map((r) => ({
+            id: r.id,
+            date: r.date,
+            storageLocation: r.storageLocation,
+            category: r.category,
+            quantity: r.usedQuantity,
+            currentStock: r.currentStock,
+            remarks: r.remarks,
+            actor: r.actor,
+          }))
+      : initialAdditiveRecords.filter((r) => r.additiveId === item.id);
+    const targetRecord =
+      stockRecords.find((r) => r.id === rejection?.recordId) ?? stockRecords[stockRecords.length - 1];
+    const initialStock = isChemicalRejected ? chemical!.currentQuantity : additive!.initialStock;
+    const allStockComments = [...(rejection?.comments ?? []), ...equipmentExtraComments];
+
+    const handleSendStockComment = () => {
+      if (!equipmentNewComment.trim()) return;
+      setEquipmentExtraComments((prev) => [
+        ...prev,
+        {
+          id: `local-${prev.length}`,
+          authorName: actor.name,
+          timestamp: commentTimestamp(),
+          body: equipmentNewComment.trim(),
+        },
+      ]);
+      setEquipmentNewComment("");
+    };
+
+    // 差し戻された記録の記録入力へ（記録が入った状態で開く）。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
+    const goToEdit = () => {
+      const to = isChemicalRejected
+        ? `/app/ledger-list/chemical-management/${item.id}/new`
+        : `/app/ledger-list/additive-management/products/${item.id}/new`;
+      navigate(to, {
+        state: {
+          inspectorName: actor.name,
+          date: targetRecord?.date,
+          editRecord: targetRecord
+            ? {
+                category: targetRecord.category,
+                quantity: targetRecord.quantity,
+                currentStock: targetRecord.currentStock,
+                remarks: targetRecord.remarks,
+              }
+            : undefined,
+          editReturn: { to: location.pathname, state: { step, actorId: equipmentActorId } },
+        },
+      });
+    };
+
+    return (
+      <>
+        <AppHeader title={`${ledgerLabel}_${item.name}`} />
+        {/* 差し戻し内容を最後まで読むまで完了ボタンは押せない（機械器具点検と同じ） */}
+        <ScrollEndArea
+          className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
+          onReachEnd={() => setEquipmentScrolledToEnd(true)}
+        >
+          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+            <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
+            <p className="text-sm text-[var(--semantic-text-primary)]">
+              承認者から差し戻し理由のコメントがあります。
+            </p>
+          </div>
+
+          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{targetRecord?.date ?? "2025/04/01"}</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{actor.name}</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">保管場所</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{item.storageLocation}</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">規格</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{item.spec}</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">元在庫数</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{initialStock}</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg overflow-x-auto shrink-0 w-full max-w-full">
+            <table className="border-collapse w-full">
+              <thead>
+                <tr className="bg-[var(--semantic-brand-primary)]">
+                  {ADDITIVE_RECORD_COLUMNS.filter((col) => col.key !== "action").map((col) => (
+                    <th
+                      key={col.key}
+                      style={{ minWidth: col.width }}
+                      className="text-white text-sm font-semibold px-2 py-2 whitespace-nowrap"
+                    >
+                      {col.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {stockRecords.map((record, index) => (
+                  <tr key={record.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
+                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                      {record.storageLocation}
+                    </td>
+                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                      {record.category}
+                    </td>
+                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                      {record.quantity}
+                    </td>
+                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                      {record.currentStock}
+                    </td>
+                    <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">
+                      {record.remarks}
+                    </td>
+                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
+                      {record.actor}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex flex-col gap-2 items-start w-full max-w-full mt-12">
+            <div className="flex h-11 items-center justify-between w-full">
+              <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
+              <button
+                type="button"
+                onClick={goToEdit}
+                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
+              >
+                <img src={iconEdit} alt="" className="size-5" />
+                点検内容を修正する
+              </button>
+            </div>
+
+            <CommentInput
+              value={equipmentNewComment}
+              onChange={setEquipmentNewComment}
+              maxLength={255}
+              comments={allStockComments}
+              onSend={handleSendStockComment}
+            />
+          </div>
+        </ScrollEndArea>
+
+        <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
+          <button
+            type="button"
+            onClick={() => setStep("confirmer")}
+            className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+          >
+            戻る
+          </button>
+          <button
+            type="button"
+            disabled={!equipmentScrolledToEnd}
+            onClick={() => setEquipmentResponseComplete(true)}
+            className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+              equipmentScrolledToEnd ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+            }`}
+          >
+            差し戻し対応完了
+          </button>
+        </div>
+
+        {equipmentResponseComplete && (
+          <CompleteDialog
+            title="差し戻し対応が完了しました"
             message="ご確認ありがとうございます。"
             buttonLabel="確認待ちに戻る"
             onButtonClick={() => navigate("/app/pending-review")}
@@ -2513,6 +2732,160 @@ export function PendingReviewDetailPage() {
               maxLength={255}
               comments={allEquipmentComments}
               onSend={handleSendEquipmentComment}
+            />
+          </div>
+        </ScrollEndArea>
+
+        <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
+          <button
+            type="button"
+            onClick={() => setStep("confirmer")}
+            className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+          >
+            戻る
+          </button>
+          <button
+            type="button"
+            disabled={!equipmentScrolledToEnd}
+            onClick={() => setEquipmentResponseComplete(true)}
+            className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+              equipmentScrolledToEnd ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+            }`}
+          >
+            差し戻し対応完了
+          </button>
+        </div>
+
+        {equipmentResponseComplete && (
+          <CompleteDialog
+            title="差し戻し対応が完了しました"
+            message="ご確認ありがとうございます。"
+            buttonLabel="確認待ちに戻る"
+            onButtonClick={() => navigate("/app/pending-review")}
+          />
+        )}
+      </>
+    );
+  }
+
+  // 清掃記録の差し戻し（機械器具点検の差し戻しと同じ流れ。2026-10-02）。
+  // 実施者が差し戻し理由を読み、必要なら清掃内容を直してから「差し戻し対応完了」を押す。
+  if (isCleaningRejected && line) {
+    const actor = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
+    const rejectionComments = CLEANING_REJECTION_COMMENTS[line.id] ?? [];
+    const allCleaningComments = [...rejectionComments, ...equipmentExtraComments];
+
+    const handleSendCleaningComment = () => {
+      if (!equipmentNewComment.trim()) return;
+      setEquipmentExtraComments((prev) => [
+        ...prev,
+        {
+          id: `local-${prev.length}`,
+          authorName: actor.name,
+          timestamp: commentTimestamp(),
+          body: equipmentNewComment.trim(),
+        },
+      ]);
+      setEquipmentNewComment("");
+    };
+
+    // 清掃の記録入力へ。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
+    const goToEdit = () => {
+      navigate(`/app/ledger-list/cleaning-record/lines/${line.id}`, {
+        state: {
+          inspectorName: actor.name,
+          editReturn: { to: location.pathname, state: { step, actorId: equipmentActorId } },
+        },
+      });
+    };
+
+    return (
+      <>
+        <AppHeader title="清掃記録" />
+        {/* 差し戻し内容を最後まで読むまで完了ボタンは押せない（機械器具点検と同じ） */}
+        <ScrollEndArea
+          className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
+          onReachEnd={() => setEquipmentScrolledToEnd(true)}
+        >
+          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+            <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
+            <p className="text-sm text-[var(--semantic-text-primary)]">
+              承認者から差し戻し理由のコメントがあります。
+            </p>
+          </div>
+
+          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{actor.name}</p>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">持ち場/ライン</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{lineLabel}</p>
+            </div>
+          </div>
+
+          {cleaningPoints.map((point) => (
+            <div
+              key={point.id}
+              className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full"
+            >
+              <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-2 rounded-lg w-full">
+                <p className="text-base text-white">清掃箇所</p>
+                <p className="text-base text-white">{point.location}</p>
+              </div>
+              <div className="flex flex-col gap-3 items-start px-2 w-full">
+                <p className="text-base text-[var(--semantic-brand-primary)]">清掃項目</p>
+                {point.items.map((item) => {
+                  const record = pendingReviewRecords[keyFor(point.location, item)];
+                  return (
+                    <div key={item} className="flex flex-col gap-2 items-start w-full">
+                      <div className="flex items-center justify-between w-full gap-4">
+                        <p className="text-base text-[var(--semantic-text-primary)]">{item}</p>
+                        <span className="bg-[#19c95f] flex h-6 w-16 items-center justify-center rounded-lg text-xs text-white">
+                          清掃済
+                        </span>
+                      </div>
+                      {record?.timestamp && (
+                        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                          {record.inspector} {record.timestamp}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full max-w-full">
+            <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+            <p className="text-base text-[var(--semantic-text-secondary)]">{cleaningInitialRemarks}</p>
+          </div>
+
+          <div className="flex flex-col gap-2 items-start w-full max-w-full mt-12">
+            <div className="flex h-11 items-center justify-between w-full">
+              <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
+              <button
+                type="button"
+                onClick={goToEdit}
+                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
+              >
+                <img src={iconEdit} alt="" className="size-5" />
+                点検内容を修正する
+              </button>
+            </div>
+
+            <CommentInput
+              value={equipmentNewComment}
+              onChange={setEquipmentNewComment}
+              maxLength={255}
+              comments={allCleaningComments}
+              onSend={handleSendCleaningComment}
             />
           </div>
         </ScrollEndArea>

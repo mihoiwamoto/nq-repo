@@ -153,3 +153,15 @@ export const ACTORS = [
   { id: "1084156", name: "松本奈々" },
   { id: "1091327", name: "中村翔太" },
 ];
+
+/** 確認待ち（差し戻し）で表示する、承認者からの差し戻し理由コメント。ライン ID ごとに持つ（機械器具点検の LINE_REJECTION_COMMENTS と同じ形） */
+export const CLEANING_REJECTION_COMMENTS: Record<string, { id: string; authorName: string; timestamp: string; body: string }[]> = {
+  c1: [
+    {
+      id: "cc1",
+      authorName: "鈴木一郎",
+      timestamp: "25.04.02 10:16",
+      body: "つまみ上げパック機 シール部の清掃後の状態が確認できません。清掃内容を追記のうえ、再度ご提出をお願いします。",
+    },
+  ],
+};

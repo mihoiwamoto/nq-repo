@@ -189,3 +189,22 @@ export const ACTORS = [
   { id: "1091243", name: "渡辺修一" },
   { id: "1046789", name: "伊藤誠" },
 ];
+
+/** 確認待ち（差し戻し）で表示する、承認者からの差し戻し理由コメント。薬品 ID ごとに持つ（機械器具点検の LINE_REJECTION_COMMENTS と同じ形）。
+ * recordId は「点検内容を修正する」で開いて直す記録 */
+export const CHEMICAL_REJECTION_COMMENTS: Record<
+  string,
+  { recordId: string; comments: { id: string; authorName: string; timestamp: string; body: string }[] }
+> = {
+  c1: {
+    recordId: "r2",
+    comments: [
+      {
+        id: "chc1",
+        authorName: "鈴木一郎",
+        timestamp: "25.04.03 09:42",
+        body: "04/02 の出庫（50ml）の使用場所が分かりません。備考に使用場所を追記のうえ、再度ご提出をお願いします。",
+      },
+    ],
+  },
+};

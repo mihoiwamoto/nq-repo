@@ -17,6 +17,11 @@ function computeAutoStock(initialStock: string, category: StockCategory | null, 
   return formatAmount(result, base.unit);
 }
 
+type EditRecord = { category: StockCategory | ""; quantity: string; currentStock: string; remarks: string };
+
+/** 差し戻しの編集で開いたときは、記録の値（単位付き）から数値だけを入力欄に戻す */
+const amountOnly = (v: string) => v.replace(/[^\d,.]/g, "");
+
 export function RecordingPage() {
   const { productId, recordId } = useParams<{ productId: string; recordId?: string }>();
   const navigate = useNavigate();
@@ -26,15 +31,31 @@ export function RecordingPage() {
   const additive = additives.find((a) => a.id === productId);
   const existingRecord = recordId ? records.find((r) => r.id === recordId) : undefined;
 
-  const state = location.state as { date?: string; inspectorName?: string } | null;
+  const state = location.state as
+    | {
+        date?: string;
+        inspectorName?: string;
+        editRecord?: EditRecord;
+        editReturn?: { to: string; state?: unknown };
+      }
+    | null;
+  // 確認待ちの差し戻しから「点検内容を修正する」で来たときの戻り先と、直す記録（2026-10-02）
+  const editReturn = state?.editReturn;
+  const editRecord = state?.editRecord;
   const date = existingRecord?.date ?? state?.date ?? "2025/04/01";
   const actor = existingRecord?.actor ?? state?.inspectorName ?? ACTORS[0].name;
 
-  const [category, setCategory] = useState<StockCategory | null>(existingRecord?.category ?? null);
-  const [quantity, setQuantity] = useState(existingRecord?.quantity ?? "");
-  const [currentStock, setCurrentStock] = useState(existingRecord?.currentStock ?? "");
+  const [category, setCategory] = useState<StockCategory | null>(
+    existingRecord?.category ?? (editRecord?.category || null),
+  );
+  const [quantity, setQuantity] = useState(
+    existingRecord?.quantity ?? (editRecord ? amountOnly(editRecord.quantity) : ""),
+  );
+  const [currentStock, setCurrentStock] = useState(
+    existingRecord?.currentStock ?? (editRecord ? amountOnly(editRecord.currentStock) : ""),
+  );
   const [currentStockEdited, setCurrentStockEdited] = useState(false);
-  const [remarks, setRemarks] = useState(existingRecord?.remarks ?? "");
+  const [remarks, setRemarks] = useState(existingRecord?.remarks ?? editRecord?.remarks ?? "");
   const basePath = `/app/ledger-list/additive-management/products/${productId}`;
   /** 数量・現在庫数は数値だけ入力してもらい、単位は品目の規格（例 1,000ml）から補う */
   const unit = unitOf(additive?.spec ?? "") || unitOf(additive?.initialStock ?? "");
@@ -183,6 +204,28 @@ export function RecordingPage() {
           </div>
         </div>
 
+        {editReturn ? (
+          /* 差し戻しの編集モード。提出はせず、「編集を保存」で確認待ち詳細の元のステップに戻る（機械器具点検と同じ） */
+          <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-10 py-6 flex items-center justify-center gap-6">
+            <button
+              type="button"
+              onClick={() => navigate(editReturn.to, { state: editReturn.state })}
+              className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+            >
+              戻る
+            </button>
+            <button
+              type="button"
+              disabled={!canSave}
+              onClick={() => navigate(editReturn.to, { state: editReturn.state })}
+              className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+                canSave ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+              }`}
+            >
+              編集を保存
+            </button>
+          </div>
+        ) : (
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-10 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
@@ -202,6 +245,7 @@ export function RecordingPage() {
             保存
           </button>
         </div>
+        )}
       </div>
     </>
   );

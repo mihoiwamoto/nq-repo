@@ -693,7 +693,7 @@ function adLogin(){
 }
 function adSignIn(role){
   if (role){ S.role = role; }
-  else if (!(S.ad.loginNo==='123456' && S.ad.loginPw==='Iwamoto1000@')){ S.ad.loginErr = true; render(); return; }
+  else if (!(S.ad.loginNo==='123456' && S.ad.loginPw==='N9MX8Wjywc6m5MxD')){ S.ad.loginErr = true; render(); return; }
   S.ad.loginErr = false; S.ad.loginNo=''; S.ad.loginPw=''; S.auth.admin = true; S.ad.sc = 'home'; render();
 }
 /* ---- ログアウト完了（LogoutCompletePage.tsx） ---- */
@@ -1231,7 +1231,7 @@ function apLogin(){
 function apSignIn(){
   if (S.off){ S.app.offShown = true; render(); return; }
   S.app.offShown = false;
-  if (!(S.app.loginId==='123456' && S.app.loginPw==='Iwamoto1000@')){ S.app.loginErr = true; render(); return; }
+  if (!(S.app.loginId==='123456' && S.app.loginPw==='N9MX8Wjywc6m5MxD')){ S.app.loginErr = true; render(); return; }
   S.app.loginErr = false; S.app.loading = true; render();
   setTimeout(()=>{ S.app.loading = false; S.app.loginId=''; S.app.loginPw=''; S.auth.app = true; S.app.sc = 'ledgers'; render(); }, 600);
 }

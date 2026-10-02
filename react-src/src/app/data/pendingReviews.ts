@@ -12,6 +12,7 @@ export type PendingReview = {
   postId?: string;
   sampleId?: string;
   machineId?: string;
+  chemicalId?: string;
 };
 
 export const PENDING_REVIEWS: PendingReview[] = [
@@ -113,5 +114,31 @@ export const PENDING_REVIEWS: PendingReview[] = [
     ledgerSlug: "equipment-inspection",
     status: "差し戻し",
     lineId: "l8",
+  },
+  // 清掃記録の差し戻し（機械器具点検の p14 と同じ流れ）
+  {
+    id: "p15",
+    date: "04/01",
+    name: "ゆばライン",
+    ledgerSlug: "cleaning-record",
+    status: "差し戻し",
+    lineId: "c1",
+  },
+  // 薬品管理・添加物管理の差し戻し（機械器具点検の p14 と同じ流れ。2026-10-02）
+  {
+    id: "p16",
+    date: "04/02",
+    name: "ソルビン酸",
+    ledgerSlug: "chemical-management",
+    status: "差し戻し",
+    chemicalId: "c1",
+  },
+  {
+    id: "p17",
+    date: "04/01",
+    name: "ソルビン酸",
+    ledgerSlug: "additive-management",
+    status: "差し戻し",
+    additiveId: "a1",
   },
 ];
