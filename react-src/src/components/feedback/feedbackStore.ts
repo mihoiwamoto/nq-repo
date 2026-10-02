@@ -50,9 +50,10 @@ export const STATUS_LABELS: Record<FeedbackStatus, string> = {
 
 /**
  * 絞り込みチップと状態変更メニューの並び順。
- * 調査中（investigating）・確認待ち（waiting）は 2026-10-01 に選べなくした。型には古いデータのため残し、読み込み時に対応中へ寄せる
+ * 調査中（investigating）は 2026-10-01 に選べなくした。型には古いデータのため残し、読み込み時に対応中へ寄せる。
+ * 確認待ち（waiting）は同じ日に一度外したが、対応中の後に戻した
  */
-export const STATUS_ORDER: FeedbackStatus[] = ["open", "inProgress", "done", "onHold"];
+export const STATUS_ORDER: FeedbackStatus[] = ["open", "inProgress", "waiting", "done", "onHold"];
 
 /** チップの丸ポチの色 */
 export const STATUS_DOT_COLOR: Record<FeedbackStatus, string> = {
@@ -198,7 +199,7 @@ function normalize(list: FeedbackEntry[]): FeedbackEntry[] {
     no: numbered.get(e.id) ?? 0,
     status: STATUS_ORDER.includes(e.status)
       ? e.status
-      : e.status === "investigating" || e.status === "waiting"
+      : e.status === "investigating"
         ? "inProgress"
         : "open",
     comments: Array.isArray(e.comments) ? e.comments : [],

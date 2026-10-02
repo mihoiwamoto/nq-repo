@@ -11,7 +11,7 @@ import {
 
 type InspectionContextValue = {
   lines: Line[];
-  updateLineStatus: (lineId: string, status: LineStatus) => void;
+  updateLineStatus: (lineId: string, status: LineStatus, patch?: Partial<Line>) => void;
   entries: Record<string, ScheduleEntry>;
   upsertEntry: (dateKey: string, lineIds: string[]) => void;
   removeEntry: (dateKey: string) => void;
@@ -27,8 +27,8 @@ export function InspectionProvider({ children }: { children: ReactNode }) {
   const value = useMemo<InspectionContextValue>(
     () => ({
       lines,
-      updateLineStatus: (lineId, status) => {
-        setLines((prev) => prev.map((line) => (line.id === lineId ? { ...line, status } : line)));
+      updateLineStatus: (lineId, status, patch) => {
+        setLines((prev) => prev.map((line) => (line.id === lineId ? { ...line, ...patch, status } : line)));
       },
       entries,
       upsertEntry: (dateKey, lineIds) => {

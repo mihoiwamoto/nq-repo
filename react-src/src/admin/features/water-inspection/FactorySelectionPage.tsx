@@ -12,7 +12,7 @@ export function FactorySelectionPage() {
 
   return (
     <div>
-      <PageTitleBar title="使用水の点検" showBack />
+      <PageTitleBar title="工場選択" showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },

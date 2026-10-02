@@ -92,7 +92,7 @@ export function ApprovalRecordsListPage() {
                       </Link>
                     </div>
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
-                      <ApprovalStatusBadge status="approved" />
+                      <ApprovalStatusBadge status="pending" />
                     </div>
                     <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       {formatDateShort(record.date)}

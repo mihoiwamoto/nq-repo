@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
 import type { LineFrequency } from "./types";
@@ -26,6 +27,18 @@ export function LineSelectionPage() {
   const { lines } = useSchedule();
   const [visibility, setVisibility] = useState<"visible" | "hidden">("visible");
   const [frequency, setFrequency] = useState<LineFrequency>("daily");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showToast, setShowToast] = useState(false);
+
+  // 確認項目の設定で保存して戻ってきたときは「保存しました。」のトーストを出す（Toast が自分で消える）
+  useEffect(() => {
+    const state = location.state as { checklistSaved?: boolean } | null;
+    if (state?.checklistSaved) {
+      setShowToast(true);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   const factoryName = getFactoryName(factoryId);
 
@@ -38,6 +51,7 @@ export function LineSelectionPage() {
 
   return (
     <div>
+      {showToast && <Toast message="保存しました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="機械器具点検"
         showBack

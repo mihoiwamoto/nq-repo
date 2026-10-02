@@ -53,6 +53,10 @@ let kitUnsent = (() => {
 })();
 export const KIT_FLAGS_EVENT = "nq-kit-flags";
 export const getKitUnsent = () => kitUnsent;
+/** 画面設計のユースケースの再生中（flags.fresh）。記録入力を見本の記録の入っていない「未点検」の状態で開き、
+ *  画面設計が入力欄を 1 つずつ埋めて見せる（progressRecordFill.ts の useProgressRecordFill が見る。2026-10-02） */
+let kitFresh = false;
+export const getKitFresh = () => kitFresh;
 const ROLES: PrototypeRoleId[] = ["approver_checker", "approver", "checker", "administrator"];
 
 function applyFlags(flags: Record<string, unknown>) {
@@ -64,6 +68,7 @@ function applyFlags(flags: Record<string, unknown>) {
   const role = flags.role;
   if (typeof role === "string" && (ROLES as string[]).includes(role)) saveCurrentRole(role as PrototypeRoleId);
   kitUnsent = !!flags.unsent && flags.unsent !== "0";
+  kitFresh = FRAME && !!flags.fresh && flags.fresh !== "0";
   if (!FRAME) {
     try {
       if (kitUnsent) sessionStorage.setItem(KIT_UNSENT_KEY, "1");
@@ -146,8 +151,8 @@ export function installFrameBridge() {
   } catch {
     /* 無視 */
   }
-  const q = new URLSearchParams(window.location.search);
-  applyFlags(Object.fromEntries(q.entries()));
+  // 上で hash を読み替えると search が消えるので、先に読んだ kq を使う（2026-10-02 まで消えたあとを読んでいて、URL の印が効いていなかった）
+  applyFlags(Object.fromEntries(kq.entries()));
 }
 
 /** BrowserRouter の中に置く。画面が変わったら親へ知らせ、親からの go で画面と状態を切り替える */

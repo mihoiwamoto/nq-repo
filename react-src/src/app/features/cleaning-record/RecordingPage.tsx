@@ -115,7 +115,7 @@ export function RecordingPage() {
     if (!skipReason.trim()) return;
     if (!isDaily && deferToTomorrow === null) return;
     navigate(`/app/ledger-list/cleaning-record/lines/${lineId}/skip-confirm`, {
-      state: { lineName, date, skipReason, inspectorName },
+      state: { lineName, date, skipReason, inspectorName, deferToTomorrow: isDaily ? undefined : deferToTomorrow ?? undefined },
     });
   }
 

@@ -28,7 +28,7 @@ export function RecordDetailPage() {
   const { recordId } = useParams<{ recordId: string }>();
   const { records, addComment } = useRecords();
   // 承認申請管理の見本は承認ステータスを持たないので画面の中だけで持つ
-  const [status, setStatus] = useState<ApprovalStatus>("approved");
+  const [status, setStatus] = useState<ApprovalStatus>("pending");
   return (
     <RecordDetailView
       record={records.find((r) => r.id === recordId)}

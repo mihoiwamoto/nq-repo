@@ -5,7 +5,7 @@ import { lines as initialLines, type Line, type LineStatus } from "./mockData";
 
 type CleaningRecordContextValue = {
   lines: Line[];
-  updateLineStatus: (lineId: string, status: LineStatus) => void;
+  updateLineStatus: (lineId: string, status: LineStatus, patch?: Partial<Line>) => void;
 };
 
 const CleaningRecordContext = createContext<CleaningRecordContextValue | null>(null);
@@ -17,8 +17,8 @@ export function CleaningRecordProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CleaningRecordContextValue>(
     () => ({
       lines,
-      updateLineStatus: (lineId, status) => {
-        setLines((prev) => prev.map((line) => (line.id === lineId ? { ...line, status } : line)));
+      updateLineStatus: (lineId, status, patch) => {
+        setLines((prev) => prev.map((line) => (line.id === lineId ? { ...line, ...patch, status } : line)));
       },
     }),
     [lines]

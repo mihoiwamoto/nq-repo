@@ -41,7 +41,7 @@ export const lines: Line[] = [
   { id: "c6", name: "充填・包装ライン", frequency: "daily", status: "not_inspected" },
   { id: "c7", name: "原料受入ライン", frequency: "daily", status: "not_inspected" },
   // 毎週は「清掃予定」で登録した日付ごとに表示する。日付は清掃予定カレンダーの登録日 (2025-04-01 / 04-02) に合わせている。
-  // 04/01 の清掃対象。ここから見送ると、「明日に見送る」の選択で翌日 (04/02) の出方が下の 2 ケースに分かれる
+  // 04/01 の清掃対象。ここから見送ると、「明日に見送る」の選択で翌日 (04/02) の出方が変わる（翌日分のラインの一覧の nextDayLines）
   { id: "c5", name: "豆乳ライン", frequency: "weekly", status: "in_progress", scheduledDate: "2025-04-01", inspectorName: "小林誠司", inspectionDate: "2025-04-01" },
   { id: "c16", name: "殺菌ライン", frequency: "weekly", status: "confirmed", scheduledDate: "2025-04-01", inspectorName: "高橋和子", inspectionDate: "2025-04-01" },
   { id: "c17", name: "冷蔵倉庫ライン", frequency: "weekly", status: "inspected", scheduledDate: "2025-04-01", inspectorName: "渡辺真由", inspectionDate: "2025-04-01" },
@@ -49,11 +49,6 @@ export const lines: Line[] = [
   { id: "c4", name: "ゆばライン", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-01" },
   { id: "c19", name: "原料受入ライン", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-01" },
   { id: "c20", name: "自動計量機・風力選別機ライン", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-01" },
-  // 見送り時の「明日に見送る」の選択によって翌日以降の出方が変わるので、両方のケースを 04/02 に並べて確認できるようにしている
-  // 「はい」= 翌日に「未点検」として出続ける
-  { id: "c21", name: "原料受入ライン（翌日に見送る：はいの場合）", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-02", deferToTomorrow: true },
-  // 「いいえ」= 清掃自体がなくなるので翌日は表示されない。その旨を押せない行として置いている
-  { id: "c22", name: "原料受入ライン（翌日に見送る：いいえの場合）は表示されない", frequency: "weekly", status: "skipped", scheduledDate: "2025-04-02", deferToTomorrow: false },
   { id: "c8", name: "ゆばライン", frequency: "monthly", status: "inspected", inspectorName: "吉田浩二", inspectionDate: "2026-09-01" },
   { id: "c9", name: "豆乳ライン", frequency: "monthly", status: "inspected", inspectorName: "山本拓海", inspectionDate: "2026-09-01" },
   { id: "c10", name: "冷蔵倉庫ライン", frequency: "monthly", status: "in_progress", inspectorName: "田村康平", inspectionDate: "2026-09-02" },

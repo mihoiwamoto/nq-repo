@@ -52,7 +52,7 @@ function ResultBadge({ icon }: { icon: ResultIcon }) {
 
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
-  const { records: allRecords } = useRecords();
+  const { records: allRecords, setApprovalStatus } = useRecords();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
   const records = useDemoList(allRecords);
   const rowStripeClasses = getDateStripeClasses(records, (r) => r.date);
@@ -61,6 +61,8 @@ export function ApprovalRecordsListPage() {
 
   const handleApprove = () => {
     requestApproval(() => {
+      // 「承認する」は一覧の承認待ちの記録をまとめて承認する
+      allRecords.forEach((r) => r.approvalStatus === "pending" && setApprovalStatus(r.id, "approved"));
       if (request) updateApprovalRequestStatus(request.id, "approved");
       navigate("/admin/approvals", { state: { statusChanged: "approved" } });
     });

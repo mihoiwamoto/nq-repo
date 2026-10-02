@@ -34,7 +34,8 @@ export function ChecklistSettingsPage() {
 
   function handleSave() {
     saveChecklistItems(draft.filter((item) => item.text.trim() !== ""));
-    navigate(`${basePath}/schedule`, { state: { justSaved: true } });
+    // 保存したら持ち場/ラインの一覧へ戻り、一覧で「保存しました。」のトーストを出す
+    navigate(basePath, { state: { checklistSaved: true } });
   }
 
   return (

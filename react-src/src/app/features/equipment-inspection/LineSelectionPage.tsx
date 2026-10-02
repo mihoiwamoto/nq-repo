@@ -17,8 +17,8 @@ const FREQUENCY_TABS: { key: Frequency; label: string }[] = [
 
 /**
  * 持ち場/ライン選択画面。
- * nextDay = 見送り時に「明日に見送る：いいえ」を選んだ翌日の状態。
- * 点検自体がなくなるので、毎週の点検予定は残らない。
+ * nextDay = 翌日（04/02）の状態。毎週は、当日（04/01）に見送ったときの「明日に見送る」で出方が変わる。
+ * はい → そのラインが 04/02 に「未点検」で並ぶ。いいえ・見送っていない → 点検自体がなくなるので、毎週の点検予定は残らない。
  */
 export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {}) {
   const { lines: allLines } = useInspection();
@@ -27,7 +27,7 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
   const [frequency, setFrequency] = useState<Frequency>(initialFrequency ?? (nextDay ? "weekly" : "daily"));
   const [progressOpen, setProgressOpen] = useState(false);
 
-  const lines = nextDay ? allLines.filter((line) => line.frequency !== "weekly") : allLines;
+  const lines = nextDay ? nextDayLines(allLines) : allLines;
   const visibleLines = lines.filter((line) => line.frequency === frequency);
   const inspectedCount = visibleLines.filter(
     (line) => line.status === "inspected" || line.status === "confirmed"
@@ -49,20 +49,6 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
   }, [visibleLines]);
 
   function renderLine(line: Line) {
-    // 「明日に見送る：いいえ」で見送った行は翌日には点検自体がなくなるので、
-    // 押せないグレーアウト表示にして「表示されない」ことだけを示す
-    if (line.status === "skipped" && line.deferToTomorrow === false) {
-      return (
-        <div
-          key={line.id}
-          aria-disabled="true"
-          className="bg-[#d0d0d0] flex gap-2 h-20 items-center p-4 rounded-lg w-full cursor-default"
-        >
-          <p className="flex-1 text-lg text-[var(--semantic-text-primary)]">{line.name}</p>
-        </div>
-      );
-    }
-
     return (
       <Link
         key={line.id}
@@ -175,4 +161,20 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
       {progressOpen && <LineProgressPanel lines={lines} inspectedLines={inspectedLines} onClose={() => setProgressOpen(false)} />}
     </>
   );
+}
+
+/** 翌日（当日の 1 日後）の毎週の並び。「明日に見送る：はい」で見送ったものだけが、翌日の日付で未点検に戻って並ぶ */
+function nextDayLines(lines: Line[]): Line[] {
+  return lines.flatMap((line) => {
+    if (line.frequency !== "weekly") return [line];
+    if (line.status !== "skipped" || line.deferToTomorrow !== true) return [];
+    return [{ ...line, status: "not_inspected" as const, scheduledDate: addDay(line.scheduledDate), inspectorName: undefined, inspectionDate: undefined }];
+  });
+}
+
+function addDay(dateKey?: string): string | undefined {
+  if (!dateKey) return dateKey;
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const next = new Date(y, m - 1, d + 1);
+  return `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}-${String(next.getDate()).padStart(2, "0")}`;
 }

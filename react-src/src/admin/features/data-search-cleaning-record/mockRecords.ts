@@ -9,7 +9,7 @@ export const mockRecords: CleaningSearchRecord[] = [
     remarks: "異常なし",
     implementer: "高橋和子",
     confirmer: "加藤由美",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
     comments: [
       {
         id: "c1",
@@ -52,7 +52,7 @@ export const mockRecords: CleaningSearchRecord[] = [
     remarks: "清掃設備メンテナンス中のため翌日に見送り",
     implementer: "中村美咲",
     confirmer: "田中裕子",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
     cleaningPoints: [],
   },
   {

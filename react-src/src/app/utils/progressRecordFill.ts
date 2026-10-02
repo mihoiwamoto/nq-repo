@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useDemoEmpty } from "../../components/demo/demoStore";
+import { getKitFresh } from "../../frameBridge";
 import type { ProgressStatus } from "../features/progress/mockData";
 
 /**
@@ -32,7 +33,9 @@ export function useProgressRecordFill(): RecordFill | null {
   const demoEmpty = useDemoEmpty();
   const state = location.state as { progressStatus?: ProgressStatus } | null;
   if (demoEmpty) return "none";
-  return state?.progressStatus ? fillFromProgressStatus(state.progressStatus) : null;
+  if (state?.progressStatus) return fillFromProgressStatus(state.progressStatus);
+  // 画面設計でユースケースを再生しているあいだは、記録の入っていない状態で開く（入力欄を埋めて見せるため）
+  return getKitFresh() ? "none" : null;
 }
 
 /** 点検中は前半だけを残して「途中まで記録した」状態にする */

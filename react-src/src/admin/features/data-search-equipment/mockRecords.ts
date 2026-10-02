@@ -9,7 +9,7 @@ export const inspectionRecords: InspectionRecord[] = [
     remarks: "全項目正常、異常なし",
     implementer: "田中太郎",
     confirmer: "山田花子",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
     metalComments: [
       {
         id: "mc1",
@@ -90,7 +90,7 @@ export const inspectionRecords: InspectionRecord[] = [
     remarks: "",
     implementer: "高橋美咲",
     confirmer: "加藤由美",
-    approvalStatus: "pending",
+    approvalStatus: "approved",
     sessions: [
       {
         segment: "点検",

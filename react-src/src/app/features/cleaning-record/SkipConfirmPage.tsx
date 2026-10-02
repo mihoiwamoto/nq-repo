@@ -8,6 +8,8 @@ type SkipConfirmState = {
   lineName: string;
   date: string;
   skipReason: string;
+  /** 毎日以外の見送りで選んだ「明日に見送る」。翌日分のラインの一覧の出方が変わる */
+  deferToTomorrow?: boolean;
   inspectorName?: string;
 };
 
@@ -42,7 +44,7 @@ export function SkipConfirmPage() {
   const { lineName, date, skipReason, inspectorName = ACTORS[0].name } = state;
 
   function handleSubmit() {
-    if (lineId) updateLineStatus(lineId, "skipped");
+    if (lineId) updateLineStatus(lineId, "skipped", { deferToTomorrow: state.deferToTomorrow });
     navigate(`${basePath}/complete`);
   }
 

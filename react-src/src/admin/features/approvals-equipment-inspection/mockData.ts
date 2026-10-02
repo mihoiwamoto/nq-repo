@@ -1,5 +1,6 @@
 import type { EquipmentApprovalRecord } from "./types";
 
+// 承認申請管理の機械器具点検は「承認待ち」の申請なので、記録も承認待ちで並べる（詳細で 1 件ずつ、データ一覧の「承認する」でまとめて承認する）
 export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
   {
     id: "a1",
@@ -9,7 +10,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "全項目正常、異常なし",
     implementer: "佐藤健一",
     confirmer: "鈴木雅人",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",
@@ -76,7 +77,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "",
     implementer: "高橋美咲",
     confirmer: "加藤由美",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "点検",
@@ -108,7 +109,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "タンク内部に油汚れを確認、分解洗浄にて対応済み",
     implementer: "渡辺真由",
     confirmer: "伊藤裕太",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",
@@ -168,7 +169,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
       "点検見送り 設備メンテナンスのためライン停止中。業者による定期整備作業が終日実施されており、点検対象の機器にアクセスできないため、本日の点検を見送りとする。整備完了後の翌営業日に点検を実施予定。",
     implementer: "小林誠司",
     confirmer: "鈴木雅人",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [],
   },
   {
@@ -179,7 +180,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "",
     implementer: "山本拓海",
     confirmer: "加藤由美",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",
@@ -231,7 +232,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "ベルト摩耗あり、次回交換予定",
     implementer: "吉田浩二",
     confirmer: "伊藤裕太",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",
@@ -283,7 +284,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "異常なし",
     implementer: "田村康平",
     confirmer: "鈴木雅人",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",
@@ -335,7 +336,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "",
     implementer: "松本奈々",
     confirmer: "加藤由美",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",
@@ -387,7 +388,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "",
     implementer: "佐藤健一",
     confirmer: "伊藤裕太",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",
@@ -439,7 +440,7 @@ export const equipmentApprovalRecords: EquipmentApprovalRecord[] = [
     remarks: "パッキン交換済み、動作確認完了",
     implementer: "高橋美咲",
     confirmer: "鈴木雅人",
-    approvalStatus: "approved",
+    approvalStatus: "pending",
     sessions: [
       {
         segment: "始業",

@@ -234,7 +234,7 @@ export function LineInspectionPage() {
     if (!skipReason.trim()) return;
     if (!isDaily && deferToTomorrow === null) return;
     navigate(`/app/ledger-list/equipment-inspection/lines/${lineId}/skip-confirm`, {
-      state: { lineName, date, skipReason, fromProgress },
+      state: { lineName, date, skipReason, fromProgress, deferToTomorrow: isDaily ? undefined : deferToTomorrow ?? undefined },
     });
   }
 

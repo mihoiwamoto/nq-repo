@@ -36,17 +36,12 @@ export const LINE_STATUS_COLORS: Record<LineStatus, string> = {
 
 export const lines: Line[] = [
   // 毎週は「点検予定」で登録した日付ごとに表示する。日付は点検予定カレンダーの登録日 (2025-04-01 / 04-02) に合わせている。
-  // 04/01 の点検対象。ここから見送ると、「明日に見送る」の選択で翌日 (04/02) の出方が下の 2 ケースに分かれる
+  // 04/01 の点検対象。ここから見送ると、「明日に見送る」の選択で翌日 (04/02) の出方が変わる（翌日分のラインの一覧の nextDayLines）
   { id: "l19", name: "原料受入ライン", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-01" },
   { id: "l1", name: "豆乳ライン", frequency: "weekly", status: "confirmed", scheduledDate: "2025-04-01", inspectorName: "佐藤健一", inspectionDate: "2025-04-01" },
   { id: "l2", name: "ゆばライン（その他）", frequency: "weekly", status: "inspected", scheduledDate: "2025-04-01", inspectorName: "高橋和子", inspectionDate: "2025-04-01" },
   { id: "l3", name: "殺菌ライン", frequency: "weekly", status: "inspected", scheduledDate: "2025-04-01", inspectorName: "渡辺真由", inspectionDate: "2025-04-01" },
   { id: "l5", name: "充填・包装ライン", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-01" },
-  // 見送り時の「明日に見送る」の選択によって翌日以降の出方が変わるので、両方のケースを 04/02 に並べて確認できるようにしている
-  // 「はい」= 翌日に「未点検」として出続ける
-  { id: "l6", name: "原料受入ライン（翌日に見送る：はいの場合）", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-02", deferToTomorrow: true },
-  // 「いいえ」= 点検自体がなくなるので翌日は表示されない。その旨を押せない行として置いている
-  { id: "l18", name: "原料受入ライン（翌日に見送る：いいえの場合）は表示されない", frequency: "weekly", status: "skipped", scheduledDate: "2025-04-02", deferToTomorrow: false },
   { id: "l7", name: "豆乳ライン", frequency: "yearly", status: "not_inspected" },
   { id: "l8", name: "豆乳ライン", frequency: "daily", status: "not_inspected" },
   { id: "l9", name: "ゆばライン（つまみ関係）", frequency: "daily", status: "in_progress", inspectorName: "小林誠司", inspectionDate: "2026-08-25" },

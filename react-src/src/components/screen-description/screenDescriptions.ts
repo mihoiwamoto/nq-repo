@@ -659,7 +659,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
       "アプリ表示期間を「開始日〜終了日」で表示。指定が無ければ「指定なし（常に表示）」",
       "持ち場/ライン名と点検頻度（毎日・毎週・毎月・毎年）を表示",
       "点検箇所ごとに、その下の点検項目を並べる。点検箇所が無ければ「点検箇所は登録されていません」",
-      "見るだけの画面で、編集・削除のボタンはまだ無い",
+      "見るだけの画面で、編集・削除のボタンは無い",
     ],
   },
 
@@ -680,7 +680,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     points: [
       "確認内容を 1 行ずつ書き換える。「+ 行追加」で行を足す",
       "行のごみ箱を押すと確認のポップアップが出て、「削除」でその行を消す（すぐに保存され、削除完了へ）",
-      "「保存」で空の行を除いて保存し、点検予定へ移る",
+      "「保存」で空の行を除いて保存し、持ち場/ラインの一覧へ戻る（「保存しました。」のトースト）",
     ],
     note: "ここの確認内容は、アプリの記録入力の上に【確認項目】としてそのまま並びます。",
   },
@@ -960,7 +960,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   },
   "src/app/pages/LedgerListPage.tsx": {
     summary: "アプリのホームにあたる帳票一覧です。今日記録する帳票（使用水の点検、清掃記録など）を選びます。",
-    points: ["帳票のカードを押すと、その帳票の入口（場所・持ち場・製品の選択）へ", "帳票によっては先に「実施者」を選ぶポップアップが出る"],
+    points: ["帳票のカードを押すと、その帳票の入口（場所・持ち場・製品の選択）へ"],
     states: [actorPickerState("選んだ帳票の入口")],
   },
   "src/app/pages/AppLedgerDetailPage.tsx": {
