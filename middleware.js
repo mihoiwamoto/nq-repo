@@ -5,7 +5,7 @@
 export const config = { matcher: '/:path*' };
 
 const USER = process.env.BASIC_AUTH_USER || 'nq-repo';
-const PASS = process.env.BASIC_AUTH_PASSWORD || 'nq_8888@';
+const PASS = process.env.BASIC_AUTH_PASSWORD || 'PT4Eb4yDGKrj7c5w';
 
 export default function middleware(request) {
   const auth = request.headers.get('authorization') || '';

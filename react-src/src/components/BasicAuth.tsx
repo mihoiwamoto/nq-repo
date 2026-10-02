@@ -5,7 +5,7 @@ interface BasicAuthProps {
 }
 
 const DEFAULT_USERNAME = 'nq-repo'
-const DEFAULT_PASSWORD = 'nq_8888@'
+const DEFAULT_PASSWORD = 'PT4Eb4yDGKrj7c5w'
 
 export function BasicAuth({ children }: BasicAuthProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
