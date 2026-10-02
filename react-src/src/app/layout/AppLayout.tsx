@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { AppRail } from "./AppRail";
 import { AppViewport } from "./AppViewport";
 import { AnnouncementBar, type AnnouncementStatus } from "./AnnouncementBar";
@@ -17,6 +17,9 @@ export function AppLayout() {
   const [status, setStatus] = useState<AnnouncementStatus | null>(null);
   /** 未送信の記録が端末に残っているか。進捗一覧の未送信マークもこれを見る */
   const [unsent, setUnsent] = useState(getKitUnsent);
+  /** オフラインで提出した直後。帯は完了画面では出さず、完了画面を離れた次の画面（帳票の一覧など）で出す */
+  const pendingUnsentRef = useRef<string | null>(null);
+  const { pathname } = useLocation();
   /** 送信エラーのポップアップが出ているか。出ている間は後ろの帯を出さない
    *（同じことを二重に言わないため。ポップアップを閉じれば帯は戻る） */
   const [sendErrorDialog, setSendErrorDialog] = useState(false);
@@ -46,10 +49,19 @@ export function AppLayout() {
     const sync = () => {
       setUnsent(getKitUnsent());
       setStatus(null);
+      pendingUnsentRef.current = null;
     };
     window.addEventListener(KIT_FLAGS_EVENT, sync);
     return () => window.removeEventListener(KIT_FLAGS_EVENT, sync);
   }, []);
+
+  // 完了画面を離れたら、オフラインで提出した分の「未送信のデータがあります」を出す
+  useEffect(() => {
+    if (pendingUnsentRef.current !== null && pendingUnsentRef.current !== pathname) {
+      pendingUnsentRef.current = null;
+      setUnsent(true);
+    }
+  }, [pathname]);
 
   function handleSend() {
     // オフラインを試している間は繋がっていない扱い。送信エラーを試している間は必ず失敗する
@@ -70,8 +82,9 @@ export function AppLayout() {
   function notifySendResult(outcome: DemoSendOutcome) {
     if (outcome === "unsent") {
       // オフラインで提出した＝端末に残っただけ。
-      // 知らせるのは「未送信のデータがあります」の帯ひとつだけにする
-      setUnsent(true);
+      // 知らせるのは「未送信のデータがあります」の帯ひとつだけにする。
+      // 完了画面では出さず、次の画面に移ったところで出す（上の pathname の effect）
+      if (!unsent) pendingUnsentRef.current = pathname;
     } else if (outcome === "failed") {
       // 送信エラーはポップアップで知らせるので、帯には出さない
       setUnsent(true);

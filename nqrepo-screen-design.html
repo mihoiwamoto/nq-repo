@@ -212,6 +212,7 @@ body:not([data-rail="0"]) .rail .rh{display:none}
   background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-2);max-width:calc(100% - 28px);
   /* left:50% のままだと幅の上限が中央の列の半分になり、状態の名前が長いと「プロトタイプで開く」が白い背景からはみ出す。中身の幅で決める */
   width:max-content}
+body.playing .tbar{display:none}
 .tbar .sep{width:1px;height:18px;background:var(--line);flex:none;margin:0 3px}
 /* 画面の状態を開いたまま切り替える */
 .stw{display:inline-flex;align-items:center;gap:7px;padding:4px 9px 4px 10px;border-radius:9px;flex:none}
@@ -365,7 +366,7 @@ body[data-view="feedback"] .stage,body[data-view="feedback"] .insp{display:none}
 .fbmlead{font-size:13px;color:var(--mute);margin:6px 0 0;line-height:1.7}
 /* 対応状況のまとめ。押すとその状況だけに絞る */
 #kit-pbsub2{position:fixed;z-index:60;pointer-events:none;box-sizing:border-box;background:#fff;color:#1b1f1d;font:700 18px/1.5 system-ui,sans-serif;padding:12px 20px;border-radius:10px;text-align:center;border:1px solid rgba(0,0,0,.1);box-shadow:0 2px 8px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center}
-#kit-pbsub2.fl{padding:4px 20px;font-size:16px}   /* フローでは 帳票・ユースケースの白い札と同じ高さ・同じ上端にそろえる（2026-10-02） */
+#kit-pbsub2.fl{padding:8px 20px;font-size:16px}   /* フローでは右の欄の下（ツールバーのすぐ上）に出す（2026-10-02） */
 #kit-pbsub2[hidden]{display:none}
 .canvas.pbsub{padding-top:108px}   /* 再生中は枠の上に字幕のぶん（2 行まで）を空け、枠をその下に縮めて収める */
 /* 中央の番号から跳んできた UI遷移仕様の行を光らせる（2026-10-02） */
@@ -1215,6 +1216,11 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
 .nvfab .sb[hidden]{display:none}
 .nvfab .cr{color:var(--nm);transition:transform .18s}
 .nvsw.open .nvfab .cr{transform:rotate(180deg)}
+/* 再生中は丸いアイコンだけにする（押せば同じパネルが開く。2026-10-02） */
+.nvfab .ic{display:none;flex:none}
+body.playing .nvfab{padding:0;width:42px;height:42px;justify-content:center;gap:0}
+body.playing .nvfab .ic{display:block;color:var(--na)}
+body.playing .nvfab .dt,body.playing .nvfab .lb,body.playing .nvfab .sb,body.playing .nvfab .cr{display:none}
 /* 画面より背が高くなったらパネルの中で縦に送る（React の KitSwitch.tsx と同じ値） */
 .nvpanel{position:absolute;right:0;bottom:calc(100% + 10px);width:312px;background:var(--nb);max-height:calc(100vh - 90px);overflow-y:auto;overscroll-behavior:contain;
   border:1px solid var(--nl);border-radius:16px;box-shadow:var(--nsh);padding:14px;
@@ -1451,6 +1457,7 @@ html.demo-fallback #nvFb,html.demo-fallback .fbmlink{display:none}
     <div class="nvfoot"><button class="nvbtn pri" id="nvFb" type="button" title="枠に出ているいまの画面へのフィードバックを書く">フィードバック</button></div>
   </div>
   <button class="nvfab" id="nvFab" type="button" aria-expanded="false" aria-controls="nvPanel">
+    <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
     <span class="dt"></span><span class="lb">画面設計</span><span class="sb" id="nvFabSb" hidden></span>
     <svg class="cr" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg>
   </button>
@@ -2455,7 +2462,7 @@ const CASES = [
   {grp:'【Admin】帳票管理', name:'新しい点検場所を足す', path:['M5','M5-1-1','M5-1-2','M5-1-3','M5-1-4','M5-1-2','A1-1-1'],
    alt:{'scale-inspection':['M5','M5-3-1','M5-3-3','M5-3-4','M5-3-1','M5-3-2','A1-3-1']},
    note:'管理者が工場を選び、点検場所を新規登録する。登録完了から一覧へ戻り、アプリの点検場所の一覧に並ぶ。翌日から（即時？）並ぶかが論点',
-   gname:'登録したものをアプリに出す', gnameBy:{'equipment-inspection':'【新規登録】登録したものをアプリに表示する', 'cleaning-record':'【新規登録】登録したものをアプリに表示する'},
+   gname:'【新規登録】登録したものをアプリに表示する',
    gnote:'管理者が工場を選び、帳票管理で新規登録する。登録完了から一覧へ戻り、アプリの一覧に並ぶ。翌日から（即時？）並ぶかが論点'},
   {grp:'【Admin】帳票管理', name:'登録した点検場所を直す', need:['edit'], path:['M5','M5-1-1','M5-1-2','M5-1-5','M5-1-6'],
    /* 編集画面で、入力欄を実際に書き換えて見せる（数字の欄があればその数字を、無ければ名前の欄を）。最後に「保存」を囲む（2026-10-02） */
@@ -2464,7 +2471,7 @@ const CASES = [
    endBy:{'chemical-management':[{type:true, cap:'入力欄を押して、内容を書き換える'}, {btn:'保存', cap:'「保存」で直した内容が登録され、薬品の一覧へ戻って「更新されました。」が出る'}]},
    gnoteBy:{'chemical-management':'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると薬品の一覧へ戻り、「更新されました。」のトーストが出る'},
    note:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻る',
-   gname:'登録したものを直す',
+   gname:'【編集】登録したものを修正する',
    gnote:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻る'},
   {grp:'【Admin】帳票管理', name:'【保管場所管理】保管場所を追加する', only:['chemical-management','additive-management'], exact:true,
    path:['M5','M5-{n}-1','M5-{n}-2','M9','M9-1','M9-3','M9'],
@@ -2527,10 +2534,11 @@ const CASES = [
    note:'データ検索で帳票・工場・点検場所を選び、年月のタブで月を切り替えて、記録の「詳細」を開く。詳細は承認申請管理と同じで、コメントも残せる。監査で記録を出すときに通る',
    gname:'承認済みの記録を探して見る',
    gnote:'データ検索で帳票・工場を選び、月を切り替えて、記録の「詳細」を開く。詳細は承認申請管理と同じで、コメントも残せる。監査で記録を出すときに通る'},
-  {grp:'エラーの場合', name:'電波の無い場所で点検する', path:['A1-1-2','A1-1-3','A1-1-4','A2'],
+  {grp:'エラーの場合', name:'電波の無い場所で点検する', path:['A1-1-2','A1-1-3','A1-1-4','A1-1-1'],
    state:'off',   /* 再生のあいだ枠を「オフライン」にする（PROJECT.screenStates のキー。2026-10-02） */
-   end:[{box:'未送信のデータがあります', cap:'オフラインで提出したので、上に「未送信のデータがあります」の帯が出る。電波が戻ったら送信ボタンで送る'}],
-   note:'オフラインでも提出まで進める。上に未送信の帯が出て、電波が戻ったら送信ボタンで送る'},
+   /* 未送信の帯は提出完了では出さず、「〇〇を続ける」で戻った帳票の一覧で出る（React の AppLayout。2026-10-02） */
+   end:[{box:'未送信のデータがあります', cap:'オフラインで提出したので、一覧に戻ると上に「未送信のデータがあります」の帯が出る。電波が戻ったら送信ボタンで送る'}],
+   note:'オフラインでも提出まで進める。提出完了から一覧に戻ると上に未送信の帯が出て、電波が戻ったら送信ボタンで送る'},
   /* ここから下は only の帳票だけのユースケース。path の {n} は帳票の番号（機械器具点検・清掃記録は画面の並びが同じ） */
   {grp:'【App】帳票一覧', name:'【毎日点検】見送りした場合', only:['equipment-inspection','cleaning-record'],
    path:['A1-{n}-1','A1-{n}-3','A1-{n}-5','A1-{n}-6','A1-{n}-1'], pick:{tab:'毎日', row:'未点検'},
@@ -8052,7 +8060,7 @@ const SPEC = {
     ['記録が無いとき', '表示', '—', '記録入力を通らずに開くと「点検内容が見つかりません。点検記録画面から操作してください。」', '—'],
   ], ops:[
     ['「戻る」', '', '前の画面へ', '前の画面'],
-    ['「提出」', '', '記録を足し、点検場所を「点検済み」にする（見本データに保存）。通信できないときは未送信の帯を出す。提出完了へ', 'A1-1-4'],
+    ['「提出」', '', '記録を足し、点検場所を「点検済み」にする（見本データに保存）。通信できないときは提出完了のあとの画面に未送信の帯を出す。提出完了へ', 'A1-1-4'],
     ['「点検記録画面に戻る」', '記録が無いとき', '記録入力へ', 'A1-1-2'],
   ]},
   'A1-1-4': {fields:[
@@ -9499,6 +9507,9 @@ function pendingDecide(s){
 }
 
 const LOG_DOC = [
+  ['2026-10-02','フローのユースケースを再生しているあいだは、右下のフローティング（画面設計・状態）を丸いアイコンだけにした。押すと同じパネルが開く'],
+  ['2026-10-02','フローのユースケースを再生しているあいだは、中央下のバー（端末の大きさ・状態・プロトタイプで開く）を隠すようにした'],
+  ['2026-10-02','オフラインで提出したときの「未送信のデータがあります」の帯を、提出完了では出さず、完了画面を離れた次の画面（帳票の一覧など）で出すようにした。「電波の無い場所で点検する」の再生も、提出完了から一覧に戻って帯を囲む'],
   ['2026-10-02','薬品管理・添加物管理のユースケース（【Admin】帳票管理）に「【保管場所管理】保管場所を追加する」を足した（一覧の保管場所管理カード → 保管場所管理 → 新規登録 → 登録完了 → 一覧）'],
   ['2026-10-02','薬品管理・添加物管理の差し戻しを機械器具点検と同じ流れにした。React に差し戻しの見本（p16 薬品管理・p17 添加物管理、どちらもソルビン酸）と確認待ちの詳細（差し戻し）を足し、記録入力は差し戻しから来たとき差し戻された記録が入った状態で「戻る」「編集を保存」にした。画面設計に A3-9-1・A3-10-1 を足し、ユースケース「差し戻された記録を直す」はその行を開く'],
   ['2026-10-02','清掃記録の差し戻しを機械器具点検と同じ流れにした。React に清掃記録の差し戻しの見本（p15・ゆばライン）と確認待ちの詳細（差し戻し）を足し、清掃の記録入力は差し戻しから来たとき「戻る」「編集を保存」にした。画面設計に A3-8-1 を足し、ユースケース「差し戻された記録を直す」はその行を開く'],
@@ -9511,6 +9522,9 @@ const LOG_DOC = [
   ['2026-10-02','ユースケース「承認して検索に残す」の再生で、詳細のステータスのプルダウンを開いて「承認済み」を選び、確認のポップアップで「承認」を押すところまで動かすようにした'],
   ['2026-10-02','承認申請管理で、確認待ちの確認が済んだ記録が「承認待ち」で並ぶようにそろえた。清掃記録の一覧・詳細が承認済みで固定されていたのを承認待ちに、添加物管理の見本 5 件を承認待ちにした（React）。薬品管理の詳細（M3-9-2）は差し戻しの記録を開いていたので承認待ちの ch2 にした'],
   ['2026-10-02','清掃記録のユースケース「登録したものをアプリに出す」の名前を、機械器具点検と同じ「【新規登録】登録したものをアプリに表示する」にした'],
+  ['2026-10-02','使用水以外の帳票のユースケース「登録したものをアプリに出す」を、機械器具点検と同じ「【新規登録】登録したものをアプリに表示する」に、「登録したものを直す」を「【編集】登録したものを修正する」にそろえた'],
+  ['2026-10-02','添加物管理・薬品管理のユースケース「【保管場所管理】保管場所を追加する」で、サイドメニューの「保管場所管理」ではなく一覧の画面の「保管場所管理」カードを押すようにした（「〜」カードの操作は画面の中から先に探す）'],
+  ['2026-10-02','ユースケースの再生で入力して見せるとき、添加物管理の区分（「選択をしてください」のプルダウン）も選ぶようにし、区分・数量を入れたあとに「自動計算」を押して現在庫数を入れるようにした（添加物管理・薬品管理）'],
   ['2026-10-02','フローの「帳票」と「ユースケース」のプルダウンを、デザインシステムのセレクトボックス／プルダウン項目と同じ見た目にした（内側 4px・角丸 8px の項目・選んでいる項目とホバーは緑に白文字・▼ の山形）'],
   ['2026-10-02','ユースケース「登録したものを直す」の最後の編集画面で、入力欄を 1 文字ずつ書き換える動き（数字の欄は打ち直し、無ければ名前の後ろに「（修正）」を足す）と「保存」の囲みを足した'],
   ['2026-10-02','ユースケース「承認済みの記録を探して見る」の再生で、データ一覧の「承認済み」の行の「詳細」を開くようにした（前は先頭の承認待ちの行を開いていた）。機械器具点検・清掃記録のデータ検索の見本は全件が承認待ちだったので、React の mockRecords の先頭 2 件を承認済みにした'],
@@ -9524,6 +9538,8 @@ const LOG_DOC = [
   ['2026-10-02','フローのプロトタイプとフロー図の境目の幅の調整に上限を置かず、自由に動かせるようにした（フロー図は 240px まで、プロトタイプは 240px まで）'],
   ['2026-10-02','フローの動画の字幕を、左上の 帳票・ユースケースの白い札と同じ高さ・同じ上端にそろえた。空いた枠の上の余白を詰め、端末の枠を大きく映すようにした'],
   ['2026-10-02','フローの動画の字幕を、枠の中に重ねず、端末の枠のすぐ下に出すようにした（画面の中身が隠れないように）。字幕からは画面ID（A1-1-1 など）を外した'],
+  ['2026-10-02','フローの動画の字幕を、右の欄の上（帳票・ユースケースの札の高さ）から、右の欄の下（下のツールバーのすぐ上）へ移した。枠はその上に縮めて収める'],
+  ['2026-10-02','フローの動画の字幕を、管理画面の画面のときは端末の枠のすぐ下に付けるようにした（アプリは右の欄の下のまま）'],
   ['2026-10-01','アプリの帳票の枝で、枠の中で帳票の最初の一覧（app/ledger-list/<帳票>）へ戻ったとき、右パネルがタイルの画面（A1-n）になり、操作の赤枠が出なかったのを直した。一覧の画面（A1-n-1）になる'],
   ['2026-10-01','アプリ › 薬品管理（A1-9）と 薬品の一覧（A1-9-1）の画面概要を React に合わせて書いた。これまでは自動の文で、「帳票のまとまり。」のような中身の無い行があり、本線から記録の一覧が抜けていた（薬品の一覧 → 記録の一覧 → 記録入力 → 提出内容の確認 → 提出完了）。A1-9 の補足（自動の文）は出さないようにした'],
   ['2026-10-01','機械器具点検・清掃記録のラインの一覧と点検見送り確認（A1-7-1・A1-7-5・A1-8-1・A1-8-5）の注釈を「見送りで「明日に見送る」が（はい）なら翌日も未点検で残り、（いいえ）ならその回が無くなる」に直した'],
@@ -10550,9 +10566,12 @@ function opFind(d, op, inDlg){
     const c = card || opFirstRepeat(cl); return c ? [c] : [];
   }
   if (words.length){
+    /* 「保管場所管理」カードのように、画面の中のカードはサイドメニュー・レールの同じ名前の項目と取り違えない（2026-10-02） */
+    const nav = '[data-nq-part="admin-sidebar"],[data-nq-part="app-rail"],[data-nq-part="admin-header"]';
+    const inPage = /カード/.test(op) && !/メニュー|レール/.test(op) ? cl.filter(el => !el.closest(nav)) : null;
     const found = words.map(w => {
       /* 行の「詳細」・カードの「…」は一覧の中から */
-      return opByWord(cl, w);
+      return (inPage && opByWord(inPage, w)) || opByWord(cl, w);
     }).filter(Boolean);
     if (found.length) return [...new Set(found)];
   }
@@ -11920,7 +11939,7 @@ function pCursor(d){
   if (!c.style.left){ c.style.left = (d.defaultView.innerWidth * .6) + 'px'; c.style.top = (d.defaultView.innerHeight * .7) + 'px'; }
   return c;
 }
-/* 字幕は枠の中に重ねると画面が隠れるので、画面設計の側に置いて端末の枠のすぐ上に出す（2026-10-02） */
+/* 字幕は枠の中に重ねると画面が隠れるので、画面設計の側に置く。フローでは枠の下、ほかは枠のすぐ上（2026-10-02） */
 let pSubRaf = 0;
 function pSubPlace(){
   pSubRaf = 0;
@@ -11930,16 +11949,21 @@ function pSubPlace(){
   /* 枠の入っている欄（フローでは右の欄）の横幅いっぱい（左右 12px あける） */
   const r = dev.getBoundingClientRect(), pane = (dev.closest('.canvas') || document.body).getBoundingClientRect();
   s.style.left = Math.round(pane.left + 12) + 'px'; s.style.width = Math.round(pane.width - 24) + 'px';
-  /* フローでは 帳票・ユースケースの白い札（.fleg）と高さ・上端をそろえる */
-  const leg = view === 'flow' && document.querySelector('.fleg'), lr = leg && leg.offsetParent && leg.getBoundingClientRect();
-  s.classList.toggle('fl', !!lr);
-  if (lr){
-    s.style.minHeight = Math.round(lr.height) + 'px'; s.style.top = Math.round(lr.top) + 'px';
-    /* 字幕が札の高さまで上がったので、枠の上は字幕の下端＋12px だけ空ける（字幕が 2 行になれば広げる） */
+  /* フローでは右の欄の下（下のツールバーのすぐ上）に出し、枠はその上に縮めて収める（2026-10-02） */
+  const fl = view === 'flow';
+  s.classList.toggle('fl', fl);
+  if (fl){
+    s.style.minHeight = '';
+    const h = s.offsetHeight || 40, tb = document.querySelector('.stage .tbar'), tr = tb && tb.offsetParent && tb.getBoundingClientRect();
+    const bot = tr && tr.top > pane.top ? Math.min(tr.top - 10, pane.bottom - 12) : pane.bottom - 12;
+    const low = Math.round(bot - h);
+    /* 管理画面（.browser）は枠のすぐ下に付ける。アプリは欄の下のまま（2026-10-02） */
+    const adm = dev.matches('.browser') || !!dev.querySelector('.browser');
+    s.style.top = (adm ? Math.min(Math.round(r.bottom + 10), low) : low) + 'px';
     const cv = document.getElementById('canvas');
     if (cv && cv.classList.contains('pbsub')){
-      const pad = Math.round(lr.top - cv.getBoundingClientRect().top + s.offsetHeight + 12) + 'px';
-      if (cv.style.paddingTop !== pad){ cv.style.paddingTop = pad; applyFit(); }
+      const pb = Math.round(cv.getBoundingClientRect().bottom - low + 12) + 'px';
+      if (cv.style.paddingTop !== '28px' || cv.style.paddingBottom !== pb){ cv.style.paddingTop = '28px'; cv.style.paddingBottom = pb; applyFit(); }
     }
   }
   else {
@@ -11979,7 +12003,7 @@ function pBox(el){
   pEl(d, 'kit-pbbox'); pTgt = {el, cursor:false}; pPlace(); if (!pRaf) pRaf = requestAnimationFrame(pTrack);
 }
 function pClear(){ pTgt = null; const d = opDoc(); ['kit-pbcur', 'kit-pbsub', 'kit-pbbox'].forEach(id => d?.getElementById(id)?.remove()); document.getElementById('kit-pbsub2')?.remove();
-  const cv = document.getElementById('canvas'); if (cv && cv.classList.contains('pbsub')){ cv.classList.remove('pbsub'); cv.style.paddingTop = ''; applyFit(); } }
+  const cv = document.getElementById('canvas'); if (cv && cv.classList.contains('pbsub')){ cv.classList.remove('pbsub'); cv.style.paddingTop = ''; cv.style.paddingBottom = ''; applyFit(); } }
 /* 部品を見える所へ巻き、囲んでカーソルを向けてから押す。scrollIntoView は画面設計の側まで動かすので、枠の中の箱だけを巻く */
 function pScroll(el){
   const d = el.ownerDocument, w = d.defaultView, r = el.getBoundingClientRect(), vh = w.innerHeight;
@@ -12197,7 +12221,7 @@ function pFields(d, scope){
   });
   /* 自前のプルダウン（「選択してください」のボタン。押すと選択肢のボタンが出る） */
   root.querySelectorAll('button,[role=combobox]').forEach(b => {
-    if (!live(b) || b.disabled || !/^選択してください$|^選択$/.test(opTxt(b))) return;
+    if (!live(b) || b.disabled || !/^選択(を)?してください$|^選択$/.test(opTxt(b))) return;   /* 添加物管理の区分は「選択をしてください」 */
     const {label, box} = pFieldLabel(b); if (optional(box)) return;
     out.push({k:'menu', el:b, label});
   });
@@ -12251,7 +12275,16 @@ async function pFormFill(P, d){
     }
     n++;
   }
-  P.quick = 0; pBox(null);
+  P.quick = 0;
+  /* 「自動計算」のボタン（添加物管理・薬品管理の現在庫数）は、区分・数量を入れたあとに押して計算した値を入れて見せる（2026-10-02） */
+  for (const b of [...scope.querySelectorAll('button')].filter(b => opVis(b) && !b.disabled && !b.closest(P_SKIP) && opTxt(b).trim() === '自動計算')){
+    if (PLAY !== P) return false;
+    const {label} = pFieldLabel(b);
+    pSub(`「自動計算」を押して、${label ? `「${label.replace(/\s*※.*$/, '')}」` : '値'}を計算する`);
+    if (!await pTap(P, b, true)) return false;
+    await pDelay(P, pJit(700)); n++;
+  }
+  pBox(null);
   if (n){ await pDelay(P, 400); }
   return PLAY === P;
 }
@@ -12493,6 +12526,8 @@ async function pJump(P, d, a, next){
   return PLAY === P;
 }
 function playPaint(){
+  /* 再生中は中央下のバー（端末の大きさ・状態・プロトタイプで開く）を隠す（2026-10-02） */
+  document.body.classList.toggle('playing', !!PLAY);
   const note = document.querySelector('#fwrap .fcnote'); if (!note) return;
   const c = caseOf(flowCase), P = PLAY && c && PLAY.key === c.key ? PLAY : null;
   const b = note.querySelector('[data-play]'), bar = note.querySelector('.pbar'), ol = note.querySelector('.pscript'), cap = note.querySelector('.pcap');
