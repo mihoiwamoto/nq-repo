@@ -926,6 +926,9 @@ button.relled:hover svg,button.relled:hover .sid{color:var(--g-d)}
 .fcnote .psk li{position:relative;padding:1px 0 1px 18px;color:var(--mute)}
 .fcnote .psk li::before{content:"";position:absolute;left:3px;top:.62em;width:6px;height:6px;border-radius:99px;background:var(--line-s)}
 .fcnote .psk li.done{color:var(--ink)}
+/* 押すとそこから再生する */
+.fcnote .pskh,.fcnote .psk li{cursor:pointer;border-radius:6px}
+.fcnote .pskh:hover,.fcnote .psk li:not(.now):hover{background:var(--surface-2)}
 .fcnote .psk li.done::before{content:"✓";width:auto;height:auto;background:none;top:0;left:1px;color:var(--g-d);font-weight:700}
 .fcnote .psk li.now{color:var(--g-d);font-weight:700;background:var(--g-l);border-radius:6px}
 .fcnote .psk li.now::before{background:var(--g-d)}
@@ -2436,6 +2439,8 @@ const CASES = [
    /* 編集画面で、入力欄を実際に書き換えて見せる（数字の欄があればその数字を、無ければ名前の欄を）。最後に「保存」を囲む（2026-10-02） */
    end:[{type:true, cap:'入力欄を押して、内容を書き換える'}, {btn:'保存', cap:'「保存」で直した内容が登録され、詳細へ戻る'}],
    alt:{'scale-inspection':['M5','M5-3-1','M5-3-5','M5-3-6']},
+   endBy:{'chemical-management':[{type:true, cap:'入力欄を押して、内容を書き換える'}, {btn:'保存', cap:'「保存」で直した内容が登録され、薬品の一覧へ戻って「更新されました。」が出る'}]},
+   gnoteBy:{'chemical-management':'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると薬品の一覧へ戻り、「更新されました。」のトーストが出る'},
    note:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻る',
    gname:'登録したものを直す',
    gnote:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻る'},
@@ -7688,7 +7693,7 @@ const SPEC = {
     ['保管場所', 'プルダウン', '必須', 'その工場の保管場所から選ぶ。プレースホルダ「例）小型物置」', '保管場所管理'],
   ], ops:[
     ['「キャンセル」', '', '保存せずに戻る', 'M5-9-5'],
-    ['「保存」', '', 'どれかが空なら「薬品名、規格、保管場所は必須です」。揃っていれば上書き保存し、詳細でトースト「更新されました。」（見本データに保存）', 'M5-9-5'],
+    ['「保存」', '', 'どれかが空なら「薬品名、規格、保管場所は必須です」。揃っていれば上書き保存し、薬品の一覧へ戻ってトースト「更新されました。」（見本データに保存）', 'M5-9-2'],
   ]},
   'M5-9-7': {fields:[
     ['完了メッセージ', '表示', '—', '完了のチェックマークと「薬品の削除が完了しました」', '—'],
@@ -9156,7 +9161,7 @@ const BUILT = {
   'M5-9-3':['動く','薬品名・規格・単位・保管場所の必須チェックが動き、登録で一覧に増える。保管場所の候補は本社工場だけ'],
   'M5-9-4':['動く','薬品の登録の完了表示。ボタンで薬品の一覧へ戻る'],
   'M5-9-5':['動く','薬品名・規格・保管場所を表示。編集へ進め、削除すると一覧から消えて削除完了へ'],
-  'M5-9-6':['動く','登録時と同じ入力欄に今の値が入り、保存すると詳細へ戻って「更新されました」が出る'],
+  'M5-9-6':['動く','登録時と同じ入力欄に今の値が入り、保存すると薬品の一覧へ戻って「更新されました」が出る'],
   'M5-9-7':['動く','薬品の削除の完了表示。ボタンで薬品の一覧へ戻る'],
   'M5-10':['動く','帳票管理に並ぶ 10 帳票のカードの 1 つ。押すとこの帳票の工場選択へ'],
   'M5-10-1':['動く','21 工場とも押せて、選んだ工場の一覧へ。絞り込み検索で工場名を絞れる'],
@@ -11418,9 +11423,9 @@ function caseList(){
         path.push(id);
       });
       const fill = t => (t || '').replace(/\{L\}/g, label);
-      return {key:`${n}.${ci}`, n, ledger:label, grp:c.grp || '', pick:c.pick || null, end:c.end || null, ng:c.ng || null, state:c.state || '',
+      return {key:`${n}.${ci}`, n, ledger:label, grp:c.grp || '', pick:c.pick || null, end:(c.endBy && c.endBy[slug]) || c.end || null, ng:c.ng || null, state:c.state || '',
               name: fill(n === 1 ? c.name : ((c.gnameBy && c.gnameBy[slug]) || c.gname || c.name)),
-              note: fill(n === 1 ? c.note : (c.gnote || c.note)), path};
+              note: fill(n === 1 ? c.note : ((c.gnoteBy && c.gnoteBy[slug]) || c.gnote || c.note)), path};
     })()).filter(Boolean);
   });
 }
@@ -11651,6 +11656,12 @@ function paintCaseNote(note, c){
   /* 操作手順の開閉は覚える（既定は閉じる。再生を始めたときは開く） */
   note.querySelector('.pscr').addEventListener('toggle', e => { if (e.isTrusted) LS.set('script', e.target.open); placeNote(); });
   note.querySelector('[data-play]')?.addEventListener('click', () => { if (PLAY && PLAY.key === c.key) stopPlay(); else playCase(c.key); });
+  /* 操作手順の行（または手順の見出し）を押すと、そこから再生する */
+  note.querySelector('.pscript').addEventListener('click', e => {
+    const li = e.target.closest('.psk'); if (!li || narrow()) return;
+    const x = e.target.closest('li[data-j]');
+    playCase(c.key, {k: +li.dataset.k, j: x ? +x.dataset.j : 0});
+  });
   note.querySelector('[data-pause]').onclick = playPause;
   note.querySelector('[data-next]').onclick = playNext;
   note.querySelector('[data-stop]').onclick = stopPlay;
@@ -12403,8 +12414,8 @@ function playPaint(){
     const tok = P ? P.tok : 'idle' + c.key, det = ol.closest('.pscr');
     if (ol.dataset.tok !== tok){
       const path = casePath(c), acts = P ? P.acts : caseActs(c, path);
-      ol.innerHTML = path.map((id, k) => `<li class="psk" data-k="${k}"><span class="pskh">${k + 1}. ${esc(dispId(id))} ${esc(pName(id))}</span>
-        <ul>${acts[k].map((a, j) => a.cap ? `<li data-j="${j}">${esc(a.cap)}</li>` : '').join('') || '<li data-j="0">画面を見る</li>'}</ul></li>`).join('');
+      ol.innerHTML = path.map((id, k) => `<li class="psk" data-k="${k}"><span class="pskh" title="この手順から再生">${k + 1}. ${esc(dispId(id))} ${esc(pName(id))}</span>
+        <ul>${acts[k].map((a, j) => a.cap ? `<li data-j="${j}" title="ここから再生">${esc(a.cap)}</li>` : '').join('') || '<li data-j="0" title="ここから再生">画面を見る</li>'}</ul></li>`).join('');
       ol.dataset.tok = tok;
       const n = note.querySelector('.pscn'); if (n) n.textContent = acts.reduce((s, x) => s + x.length, 0) + '操作';
       if (P && det && !det.open){ det.open = true; placeNote(); }
@@ -12473,9 +12484,12 @@ document.addEventListener('keydown', e => {
   else if (e.key === '>' || e.key === '<'){ e.preventDefault(); e.stopPropagation(); playRate(e.key === '>' ? 1 : -1); }   /* YouTube と同じ Shift + . ／ Shift + , */
 }, true);
 let playState = false;   /* 再生がユースケースの state で状態を入れたか */
-async function playCase(key){
+/* from = {k, j}：操作手順の行を押したとき、その手順のその操作から再生する（2026-10-02）。
+   前の手順は飛ばしてその画面を開き、同じ手順の前の操作（ポップアップを開くなど）は待たずに済ませてから始める */
+async function playCase(key, from){
   stopPlay(); const c = caseOf(key); if (!c || narrow()) return;
   const path = casePath(c); if (!path.length) return;
+  const k0 = from ? Math.max(0, Math.min(path.length - 1, from.k | 0)) : 0;
   const P = PLAY = {key, k:0, j:-1, paused:false, busy:false, hurry:false, next:0, up:null, tok:'p' + Date.now(), acts:caseActs(c, path),
     /* アプリで点検して提出する道は、記録入力を空の状態で開いて入力欄を埋めて見せる（fresh:false で外せる。2026-10-02） */
     fresh: c.fresh != null ? !!c.fresh : /帳票一覧|進捗一覧|エラーの場合/.test(c.grp || '')};
@@ -12483,15 +12497,20 @@ async function playCase(key){
   /* ユースケースが状態（オフラインなど）を持つときは、その状態で枠を開く。前の再生が入れた状態は通常に戻す */
   if (c.state || playState){ curState = c.state; playState = !!c.state; }
   /* 枠は作り直して、まっさらな状態から始める（前の再生で承認・提出した結果が残らないように） */
-  go(path[0], {fromHash:true}); paintState(); buildFrame(cur);
-  for (let k = 0; k < path.length; k++){
-    const id = path[k];
-    if (!await playGate(P, k, 0)) return;
+  P.k = k0; P.j = 0;
+  go(path[k0], {fromHash:true}); paintState(); buildFrame(cur);
+  for (let k = k0; k < path.length; k++){
+    const id = path[k], j0 = k === k0 && from ? Math.max(0, Math.min(P.acts[k].length, from.j | 0)) : 0;
+    if (!j0 && !await playGate(P, k, 0)) return;
     if (!pAt(id)) go(id, {fromHash:true});   /* 前の手順の操作で、もうこの画面に移っていれば切り替えない */
     stepK = k; zoomToStep(); playMark(P);   /* フロー図・チップをこの手順へ */
     await pSettle(P); if (PLAY !== P) return;
-    for (let j = 0; j < P.acts[k].length; j++){
-      if (j && !await playGate(P, k, j)) return;
+    for (let j = 0; j < j0; j++){   /* 押した行より前の操作は、待たずに済ませる */
+      P.k = k; P.j = j; P.busy = true; P.hurry = true; playMark(P);
+      await pRun(P, P.acts[k][j], path[k + 1]); if (PLAY !== P) return;
+    }
+    for (let j = j0; j < P.acts[k].length; j++){
+      if ((j || j0) && !await playGate(P, k, j)) return;
       await pRun(P, P.acts[k][j], path[k + 1]); if (PLAY !== P) return;
     }
     P.j = P.acts[k].length; P.busy = false; playMark(P);

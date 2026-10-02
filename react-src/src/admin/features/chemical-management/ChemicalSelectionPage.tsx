@@ -1,6 +1,8 @@
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useChemicalManagement } from "./ChemicalManagementContext";
 
@@ -9,9 +11,23 @@ export function ChemicalSelectionPage() {
   const { chemicals } = useChemicalManagement();
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/ledger-management/chemical-management/factories/${factoryId}`;
+  const location = useLocation();
+  const [showToast, setShowToast] = useState(false);
+
+  /* 編集画面で「保存」したあとはこの一覧へ戻り、更新トーストを出す */
+  useEffect(() => {
+    if (location.state?.justSaved) {
+      setShowToast(true);
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state?.justSaved]);
 
   return (
     <div>
+      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="薬品管理"
         showBack

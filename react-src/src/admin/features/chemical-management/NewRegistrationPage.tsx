@@ -32,7 +32,7 @@ export function NewRegistrationPage() {
     }
     if (isEditing && existing) {
       updateChemical(existing.id, { name, spec, unit, storageLocation });
-      navigate(`${basePath}/chemicals/${existing?.id}`, { state: { justSaved: true } });
+      navigate(basePath, { state: { justSaved: true } });
     } else {
       addChemical({ name, spec, unit, storageLocation });
       navigate(`${basePath}/chemicals/registered`);
