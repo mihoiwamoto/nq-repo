@@ -5,7 +5,7 @@
   "outputDirectory": ".vercel-out",
   "cleanUrls": false,
   "redirects": [
-    { "source": "/", "destination": "/nqrepo-screen-design.html", "permanent": false }
+    { "source": "/", "destination": "/react/admin/login?kit=1", "permanent": false }
   ],
   "rewrites": [
     { "source": "/snapshots/images/:path*", "destination": "/images/:path*" },
