@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import type { LineFrequency } from "./types";
 import { useSchedule } from "./ScheduleContext";
 
-const TABS: { key: LineFrequency; label: string }[] = [
-  { key: "daily", label: "毎日" },
-  { key: "weekly", label: "毎週" },
-  { key: "monthly", label: "毎月" },
-  { key: "yearly", label: "毎年" },
-];
+const FREQUENCY_LABEL: Record<LineFrequency, string> = {
+  daily: "毎日",
+  weekly: "毎週",
+  monthly: "毎月",
+  yearly: "毎年",
+};
+
+// 毎日のタブは出さない（2026-10-05）
+const TABS: { key: LineFrequency; label: string }[] = (
+  ["weekly", "monthly", "yearly"] as const
+).map((key) => ({ key, label: FREQUENCY_LABEL[key] }));
 
 export function AddLineDialog({
   selectedIds,
@@ -98,7 +103,7 @@ export function AddLineDialog({
                         : "text-[var(--semantic-text-primary)]"
                     }`}
                   >
-                    【{TABS.find((t) => t.key === line.frequency)?.label}】{line.name}
+                    【{FREQUENCY_LABEL[line.frequency]}】{line.name}
                   </span>
                 </button>
               ))
