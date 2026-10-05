@@ -27,7 +27,7 @@ export function AddProductDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+      <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[686px]">
         <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">製品追加</h2>
         <div className="flex flex-col gap-4 items-start w-full">
           <div className="flex gap-4 items-start w-full">
