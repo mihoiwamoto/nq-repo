@@ -98,7 +98,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">

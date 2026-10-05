@@ -34,7 +34,7 @@ export function WeightCheckerListPage() {
 
   return (
     <div>
-      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="更新しました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="ウェイトチェッカー管理"
         showBack

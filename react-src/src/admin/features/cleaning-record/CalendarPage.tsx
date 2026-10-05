@@ -27,7 +27,7 @@ export function CalendarPage() {
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("更新されました。");
+  const [toastMessage, setToastMessage] = useState("更新しました。");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -40,7 +40,7 @@ export function CalendarPage() {
         setYear(y);
         setMonth(m - 1);
       }
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => setShowToast(false), 3000);
       navigate(location.pathname, { replace: true });

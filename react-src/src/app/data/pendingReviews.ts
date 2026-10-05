@@ -124,6 +124,15 @@ export const PENDING_REVIEWS: PendingReview[] = [
     status: "差し戻し",
     lineId: "c1",
   },
+  // 薬品管理の点検済み（確認者が見て提出する。添加物管理の p1 と同じ流れ。2026-10-05）
+  {
+    id: "p18",
+    date: "04/01",
+    name: "ソルビン酸",
+    ledgerSlug: "chemical-management",
+    status: "点検済み",
+    chemicalId: "c1",
+  },
   // 薬品管理・添加物管理の差し戻し（機械器具点検の p14 と同じ流れ。2026-10-02）
   {
     id: "p16",

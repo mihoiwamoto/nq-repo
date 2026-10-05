@@ -6,5 +6,6 @@ window.SNAPSHOTS = [
   {"file": "2026-09-25.html", "date": "2026-09-25", "time": "09:02", "kind": "daily", "name": ""},
   {"file": "2026-09-25-1028.html", "date": "2026-09-25", "time": "10:28", "kind": "take", "name": ""},
   {"file": "2026-09-28.html", "date": "2026-09-28", "time": "09:16", "kind": "daily", "name": ""},
-  {"file": "2026-09-29.html", "date": "2026-09-29", "time": "09:20", "kind": "daily", "name": ""}
+  {"file": "2026-09-29.html", "date": "2026-09-29", "time": "09:20", "kind": "daily", "name": ""},
+  {"file": "2026-10-05.html", "date": "2026-10-05", "time": "10:57", "kind": "daily", "name": ""}
 ];

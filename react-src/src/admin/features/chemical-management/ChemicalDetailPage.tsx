@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
+import { FRAME } from "../../../frameBridge";
 import { getFactoryName } from "../../../data/factories";
 import { useChemicalManagement } from "./ChemicalManagementContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -23,8 +24,10 @@ export function ChemicalDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
+      // 画面設計の枠の中では消さない（ユースケースの再生でトーストを囲んで見せるため。Toast も同じ。2026-10-05）
+      if (FRAME) return;
       const timer = setTimeout(() => {
         setShowToast(false);
       }, 2000);

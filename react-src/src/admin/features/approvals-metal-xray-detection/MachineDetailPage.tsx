@@ -128,7 +128,7 @@ export function MachineDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
       <PageTitleBar title="点検内容一覧" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">

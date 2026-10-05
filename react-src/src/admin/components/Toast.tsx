@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import iconCheck from "../../../images/Icon/check.svg";
+import { FRAME } from "../../frameBridge";
 
 type ToastProps = {
   message: string;
@@ -11,6 +12,8 @@ export function Toast({ message, onClose, autoCloseDuration = 3000 }: ToastProps
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    // 画面設計の枠の中では自動で閉じない（ユースケースの再生でトーストを囲んで見せるため。2026-10-05）
+    if (FRAME) return;
     const timer = setTimeout(() => {
       setIsVisible(false);
       onClose();

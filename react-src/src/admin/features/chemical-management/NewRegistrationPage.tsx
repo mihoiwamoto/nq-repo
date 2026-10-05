@@ -32,7 +32,8 @@ export function NewRegistrationPage() {
     }
     if (isEditing && existing) {
       updateChemical(existing.id, { name, spec, unit, storageLocation });
-      navigate(basePath, { state: { justSaved: true } });
+      // 添加物管理と同じく、保存したら詳細へ戻り「更新しました。」のトーストを出す
+      navigate(`${basePath}/chemicals/${existing.id}`, { state: { justSaved: true } });
     } else {
       addChemical({ name, spec, unit, storageLocation });
       navigate(`${basePath}/chemicals/registered`);

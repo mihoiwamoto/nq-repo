@@ -144,7 +144,7 @@ export function PointDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );

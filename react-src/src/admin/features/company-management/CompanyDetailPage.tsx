@@ -54,7 +54,7 @@ export function CompanyDetailPage() {
 
   return (
     <div>
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[

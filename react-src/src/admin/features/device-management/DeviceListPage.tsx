@@ -24,7 +24,7 @@ export function DeviceListPage() {
   const [page, setPage] = useState(1);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("変更が完了しました");
+  const [toastMessage, setToastMessage] = useState("更新しました。");
   const [notifiedDeviceId, setNotifiedDeviceId] = useState<string | null>(null);
   const [notificationQueue, setNotificationQueue] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -107,7 +107,7 @@ export function DeviceListPage() {
       saveDevices(next);
       return next;
     });
-    setToastMessage("変更が完了しました");
+    setToastMessage("更新しました。");
     setShowToast(true);
   }
 

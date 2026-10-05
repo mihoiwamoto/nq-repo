@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
@@ -57,6 +57,16 @@ export function RecordDetailView({
   setApprovalStatus: (id: string, status: ApprovalStatus) => void;
   addComment: (id: string, text: string) => void;
 }) {
+  // 開いたときは画面の上から見せる（一覧で下のほうの「詳細」を押しても、右上の承認ステータスが見えるように。2026-10-05）
+  useLayoutEffect(() => {
+    const toTop = () => {
+      const main = document.querySelector("main");
+      if (main) main.scrollTop = 0;
+    };
+    toTop();
+    requestAnimationFrame(toTop);
+  }, [record?.id]);
+
   const {
     showConfirmDialog,
     showRejectDialog,
@@ -99,7 +109,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="承認ステータスを更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">

@@ -67,7 +67,10 @@ function applyFlags(flags: Record<string, unknown>) {
   if (cur !== next) setDemoTrial(next === null ? cur : next);
   const role = flags.role;
   if (typeof role === "string" && (ROLES as string[]).includes(role)) saveCurrentRole(role as PrototypeRoleId);
+  const prevUnsent = kitUnsent;
   kitUnsent = !!flags.unsent && flags.unsent !== "0";
+  // 状態が前と同じ（画面だけ切り替えた）なら、端末の中で起きたこと（オフラインで提出した未送信など）は消さない
+  const changed = cur !== next || prevUnsent !== kitUnsent;
   kitFresh = FRAME && !!flags.fresh && flags.fresh !== "0";
   if (!FRAME) {
     try {
@@ -77,7 +80,7 @@ function applyFlags(flags: Record<string, unknown>) {
       /* 無視 */
     }
   }
-  window.dispatchEvent(new CustomEvent(KIT_FLAGS_EVENT));
+  window.dispatchEvent(new CustomEvent(KIT_FLAGS_EVENT, { detail: { changed } }));
 }
 
 /** 画面設計の状態のキー（''／empty／off／unsent／err／session）。「プロトタイプで開く」のタブの右下「状態」が使う */

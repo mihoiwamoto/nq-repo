@@ -24,7 +24,7 @@ export function ProductDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);

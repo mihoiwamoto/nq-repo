@@ -45,8 +45,12 @@ export function AppLayout() {
 
   // 画面設計から状態が届いたら、帯をその状態に合わせて出し直す（前に開いた画面で出た帯を持ち越さない）。
   // 完了画面ならこのあと SubmitOutcome が提出の結果（オフライン＝未送信）を帯に足す
+  // 状態が変わらず画面だけ切り替えたとき（ユースケースの再生で次の画面へ飛ぶなど）は、
+  // オフラインで提出した分の未送信は残す（2026-10-05）
   useEffect(() => {
-    const sync = () => {
+    const sync = (e: Event) => {
+      const changed = (e as CustomEvent<{ changed?: boolean }>).detail?.changed !== false;
+      if (!changed) return;
       setUnsent(getKitUnsent());
       setStatus(null);
       pendingUnsentRef.current = null;

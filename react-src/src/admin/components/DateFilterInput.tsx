@@ -29,9 +29,12 @@ function DateFilterPicker({
   const handlePrevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
   const handleNextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
 
+  /* toISOString は UTC なので、日本時間だと前の日になる。ローカルの年月日で作る */
+  const toKey = (day: number) =>
+    `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
   const handleSelectDate = (day: number) => {
-    const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    onChange(selectedDate.toISOString().split("T")[0]);
+    onChange(toKey(day));
     onClose();
   };
 
@@ -63,9 +66,7 @@ function DateFilterPicker({
         ))}
 
         {days.map((day, index) => {
-          const dayDateString = day
-            ? new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toISOString().split("T")[0]
-            : null;
+          const dayDateString = day ? toKey(day) : null;
           const isSelected = day !== null && value === dayDateString;
           return (
             <button

@@ -910,12 +910,12 @@ function adStatus(kind, id, v){
   if (v==='rejected'){ S.ad.dlg = {k:'reject', id}; render(); return; }
   r.st = v; render();
 }
-function doApprove(id){ const r = recOf(id); r.st = 'approved'; S.ad.dlg = null; render(); adToast('更新しました。'); }
+function doApprove(id){ const r = recOf(id); r.st = 'approved'; S.ad.dlg = null; render(); adToast('承認ステータスを更新しました。'); }
 function doApproveAll(){ (S.ad.sc==='rxList' ? rxListRows('appr', S.ad.rx.slug) : waterRows('appr')).filter(r=>r.st==='pending').forEach(r=>r.st='approved'); S.ad.dlg = null; adGo('approvals',{tab:'approved'}); adToast('承認しました。'); }
 function doReject(id){
   const t = (document.getElementById('rjIn')?.value||'').trim(); if (!t) return;
   const r = recOf(id); r.st = 'rejected'; r.comments.push({who:ACCOUNT.name, at:`${jpDate(today())} ${nowHM()}`, text:t});
-  S.ad.dlg = null; render(); adToast('更新しました。');
+  S.ad.dlg = null; render(); adToast('承認ステータスを更新しました。');
 }
 
 /* ---- 帳票管理 › 使用水の点検 › 点検場所選択（water-inspection/PointSelectionPage.tsx） ---- */
@@ -1068,7 +1068,7 @@ function adDevices(){
       `<button type="button" class="bw bd bcd s2 r8 sq" style="height:40px;width:40px" onclick="S.ad.dlg={k:'delDevice',i:${S.devices.indexOf(d)}};render()" aria-label="削除">${im('common/trash.svg',24)}</button>`]), '該当するログイン端末がありません')}
     ${pager('devices', list.length, 10)}</div>`;
 }
-function devStatus(i, v){ S.devices[i].st = v; render(); adToast('更新しました。'); }
+function devStatus(i, v){ S.devices[i].st = v; render(); adToast('変更が完了しました'); }
 
 /* ---- ヘルプ（HelpPage.tsx＋HelpAccordion.tsx。FAQ は mockData.ts の 12 件） ---- */
 const HELP_CATS = ['帳票管理について','企業管理について','工場管理について','職員管理について','アカウント・権限について','データ検索について','承認申請について','その他'];
@@ -1956,7 +1956,7 @@ function lxSubmit(){
   const E = lxE(), x = S.ad.lx, list = lxList(E);
   const first = E.fields.find(f=>f[1]==='text'||f[1]==='select');
   const inp = document.querySelector('.lx-name'); const name = (inp && inp.value.trim()) || (first && first[1]==='select' && x['s'+first[0]]) || '';
-  if (x.page==='edit'){ const it = list.find(i=>i.id===x.id); if (it && name) it.name = name; lxGo({page:'detail'}); adToast('更新しました。'); return; }
+  if (x.page==='edit'){ const it = list.find(i=>i.id===x.id); if (it && name) it.name = name; lxGo({page:'detail'}); adToast('変更が完了しました'); return; }
   if (!name){ say(`<b>${esc(first ? first[0] : E.noun)}</b> を入力してください`); return; }
   const it = {id:E.seg.slice(0,2)+uid(), name}; if (E.freq) it.freq = x.fq||'毎日'; if (x['s持ち場']) it.post = x['s持ち場'];
   list.push(it); x.sel = [];
@@ -2208,7 +2208,7 @@ function adPointEdit(){
 function savePoint(id){
   const n = (document.getElementById('ptEdit')?.value||'').trim(); if (!n){ say('点検場所名を入力してください'); return; }
   const p = S.points.find(x=>x[0]===id); if (p){ const old = p[1]; p[1] = n; S.records.filter(r=>r.point===id).forEach(r=>{ r.location = n; }); if (S.ad.pt===old) S.ad.pt = n; }
-  adGo('ledgerPoint',{pid:id}); adToast('更新しました。');
+  adGo('ledgerPoint',{pid:id}); adToast('変更が完了しました');
 }
 </script>
 <script>

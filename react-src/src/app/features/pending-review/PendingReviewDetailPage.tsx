@@ -48,6 +48,7 @@ import {
   additives,
   initialRecords as initialAdditiveRecords,
   ADDITIVE_REJECTION_COMMENTS,
+  type AdditiveRecord,
 } from "../additive-management/mockData";
 import {
   chemicals,
@@ -729,6 +730,8 @@ export function PendingReviewDetailPage() {
   const isChemicalRejected = isChemicalLedger && !!chemical && review.status === "差し戻し";
   const isAdditiveRejected = isAdditive && review.status === "差し戻し";
   const isStockRejected = isChemicalRejected || isAdditiveRejected;
+  // 薬品管理の点検済み（確認者が見て提出する）。添加物管理と同じ画面で出す（2026-10-05）
+  const isChemical = isChemicalLedger && !!chemical && review.status !== "差し戻し";
   const isActorPicker = isLineRejected || isStockRejected;
 
   if (
@@ -742,6 +745,7 @@ export function PendingReviewDetailPage() {
     !isSensory &&
     !isMetalXray &&
     !isChemicalRejected &&
+    !isChemical &&
     review?.ledgerSlug !== "sample-management"
   ) {
     return (
@@ -1491,10 +1495,26 @@ export function PendingReviewDetailPage() {
     );
   }
 
-  if (isAdditive && additive) {
-    const additiveRecords = initialAdditiveRecords.filter(
-      (record) => record.additiveId === additive.id
-    );
+  if ((isAdditive && additive) || (isChemical && chemical)) {
+    const stockLabel = isChemical ? "薬品管理" : "添加物管理";
+    const stockItem = isChemical ? chemical! : additive!;
+    // 薬品の記録は 使用量（usedQuantity）・元在庫数（previousStock）の名前なので、添加物の記録の形にそろえる
+    const additiveRecords: (AdditiveRecord & { previousStock?: string; timestamps?: { category?: string; quantity?: string; currentStock?: string } })[] = isChemical
+      ? initialChemicalRecords
+          .filter((r) => r.chemicalId === chemical!.id)
+          .map((r) => ({
+            id: r.id,
+            additiveId: r.chemicalId,
+            date: r.date,
+            storageLocation: r.storageLocation,
+            category: r.category as AdditiveRecord["category"],
+            quantity: r.usedQuantity,
+            currentStock: r.currentStock,
+            remarks: r.remarks,
+            actor: r.actor,
+            previousStock: r.previousStock,
+          }))
+      : initialAdditiveRecords.filter((record) => record.additiveId === additive!.id);
     const selectedAdditiveRecord = additiveRecords.find(
       (record) => record.id === selectedAdditiveRecordId
     );
@@ -1502,7 +1522,7 @@ export function PendingReviewDetailPage() {
     if (step === "record" && selectedAdditiveRecord) {
       return (
         <>
-          <AppHeader title={`添加物管理_${additive.name}`} />
+          <AppHeader title={`${stockLabel}_${stockItem.name}`} />
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
             <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
               <div className="flex items-center justify-between w-full">
@@ -1519,12 +1539,12 @@ export function PendingReviewDetailPage() {
               </div>
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">規格</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">{additive.spec}</p>
+                <p className="text-base text-[var(--semantic-text-primary)]">{stockItem.spec}</p>
               </div>
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">元在庫数</p>
                 <p className="text-base text-[var(--semantic-text-primary)]">
-                  {additive.initialStock}
+                  {selectedAdditiveRecord.previousStock ?? additive?.initialStock}
                 </p>
               </div>
             </div>
@@ -1601,7 +1621,7 @@ export function PendingReviewDetailPage() {
 
     return (
       <>
-        <AppHeader title={`添加物管理_${additive.name}`} />
+        <AppHeader title={`${stockLabel}_${stockItem.name}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
           <div className="flex items-center justify-between w-full max-w-full">
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">

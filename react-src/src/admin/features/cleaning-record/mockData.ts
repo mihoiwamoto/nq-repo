@@ -15,6 +15,11 @@ export const initialLines: Line[] = [
   { id: "c2", name: "充填・包装ライン", frequency: "daily", cleaningPoints: [] },
   { id: "c3", name: "豆乳パックライン", frequency: "daily", cleaningPoints: [] },
   { id: "c4", name: "自動計量機・風力選別機ライン", frequency: "daily", cleaningPoints: [] },
+  // 毎週のライン。アプリの見本（app/features/cleaning-record/mockData.ts の毎週）と同じ名前・id にそろえる
+  { id: "c5", name: "豆乳ライン", frequency: "weekly", cleaningPoints: [] },
+  { id: "c16", name: "殺菌ライン", frequency: "weekly", cleaningPoints: [] },
+  { id: "c17", name: "冷蔵倉庫ライン", frequency: "weekly", cleaningPoints: [] },
+  { id: "c19", name: "原料受入ライン", frequency: "weekly", cleaningPoints: [] },
 ];
 
 export const initialEntries: Record<string, ScheduleEntry> = {

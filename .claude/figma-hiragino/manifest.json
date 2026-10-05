@@ -1,0 +1,8 @@
+{
+  "name": "NQ ヒラギノに置き換え",
+  "id": "nq-hiragino-swap",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page"
+}

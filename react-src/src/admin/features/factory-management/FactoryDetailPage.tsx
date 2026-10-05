@@ -262,7 +262,7 @@ export function FactoryDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );
