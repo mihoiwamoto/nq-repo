@@ -11,13 +11,15 @@
 import { ledgerCategories } from "./ledgers";
 import type { LedgerCategory } from "../types/ledger";
 
-/** 画面設計の ⑬ RELEASES の写し（新しい順。帳票は slug）。画面設計側を直したらここも直す */
-export const KIT_VERSIONS: { ver: string; st: string; c: string; ledgers: string[] }[] = [
+/** 画面設計の ⑬ RELEASES の写し（新しい順。帳票は slug）。画面設計側を直したらここも直す。
+ *  menus は帳票ではない管理画面のメニュー（サイドメニューのパス）で、その Ver から実装したもの。
+ *  製品管理は Ver.2.0〜、保管場所管理は Ver.3.0〜（2026-10-06 に聞いた） */
+export const KIT_VERSIONS: { ver: string; st: string; c: string; ledgers: string[]; menus?: string[] }[] = [
   { ver: "Ver.5.0", st: "予定", c: "#6B6B6B", ledgers: [] },
   { ver: "Ver.4.0", st: "デザイン中", c: "#00853C", ledgers: ["equipment-inspection", "cleaning-record", "additive-management", "chemical-management"] },
-  { ver: "Ver.3.0", st: "開発中", c: "#C62F2F", ledgers: ["metal-xray-detection", "sample-management"] },
+  { ver: "Ver.3.0", st: "開発中", c: "#C62F2F", ledgers: ["metal-xray-detection", "sample-management"], menus: ["/admin/storage"] },
   { ver: "Ver.2.1", st: "リリース済み", c: "#4A6D99", ledgers: [] },
-  { ver: "Ver.2.0", st: "リリース済み", c: "#2F7FD4", ledgers: ["scale-inspection", "sensory-inspection"] },
+  { ver: "Ver.2.0", st: "リリース済み", c: "#2F7FD4", ledgers: ["scale-inspection", "sensory-inspection"], menus: ["/admin/products"] },
   { ver: "Ver.1.5", st: "リリース済み", c: "#7C4DCC", ledgers: ["glass-plastic"] },
   { ver: "Ver.1.0", st: "リリース済み", c: "#B65A0E", ledgers: ["water-inspection"] },
 ];
@@ -62,6 +64,11 @@ function writeLs(v: string) {
   }
 }
 
+const menusFor = (ver: string) => {
+  const i = KIT_VERSIONS.findIndex((x) => x.ver === ver);
+  return new Set(i < 0 ? [] : KIT_VERSIONS.slice(0, i).flatMap((x) => x.menus || []));
+};
+
 let ver = "";
 let hidden = new Set<string>();
 (() => {
@@ -104,6 +111,9 @@ export function chooseKitVer(v: string) {
   writeLs(v);
   window.location.reload();
 }
+
+/** サイドメニュー（とその下の画面）を Ver の切替で隠すか。/admin/storage/new なども同じメニューとして見る */
+export const isMenuHidden = (path: string) => [...menusFor(ver)].some((m) => path === m || path.startsWith(m + "/"));
 
 export const isLedgerHidden = (slug: string | undefined | null) => !!slug && hidden.has(slug);
 

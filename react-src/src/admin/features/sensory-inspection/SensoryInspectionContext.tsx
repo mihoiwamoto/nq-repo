@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { SENSORY_TARGET_PRODUCTS } from "./mockData";
 import type { ScheduleEntry, SensoryTargetProduct } from "./types";
 
@@ -71,5 +72,7 @@ export function SensoryInspectionProviderOutlet() {
 export function useSensoryInspection() {
   const ctx = useContext(SensoryInspectionContext);
   if (!ctx) throw new Error("useSensoryInspection must be used within SensoryInspectionProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, products: [], scheduleEntries: {} } : ctx), [ctx, empty]);
 }

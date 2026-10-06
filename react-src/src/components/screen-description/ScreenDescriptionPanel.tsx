@@ -14,7 +14,9 @@ import { CATEGORY_LABELS, groupOf, roleOf, type ScreenEntry } from "../../admin/
 import { screenBreadcrumb } from "../feedback/screenBreadcrumb";
 import { describeScreenFile } from "./screenDescriptions";
 import { descriptionOfState, findOpenScreenState } from "./screenStates";
-import { VERSION_CHIP_CLASS } from "./screenDescriptionUtils";
+import { VERSION_CHIP_CLASS, shortTitleOf } from "./screenDescriptionUtils";
+import { KIT_USER_DESCRIPTIONS, type KitUserStateDescription, type KitUserTask } from "../demo/kitUserDescriptions";
+import type { ScreenDescription } from "./screenDescriptions";
 
 /** PageDescriptionButton の aria-controls と対応させるためのパネルの id */
 export const SCREEN_DESCRIPTION_PANEL_ID = "nq-screen-description-panel";
@@ -50,12 +52,21 @@ export function ScreenDescriptionPanel({
   screen,
   pathname,
   onClose,
+  docked = false,
+  forUser = false,
 }: {
   /** 説明する画面。URL が画面一覧に無いときは undefined */
   screen: ScreenEntry | undefined;
   /** 今の URL（パンくずと、画面が見つからないときの表示に使う） */
   pathname: string;
   onClose: () => void;
+  /** true のとき画面の上に重ねず、置いた場所（メインの右）に並べてメインを狭める */
+  docked?: boolean;
+  /**
+   * true のとき、実際に使う人向けの説明（kitUserDescriptions.ts）を出し、
+   * 開発者向けのもの（区分・Ver のチップ、URL、ガイドへのリンク、説明の足し方）は出さない。プロトタイプのパネルで使う
+   */
+  forUser?: boolean;
 }) {
   // Esc で閉じる
   useEffect(() => {
@@ -66,7 +77,14 @@ export function ScreenDescriptionPanel({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const pageDescription = screen ? describeScreenFile(screen.filePath) : undefined;
+  // 利用者向け（forUser）の説明は points の代わりに tasks（やりたいことごとの操作手順）を持つ。
+  // ポップアップの判定（states の whenHeading）と summary・note は同じ形なので、そのまま同じ仕組みに通す
+  const userDescription = screen && forUser ? KIT_USER_DESCRIPTIONS[screen.filePath] : undefined;
+  const pageDescription: ScreenDescription | undefined = screen
+    ? forUser
+      ? (userDescription as unknown as ScreenDescription | undefined)
+      : describeScreenFile(screen.filePath)
+    : undefined;
 
   /**
    * 画面の上にポップアップ（実施者の選択など）が出ている間は、そのポップアップの説明に差し替える。
@@ -74,11 +92,15 @@ export function ScreenDescriptionPanel({
    */
   const [stateLabel, setStateLabel] = useState<string | null>(null);
   const [description, setDescription] = useState(pageDescription);
+  const [userTasks, setUserTasks] = useState<KitUserTask[] | undefined>(userDescription?.tasks);
   useEffect(() => {
     const sync = () => {
       const active = findOpenScreenState(document, pageDescription);
       setStateLabel(active?.state.label ?? null);
       setDescription(descriptionOfState(pageDescription, active));
+      setUserTasks(
+        active ? (active.state as unknown as KitUserStateDescription).tasks : (pageDescription as unknown as { tasks?: KitUserTask[] } | undefined)?.tasks,
+      );
     };
     sync();
     const root = document.getElementById("root");
@@ -94,7 +116,7 @@ export function ScreenDescriptionPanel({
       if (timer) clearTimeout(timer);
     };
   }, [pageDescription]);
-  const title = screen?.title ?? (pathname === "/" ? "ホーム" : pathname);
+  const title = screen ? (forUser ? shortTitleOf(screen) : screen.title) : pathname === "/" ? "ホーム" : pathname;
   const trail = screenBreadcrumb(pathname, title);
   const group = screen ? groupOf(screen) : null;
   const role = screen ? roleOf(screen) : null;
@@ -107,7 +129,11 @@ export function ScreenDescriptionPanel({
       id={SCREEN_DESCRIPTION_PANEL_ID}
       role="complementary"
       aria-labelledby={TITLE_ID}
-      className="nq-screen-description-panel fixed inset-y-0 right-0 z-[60] w-[400px] max-w-full bg-white shadow-[-8px_0_30px_rgba(0,0,0,0.18)] flex flex-col"
+      className={
+        docked
+          ? "nq-screen-description-panel relative shrink-0 w-[400px] max-w-[50%] h-full bg-white border-l border-[#e5e5e5] flex flex-col"
+          : "nq-screen-description-panel fixed inset-y-0 right-0 z-[60] w-[400px] max-w-full bg-white shadow-[-8px_0_30px_rgba(0,0,0,0.18)] flex flex-col"
+      }
     >
       {/* ヘッダー */}
       <div className="h-14 px-4 flex items-center gap-2 border-b border-[#eee] shrink-0">
@@ -135,7 +161,7 @@ export function ScreenDescriptionPanel({
             {title}
             {stateLabel && <span className="text-[var(--semantic-text-secondary)] font-normal"> › {stateLabel}</span>}
           </h3>
-          {screen && (
+          {screen && !forUser && (
             <div className="flex items-center gap-1.5 flex-wrap">
               <Chip className="bg-[#eeeeee] text-[#555555]">{CATEGORY_LABELS[screen.category]}</Chip>
               {group?.kind === "ledger" && <Chip className="bg-[#f3f3f3] text-[var(--semantic-text-primary)]">{group.label}</Chip>}
@@ -143,14 +169,18 @@ export function ScreenDescriptionPanel({
               {role && <Chip className="bg-[#e7f1fe] text-[#2f7fd4]">{role}</Chip>}
             </div>
           )}
-          {screen && (
+          {screen && !forUser && (
             <span className="text-[11px] font-normal text-[var(--semantic-text-secondary)] font-mono break-all" title={screen.filePath}>
               {pathname}
             </span>
           )}
         </section>
 
-        {!screen ? (
+        {forUser && !description ? (
+          <section className="px-4 py-6">
+            <p className="text-sm leading-relaxed text-[var(--semantic-text-primary)]">この画面の説明は準備中です。</p>
+          </section>
+        ) : !screen ? (
           <section className="px-4 py-6 flex flex-col gap-2">
             <p className="text-sm leading-relaxed text-[var(--semantic-text-primary)]">この URL は画面一覧に無いページです。</p>
             <p className="text-xs leading-relaxed text-[var(--semantic-text-secondary)]">
@@ -170,10 +200,30 @@ export function ScreenDescriptionPanel({
         ) : (
           <>
             <section className="px-4 pt-4 pb-4 border-b border-[#eee] flex flex-col gap-1.5">
-              <h4 className="text-xs font-bold text-[var(--semantic-text-secondary)]">概要</h4>
+              <h4 className="text-xs font-bold text-[var(--semantic-text-secondary)]">{forUser ? "この画面について" : "概要"}</h4>
               <p className="text-sm leading-relaxed text-[var(--semantic-text-primary)]">{description.summary}</p>
             </section>
 
+            {forUser ? (
+              <section className="px-4 pt-4 pb-4 border-b border-[#eee] flex flex-col gap-4">
+                <h4 className="text-xs font-bold text-[var(--semantic-text-secondary)]">操作手順</h4>
+                {(userTasks ?? []).map((task, ti) => (
+                  <div key={ti} className="flex flex-col gap-2">
+                    <h5 className="text-sm font-bold text-[var(--semantic-text-primary)]">{task.title}</h5>
+                    <ol className="flex flex-col gap-2">
+                      {task.steps.map((step, si) => (
+                        <li key={si} className="flex items-start gap-2 text-sm leading-relaxed text-[var(--semantic-text-primary)]">
+                          <span className="mt-0.5 size-5 shrink-0 rounded-full bg-[var(--semantic-brand-primary)] text-white text-xs font-bold flex items-center justify-center">
+                            {si + 1}
+                          </span>
+                          <span className="flex-1 min-w-0 break-words">{step}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ))}
+              </section>
+            ) : (
             <section className="px-4 pt-4 pb-4 border-b border-[#eee] flex flex-col gap-2">
               <h4 className="text-xs font-bold text-[var(--semantic-text-secondary)]">この画面でできること</h4>
               <ul className="flex flex-col gap-1.5">
@@ -185,6 +235,7 @@ export function ScreenDescriptionPanel({
                 ))}
               </ul>
             </section>
+            )}
 
             {description.note && (
               <section className="px-4 pt-4 pb-4 border-b border-[#eee]">
@@ -198,7 +249,7 @@ export function ScreenDescriptionPanel({
         )}
 
         {/* 行き先（ガイドは管理画面側にしかないので、アプリでは出さない） */}
-        {screen && isAdmin && (
+        {screen && isAdmin && !forUser && (
           <section className="px-4 pt-4 pb-6 flex flex-col gap-2">
             <Link
               to={`/admin/guide/descriptions/${encodeURIComponent(screen.id)}`}

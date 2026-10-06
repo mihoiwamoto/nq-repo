@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { MACHINES, type Machine } from "./mockData";
 
 type MetalXrayManagementContextValue = {
@@ -46,5 +47,7 @@ export function MetalXrayManagementProviderOutlet() {
 export function useMetalXrayManagement() {
   const ctx = useContext(MetalXrayManagementContext);
   if (!ctx) throw new Error("useMetalXrayManagement must be used within MetalXrayManagementProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, machines: [] } : ctx), [ctx, empty]);
 }

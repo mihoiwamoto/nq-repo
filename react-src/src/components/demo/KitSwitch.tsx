@@ -2,8 +2,8 @@
  * 画面設計キットの「プロトタイプで開く」から開いたとき（?kit=1）に、右下の「動作デモ」ピルの代わりに出す切替。
  * 中身は画面設計（Documents/NQrepo の nqrepo-screen-design.html）の右下のフローティングと同じ：
  *   資料 … 画面設計（押すといまの画面・状態・ロールのまま画面設計へ戻る）／ React 実装（いま見ているもの）
- *   権限（管理画面のロール） … 画面設計の PROJECT.roles と同じ 4 つ・同じ並び。2 列で、説明は出さない
- *   状態 … 画面設計の PROJECT.screenStates と同じ。見出しの ? で出す説明は画面設計の STATE_HELP の写し
+ *   ログイン中（管理画面のロール） … 画面設計の PROJECT.roles と同じ並び。カードを押すと下に一覧が開く（2026-10-06）
+ *   状態を試す … 画面設計の PROJECT.screenStates と同じ。通常以外を 1 行ずつスイッチで出す。見出しの ? で出す説明は画面設計の STATE_HELP の写し
  *   バージョン … 画面設計のヘッダー右上の Ver の切替と同じ（2026-10-06）。選んだ Ver より後で足す帳票を隠す。
  *              選んだものは画面設計と同じ localStorage に覚えるので、画面設計へ戻っても同じ Ver（data/ledgerVisibility.ts）
  * 見た目も画面設計の .nvsw の CSS をそのまま写してある（画面設計側を直したらここも写し直す）。
@@ -26,7 +26,7 @@ import {
 import { openFeedbackPanel } from "../feedback/feedbackStore";
 import { KIT_VERSIONS, chooseKitVer, getKitVer } from "../../data/ledgerVisibility";
 import { ScreenCoachMarks } from "../screen-description/ScreenCoachMarks";
-import { setSectionNotesOpen, useSectionNotesOpen } from "../section-notes/sectionNotesStore";
+import { isKitDescPath, setKitDescClosed, useKitDescClosed } from "./KitScreenDescription";
 import type { CoachMarkKind } from "../screen-description/coachMarks";
 
 /**
@@ -39,12 +39,6 @@ const COACH_SKIP: CoachMarkKind[] = ["title", "breadcrumb"];
 /** 点検の事前準備は「点検予定」「確認項目の設定」それぞれに番号を付ける。一覧と「毎日」のように左上が同じ番号は横にずらす。説明カードは見出しをつかんで動かせる */
 const COACH_OPTIONS = { splitPrep: true, spreadBadges: true, draggableCard: true };
 const hasCoach = (path: string) => COACH_PATHS.some((re) => re.test(path));
-/**
- * 「?」の左に「i」（注釈）を出す画面。押すと部品の下に文字だけの注釈（SectionNote）が出る。
- * 注釈の文は各ページに直に書く。2026-10-06 に 帳票管理 › 機械器具点検 の持ち場/ラインの一覧だけで試す。広げるときはここへ足す
- */
-const NOTE_PATHS = [/^\/admin\/ledger-management\/equipment-inspection\/factories\/[^/]+\/?$/];
-const hasNotes = (path: string) => NOTE_PATHS.some((re) => re.test(path));
 
 type Pf = "admin" | "app";
 
@@ -139,23 +133,61 @@ const CSS = `
   --nb:#fff;--nl:#E2E5E7;--nt:#2B3134;--nm:#7A828A;--na:#009E5E;--nad:#1E7A4C;--nal:#DFF3E9;--ns:#F4F5F6;
   --nsh:0 4px 14px rgba(20,26,30,.10), 0 18px 44px -18px rgba(20,26,30,.36);
   font-family:"Noto Sans JP",system-ui,-apple-system,sans-serif}
-.nvfab{display:flex;align-items:center;gap:9px;background:var(--nb);color:var(--nt);
-  border:1px solid var(--nl);border-radius:999px;padding:9px 15px 9px 13px;box-shadow:var(--nsh);
-  font-size:13px;line-height:1.5;cursor:pointer;transition:transform .14s,box-shadow .14s}
-.nvfab:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(20,26,30,.14), 0 22px 50px -18px rgba(20,26,30,.42)}
+.nvfab{display:grid;place-items:center;width:56px;height:56px;padding:0;background:#2B7A47;color:#fff;
+  border:0;border-radius:999px;box-shadow:0 4px 12px rgba(20,26,30,.18), 0 14px 32px -14px rgba(20,26,30,.45);
+  cursor:pointer;transition:transform .14s,box-shadow .14s,background .14s}
+.nvfab:hover{transform:translateY(-1px);background:#246A3D;box-shadow:0 6px 16px rgba(20,26,30,.22), 0 18px 40px -14px rgba(20,26,30,.5)}
+.nvfab:focus-visible{outline:3px solid rgba(43,122,71,.35);outline-offset:3px}
+.nvsw.open .nvfab{background:#246A3D}
 .nvfab .dt{width:8px;height:8px;border-radius:99px;background:var(--na);flex:none}
 .nvfab .lb{font-weight:700;white-space:nowrap}
 .nvfab .sb{color:var(--nm);white-space:nowrap;border-left:1px solid var(--nl);padding-left:9px}
 .nvfab .cr{color:var(--nm);transition:transform .18s}
 .nvsw.open .nvfab .cr{transform:rotate(180deg)}
-.nvpanel{position:absolute;right:0;bottom:calc(100% + 10px);width:312px;background:var(--nb);max-height:calc(100vh - 90px);overflow-y:auto;overscroll-behavior:contain;
-  border:1px solid var(--nl);border-radius:16px;box-shadow:var(--nsh);padding:14px;
+.nvpanel{position:absolute;right:0;bottom:calc(100% + 10px);width:316px;background:var(--nb);max-height:calc(100vh - 90px);
+  display:flex;flex-direction:column;border:1px solid var(--nl);border-radius:16px;box-shadow:var(--nsh);overflow:hidden;
   animation:nvup .18s cubic-bezier(.2,1,.3,1)}
+.nvhead{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 4px 18px;flex:none}
+.nvhead b{font-size:13px;font-weight:500;color:var(--nm)}
+.nvx{width:28px;height:28px;display:grid;place-items:center;border:0;background:none;border-radius:8px;color:var(--nm);cursor:pointer}
+.nvx:hover{background:var(--ns);color:var(--nt)}
+.nvbody{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 16px 4px}
+.nvseg{display:flex;gap:2px;background:var(--ns);border-radius:11px;padding:3px}
+.nvseg>*{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 8px;border:0;background:none;border-radius:9px;
+  font:inherit;font-size:13px;color:var(--nt);text-decoration:none;cursor:pointer;white-space:nowrap}
+.nvseg>*:hover{color:var(--nad)}
+.nvseg>[aria-selected="true"],.nvseg>[aria-current="true"]{background:var(--nb);color:var(--nad);font-weight:700;box-shadow:0 1px 3px rgba(20,26,30,.14);cursor:default}
+.nvcap{margin:8px 2px 0;font-size:11.5px;color:var(--nm);line-height:1.6}
+.nvcard{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid var(--nl);border-radius:12px;background:var(--nb);
+  padding:9px 12px;cursor:pointer;font:inherit;color:var(--nt)}
+.nvcard:hover,.nvcard[aria-expanded="true"]{border-color:var(--na)}
+.nvav{width:32px;height:32px;border-radius:99px;background:var(--nal);color:var(--nad);display:grid;place-items:center;font-size:13px;font-weight:700;flex:none}
+.nvcard .tx,.nvmenu .tx{min-width:0;flex:1}
+.nvcard .t1{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;line-height:1.4}
+.nvbadge{font-size:10.5px;font-weight:500;color:var(--nad);background:var(--nal);border-radius:5px;padding:1px 6px}
+.nvcard .t2{display:block;font-size:11.5px;color:var(--nm);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nvcard .cr{color:var(--nm);flex:none;transition:transform .18s}
+.nvcard[aria-expanded="true"] .cr{transform:rotate(180deg)}
+.nvmenu{margin-top:5px;border:1px solid var(--nl);border-radius:12px;padding:4px;background:var(--nb)}
+.nvmenu[hidden]{display:none}
+.nvmenu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;border-radius:9px;padding:7px 9px;font:inherit;color:var(--nt);cursor:pointer}
+.nvmenu button:hover{background:var(--ns)}
+.nvmenu button[aria-current="true"]{background:var(--nal)}
+.nvmenu .nvav{width:26px;height:26px;font-size:11.5px}
+.nvmenu .t1{display:block;font-size:13px;font-weight:500}
+.nvmenu .t2{display:block;font-size:11px;color:var(--nm);line-height:1.45}
+.nvsws{display:flex;flex-direction:column}
+.nvsw1{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:none;padding:7px 2px;font:inherit;font-size:13.5px;color:var(--nt);cursor:pointer;text-align:left}
+.nvsw1 .tg{position:relative;width:34px;height:20px;border-radius:99px;background:#D5D9DC;flex:none;transition:background .15s}
+.nvsw1 .tg::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:99px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.nvsw1[aria-checked="true"] .tg{background:#009E5E}
+.nvsw1[aria-checked="true"] .tg::after{transform:translateX(14px)}
 /* display を指定しているので、hidden 属性だけでは消えない。明示的に閉じる */
 .nvpanel[hidden]{display:none}
 @keyframes nvup{from{transform:translateY(8px)}to{transform:none}}
-.nvh{margin:0 0 7px 4px;font-size:10.5px;letter-spacing:.14em;color:var(--nm);font-weight:500}
-.nvsec+.nvsec{margin-top:15px;padding-top:14px;border-top:1px solid var(--nl)}
+.nvh{display:flex;align-items:center;margin:0 0 9px 2px;font-size:13px;color:var(--nm);font-weight:500}
+.nvsec{padding:12px 0 14px}
+.nvsec+.nvsec{border-top:1px solid var(--nl)}
 .nvit{display:flex;align-items:center;gap:10px;width:100%;text-align:left;text-decoration:none;
   border-radius:10px;padding:9px 11px;color:var(--nt);border:0;background:none;cursor:pointer;font:inherit}
 .nvit:hover{background:var(--ns)}
@@ -180,13 +212,9 @@ const CSS = `
 .nvfab .vb i{width:7px;height:7px;border-radius:99px;background:var(--vf,#808080)}
 .nvflow{margin:9px 4px 0;font-size:11px;color:var(--nm);line-height:1.65}
 .nvflow b{color:var(--nt);font-weight:500}
-.nvfoot{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid var(--nl)}
-.nvbtn{font-size:12px;border:1px solid var(--nl);border-radius:8px;padding:6px 12px;color:var(--nm);background:none;cursor:pointer;font-family:inherit}
+.nvfoot{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:12px 14px;border-top:1px solid var(--nl);flex:none}
+.nvbtn{font-size:12.5px;border:1px solid var(--nl);border-radius:9px;padding:7px 14px;color:var(--nm);background:none;cursor:pointer;font-family:inherit}
 .nvbtn:hover{border-color:var(--na);color:var(--nad)}
-.nvtabs{display:flex;gap:2px;background:var(--ns);border-radius:9px;padding:2px;margin:0 0 12px}
-.nvtab{flex:1;font-size:12.5px;padding:6px 10px;border-radius:7px;color:var(--nm);text-align:center;background:none;border:0;cursor:pointer;font-family:inherit}
-.nvtab:hover{color:var(--nt)}
-.nvtab[aria-selected="true"]{background:var(--nb);color:var(--nt);font-weight:500;box-shadow:0 1px 2px rgba(20,26,30,.12)}
 .nvbtn.pri{background:#009E5E;border-color:#009E5E;color:#fff}
 .nvbtn.pri:hover{background:#1E7A4C;border-color:#1E7A4C;color:#fff}
 .nvqsec{position:relative}
@@ -211,11 +239,11 @@ const CSS = `
   border:1px solid var(--nl);box-shadow:var(--nsh);font:700 18px/1 system-ui,sans-serif;cursor:pointer;padding:0;transition:transform .14s}
 .nvhelp:hover{transform:translateY(-1px);border-color:var(--na)}
 .nvhelp[aria-pressed="true"]{background:var(--na);border-color:var(--na);color:#fff}
-/* セクションごとの注釈の i（? の左）。注釈の箱と同じ青 */
-.nvinfo{color:#3D7BB8;font:700 18px/1 Georgia,"Times New Roman",serif}
-.nvinfo:hover{border-color:#3D7BB8}
-.nvinfo[aria-pressed="true"]{background:#3D7BB8;border-color:#3D7BB8;color:#fff}
-@media (max-width:700px){ .nvfab .sb,.nvfab .vb{display:none} .nvpanel{width:min(300px,calc(100vw - 40px))} }
+/* 画面説明のパネルの開閉（? の左）。パネルの見出しと同じ青 */
+.nvdesc{color:#2f7fd4}
+.nvdesc:hover{border-color:#2f7fd4}
+.nvdesc[aria-pressed="true"]{background:#2f7fd4;border-color:#2f7fd4;color:#fff}
+@media (max-width:700px){ .nvpanel{width:min(300px,calc(100vw - 40px))} }
 @media (prefers-reduced-motion:reduce){.nvfab,.nvpanel,.nvfab .cr,.nvtip{transition:none!important;animation:none!important}}
 `;
 
@@ -262,6 +290,7 @@ function lastPath(pf: Pf): string {
 export function KitSwitch() {
   const [open, setOpen] = useState(false);
   const [tip, setTip] = useState(false); // 「状態」の ? の吹き出し
+  const [roleOpen, setRoleOpen] = useState(false); // ログイン中のカードの下の権限の一覧
   const [coach, setCoach] = useState(false); // 画面説明（? ボタン）
   const role = useCurrentRole(loadCurrentRole("administrator"));
   const location = useLocation();
@@ -274,7 +303,7 @@ export function KitSwitch() {
   // scrollIntoView だと、吹き出しがパネルより高いとき下の端に合わせて上が切れ、ページごと動いてしまう
   useEffect(() => {
     const t = tipBox.current;
-    const panel = t?.closest(".nvpanel");
+    const panel = t?.closest(".nvbody");
     const head = t?.parentElement?.querySelector(".nvh");
     if (!tip || !panel || !head) return;
     panel.scrollTop +=
@@ -293,8 +322,8 @@ export function KitSwitch() {
   const ver = getKitVer();
   const verInfo = KIT_VERSIONS.find((v) => v.ver === ver);
   const coachHere = hasCoach(location.pathname);
-  const notesHere = hasNotes(location.pathname);
-  const notes = useSectionNotesOpen();
+  const descHere = isKitDescPath(location.pathname);
+  const descOpen = !useKitDescClosed();
   // 説明のある画面から離れたら閉じる
   useEffect(() => {
     if (!coachHere) setCoach(false);
@@ -343,139 +372,191 @@ export function KitSwitch() {
       <style>{CSS}</style>
       {/* 吹き出しの外（パネルの中）を押したら閉じる */}
       <div className="nvpanel" hidden={!open} onClick={() => setTip(false)}>
-        <div className="nvtabs" role="tablist" aria-label="端末の切り替え">
-          {(["admin", "app"] as Pf[]).map((p) => (
-            <button
-              key={p}
-              type="button"
-              role="tab"
-              className="nvtab"
-              aria-selected={p === pf}
-              onClick={() => p !== pf && navigate(lastPath(p))}
-            >
-              {p === "admin" ? "管理画面" : "アプリ"}
-            </button>
-          ))}
+        {/* 2026-10-06 に画面設計と同じ「切り替え」パネルの形にした（見出しと ×・2 段の切替・ログイン中のカード・状態のスイッチ・リセット） */}
+        <div className="nvhead">
+          <b>切り替え</b>
+          <button className="nvx" type="button" aria-label="閉じる" onClick={() => setOpen(false)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
         </div>
-        <div className="nvsec">
-          <p className="nvh">資料</p>
-          <a className="nvit" href={back} aria-current="false">
-            <span className="tx">
-              <b className="t1">{info.doc}</b>
-              <span className="t2">
-                {info.n ? `画面ごとの仕様・画面のつながりをまとめた資料。全${info.n}画面` : "画面ごとの仕様・画面のつながりをまとめた資料"}
-              </span>
-            </span>
-          </a>
-          <span className="nvit" aria-current="true">
-            <span className="tx">
-              <b className="t1">{info.demo}</b>
-              <span className="t2">{info.demoDesc}</span>
-            </span>
-          </span>
-        </div>
-        <div className="nvsec">
-          <p className="nvh">権限</p>
-          <div className="nvgrid">
-            {ROLES.map((r) => (
-              <button
-                key={r.key}
-                type="button"
-                className="nvit"
-                aria-current={r.key === role}
-                onClick={() => saveCurrentRole(r.key)}
-              >
-                <span className="tx">
-                  <b className="t1">{r.name}</b>
-                </span>
-              </button>
-            ))}
+        <div className="nvbody">
+          <div className="nvsec">
+            <div className="nvseg">
+              <a href={back} aria-current="false">{info.doc}</a>
+              <span aria-current="true">{info.demo}</span>
+            </div>
+            <p className="nvcap">{info.doc}は、いまの画面・状態・ログイン中のまま開きます</p>
           </div>
-        </div>
-        <div className="nvsec nvqsec">
-          <p className="nvh">
-            状態
-            <button
-              className="nvq"
-              type="button"
-              aria-expanded={tip}
-              aria-label="それぞれの状態の説明"
-              onClick={(e) => {
-                e.stopPropagation();
-                setTip((v) => !v);
-              }}
-            >
-              ?
-            </button>
-          </p>
-          <div
-            className="nvtip"
-            role="tooltip"
-            ref={tipBox}
-            hidden={!tip}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <dl>
-              {STATES.filter((x) => x.pf.includes(pf)).map((x) => (
-                <div key={x.key || "normal"}>
-                  <dt>{x.name}</dt>
-                  <dd>{STATE_HELP[pf][x.key]?.when || "未記入"}</dd>
-                  {(STATE_HELP[pf][x.key]?.texts || []).length ? (
-                    STATE_HELP[pf][x.key].texts.map(([at, t], i) => (
-                      <dd key={i} className="q">
-                        表示文言（{at}）：「{t}」
-                      </dd>
-                    ))
-                  ) : (
-                    <dd className="q">表示文言：なし</dd>
-                  )}
-                </div>
+          <div className="nvsec">
+            <p className="nvh">画面</p>
+            <div className="nvseg" role="tablist" aria-label="端末の切り替え">
+              {(["app", "admin"] as Pf[]).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  role="tab"
+                  aria-selected={p === pf}
+                  onClick={() => p !== pf && navigate(lastPath(p))}
+                >
+                  {p === "admin" ? "管理画面" : "アプリ"}
+                </button>
               ))}
-            </dl>
+            </div>
           </div>
-          <div className="nvgrid">
-            {STATES.filter((x) => x.pf.includes(pf)).map((x) => (
+          <div className="nvsec">
+            <p className="nvh">ログイン中</p>
+            {(() => {
+              const cur = ROLES.find((r) => r.key === role) ?? ROLES[0];
+              return (
+                <>
+                  <button
+                    type="button"
+                    className="nvcard"
+                    aria-expanded={roleOpen}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRoleOpen((v) => !v);
+                    }}
+                  >
+                    <span className="nvav" aria-hidden="true">{cur.name.slice(0, 1)}</span>
+                    <span className="tx">
+                      <b className="t1">
+                        {cur.name}
+                        <span className="nvbadge">権限</span>
+                      </b>
+                      <span className="t2">{cur.desc}</span>
+                    </span>
+                    <svg className="cr" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </button>
+                  <div className="nvmenu" role="menu" hidden={!roleOpen}>
+                    {ROLES.map((r) => (
+                      <button
+                        key={r.key}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={r.key === role}
+                        aria-current={r.key === role}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRoleOpen(false);
+                          saveCurrentRole(r.key);
+                        }}
+                      >
+                        <span className="nvav" aria-hidden="true">{r.name.slice(0, 1)}</span>
+                        <span className="tx">
+                          <b className="t1">{r.name}</b>
+                          <span className="t2">{r.desc}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+          <div className="nvsec nvqsec">
+            <p className="nvh">
+              状態を試す
               <button
-                key={x.key || "normal"}
+                className="nvq"
                 type="button"
-                className="nvit"
-                aria-current={x.key === state}
+                aria-expanded={tip}
+                aria-label="それぞれの状態の説明"
                 onClick={(e) => {
-                  e.stopPropagation(); // 吹き出しを開いたまま切り替えられるように（画面設計と同じ）
-                  setKitState(x.key);
+                  e.stopPropagation();
+                  setTip((v) => !v);
                 }}
               >
-                <span className="tx">
-                  <b className="t1">{x.name}</b>
-                </span>
+                ?
               </button>
-            ))}
+            </p>
+            <div
+              className="nvtip"
+              role="tooltip"
+              ref={tipBox}
+              hidden={!tip}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <dl>
+                {STATES.filter((x) => x.pf.includes(pf)).map((x) => (
+                  <div key={x.key || "normal"}>
+                    <dt>{x.name}</dt>
+                    <dd>{STATE_HELP[pf][x.key]?.when || "未記入"}</dd>
+                    {(STATE_HELP[pf][x.key]?.texts || []).length ? (
+                      STATE_HELP[pf][x.key].texts.map(([at, t], i) => (
+                        <dd key={i} className="q">
+                          表示文言（{at}）：「{t}」
+                        </dd>
+                      ))
+                    ) : (
+                      <dd className="q">表示文言：なし</dd>
+                    )}
+                  </div>
+                ))}
+              </dl>
+            </div>
+            {/* 通常以外を 1 行ずつスイッチで出す。入れられるのは 1 つだけで、入っているものを切ると通常に戻る */}
+            <div className="nvsws">
+              {STATES.filter((x) => x.key && x.pf.includes(pf)).map((x) => (
+                <button
+                  key={x.key}
+                  type="button"
+                  role="switch"
+                  className="nvsw1"
+                  aria-checked={x.key === state}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 吹き出しを開いたまま切り替えられるように（画面設計と同じ）
+                    setKitState(x.key === state ? "" : x.key);
+                  }}
+                >
+                  <span>{x.name}</span>
+                  <span className="tg" aria-hidden="true" />
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="nvsec">
+            <p className="nvh">バージョン</p>
+            {/* プルダウン。左の丸は選んでいる Ver の色 */}
+            <label className="nvsel" style={verInfo ? { ["--vf" as string]: verInfo.c } : undefined}>
+              <span className="vd" aria-hidden="true" />
+              <select
+                aria-label="バージョン"
+                value={ver}
+                title={verInfo ? `${verInfo.ver}（${verInfo.st}）の時点の画面。これより後で足す帳票を隠す` : "すべての帳票を出す"}
+                onChange={(e) => e.target.value !== ver && chooseKitVer(e.target.value)}
+              >
+                <option value="">すべての Ver</option>
+                {KIT_VERSIONS.map((v) => (
+                  <option key={v.ver} value={v.ver}>
+                    {v.ver}（{v.st}）
+                  </option>
+                ))}
+              </select>
+              <svg className="cr" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </label>
           </div>
         </div>
-        <div className="nvsec">
-          <p className="nvh">バージョン</p>
-          {/* プルダウン。左の丸は選んでいる Ver の色 */}
-          <label className="nvsel" style={verInfo ? { ["--vf" as string]: verInfo.c } : undefined}>
-            <span className="vd" aria-hidden="true" />
-            <select
-              aria-label="バージョン"
-              value={ver}
-              title={verInfo ? `${verInfo.ver}（${verInfo.st}）の時点の画面。これより後で足す帳票を隠す` : "すべての帳票を出す"}
-              onChange={(e) => e.target.value !== ver && chooseKitVer(e.target.value)}
-            >
-              <option value="">すべての Ver</option>
-              {KIT_VERSIONS.map((v) => (
-                <option key={v.ver} value={v.ver}>
-                  {v.ver}（{v.st}）
-                </option>
-              ))}
-            </select>
-            <svg className="cr" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true">
-              <path d="M6 9l6 6 6-6" />
-            </svg>
-          </label>
-        </div>
         <div className="nvfoot">
+          <button
+            type="button"
+            className="nvbtn"
+            title="状態を通常に、ログイン中を最初の権限に戻す"
+            onClick={(e) => {
+              e.stopPropagation();
+              setRoleOpen(false);
+              setKitState("");
+              saveCurrentRole(ROLES[0].key);
+            }}
+          >
+            リセット
+          </button>
           <button
             type="button"
             className="nvbtn pri"
@@ -490,20 +571,24 @@ export function KitSwitch() {
       </div>
       {coach && <ScreenCoachMarks onClose={() => setCoach(false)} cardBottom={130} skipKinds={COACH_SKIP} options={COACH_OPTIONS} />}
       <div className="nvrow">
-      {notesHere && (
+      {descHere && (
         <button
-          className="nvhelp nvinfo"
+          className="nvhelp nvdesc"
           type="button"
-          aria-pressed={notes}
-          aria-label={notes ? "セクションの注釈を閉じる" : "セクションごとの注釈を出す"}
-          title="セクションごとの注釈"
+          aria-pressed={descOpen}
+          aria-label={descOpen ? "画面説明を閉じる" : "画面説明を表示"}
+          title="画面説明"
           onClick={(e) => {
             e.stopPropagation();
             setOpen(false);
-            setSectionNotesOpen(!notes);
+            setKitDescClosed(descOpen);
           }}
         >
-          i
+          {/* 右にパネルが出る形のアイコン */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2.5" />
+            <path d="M14 4v16M16.5 8.5h2M16.5 12h2" strokeLinecap="round" />
+          </svg>
         </button>
       )}
       {coachHere && (
@@ -526,31 +611,17 @@ export function KitSwitch() {
         className="nvfab"
         type="button"
         aria-expanded={open}
+        aria-label={`切り替え（${info.demo}・${verInfo ? verInfo.ver : "すべての Ver"}・${(STATES.find((x) => x.key === state) || STATES[0]).name}）`}
+        title="切り替え"
         onClick={(e) => {
           e.stopPropagation();
           setOpen((v) => !v);
         }}
       >
-        <span className="dt"></span>
-        <span className="lb">{info.demo}</span>
-        <span className="vb" style={verInfo ? { ["--vf" as string]: verInfo.c } : undefined}>
-          {verInfo && <i />}
-          {verInfo ? verInfo.ver : "すべての Ver"}
-        </span>
-        <span className="sb">
-          {(STATES.find((x) => x.key === state) || STATES[0]).name}
-        </span>
-        <svg
-          className="cr"
-          width="11"
-          height="11"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.6"
-          strokeLinecap="round"
-        >
-          <path d="M6 15l6-6 6 6" />
+        {/* 2026-10-06 から緑の丸に重なった 2 枚の四角のアイコンだけ（画面設計と同じ。いまの状態・Ver はパネルの中で見る） */}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
+          <rect x="4" y="3.5" width="11.5" height="13.5" rx="2.2" />
+          <path d="M19.5 7.5v10.3a2.7 2.7 0 0 1-2.7 2.7H9" />
         </svg>
       </button>
       </div>

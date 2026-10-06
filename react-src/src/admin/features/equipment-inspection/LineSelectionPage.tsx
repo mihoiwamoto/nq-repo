@@ -5,7 +5,6 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
-import { SectionNote } from "../../../components/section-notes/SectionNote";
 import type { LineFrequency } from "./types";
 
 const FREQUENCY_TABS: { key: LineFrequency; label: string }[] = [
@@ -57,16 +56,12 @@ export function LineSelectionPage() {
         title="機械器具点検"
         showBack
         action={
-          // 右下の「i」を押すと、ボタンの下に注釈が出る（場所を取らないよう absolute で置く）
-          <div className="relative">
           <Link
             to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/lines/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
-            <SectionNote className="absolute right-0 top-full mt-1.5">①持ち場/ラインの登録はここから</SectionNote>
-          </div>
         }
       />
       <Breadcrumb
@@ -95,7 +90,6 @@ export function LineSelectionPage() {
                 >
                   点検予定
                 </Link>
-                <SectionNote className="absolute left-0 top-full mt-1">②点検する日の予定はここから</SectionNote>
               </div>
             </div>
             <div className="flex flex-col gap-2 items-start">
@@ -107,7 +101,6 @@ export function LineSelectionPage() {
                 >
                   確認項目の設定
                 </Link>
-                <SectionNote className="absolute left-0 top-full mt-1">③確認項目の登録はここから</SectionNote>
               </div>
             </div>
           </div>
@@ -148,8 +141,6 @@ export function LineSelectionPage() {
                   {tab.label}
                 </button>
               ))}
-              <SectionNote className="absolute left-0 bottom-full mb-1">④点検頻度（毎日・毎週・毎月・毎年）で持ち場/ラインを切り替え</SectionNote>
-              <SectionNote className="absolute left-0 top-full mt-1">⑤カードを押すと、点検箇所と点検項目の詳細画面へ</SectionNote>
             </div>
 
             {/* 画面説明（コーチマーク）の「持ち場/ラインのカード」はこの並びを囲む */}

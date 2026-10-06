@@ -629,13 +629,13 @@ export function PendingReviewDetailPage() {
   const [selectedScoreRowId, setSelectedScoreRowId] = useState<string | null>(null);
   const [selectedMachineRecordId, setSelectedMachineRecordId] = useState<string | null>(null);
   const [metalXrayComment, setMetalXrayComment] = useState("");
-  const [metalXrayActorPickerOpen, setMetalXrayActorPickerOpen] = useState(false);
-  const [selectedMetalXrayActorId, setSelectedMetalXrayActorId] = useState(ACTORS[0].id);
   const [metalXrayNewComment, setMetalXrayNewComment] = useState("");
   const [metalXrayExtraComments, setMetalXrayExtraComments] = useState<
     { id: string; authorName: string; timestamp: string; body: string }[]
   >([]);
   const [metalXrayResponseComplete, setMetalXrayResponseComplete] = useState(false);
+  const [metalXrayActorPickerOpen, setMetalXrayActorPickerOpen] = useState(false);
+  const [selectedMetalXrayActorId, setSelectedMetalXrayActorId] = useState(ACTORS[0].id);
   // 機械器具点検の差し戻し対応（実施者が自分の記録を直す画面）で使う状態
   const [equipmentActorId, setEquipmentActorId] = useState(
     returnState?.actorId && ACTORS.some((a) => a.id === returnState.actorId)
@@ -649,6 +649,8 @@ export function PendingReviewDetailPage() {
   const [equipmentResponseComplete, setEquipmentResponseComplete] = useState(false);
   // Figma「下までスクロールしていない時」= 差し戻し内容を最後まで読むまで完了ボタンは押せない
   const [equipmentScrolledToEnd, setEquipmentScrolledToEnd] = useState(false);
+  // 差し戻しの「点検内容を修正する」で開く実施者の選択（入口は確認待ちなので確認者を選ぶ。直す人はここで選ぶ。2026-10-06）
+  const [rejectEditTarget, setRejectEditTarget] = useState<((actorName: string) => void) | null>(null);
   const [comment, setComment] = useState("");
   const [outcome, setOutcome] = useState<"approved" | "rejected">("approved");
   const [showComplete, setShowComplete] = useState(false);
@@ -712,12 +714,11 @@ export function PendingReviewDetailPage() {
     : undefined;
 
   const isEquipment = review.ledgerSlug === "equipment-inspection" && !!line;
-  // 差し戻しは確認者ではなく実施者が対応するので、入口のダイアログも実施者選択になる
+  // 差し戻しも入口は確認者を選び、直す実施者は「点検内容を修正する」で選ぶ（2026-10-06）
   const isEquipmentRejected = isEquipment && review.status === "差し戻し";
   const isCleaning = isCleaningLedger && !!line;
   // 清掃記録の差し戻しも機械器具点検と同じく、実施者が対応する（2026-10-02）
   const isCleaningRejected = isCleaning && review.status === "差し戻し";
-  const isLineRejected = isEquipmentRejected || isCleaningRejected;
   const isWater = review.ledgerSlug === "water-inspection" && !!waterRecord;
   const isGlassPlastic = isGlassPlasticLedger && !!floor;
   const isAdditive = isAdditiveLedger && !!additive;
@@ -732,7 +733,6 @@ export function PendingReviewDetailPage() {
   const isStockRejected = isChemicalRejected || isAdditiveRejected;
   // 薬品管理の点検済み（確認者が見て提出する）。添加物管理と同じ画面で出す（2026-10-05）
   const isChemical = isChemicalLedger && !!chemical && review.status !== "差し戻し";
-  const isActorPicker = isLineRejected || isStockRejected;
 
   if (
     !isEquipment &&
@@ -770,6 +770,59 @@ export function PendingReviewDetailPage() {
   const lineLabel = line ? `【${FREQUENCY_LABELS[line.frequency]}】${line.name}` : "";
   const confirmer = CONFIRMERS.find((c) => c.id === confirmerId) ?? CONFIRMERS[0];
   const confirmedReview = review;
+
+  // 差し戻しの「点検内容を修正する」→ 実施者を選んで「次へ」で記録の編集へ（機械器具点検・清掃記録・薬品管理・添加物管理）
+  const openRejectEdit = (go: (actorName: string) => void) => {
+    setEquipmentActorId(ACTORS[0].id);
+    setRejectEditTarget(() => go);
+  };
+  const rejectActorPicker = rejectEditTarget && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/50" onClick={() => setRejectEditTarget(null)} />
+      {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
+      <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+        <h2 className="text-2xl text-[var(--semantic-text-primary)]">実施者を選んでください</h2>
+        <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
+          {ACTORS.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              onClick={() => setEquipmentActorId(a.id)}
+              className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
+                equipmentActorId === a.id
+                  ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
+                  : "bg-white border-2 border-transparent"
+              }`}
+            >
+              <span className="text-base text-[var(--semantic-text-primary)]">{a.name}</span>
+              <span className="text-sm text-[var(--semantic-text-secondary)]">{a.id}</span>
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-10 items-center justify-center w-full">
+          <button
+            type="button"
+            onClick={() => setRejectEditTarget(null)}
+            className="bg-white border-2 border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
+          >
+            閉じる
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const go = rejectEditTarget;
+              const picked = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
+              setRejectEditTarget(null);
+              go(picked.name);
+            }}
+            className="bg-[#094] h-16 w-60 rounded-lg text-xl text-white font-semibold hover:bg-[#076a38]"
+          >
+            次へ
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   function handleApprove() {
     setOutcome("approved");
@@ -889,10 +942,10 @@ export function PendingReviewDetailPage() {
   }
 
   if (step === "confirmer") {
-    // 差し戻しは「記録を直す実施者」が入るので、確認者ではなく実施者を選んでもらう
-    const pickerPeople = isActorPicker ? ACTORS : CONFIRMERS;
-    const pickerSelectedId = isActorPicker ? equipmentActorId : confirmerId;
-    const selectPickerPerson = isActorPicker ? setEquipmentActorId : setConfirmerId;
+    // 確認待ちの画面なので、差し戻しでも入口は確認者を選ぶ（直す実施者は「点検内容を修正する」で選ぶ。2026-10-06）
+    const pickerPeople = CONFIRMERS;
+    const pickerSelectedId = confirmerId;
+    const selectPickerPerson = setConfirmerId;
     return (
       <>
         <AppHeader title="確認待ち" />
@@ -901,7 +954,7 @@ export function PendingReviewDetailPage() {
             <div className="absolute inset-0 bg-black/50" onClick={() => navigate("/app/pending-review")} />
             <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
               <h2 className="text-2xl text-[var(--semantic-text-primary)]">
-                {isActorPicker ? "実施者を選んでください" : "確認者を選んでください"}
+                確認者を選んでください
               </h2>
               <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
                 {pickerPeople.map((c) => (
@@ -1299,7 +1352,6 @@ export function PendingReviewDetailPage() {
   // 薬品管理・添加物管理の差し戻し（機械器具点検の差し戻しと同じ流れ。2026-10-02）。
   // 実施者が差し戻し理由を読み、必要なら記録を直してから「差し戻し対応完了」を押す。
   if (isStockRejected) {
-    const actor = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
     const item = isChemicalRejected ? chemical! : additive!;
     const ledgerLabel = isChemicalRejected ? "薬品管理" : "添加物管理";
     const rejection = isChemicalRejected
@@ -1330,7 +1382,7 @@ export function PendingReviewDetailPage() {
         ...prev,
         {
           id: `local-${prev.length}`,
-          authorName: actor.name,
+          authorName: confirmer.name,
           timestamp: commentTimestamp(),
           body: equipmentNewComment.trim(),
         },
@@ -1339,13 +1391,13 @@ export function PendingReviewDetailPage() {
     };
 
     // 差し戻された記録の記録入力へ（記録が入った状態で開く）。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
-    const goToEdit = () => {
+    const goToEdit = (actorName: string) => {
       const to = isChemicalRejected
         ? `/app/ledger-list/chemical-management/${item.id}/new`
         : `/app/ledger-list/additive-management/products/${item.id}/new`;
       navigate(to, {
         state: {
-          inspectorName: actor.name,
+          inspectorName: actorName,
           date: targetRecord?.date,
           editRecord: targetRecord
             ? {
@@ -1355,7 +1407,7 @@ export function PendingReviewDetailPage() {
                 remarks: targetRecord.remarks,
               }
             : undefined,
-          editReturn: { to: location.pathname, state: { step, actorId: equipmentActorId } },
+          editReturn: { to: location.pathname, state: { step, confirmerId } },
         },
       });
     };
@@ -1381,8 +1433,8 @@ export function PendingReviewDetailPage() {
               <p className="text-base text-[var(--semantic-text-primary)]">{targetRecord?.date ?? "2025/04/01"}</p>
             </div>
             <div className="flex items-center justify-between w-full">
-              <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
-              <p className="text-base text-[var(--semantic-text-primary)]">{actor.name}</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">確認者</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{confirmer.name}</p>
             </div>
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">保管場所</p>
@@ -1445,7 +1497,7 @@ export function PendingReviewDetailPage() {
               <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
               <button
                 type="button"
-                onClick={goToEdit}
+                onClick={() => openRejectEdit(goToEdit)}
                 className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
               >
                 <img src={iconEdit} alt="" className="size-5" />
@@ -1482,6 +1534,8 @@ export function PendingReviewDetailPage() {
             差し戻し対応完了
           </button>
         </div>
+
+        {rejectActorPicker}
 
         {equipmentResponseComplete && (
           <CompleteDialog
@@ -2272,25 +2326,26 @@ export function PendingReviewDetailPage() {
           {
             id: `local-${prev.length}`,
             authorName: confirmer.name,
-            timestamp: "25.04.02 10:20",
+            timestamp: commentTimestamp(),
             body: metalXrayNewComment.trim(),
           },
         ]);
         setMetalXrayNewComment("");
       };
 
+      // 確認待ちの入口では確認者を選ぶので、直す人（実施者）は「点検内容を修正する」で選ぶ（2026-10-06）
       const openMetalXrayActorPicker = () => {
         setSelectedMetalXrayActorId(ACTORS[0].id);
         setMetalXrayActorPickerOpen(true);
       };
 
+      // 点検の編集画面（機器の詳細）へ。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
       const confirmMetalXrayActorPicker = () => {
-        const actor = ACTORS.find((a) => a.id === selectedMetalXrayActorId) ?? ACTORS[0];
+        const picked = ACTORS.find((a) => a.id === selectedMetalXrayActorId) ?? ACTORS[0];
         setMetalXrayActorPickerOpen(false);
-        // 点検の編集画面へ。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
         navigate(`/app/ledger-list/metal-xray-detection/machines/${machine.id}`, {
           state: {
-            inspectorName: actor.name,
+            inspectorName: picked.name,
             editReturn: { to: location.pathname, state: { step, confirmerId } },
           },
         });
@@ -2299,12 +2354,25 @@ export function PendingReviewDetailPage() {
       return (
         <>
           <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-            <div className="bg-white flex items-center justify-between p-4 rounded-lg w-full">
-              <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
-              <p className="text-base text-[var(--semantic-text-primary)]">
-                {inspectionDate ? inspectionDate.replaceAll("-", "/") : "2025/03/24"}
+          {/* 差し戻し内容を最後まで読むまで完了ボタンは押せない（機械器具点検と同じ。2026-10-06） */}
+          <ScrollEndArea
+            className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
+            onReachEnd={() => setEquipmentScrolledToEnd(true)}
+          >
+            <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+              <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
+              <p className="text-sm text-[var(--semantic-text-primary)]">
+                承認者から差し戻し理由のコメントがあります。
               </p>
+            </div>
+
+            <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
+              <div className="flex items-center justify-between w-full">
+                <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
+                <p className="text-base text-[var(--semantic-text-primary)]">
+                  {inspectionDate ? inspectionDate.replaceAll("-", "/") : "2025/03/24"}
+                </p>
+              </div>
             </div>
 
             <div className="bg-white rounded-lg overflow-x-auto w-full">
@@ -2396,7 +2464,7 @@ export function PendingReviewDetailPage() {
                 onSend={handleSendMetalXrayComment}
               />
             </div>
-          </div>
+          </ScrollEndArea>
 
           <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
             <button
@@ -2406,11 +2474,13 @@ export function PendingReviewDetailPage() {
             >
               戻る
             </button>
-            {/* コメントや点検内容の修正をしていなくても押せる（差し戻し内容の確認だけで完了できる） */}
             <button
               type="button"
+              disabled={!equipmentScrolledToEnd}
               onClick={() => setMetalXrayResponseComplete(true)}
-              className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
+              className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+                equipmentScrolledToEnd ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+              }`}
             >
               差し戻し対応完了
             </button>
@@ -2423,19 +2493,19 @@ export function PendingReviewDetailPage() {
               <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
                 <h2 className="text-2xl text-[var(--semantic-text-primary)]">実施者を選んでください</h2>
                 <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
-                  {ACTORS.map((actor) => (
+                  {ACTORS.map((a) => (
                     <button
-                      key={actor.id}
+                      key={a.id}
                       type="button"
-                      onClick={() => setSelectedMetalXrayActorId(actor.id)}
+                      onClick={() => setSelectedMetalXrayActorId(a.id)}
                       className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
-                        selectedMetalXrayActorId === actor.id
+                        selectedMetalXrayActorId === a.id
                           ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
                           : "bg-white border-2 border-transparent"
                       }`}
                     >
-                      <span className="text-base text-[var(--semantic-text-primary)]">{actor.name}</span>
-                      <span className="text-sm text-[var(--semantic-text-secondary)]">{actor.id}</span>
+                      <span className="text-base text-[var(--semantic-text-primary)]">{a.name}</span>
+                      <span className="text-sm text-[var(--semantic-text-secondary)]">{a.id}</span>
                     </button>
                   ))}
                 </div>
@@ -2610,7 +2680,6 @@ export function PendingReviewDetailPage() {
   // 機械器具点検の差し戻し（Figma: 確認待ち_差し戻し_機械器具点検_詳細）。
   // 実施者が差し戻し理由を読み、必要なら点検内容を直してから「差し戻し対応完了」を押す。
   if (isEquipmentRejected && line) {
-    const actor = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
     const rejectionComments = LINE_REJECTION_COMMENTS[line.id] ?? [];
     const allEquipmentComments = [...rejectionComments, ...equipmentExtraComments];
 
@@ -2620,7 +2689,7 @@ export function PendingReviewDetailPage() {
         ...prev,
         {
           id: `local-${prev.length}`,
-          authorName: actor.name,
+          authorName: confirmer.name,
           timestamp: commentTimestamp(),
           body: equipmentNewComment.trim(),
         },
@@ -2629,11 +2698,11 @@ export function PendingReviewDetailPage() {
     };
 
     // 点検の編集画面へ。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
-    const goToEdit = () => {
+    const goToEdit = (actorName: string) => {
       navigate(`/app/ledger-list/equipment-inspection/lines/${line.id}`, {
         state: {
-          inspectorName: actor.name,
-          editReturn: { to: location.pathname, state: { step, actorId: equipmentActorId } },
+          inspectorName: actorName,
+          editReturn: { to: location.pathname, state: { step, confirmerId } },
         },
       });
     };
@@ -2659,8 +2728,8 @@ export function PendingReviewDetailPage() {
               <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
             </div>
             <div className="flex items-center justify-between w-full">
-              <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
-              <p className="text-base text-[var(--semantic-text-primary)]">{actor.name}</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">確認者</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{confirmer.name}</p>
             </div>
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">持ち場/ライン</p>
@@ -2738,7 +2807,7 @@ export function PendingReviewDetailPage() {
               <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
               <button
                 type="button"
-                onClick={goToEdit}
+                onClick={() => openRejectEdit(goToEdit)}
                 className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
               >
                 <img src={iconEdit} alt="" className="size-5" />
@@ -2776,6 +2845,8 @@ export function PendingReviewDetailPage() {
           </button>
         </div>
 
+        {rejectActorPicker}
+
         {equipmentResponseComplete && (
           <CompleteDialog
             title="差し戻し対応が完了しました"
@@ -2791,7 +2862,6 @@ export function PendingReviewDetailPage() {
   // 清掃記録の差し戻し（機械器具点検の差し戻しと同じ流れ。2026-10-02）。
   // 実施者が差し戻し理由を読み、必要なら清掃内容を直してから「差し戻し対応完了」を押す。
   if (isCleaningRejected && line) {
-    const actor = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
     const rejectionComments = CLEANING_REJECTION_COMMENTS[line.id] ?? [];
     const allCleaningComments = [...rejectionComments, ...equipmentExtraComments];
 
@@ -2801,7 +2871,7 @@ export function PendingReviewDetailPage() {
         ...prev,
         {
           id: `local-${prev.length}`,
-          authorName: actor.name,
+          authorName: confirmer.name,
           timestamp: commentTimestamp(),
           body: equipmentNewComment.trim(),
         },
@@ -2810,11 +2880,11 @@ export function PendingReviewDetailPage() {
     };
 
     // 清掃の記録入力へ。「編集を保存」でこの詳細画面（同じステップ）に戻ってくる
-    const goToEdit = () => {
+    const goToEdit = (actorName: string) => {
       navigate(`/app/ledger-list/cleaning-record/lines/${line.id}`, {
         state: {
-          inspectorName: actor.name,
-          editReturn: { to: location.pathname, state: { step, actorId: equipmentActorId } },
+          inspectorName: actorName,
+          editReturn: { to: location.pathname, state: { step, confirmerId } },
         },
       });
     };
@@ -2840,8 +2910,8 @@ export function PendingReviewDetailPage() {
               <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
             </div>
             <div className="flex items-center justify-between w-full">
-              <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
-              <p className="text-base text-[var(--semantic-text-primary)]">{actor.name}</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">確認者</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{confirmer.name}</p>
             </div>
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">持ち場/ライン</p>
@@ -2892,7 +2962,7 @@ export function PendingReviewDetailPage() {
               <p className="text-lg font-semibold text-[var(--semantic-text-primary)]">コメント</p>
               <button
                 type="button"
-                onClick={goToEdit}
+                onClick={() => openRejectEdit(goToEdit)}
                 className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
               >
                 <img src={iconEdit} alt="" className="size-5" />
@@ -2929,6 +2999,8 @@ export function PendingReviewDetailPage() {
             差し戻し対応完了
           </button>
         </div>
+
+        {rejectActorPicker}
 
         {equipmentResponseComplete && (
           <CompleteDialog

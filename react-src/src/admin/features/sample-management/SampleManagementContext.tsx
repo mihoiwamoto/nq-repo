@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { SAMPLE_TARGET_PRODUCTS, type SampleTargetProduct } from "./mockData";
 import type { ScheduleEntry } from "./types";
 
@@ -65,5 +66,7 @@ export function SampleManagementProviderOutlet() {
 export function useSampleManagement() {
   const ctx = useContext(SampleManagementContext);
   if (!ctx) throw new Error("useSampleManagement must be used within SampleManagementProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, products: [], scheduleEntries: {} } : ctx), [ctx, empty]);
 }

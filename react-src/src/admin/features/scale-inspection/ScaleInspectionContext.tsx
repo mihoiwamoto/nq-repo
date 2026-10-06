@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { initialScaleInspectionPosts, initialScaleInspectionScales } from "./mockData";
 import type { ScaleInspectionPost, ScaleInspectionScale, ScaleRepairStatus } from "./types";
 
@@ -105,5 +106,7 @@ export function ScaleInspectionProviderOutlet() {
 export function useScaleInspection() {
   const ctx = useContext(ScaleInspectionContext);
   if (!ctx) throw new Error("useScaleInspection must be used within ScaleInspectionProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, posts: [], scales: [] } : ctx), [ctx, empty]);
 }

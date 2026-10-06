@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { initialWaterInspectionPoints } from "./mockData";
 import type { WaterInspectionPoint } from "./types";
 
@@ -49,5 +50,7 @@ export function WaterInspectionProviderOutlet() {
 export function useWaterInspection() {
   const ctx = useContext(WaterInspectionContext);
   if (!ctx) throw new Error("useWaterInspection must be used within WaterInspectionProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, points: [] } : ctx), [ctx, empty]);
 }

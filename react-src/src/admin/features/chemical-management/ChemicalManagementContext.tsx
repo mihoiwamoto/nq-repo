@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { CHEMICALS, type Chemical } from "../../../data/chemicals";
 
 type ChemicalInput = {
@@ -55,5 +56,7 @@ export function ChemicalManagementProviderOutlet() {
 export function useChemicalManagement() {
   const ctx = useContext(ChemicalManagementContext);
   if (!ctx) throw new Error("useChemicalManagement must be used within ChemicalManagementProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, chemicals: [] } : ctx), [ctx, empty]);
 }

@@ -73,7 +73,7 @@ function DetectorSelect({
 
   return (
     <div className="flex flex-col gap-1 items-start w-[240px] mb-4" ref={containerRef}>
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center whitespace-nowrap">
         <p className="text-xl text-[var(--semantic-text-primary)]">{label}</p>
         <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
       </div>

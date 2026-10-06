@@ -14,7 +14,7 @@ import iconHelp from "../assets/figma/icons/nav/help.svg";
 import type { PrototypeRoleId } from "../data/roleStore";
 import { approvalRequests } from "./data/approvals";
 import { pendingConfirmationCount } from "./data/confirmations";
-import { withoutHiddenLedgers } from "../data/ledgerVisibility";
+import { isMenuHidden, withoutHiddenLedgers } from "../data/ledgerVisibility";
 
 // 画面設計の Ver の切替で隠している帳票の申請は数えない（枠の URL の ?hide= を読み込みのときに見る）
 const pendingApprovalCount = withoutHiddenLedgers(approvalRequests).filter((item) => item.status === "pending").length;
@@ -110,7 +110,8 @@ const NAV_VISIBILITY: Partial<Record<PrototypeRoleId, { allow?: string[]; hide?:
 export const HIDDEN_NAV_PATHS = ["/admin/confirmations"];
 
 export function filterNavByRole(items: AdminNavItem[], role: PrototypeRoleId): AdminNavItem[] {
-  const shown = items.filter((item) => !HIDDEN_NAV_PATHS.includes(item.path));
+  // 画面設計・プロトタイプの Ver の切替で、その Ver にまだ無いメニュー（製品管理・保管場所管理）も出さない
+  const shown = items.filter((item) => !HIDDEN_NAV_PATHS.includes(item.path) && !isMenuHidden(item.path));
   const rule = NAV_VISIBILITY[role];
   if (!rule) return shown;
   return shown.filter(

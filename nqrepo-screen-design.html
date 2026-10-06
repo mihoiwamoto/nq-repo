@@ -220,6 +220,18 @@ body.playing .tbar{display:none}
 .stw select{font:inherit;font-size:11.5px;color:var(--ink);background:none;border:0;padding:2px 0;max-width:140px;cursor:pointer}
 .stw select:focus{outline:none}
 .stw:hover{background:var(--surface-2)}
+.stw[hidden]{display:none}
+/* 中央下の帯の「状態」「権限」を開いたときの一覧。NQ の管理画面のプルダウン（React の admin/components/Pulldown.tsx）と同じ形：
+   白地・影 0 0 3px・角丸 8px・内側 8px、行は高さ 42px・角丸 8px・16px、選んでいる行は緑地に白文字、触れている行は #F1EFEA（2026-10-06）。
+   帯は画面の下にあるので、上へ開く */
+.nqpop{position:fixed;z-index:300;background:#fff;box-shadow:0 0 3px rgba(51,51,51,.24);border-radius:8px;padding:8px;
+  max-height:290px;overflow-y:auto;font-family:"Noto Sans JP",system-ui,sans-serif;font-weight:700}
+.nqpop button{display:flex;align-items:center;width:100%;height:42px;padding:0 8px;border:0;border-radius:8px;background:none;
+  font:inherit;font-size:16px;color:#333;text-align:left;white-space:nowrap;cursor:pointer}
+.nqpop button:hover{background:#F1EFEA}
+.nqpop button[aria-selected="true"]{background:#009944;color:#fff}
+.nqpop button:focus{outline:none}
+.nqpop button:focus-visible:not([aria-selected="true"]){background:#F1EFEA}
 .stw.on{background:var(--warn-l)}
 .stw.on .sl,.stw.on select{color:var(--warn)}
 /* 枠の大きさは、枠のすぐ上（中央の画面バー）に置く。右パネルには出さない */
@@ -1216,10 +1228,14 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
   --nb:#171D20;--nl:#2A3236;--nt:#E7EBEC;--nm:#98A2A7;--na:#35BE84;--nad:#8FDCBB;--nal:#12312A;--ns:#1E2528;
   --nsh:0 4px 14px rgba(0,0,0,.5), 0 20px 50px -18px rgba(0,0,0,.95)}
 
-.nvfab{display:flex;align-items:center;gap:9px;background:var(--nb);color:var(--nt);
-  border:1px solid var(--nl);border-radius:999px;padding:9px 15px 9px 13px;box-shadow:var(--nsh);
-  font-size:13px;line-height:1.5;cursor:pointer;transition:transform .14s,box-shadow .14s}
-.nvfab:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(20,26,30,.14), 0 22px 50px -18px rgba(20,26,30,.42)}
+.nvfab{display:grid;place-items:center;width:56px;height:56px;padding:0;background:#2B7A47;color:#fff;
+  border:0;border-radius:999px;box-shadow:0 4px 12px rgba(20,26,30,.18), 0 14px 32px -14px rgba(20,26,30,.45);
+  cursor:pointer;transition:transform .14s,box-shadow .14s,background .14s}
+.nvfab:hover{transform:translateY(-1px);background:#246A3D;box-shadow:0 6px 16px rgba(20,26,30,.22), 0 18px 40px -14px rgba(20,26,30,.5)}
+.nvfab:focus-visible{outline:3px solid rgba(43,122,71,.35);outline-offset:3px}
+.nvsw.open .nvfab{background:#246A3D}
+/* 文字・いまの状態・矢印は出さない（2026-10-06。要素は JS が使うので残す） */
+.nvfab .dt,.nvfab .lb,.nvfab .sb,.nvfab .cr{display:none!important}
 .nvfab .dt{width:8px;height:8px;border-radius:99px;background:var(--na);flex:none}
 .nvfab .lb{font-weight:700;white-space:nowrap}
 .nvfab .sb{color:var(--nm);white-space:nowrap;border-left:1px solid var(--nl);padding-left:9px}
@@ -1227,19 +1243,65 @@ ul.bul li::before{content:"";position:absolute;left:2px;top:.75em;width:5px;heig
 .nvfab .cr{color:var(--nm);transition:transform .18s}
 .nvsw.open .nvfab .cr{transform:rotate(180deg)}
 /* 再生中は丸いアイコンだけにする（押せば同じパネルが開く。2026-10-02） */
-.nvfab .ic{display:none;flex:none}
-body.playing .nvfab{padding:0;width:42px;height:42px;justify-content:center;gap:0}
-body.playing .nvfab .ic{display:block;color:var(--na)}
-body.playing .nvfab .dt,body.playing .nvfab .lb,body.playing .nvfab .sb,body.playing .nvfab .cr{display:none}
+.nvfab .ic{display:block;flex:none}
+body.playing .nvfab{width:44px;height:44px}
+body.playing .nvfab .ic{width:20px;height:20px}
 /* 画面より背が高くなったらパネルの中で縦に送る（React の KitSwitch.tsx と同じ値） */
-.nvpanel{position:absolute;right:0;bottom:calc(100% + 10px);width:312px;background:var(--nb);max-height:calc(100vh - 90px);overflow-y:auto;overscroll-behavior:contain;
-  border:1px solid var(--nl);border-radius:16px;box-shadow:var(--nsh);padding:14px;
+.nvpanel{position:absolute;right:0;bottom:calc(100% + 10px);width:316px;background:var(--nb);max-height:calc(100vh - 90px);
+  display:flex;flex-direction:column;border:1px solid var(--nl);border-radius:16px;box-shadow:var(--nsh);overflow:hidden;
   animation:nvup .18s cubic-bezier(.2,1,.3,1)}
+/* 見出し（切り替え・×）と下の帯（リセット・フィードバック）は動かさず、間だけを縦に送る（2026-10-06） */
+.nvhead{display:flex;align-items:center;justify-content:space-between;padding:14px 12px 4px 18px;flex:none}
+.nvhead b{font-size:13px;font-weight:500;color:var(--nm)}
+.nvx{width:28px;height:28px;display:grid;place-items:center;border:0;background:none;border-radius:8px;color:var(--nm);cursor:pointer}
+.nvx:hover{background:var(--ns);color:var(--nt)}
+.nvbody{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 16px 4px}
+/* 2 段・3 段の切替（灰色の地に、選んだものだけ白地・緑の太字） */
+.nvseg{display:flex;gap:2px;background:var(--ns);border-radius:11px;padding:3px}
+.nvseg>*{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 8px;border:0;background:none;border-radius:9px;
+  font:inherit;font-size:13px;color:var(--nt);text-decoration:none;cursor:pointer;white-space:nowrap}
+.nvseg>*:hover{color:var(--nad)}
+.nvseg>[aria-selected="true"],.nvseg>[aria-current="true"]{background:var(--nb);color:var(--nad);font-weight:700;box-shadow:0 1px 3px rgba(20,26,30,.14);cursor:default}
+.nvcap{margin:8px 2px 0;font-size:11.5px;color:var(--nm);line-height:1.6}
+/* 画面設計の右下は「画面設計／プロトタイプ」の切替だけにする（2026-10-06）。画面・ログイン中・状態を試す・リセット・フィードバックは出さない
+   （端末・状態・権限は中央下の段で切り替える）。中身の HTML と JS は残してあるので、戻すときはこの 1 行を消す */
+#nvSw .nvbody>.nvsec:not(#nvDocs),#nvSw .nvfoot{display:none!important}
+#nvSw #nvDocs{padding-bottom:4px}
+/* ログイン中（権限）。カードを押すと下に権限の一覧が開く */
+.nvwho{position:relative}
+.nvcard{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:1px solid var(--nl);border-radius:12px;background:var(--nb);
+  padding:9px 12px;cursor:pointer;font:inherit;color:var(--nt)}
+.nvcard:hover,.nvcard[aria-expanded="true"]{border-color:var(--na)}
+.nvav{width:32px;height:32px;border-radius:99px;background:var(--nal);color:var(--nad);display:grid;place-items:center;font-size:13px;font-weight:700;flex:none}
+.nvcard .tx{min-width:0;flex:1}
+.nvcard .t1{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;line-height:1.4}
+.nvbadge{font-size:10.5px;font-weight:500;color:var(--nad);background:var(--nal);border-radius:5px;padding:1px 6px}
+.nvcard .t2{display:block;font-size:11.5px;color:var(--nm);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nvcard .cr{color:var(--nm);flex:none;transition:transform .18s}
+.nvcard[aria-expanded="true"] .cr{transform:rotate(180deg)}
+.nvmenu{margin-top:5px;border:1px solid var(--nl);border-radius:12px;padding:4px;background:var(--nb)}
+.nvmenu[hidden]{display:none}
+.nvmenu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;border-radius:9px;padding:7px 9px;font:inherit;color:var(--nt);cursor:pointer}
+.nvmenu button:hover{background:var(--ns)}
+.nvmenu button[aria-current="true"]{background:var(--nal)}
+.nvmenu .nvav{width:26px;height:26px;font-size:11.5px}
+.nvmenu .t1{display:block;font-size:13px;font-weight:500}
+.nvmenu .t2{display:block;font-size:11px;color:var(--nm);line-height:1.45}
+/* 状態を試す（1 行ずつスイッチ。1 つだけ入る。全部切ると通常） */
+.nvsws{display:flex;flex-direction:column}
+.nvsw1{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:none;padding:7px 2px;font:inherit;font-size:13.5px;color:var(--nt);cursor:pointer;text-align:left}
+.nvsw1 .tg{position:relative;width:34px;height:20px;border-radius:99px;background:#D5D9DC;flex:none;transition:background .15s}
+.nvsw1 .tg::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:99px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.nvsw1[aria-checked="true"] .tg{background:#009E5E}
+.nvsw1[aria-checked="true"] .tg::after{transform:translateX(14px)}
+.nvsw1:hover .tg{filter:brightness(.96)}
 /* display を指定しているので、hidden 属性だけでは消えない。明示的に閉じる */
 .nvpanel[hidden]{display:none}
 @keyframes nvup{from{transform:translateY(8px)}to{transform:none}}
-.nvh{margin:0 0 7px 4px;font-size:10.5px;letter-spacing:.14em;color:var(--nm);font-weight:500}
-.nvsec+.nvsec{margin-top:15px;padding-top:14px;border-top:1px solid var(--nl)}
+.nvh{display:flex;align-items:center;margin:0 0 9px 2px;font-size:13px;color:var(--nm);font-weight:500}
+.nvsec{padding:12px 0 14px}
+.nvsec+.nvsec{border-top:1px solid var(--nl)}
+.nvsec[hidden]{display:none}
 .nvit{display:flex;align-items:center;gap:10px;width:100%;text-align:left;text-decoration:none;
   border-radius:10px;padding:9px 11px;color:var(--nt);border:0;background:none;cursor:pointer;font:inherit}
 .nvit:hover{background:var(--ns)}
@@ -1255,15 +1317,12 @@ body.playing .nvfab .dt,body.playing .nvfab .lb,body.playing .nvfab .sb,body.pla
 .nvgrid .nvit[aria-current="true"] .t1{font-weight:700}
 .nvflow{margin:9px 4px 0;font-size:11px;color:var(--nm);line-height:1.65}
 .nvflow b{color:var(--nt);font-weight:500}
-.nvfoot{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid var(--nl)}
-.nvbtn{font-size:12px;border:1px solid var(--nl);border-radius:8px;padding:6px 12px;color:var(--nm);background:none;cursor:pointer;font-family:inherit}
+.nvfoot{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:12px 14px;border-top:1px solid var(--nl);flex:none}
+.nvbtn{font-size:12.5px;border:1px solid var(--nl);border-radius:9px;padding:7px 14px;color:var(--nm);background:none;cursor:pointer;font-family:inherit}
 .nvbtn:hover{border-color:var(--na);color:var(--nad)}
 /* 緑地に白文字（暗い配色でも同じ緑。白文字が読めるように --na は使わない） */
 /* 右下の中の 管理画面／アプリ。左の一覧のタブ（.ptab）と同じ動き */
-.nvtabs{display:flex;gap:2px;background:var(--ns);border-radius:9px;padding:2px;margin:0 0 12px}
-.nvtab{flex:1;font-size:12.5px;padding:6px 10px;border-radius:7px;color:var(--nm);text-align:center;background:none;border:0;cursor:pointer;font-family:inherit}
-.nvtab:hover{color:var(--nt)}
-.nvtab[aria-selected="true"]{background:var(--nb);color:var(--nt);font-weight:500;box-shadow:0 1px 2px rgba(20,26,30,.12)}
+
 .nvbtn.pri{background:#009E5E;border-color:#009E5E;color:#fff}
 .nvbtn.pri:hover{background:#1E7A4C;border-color:#1E7A4C;color:#fff}
 .nvkey{margin-left:auto;font-size:10.5px;color:var(--nm);text-align:right;line-height:1.6}
@@ -1404,7 +1463,7 @@ html.demo-fallback #nvFb,html.demo-fallback .fbmlink{display:none}
     <div class="vsw" role="group" aria-label="表示の切り替え">
       <button type="button" data-view="screen" aria-pressed="true">詳細</button>
       <button type="button" data-view="flow" aria-pressed="false">フロー</button>
-      <button type="button" data-view="ref" aria-pressed="false">前提</button>
+      <button type="button" data-view="ref" aria-pressed="false">概要</button>
       <button type="button" data-view="release" aria-pressed="false">リリース</button>
       <button type="button" data-view="feedback" aria-pressed="false">フィードバック管理</button>
     </div>
@@ -1442,6 +1501,9 @@ html.demo-fallback #nvFb,html.demo-fallback .fbmlink{display:none}
       <span class="sep"></span>
       <label class="stw" id="stStateWrap"><span class="sl">状態</span>
         <select id="stState" aria-label="画面の状態を切り替える"></select></label>
+      <!-- 権限（管理画面のロール）。右下の「ログイン中」と同じもの。管理画面の画面のときだけ出す（2026-10-06） -->
+      <label class="stw" id="stRoleWrap" hidden><span class="sl">権限</span>
+        <select id="stRole" aria-label="管理画面の権限を切り替える"></select></label>
       <span class="sep" id="stSep2"></span>
       <a class="demolink" id="openDemo" href="nqrepo-demo.html" target="_blank" rel="noopener" title="この画面をプロトタイプ本体で開く"><span class="dlt">プロトタイプで開く</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
     </div>
@@ -1457,21 +1519,29 @@ html.demo-fallback #nvFb,html.demo-fallback .fbmlink{display:none}
   <button class="grip g-insp" type="button" data-side="insp" aria-label="仕様パネルの幅を変える（←→で調整）" title="ドラッグで幅を変える（下限で止まります）"><i></i></button>
 <div class="nvsw" id="nvSw">
   <div class="nvpanel" id="nvPanel" hidden>
-    <div class="nvtabs" role="tablist" aria-label="端末の切り替え">
-      <button class="ptab nvtab" type="button" role="tab" data-pf="admin" aria-selected="true">管理画面</button>
-      <button class="ptab nvtab" type="button" role="tab" data-pf="app" aria-selected="false">アプリ</button>
+    <!-- 2026-10-06 に NVIDEO の「切り替え」パネルの形にした（見出しと ×・2 段の切替・ログイン中のカード・状態のスイッチ・リセット） -->
+    <div class="nvhead"><b>切り替え</b><button class="nvx" id="nvClose" type="button" aria-label="閉じる">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="nvbody">
+      <div class="nvsec" id="nvDocs"><div class="nvseg" id="nvDocSeg"></div><p class="nvcap" id="nvDocCap"></p></div>
+      <div class="nvsec"><p class="nvh">画面</p>
+        <div class="nvseg nvtabs" role="tablist" aria-label="端末の切り替え">
+          <button class="ptab nvtab" type="button" role="tab" data-pf="app" aria-selected="false">アプリ</button>
+          <button class="ptab nvtab" type="button" role="tab" data-pf="admin" aria-selected="true">管理画面</button>
+        </div></div>
+      <div class="nvsec" id="nvRoleSec" hidden><p class="nvh">ログイン中</p><div id="nvRole"></div></div>
+      <div class="nvsec nvqsec" id="nvStateSec" hidden>
+        <p class="nvh">状態を試す<button class="nvq" id="nvStQ" type="button" aria-expanded="false" aria-controls="nvStTip" aria-label="それぞれの状態の説明">?</button></p>
+        <div class="nvtip" id="nvStTip" role="tooltip" hidden></div>
+        <div class="nvsws" id="nvState"></div>
+      </div>
     </div>
-    <div class="nvsec" id="nvDocs"><p class="nvh">資料</p></div>
-    <div class="nvsec" id="nvRoleSec" hidden><p class="nvh">権限</p><div class="nvgrid" id="nvRole"></div></div>
-    <div class="nvsec nvqsec" id="nvStateSec" hidden>
-      <p class="nvh">状態<button class="nvq" id="nvStQ" type="button" aria-expanded="false" aria-controls="nvStTip" aria-label="それぞれの状態の説明">?</button></p>
-      <div class="nvtip" id="nvStTip" role="tooltip" hidden></div>
-      <div class="nvgrid" id="nvState"></div>
-    </div>
-    <div class="nvfoot"><button class="nvbtn pri" id="nvFb" type="button" title="枠に出ているいまの画面へのフィードバックを書く">フィードバック</button></div>
+    <div class="nvfoot"><button class="nvbtn" id="nvReset" type="button" title="状態を通常に、ログイン中を最初の権限に戻す">リセット</button>
+      <button class="nvbtn pri" id="nvFb" type="button" title="枠に出ているいまの画面へのフィードバックを書く">フィードバック</button></div>
   </div>
-  <button class="nvfab" id="nvFab" type="button" aria-expanded="false" aria-controls="nvPanel">
-    <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+  <button class="nvfab" id="nvFab" type="button" aria-expanded="false" aria-controls="nvPanel" aria-label="切り替え" title="切り替え">
+    <!-- 2026-10-06 から緑の丸に重なった 2 枚の四角のアイコンだけ（文字・いまの状態は出さない。状態はパネルの中で見る） -->
+    <svg class="ic" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3.5" width="11.5" height="13.5" rx="2.2"/><path d="M19.5 7.5v10.3a2.7 2.7 0 0 1-2.7 2.7H9"/></svg>
     <span class="dt"></span><span class="lb">画面設計</span><span class="sb" id="nvFabSb" hidden></span>
     <svg class="cr" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg>
   </button>
@@ -1836,18 +1906,21 @@ const alBranches = () => AL_LEDGERS.flatMap(([slug, label, steps], i) => alLedge
 /* ---------- ⑬ リリース（開発 Ver） ----------
    ヘッダーの「リリース」で出す。元は React 実装の開発Ver管理（src/admin/features/guide/devVersions.ts）と
    Confluence「バージョン管理」。帳票を追加するメジャーアップデートで整数部分を上げ、修正は 1.x.x を更新する。
-   新しい順。ledgers は画面名と同じ文字で書くと「画面設計で見る」が付く。色 c は Ver の印の色（React 側と同じ） */
+   新しい順。ledgers は画面名と同じ文字で書くと「画面設計で見る」が付く。色 c は Ver の印の色（React 側と同じ）
+   menus は帳票ではない管理画面のメニューで、その Ver から実装したもの（2026-10-06 に聞いた：製品管理は Ver.2.0〜、保管場所管理は Ver.3.0〜）。
+   画面名（「保管場所管理 › 詳細」のような枝も）で引き、Ver の切替でそれより前の Ver を選ぶと隠す。
+   React 側の写しは react-src/src/data/ledgerVisibility.ts の KIT_VERSIONS（menus はサイドメニューのパス）。直したら両方直す */
 const RELEASE_CURRENT = 'Ver.4.0';
 const RELEASES = [
   {ver:'Ver.5.0', st:'予定',       when:'2026-08〜',            c:'#6B6B6B', ledgers:[],
    aim:'加熱記録・冷却記録、一括表示・箱詰め管理表を追加する予定。リリース目標は 2027 年 2 月末。'},
   {ver:'Ver.4.0', st:'デザイン中', when:'2026-02〜',            c:'#00853C', ledgers:['機械器具点検','清掃記録','添加物管理','薬品管理'],
    aim:'機械器具点検・清掃記録・添加物管理・薬品管理の 4 帳票を追加。リリース目標は 2026 年 11 月末。'},
-  {ver:'Ver.3.0', st:'開発中',     when:'2026-04〜',            c:'#C62F2F', ledgers:['金属探知機・X線探知機記録','検体の管理'],
+  {ver:'Ver.3.0', st:'開発中',     when:'2026-04〜',            c:'#C62F2F', ledgers:['金属探知機・X線探知機記録','検体の管理'], menus:['保管場所管理'],
    aim:'金属探知機・X線探知機記録と検体管理を追加。'},
   {ver:'Ver.2.1', st:'リリース済み', when:'2026-03〜2026-09-15', c:'#4A6D99', ledgers:[],
    aim:'帳票追加なし。独自テンキーの実装とリファクタリング。'},
-  {ver:'Ver.2.0', st:'リリース済み', when:'',                    c:'#2F7FD4', ledgers:['秤点検管理','官能検査記録'],
+  {ver:'Ver.2.0', st:'リリース済み', when:'',                    c:'#2F7FD4', ledgers:['秤点検管理','官能検査記録'], menus:['製品管理'],
    aim:'秤点検管理・官能検査記録を追加。'},
   {ver:'Ver.1.5', st:'リリース済み', when:'',                    c:'#7C4DCC', ledgers:['ガラスプラスチック管理'],
    aim:'ガラスプラスチック管理を追加。'},
@@ -1879,15 +1952,19 @@ const VER_HIDE_NO = new Set([['water-inspection'], ...DS_LEDGERS].map(([sl], k) 
 /* 帳票の枝でなくても hash に隠す帳票の slug がある画面（点検予定の設定 A4-1・A4-2 など）。SCREENS を絞るときに集める */
 const VER_HIDE_IDS = new Set();
 const verHideHash = h => !!h && VER_HIDE_SLUGS.size > 0 && String(h).split('/').some(x => VER_HIDE_SLUGS.has(x));
+/* 隠すメニュー（帳票ではない管理画面。RELEASES の menus） */
+const VER_HIDE_MENUS = VER_SEL ? RELEASES.slice(0, RELEASES.findIndex(r => r.ver === VER_SEL)).flatMap(r => r.menus || []) : [];
+const verHideMenu = s => s.pf === 'admin' && VER_HIDE_MENUS.some(m => s.name === m || String(s.name).startsWith(m + ' ›'));
 const verHidden = id => { if (VER_HIDE_IDS.has(id)) return true; const m = /^(?:M[2-5]|A1|A3)-(\d+)(?:-|$)/.exec(id); return !!m && VER_HIDE_NO.has(+m[1]); };
 
 /* 画面設計から隠す画面。確認管理（M4 とその枝）は今回の開発で実装しないので、画面一覧・検索・フロー・権限表など
    画面設計のどこにも出さない（2026-09-30）。定義は下にそのまま残してあるので、実装することになったらここを空にする */
-const SCREEN_HIDE = id => /^M4(-|$)/.test(id) || verHidden(id);
+const SCREEN_HIDE_BASE = id => /^M4(-|$)/.test(id);
+const SCREEN_HIDE = id => SCREEN_HIDE_BASE(id) || verHidden(id);
 /* 画面に出す番号。隠した親の番号を飛ばさず詰める（M4 を隠すと M5 帳票管理 が M4 に見える）。
    中の ID（hash・FLOW・ACCESS など）は元のまま。SCREEN_HIDE を空にすると元の番号に戻る */
 const dispId = id => String(id).replace(/^([MA])(\d+)/, (m, p, n) => {
-  let k = 0; for (let i = 0; i < +n; i++) if (SCREEN_HIDE(p + i)) k++;
+  let k = 0; for (let i = 0; i < +n; i++) if (SCREEN_HIDE_BASE(p + i)) k++;   /* Ver の切替で隠した画面では詰めない（Ver で番号が変わらないように） */
   return p + (n - k); });
 /* 説明文の中の画面ID（（M5-1-2） など）も同じく詰める */
 const dispText = s => String(s ?? '').replace(/(^|[^A-Za-z0-9_])([MA]\d+(?:-[0-9n]+)*)/g, (m, a, id) => a + dispId(id));
@@ -2352,7 +2429,7 @@ const SCREENS = [
  decide:[],
  hash:'app/settings/license', src:'src/app/features/settings/LicensePage.tsx'},
 
-].filter(s => { if (verHideHash(s.hash)) VER_HIDE_IDS.add(s.id); return !SCREEN_HIDE(s.id); });
+].filter(s => { if (verHideHash(s.hash) || verHideMenu(s)) VER_HIDE_IDS.add(s.id); return !SCREEN_HIDE(s.id); });
 
 
 /* =========================================================================
@@ -2474,7 +2551,7 @@ const ACCESS = {
   M6:['－','－','○','○'], M7:['－','－','－','○', '承認者は企業管理に触れない案'], M8:['－','－','－','○'], M9:['－','－','○','○'], 'M9-1':['－','－','○','○'], 'M9-2':['－','－','○','○'], 'M9-3':['－','－','○','○'],
   M10:['－','－','○','○', '承認者は閲覧のみにする案'], M11:['－','－','○','○'], M12:['－','－','－','○'], M13:['－','－','○','○'], M14:['－','－','○','○'],
   A0:['○','○','○','○'], A1:['○','○','○','○'], 'A1-1':['○','○','○','○'], 'A1-1-1':['○','○','○','○'], 'A1-1-2':['○','○','○','○'], 'A1-1-3':['○','○','○','○'], 'A1-1-4':['○','○','○','○'],
-  A2:['○','○','○','○'], A3:['－','○','△','○', '承認者にも見せるかは要確認'], 'A3-1':['－','○','△','○'], 'A3-2':['－','○','△','○'], 'A3-3':['－','○','△','○'], 'A3-4':['－','○','△','○'], 'A3-5':['－','○','△','○'], 'A3-5-1':['－','○','△','○'], 'A3-7':['－','○','△','○'], 'A3-7-1':['○','－','－','－', '差し戻しは実施者が直す'], 'A3-8-1':['○','－','－','－', '差し戻しは実施者が直す'], 'A3-9-1':['○','－','－','－', '差し戻しは実施者が直す'], 'A3-10-1':['○','－','－','－', '差し戻しは実施者が直す'], 'A3-8':['－','○','△','○'], 'A3-9':['－','○','△','○'], 'A3-10':['－','○','△','○'], A4:['○','○','○','○'], 'A4-1':['○','○','○','○'], 'A4-2':['○','○','○','○'], A5:['○','○','○','○'], A6:['○','○','○','○'], A7:['○','○','○','○'], 'A7-1':['○','○','○','○'], 'A7-2':['○','○','○','○'],
+  A2:['○','○','○','○'], A3:['－','○','△','○', '承認者にも見せるかは要確認'], 'A3-1':['－','○','△','○'], 'A3-2':['－','○','△','○'], 'A3-3':['－','○','△','○'], 'A3-4':['－','○','△','○'], 'A3-5':['－','○','△','○'], 'A3-5-1':['－','○','△','○'], 'A3-7':['－','○','△','○'], 'A3-7-1':['－','○','△','○'], 'A3-8-1':['－','○','△','○'], 'A3-9-1':['－','○','△','○'], 'A3-10-1':['－','○','△','○'], 'A3-8':['－','○','△','○'], 'A3-9':['－','○','△','○'], 'A3-10':['－','○','△','○'], A4:['○','○','○','○'], 'A4-1':['○','○','○','○'], 'A4-2':['○','○','○','○'], A5:['○','○','○','○'], A6:['○','○','○','○'], A7:['○','○','○','○'], 'A7-1':['○','○','○','○'], 'A7-2':['○','○','○','○'],
 };
 
 /* =========================================================================
@@ -2533,15 +2610,33 @@ const CASES = [
    gname:'【新規登録】登録したものをアプリに表示する',
    gnote:'管理者が工場を選び、帳票管理で新規登録する。登録完了から一覧へ戻り、アプリの一覧に並ぶ。翌日から（即時？）並ぶかが論点'},
   {grp:'【Admin】帳票管理', name:'登録した点検場所を直す', need:['edit'], path:['M5','M5-1-1','M5-1-2','M5-1-5','M5-1-6'],
-   /* 編集画面で、入力欄を実際に書き換えて見せる（数字の欄があればその数字を、無ければ名前の欄を）。最後に「保存」を囲む（2026-10-02） */
-   end:[{type:true, cap:'入力欄を押して、内容を書き換える'}, {btn:'保存', cap:'「保存」で直した内容が登録され、詳細へ戻る'}],
+   /* 編集画面で、入力欄を実際に書き換えて見せる（数字の欄があればその数字を、無ければ名前の欄を）。
+      「保存」を押して詳細へ戻り、「更新しました。」のトーストを囲む（2026-10-02。2026-10-06 に薬品管理・添加物管理だけだったのを全帳票にした。
+      React はどの帳票の編集も保存で詳細へ戻る。官能検査記録の製品の詳細はトーストが無いので、戻った詳細を見せるだけ） */
+   end:[{type:true, cap:'入力欄を押して、内容を書き換える'}, {press:'保存', cap:'「保存」を押すと、詳細へ戻る'}, {box:'更新しました', cap:'詳細へ戻り、「更新しました。」のトーストが出る'}],
    alt:{'scale-inspection':['M5','M5-3-1','M5-3-5','M5-3-6']},
-   /* 薬品管理・添加物管理は「保存」を押して詳細へ戻り、「更新しました。」のトーストを囲む（2026-10-05） */
-   endBy:{'chemical-management':[{type:true, cap:'入力欄を押して、内容を書き換える'}, {press:'保存', cap:'「保存」を押すと、詳細へ戻る'}, {box:'更新しました', cap:'詳細に「更新しました。」のトーストが出る'}], 'additive-management':[{type:true, cap:'入力欄を押して、内容を書き換える'}, {press:'保存', cap:'「保存」を押すと、詳細へ戻る'}, {box:'更新しました', cap:'詳細に「更新しました。」のトーストが出る'}]},
-   gnoteBy:{'chemical-management':'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻り、「更新しました。」のトーストが出る', 'additive-management':'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻り、「更新しました。」のトーストが出る'},
-   note:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻る',
+   endBy:{'sensory-inspection':[{type:true, cap:'入力欄を押して、内容を書き換える'}, {press:'保存', cap:'「保存」を押すと、詳細へ戻る'}, {cap:'直した内容で詳細へ戻る'}]},
+   gnoteBy:{'sensory-inspection':'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻る'},
+   note:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻り、「更新しました。」のトーストが出る',
    gname:'【編集】登録したものを修正する',
-   gnote:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻る'},
+   gnote:'一覧の行を押して詳細を開き、「編集」で直して保存する。保存すると詳細へ戻り、「更新しました。」のトーストが出る'},
+  /* 金属/X線探知機記録の下位の管理（金属探知機管理・X線探知機管理・ウェイトチェッカー管理）の新規登録 → 編集。
+     新規登録して一覧へ戻り、その行の詳細から編集する。機器の編集と同じく、保存で詳細へ戻りトーストを囲む（2026-10-06） */
+  {grp:'【Admin】帳票管理', name:'【金属探知機管理】金属探知機を新規登録して修正する', only:['metal-xray-detection'], exact:true,
+   fill:{'金属探知機名':'金属探知機4号機'}, pick:{row:'金属探知機4号機'},   /* 見本の「金属探知機1号機」は登録済みなので、別の名前で登録してその行を開く */
+   path:['M5','M5-{n}-1','M5-{n}-2','M5-{n}-8','M5-{n}-9','M5-{n}-10','M5-{n}-8','M5-{n}-11','M5-{n}-12'],
+   end:[{type:true, cap:'入力欄を押して、内容を書き換える'}, {press:'保存', cap:'「保存」を押すと、詳細へ戻る'}, {box:'更新しました', cap:'詳細へ戻り、「更新しました。」のトーストが出る'}],
+   note:'{L}の一覧の「金属探知機管理」カードから金属探知機管理へ移り、「+ 新規登録」で金属探知機を登録する。登録完了から一覧へ戻り、行の「詳細」から「編集」で直して保存する。保存すると詳細へ戻り、「更新しました。」のトーストが出る。直した金属探知機名は、機器の新規登録・編集の「金属探知機名」のプルダウンに出る'},
+  {grp:'【Admin】帳票管理', name:'【X線探知機管理】X線探知機を新規登録して修正する', only:['metal-xray-detection'], exact:true,
+   fill:{'X線探知機名':'X線探知機4号機'}, pick:{row:'X線探知機4号機'},   /* 見本の「X線探知機1号機」は登録済みなので、別の名前で登録してその行を開く */
+   path:['M5','M5-{n}-1','M5-{n}-2','M5-{n}-15','M5-{n}-16','M5-{n}-17','M5-{n}-15','M5-{n}-18','M5-{n}-19'],
+   end:[{type:true, cap:'入力欄を押して、内容を書き換える'}, {press:'保存', cap:'「保存」を押すと、詳細へ戻る'}, {box:'更新しました', cap:'詳細へ戻り、「更新しました。」のトーストが出る'}],
+   note:'{L}の一覧の「X線探知機管理」カードからX線探知機管理へ移り、「+ 新規登録」でX線探知機を登録する。登録完了から一覧へ戻り、行の「詳細」から「編集」で直して保存する。保存すると詳細へ戻り、「更新しました。」のトーストが出る。直したX線探知機名は、機器の新規登録・編集の「X線探知機名」のプルダウンに出る'},
+  {grp:'【Admin】帳票管理', name:'【ウェイトチェッカー管理】ウェイトチェッカーを新規登録して修正する', only:['metal-xray-detection'], exact:true,
+   fill:{'ウェイトチェッカー名':'ウェイトチェッカー4号機'}, pick:{row:'ウェイトチェッカー4号機'},   /* 見本の「ウェイトチェッカー1号機」は登録済みなので、別の名前で登録してその行を開く */
+   path:['M5','M5-{n}-1','M5-{n}-2','M5-{n}-22','M5-{n}-23','M5-{n}-24','M5-{n}-22','M5-{n}-25','M5-{n}-26'],
+   end:[{type:true, cap:'入力欄を押して、内容を書き換える'}, {press:'保存', cap:'「保存」を押すと、詳細へ戻る'}, {box:'更新しました', cap:'詳細へ戻り、「更新しました。」のトーストが出る'}],
+   note:'{L}の一覧の「ウェイトチェッカー管理」カードからウェイトチェッカー管理へ移り、「+ 新規登録」でウェイトチェッカーを登録する。登録完了から一覧へ戻り、行の「詳細」から「編集」で直して保存する。保存すると詳細へ戻り、「更新しました。」のトーストが出る。直したウェイトチェッカー名は、機器の新規登録・編集の「ウェイトチェッカー名」のプルダウンに出る'},
   {grp:'【Admin】帳票管理', name:'【保管場所管理】保管場所を追加する', only:['chemical-management','additive-management'], exact:true,
    path:['M5','M5-{n}-1','M5-{n}-2','M9','M9-1','M9-3','M9'],
    note:'{L}の一覧の「保管場所管理」カードから保管場所管理へ移り、「+ 新規登録」で保管場所名を入れ、工場をプルダウンで選んで「登録」。登録した保管場所は、{L}の新規登録・編集の「保管場所」のプルダウンで選べるようになる',
@@ -2552,6 +2647,10 @@ const CASES = [
    /* 点検予定で登録するのは毎週のライン。アプリでは「毎週」のタブを開いて見せる（2026-10-05） */
    end:[{tab:'毎週', cap:'「毎週」のタブを押す'}, {cap:'点検予定に登録した内容が、アプリのラインの一覧の「毎週」に表示される'}],
    note:'管理者が工場を選び、ラインの一覧から「点検予定」を開く。予定の新規登録でラインと点検日を登録し、登録完了から点検予定へ戻る。登録した日には、アプリのラインの一覧にそのラインが並ぶ'},
+  {grp:'【Admin】帳票管理', name:'【点検予定】登録した製品が検体の一覧に表示される', only:['sample-management'], exact:true,   /* 検体の管理の点検予定（2026-10-06） */
+   path:['M5','M5-{n}-1','M5-{n}-2','M5-{n}-7','M5-{n}-8','M5-{n}-9','M5-{n}-7','A1-{n}-1'],
+   end:[{cap:'点検予定に登録した製品が、その日のアプリの検体の一覧に表示される'}],
+   note:'管理者が工場を選び、検体（製品）の一覧から「点検予定」を開く。予定の新規登録で点検日と製品を登録し、登録完了から点検予定へ戻る。登録した日には、アプリの検体の一覧にその製品が並ぶ'},
   {grp:'【Admin】帳票管理', name:'【確認項目の設定】設定したものが点検画面に表示される', only:['equipment-inspection'], exact:true,
    path:['M5','M5-{n}-1','M5-{n}-2','M5-{n}-6','M5-{n}-2','A1-{n}-1','A1-{n}-3'],
    end:[{box:'【確認項目】', cap:'設定した確認事項がここに表示されます'}],
@@ -2563,6 +2662,10 @@ const CASES = [
   {grp:'【App】帳票一覧', name:'【異常あり】点検で異常があった場合', only:['equipment-inspection'], exact:true,
    path:['A1','A1-{n}-1','A1-{n}-3','A1-{n}-4','A1-{n}-6'], ng:{cause:'汚れ', action:'掃除'},
    note:'ラインの点検で、異常のある項目は「×」を押す。ポップアップで原因（汚れ・故障・部品の欠落・破損・その他）と対応（修理・修理（外部委託）・交換・掃除・その他）を選んで「完了」。項目の下に原因と対応が出て、ほかの項目と同じく確認してから提出する'},
+  /* 金属/X線探知機記録の動作確認で、項目の ×（異常あり）を押す。ポップアップ「点検箇所」の 原因・対応 は記入欄なので、書いてから「完了」（2026-10-06） */
+  {grp:'【App】帳票一覧', name:'【異常あり】点検で異常があった場合', only:['metal-xray-detection'], exact:true,
+   path:['A1','A1-{n}-1','A1-{n}-2','A1-{n}-3','A1-{n}-4','A1-{n}-7'], ng:{cause:'検出部に製品くずが付着していた', action:'検出部を清掃し、テストピースで再確認した', cap:'異常ありの項目の下に、書いた原因と対応が出る'},
+   note:'機器を開いて「＋」から点検内容「動作確認」を選ぶ。異常のある項目は「×」を押すと「点検箇所」のポップアップが出るので、原因と対応を書いて「完了」。項目の下に原因と対応が出て、記録の結果は NG になる。ほかの項目を埋めて「保存」し、提出内容を確認して提出する'},
   {grp:'【App】確認待ち', name:'提出された記録を確認待ちで確認する', path:['A3','A3-1','M3-1-1'],   /* 提出完了は入れず、確認待ちから始める（2026-10-02） */
    end:[{cap:'確認者の確認が完了すると、承認申請管理に表示される'}],   /* 最後の画面（承認申請管理のデータ一覧）で見せる字幕（2026-10-02） */
    pick:{rowBy:{1:['点検場所A','使用水の点検'], 2:['フロアB','ガラス・プラスチック管理'], 3:['添加物','秤点検記録'], 4:['マンゴープリン'], 8:['ゆばライン','清掃記録'], 9:['ソルビン酸','薬品管理','点検済み'], 10:['ソルビン酸','添加物管理','点検済み'], 5:['金探1号機（1kg'], 7:['豆乳ライン','機械器具点検','点検済み']}},   /* 確認待ちの一覧で開く行（React の確認待ちの見本の、その帳票の行） */
@@ -2590,14 +2693,16 @@ const CASES = [
         [{cap:'一覧の記録がまとめて承認済みになり、申請は承認申請管理で「承認済み」になる'}]]},
    note:'承認者が申請カードからデータ一覧を開き、下の「承認する」を押す。「承認しますか？」で「承認」を押すと、申請が承認済みになり、承認申請管理へ戻る。1 件ずつ見て決めるときは詳細で承認する',
    gnoteBy:{'equipment-inspection':'承認者が申請カードからデータ一覧を開き、下の「承認する」を押す。「承認しますか？」で「承認」を押すと、一覧の承認待ちの記録がまとめて承認済みになり、承認申請管理へ戻る。1 件ずつ見て決めるときは詳細で承認する'}},
-  {grp:'【App】確認待ち（差し戻し）', name:'差し戻された記録を直す', path:['A3','A3-1-1','A1-1-2','A3-1-1'],   /* 管理画面の詳細（差し戻す画面）は入れず、確認待ちから始める（2026-10-02） */
+  {grp:'【App】確認待ち（差し戻し）', name:'差し戻された記録を直す', path:['A3','A3-1-1','A1-1-2','A3-1-1'],
+   alt:{'metal-xray-detection':['A3','A3-{n}-1','A1-{n}-2','A3-{n}-1']},   /* 金属/X線探知機記録は 機器の詳細（記録の表）で直して「編集を保存」（2026-10-06） */   /* 管理画面の詳細（差し戻す画面）は入れず、確認待ちから始める（2026-10-02） */
    pick:{rowBy:{1:['点検場所A','使用水の点検'], 2:['フロアB','ガラス・プラスチック管理'], 3:['添加物','秤点検記録'], 4:['マンゴープリン'], 8:['ゆばライン','清掃記録'], 10:['ソルビン酸','添加物管理'], 5:['金探1号機（500g', '差し戻し'], 7:['豆乳ライン', '差し戻し'], 8:['ゆばライン', '清掃記録', '差し戻し'], 9:['ソルビン酸', '薬品管理', '差し戻し'], 10:['ソルビン酸', '添加物管理', '差し戻し']}},   /* 差し戻しの見本が無い帳票は、その帳票の行（2026-10-02） */
    /* 最後の確認待ちの詳細（差し戻し）で、下までスクロール →「差し戻し対応完了」が押せる（緑）→ 押して完了のポップアップ（2026-10-02。ボタンの無い帳票では飛ばす） */
    end:[{need:'差し戻し対応完了', scroll:'bottom', cap:'一番下までスクロールすると、「差し戻し対応完了」が押せるようになる'},
         {need:'差し戻し対応完了', press:'差し戻し対応完了', cap:'「差し戻し対応完了」を押すと、「差し戻し対応が完了しました」のポップアップが出る'}],
-   note:'承認者が理由を付けて差し戻すと、アプリの確認待ちに「差し戻し」で並ぶ。実施者が行を開いて実施者を選び、黄色の帯とコメントを見て「点検内容を修正する」→ 記録が入った状態の点検画面で直して「編集を保存」→ 確認待ちの詳細へ戻り「差し戻し対応完了」',
+   note:'承認者が理由を付けて差し戻すと、アプリの確認待ちに「差し戻し」で並ぶ。行を開いて確認者を選び、黄色の帯とコメントを見て「点検内容を修正する」→ 実施者を選び、記録が入った状態の点検画面で直して「編集を保存」→ 確認待ちの詳細へ戻り「差し戻し対応完了」',
    gname:'差し戻された記録を直す'},
   {grp:'【App】進捗一覧', name:'進捗一覧から未点検の場所を点検する', path:['A1','A2','A1-1-2','A1-1-3','A1-1-4','A2'],
+   alt:{'metal-xray-detection':['A1','A2','A1-{n}-2','A1-{n}-3','A1-{n}-4','A1-{n}-7','A2']},   /* 金属/X線探知機記録は、進捗の行から機器の詳細（記録の表）が開き、そこから記録入力へ（2026-10-06） */
    note:'進捗の「未点検」タブで残っている行を押し、実施者を選んで記録を入れて提出する。提出完了のボタンは「進捗一覧に戻る」だけになり、帳票一覧には戻らない',
    gname:'進捗一覧から未点検のものを記録する',
    gnote:'進捗の「未点検」タブで残っている行を押し、実施者を選んで記録を入れて提出する。提出完了のボタンは「進捗一覧に戻る」だけになり、帳票一覧には戻らない'},
@@ -4858,10 +4963,10 @@ const OVERVIEW = {
   'A3-5-1': {lead:'差し戻された金属/X線探知機記録を直して、差し戻し対応を完了する画面。',
     merged:true,
     body:[
-      '最初に「確認者を選んでください」のポップアップが出る。「次へ」で中身へ、「閉じる」で確認待ちへ戻る',
-      '表と差し戻しコメントを見て、コメント（255 文字まで）を返せる',
-      '「点検内容を修正する」で実施者を選び、機械の記録の画面で直す。保存するとこの画面へ戻る',
-      '「差し戻し対応完了」で「差し戻し対応が完了しました」',
+      '最初に「確認者を選んでください」のポップアップが出る（確認待ちの画面なので）。「次へ」で中身へ、「閉じる」で確認待ちへ戻る',
+      '「承認者から差し戻し理由のコメントがあります。」の帯と、実施日・記録の表・差し戻しコメント',
+      '「点検内容を修正する」で実施者を選び、記録の入った機器の詳細へ。「編集を保存」でこの画面へ戻る',
+      '最後までスクロールすると「差し戻し対応完了」が押せ、「差し戻し対応が完了しました」',
     ],
     pages:[]},
   'A3-7': {lead:'機械器具点検の記録を、確認者が見て提出する画面。',
@@ -4873,30 +4978,30 @@ const OVERVIEW = {
       '「提出」で「提出が完了しました」',
     ],
     pages:[]},
-  'A3-7-1': {lead:'差し戻された機械器具点検の記録を、実施者が直して差し戻し対応を完了する画面。',
+  'A3-7-1': {lead:'差し戻された機械器具点検の記録を、確認者が開き、実施者を選んで直して差し戻し対応を完了する画面。',
     merged:true,
     body:[
-      '最初に「実施者を選んでください」のポップアップが出る（確認ではなく修正に入るため）',
+      '最初に「確認者を選んでください」のポップアップが出る（確認待ちの画面なので）。「次へ」で中身へ、「閉じる」で確認待ちへ戻る',
       '「承認者から差し戻し理由のコメントがあります。」の帯と、始業・終業の点検内容・差し戻しコメント',
-      '「点検内容を修正する」でラインの点検画面へ。保存するとこの画面へ戻る',
+      '「点検内容を修正する」で実施者を選び、ラインの点検画面へ。保存するとこの画面へ戻る',
       '最後までスクロールすると「差し戻し対応完了」が押せ、「差し戻し対応が完了しました」',
     ],
     pages:[]},
-  'A3-9-1': {lead:'差し戻された薬品管理の記録を、実施者が直して差し戻し対応を完了する画面。',
+  'A3-9-1': {lead:'差し戻された薬品管理の記録を、確認者が開き、実施者を選んで直して差し戻し対応を完了する画面。',
     merged:true,
     body:[
-      '最初に「実施者を選んでください」のポップアップが出る（確認ではなく修正に入るため）',
+      '最初に「確認者を選んでください」のポップアップが出る（確認待ちの画面なので）。「次へ」で中身へ、「閉じる」で確認待ちへ戻る',
       '「承認者から差し戻し理由のコメントがあります。」の帯と、保管場所・規格・元在庫数、入庫・出庫の記録の表・差し戻しコメント',
-      '「点検内容を修正する」で、差し戻された記録が入った記録入力へ。「編集を保存」でこの画面へ戻る',
+      '「点検内容を修正する」で実施者を選び、、差し戻された記録が入った記録入力へ。「編集を保存」でこの画面へ戻る',
       '最後までスクロールすると「差し戻し対応完了」が押せ、「差し戻し対応が完了しました」',
     ],
     pages:[]},
-  'A3-10-1': {lead:'差し戻された添加物管理の記録を、実施者が直して差し戻し対応を完了する画面。',
+  'A3-10-1': {lead:'差し戻された添加物管理の記録を、確認者が開き、実施者を選んで直して差し戻し対応を完了する画面。',
     merged:true,
     body:[
-      '最初に「実施者を選んでください」のポップアップが出る（確認ではなく修正に入るため）',
+      '最初に「確認者を選んでください」のポップアップが出る（確認待ちの画面なので）。「次へ」で中身へ、「閉じる」で確認待ちへ戻る',
       '「承認者から差し戻し理由のコメントがあります。」の帯と、保管場所・規格・元在庫数、入庫・出庫の記録の表・差し戻しコメント',
-      '「点検内容を修正する」で、差し戻された記録が入った記録入力へ。「編集を保存」でこの画面へ戻る',
+      '「点検内容を修正する」で実施者を選び、、差し戻された記録が入った記録入力へ。「編集を保存」でこの画面へ戻る',
       '最後までスクロールすると「差し戻し対応完了」が押せ、「差し戻し対応が完了しました」',
     ],
     pages:[]},
@@ -4909,12 +5014,12 @@ const OVERVIEW = {
       '「提出」で「提出が完了しました」',
     ],
     pages:[]},
-  'A3-8-1': {lead:'差し戻された清掃記録を、実施者が直して差し戻し対応を完了する画面。',
+  'A3-8-1': {lead:'差し戻された清掃記録を、確認者が開き、実施者を選んで直して差し戻し対応を完了する画面。',
     merged:true,
     body:[
-      '最初に「実施者を選んでください」のポップアップが出る（確認ではなく修正に入るため）',
+      '最初に「確認者を選んでください」のポップアップが出る（確認待ちの画面なので）。「次へ」で中身へ、「閉じる」で確認待ちへ戻る',
       '「承認者から差し戻し理由のコメントがあります。」の帯と、清掃箇所ごとの清掃項目・備考・差し戻しコメント',
-      '「点検内容を修正する」で清掃の記録入力へ。「編集を保存」でこの画面へ戻る',
+      '「点検内容を修正する」で実施者を選び、清掃の記録入力へ。「編集を保存」でこの画面へ戻る',
       '最後までスクロールすると「差し戻し対応完了」が押せ、「差し戻し対応が完了しました」',
     ],
     pages:[]},
@@ -4989,29 +5094,35 @@ const SPEC = {
     ['「提出」', '', '「提出が完了しました」→「確認待ちに戻る」。記録は承認申請管理に「承認待ち」で並ぶ', 'M3-7-1'],
     ['「戻る」', '', '確認者の選択へ戻る', ''],
   ]},
-  'A3-7-1': {fields:[], ops:[
-    ['ポップアップの「次へ」（実施者）', '', '選んだ実施者で差し戻しの内容を開く', 'ポップアップ'],
-    ['「点検内容を修正する」', '', '記録の入ったラインの点検画面で直す。「編集を保存」でこの画面へ戻る', 'A1-7-3'],
+  'A3-5-1': {fields:[], ops:[
+    ['ポップアップの「次へ」（確認者）', '', '選んだ確認者で差し戻しの内容を開く', 'ポップアップ'],
+    ['「点検内容を修正する」', '', '「実施者を選んでください」のポップアップで実施者を選び、「次へ」で記録の入った機器の詳細へ。「編集を保存」でこの画面へ戻る', 'A1-5-2'],
     ['「差し戻し対応完了」', '最後までスクロールするまで押せない', '「差し戻し対応が完了しました」→「確認待ちに戻る」', ''],
-    ['「戻る」', '', '実施者の選択へ戻る', ''],
+    ['「戻る」', '', '確認者の選択へ戻る', ''],
+  ]},
+  'A3-7-1': {fields:[], ops:[
+    ['ポップアップの「次へ」（確認者）', '', '選んだ確認者で差し戻しの内容を開く', 'ポップアップ'],
+    ['「点検内容を修正する」', '', '「実施者を選んでください」のポップアップで実施者を選び、「次へ」で記録の入ったラインの点検画面で直す。「編集を保存」でこの画面へ戻る', 'A1-7-3'],
+    ['「差し戻し対応完了」', '最後までスクロールするまで押せない', '「差し戻し対応が完了しました」→「確認待ちに戻る」', ''],
+    ['「戻る」', '', '確認者の選択へ戻る', ''],
   ]},
   'A3-8-1': {fields:[], ops:[
-    ['ポップアップの「次へ」（実施者）', '', '選んだ実施者で差し戻しの内容を開く', 'ポップアップ'],
-    ['「点検内容を修正する」', '', '記録の入った清掃の記録入力で直す。「編集を保存」でこの画面へ戻る', 'A1-8-3'],
+    ['ポップアップの「次へ」（確認者）', '', '選んだ確認者で差し戻しの内容を開く', 'ポップアップ'],
+    ['「点検内容を修正する」', '', '「実施者を選んでください」のポップアップで実施者を選び、「次へ」で記録の入った清掃の記録入力で直す。「編集を保存」でこの画面へ戻る', 'A1-8-3'],
     ['「差し戻し対応完了」', '最後までスクロールするまで押せない', '「差し戻し対応が完了しました」→「確認待ちに戻る」', ''],
-    ['「戻る」', '', '実施者の選択へ戻る', ''],
+    ['「戻る」', '', '確認者の選択へ戻る', ''],
   ]},
   'A3-9-1': {fields:[], ops:[
-    ['ポップアップの「次へ」（実施者）', '', '選んだ実施者で差し戻しの内容を開く', 'ポップアップ'],
-    ['「点検内容を修正する」', '', '差し戻された記録が入った記録入力で直す。「編集を保存」でこの画面へ戻る', 'A1-9-3'],
+    ['ポップアップの「次へ」（確認者）', '', '選んだ確認者で差し戻しの内容を開く', 'ポップアップ'],
+    ['「点検内容を修正する」', '', '「実施者を選んでください」のポップアップで実施者を選び、「次へ」で差し戻された記録が入った記録入力で直す。「編集を保存」でこの画面へ戻る', 'A1-9-3'],
     ['「差し戻し対応完了」', '最後までスクロールするまで押せない', '「差し戻し対応が完了しました」→「確認待ちに戻る」', ''],
-    ['「戻る」', '', '実施者の選択へ戻る', ''],
+    ['「戻る」', '', '確認者の選択へ戻る', ''],
   ]},
   'A3-10-1': {fields:[], ops:[
-    ['ポップアップの「次へ」（実施者）', '', '選んだ実施者で差し戻しの内容を開く', 'ポップアップ'],
-    ['「点検内容を修正する」', '', '差し戻された記録が入った記録入力で直す。「編集を保存」でこの画面へ戻る', 'A1-10-3'],
+    ['ポップアップの「次へ」（確認者）', '', '選んだ確認者で差し戻しの内容を開く', 'ポップアップ'],
+    ['「点検内容を修正する」', '', '「実施者を選んでください」のポップアップで実施者を選び、「次へ」で差し戻された記録が入った記録入力で直す。「編集を保存」でこの画面へ戻る', 'A1-10-3'],
     ['「差し戻し対応完了」', '最後までスクロールするまで押せない', '「差し戻し対応が完了しました」→「確認待ちに戻る」', ''],
-    ['「戻る」', '', '実施者の選択へ戻る', ''],
+    ['「戻る」', '', '確認者の選択へ戻る', ''],
   ]},
   'A3-8': {fields:[],   ops:[
     ['ポップアップの「次へ」（確認者）', '', '選んだ確認者で記録の中身を開く', 'ポップアップ'],
@@ -8429,7 +8540,7 @@ const SPEC = {
     ['「途中保存」', '差し戻しの編集でないとき', '「途中保存しました」ダイアログ「入力内容を途中保存しました。続きは後から入力できます。」を出す（保存の処理はしない）。「閉じる」で閉じる。', 'ポップアップ'],
     ['「確認画面へ」', '差し戻しの編集でないとき。実施日があり、記録が 1 件以上あるまで無効', '表示中の記録を持って提出内容の確認へ。', 'A1-5-4'],
     ['「戻る」', '差し戻しの編集のとき', '確認待ちの詳細の元の段へ戻る。', 'A3'],
-    ['「編集を保存」', '差し戻しの編集のとき。実施日があり、記録が 1 件以上あるまで無効', '確認待ちの詳細の元の段へ戻る（見本データへの保存はしない）。', 'A3'],
+    ['「編集を保存」', '差し戻しの編集のとき。実施日があり、記録が 1 件以上あるまで無効', '確認待ちの詳細の元の段へ戻る（見本データへの保存はしない）。', 'A3-5-1'],
   ]},
   'A1-5-3': {fields:[
     ['点検内容', '表示', '—', '前の画面のポップアップで選んだもの（無いときは「動作確認」）。点検内容で入力欄が変わる。', '—'],
@@ -9422,13 +9533,13 @@ const BUILT = {
   'A3-3':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
   'A3-4':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
   'A3-5':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
-  'A3-5-1':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
+  'A3-5-1':['動く','確認者の選択・差し戻しコメント・点検内容を修正する（実施者を選んで機器の詳細へ。「編集を保存」で戻る）・差し戻し対応完了まで動く'],
   'A3-7':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
-  'A3-7-1':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
+  'A3-7-1':['動く','確認者の選択・差し戻しコメント・点検内容を修正する（実施者を選んでラインの点検画面の「編集を保存」で戻る）・差し戻し対応完了まで動く'],
   'A3-8':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
-  'A3-9-1':['動く','実施者の選択・差し戻しコメント・点検内容を修正する（薬品の記録入力の「編集を保存」で戻る）・差し戻し対応完了まで動く'],
-  'A3-10-1':['動く','実施者の選択・差し戻しコメント・点検内容を修正する（添加物の記録入力の「編集を保存」で戻る）・差し戻し対応完了まで動く'],
-  'A3-8-1':['動く','実施者の選択・差し戻しコメント・点検内容を修正する（清掃の記録入力の「編集を保存」で戻る）・差し戻し対応完了まで動く'],
+  'A3-9-1':['動く','確認者の選択・差し戻しコメント・点検内容を修正する（実施者を選んで薬品の記録入力の「編集を保存」で戻る）・差し戻し対応完了まで動く'],
+  'A3-10-1':['動く','確認者の選択・差し戻しコメント・点検内容を修正する（実施者を選んで添加物の記録入力の「編集を保存」で戻る）・差し戻し対応完了まで動く'],
+  'A3-8-1':['動く','確認者の選択・差し戻しコメント・点検内容を修正する（実施者を選んで清掃の記録入力の「編集を保存」で戻る）・差し戻し対応完了まで動く'],
   'A3-9':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。添加物管理と同じ画面。見本の記録で、提出しても一覧は変わらない'],
   'A3-10':['動く','確認者（実施者）の選択から中身・完了のポップアップまで動く。見本の記録で、提出しても一覧は変わらない'],
   A4:['動く','月送り・日の選択・休業日の表示・新規登録（帳票を選ぶ）と登録済みの案内が動く。初期表示は 2025 年 4 月'],
@@ -9571,9 +9682,17 @@ function pendingDecide(s){
 }
 
 const LOG_DOC = [
+  ['2026-10-06','中央下の帯の「状態」「権限」を開いたときの一覧を、NQ の管理画面のプルダウンと同じ形にした（白地・行は高さ 42px・選んでいる行は緑地に白文字）'],
+  ['2026-10-06','中央下の帯の「状態」の右に「権限」（管理者・承認者）を足した。管理画面の画面のときだけ出る。右下の「ログイン中」と同じ値'],
+  ['2026-10-06','右下のフローティングボタンを、緑の丸に重なった 2 枚の四角のアイコンだけにした（文字といまの状態は出さない）。プロトタイプの右下も同じ'],
+  ['2026-10-06','右下のフローティングの中身を「切り替え」パネルの形にした（見出しと ×、資料・画面は 2 段の切替、ログイン中は権限のカード、状態を試すは 1 行ずつスイッチ、下にリセット）。プロトタイプの右下（React の KitSwitch）も同じ形にした'],
+  ['2026-10-06','ヘッダーのタブ「前提」の名前を「概要」に変えた（左のメニューの見出しも）'],
+  ['2026-10-06','確認待ちの差し戻し（機械器具点検・清掃記録・薬品管理・添加物管理）の入口を「確認者を選んでください」に揃えた（確認待ちの画面なので。金属/X線探知機記録と同じ）。直す実施者は「点検内容を修正する」で選ぶ。React の確認待ちの詳細（差し戻し）と、画面設計の A3-7-1〜A3-10-1 の説明・操作・権限を直した'],
+  ['2026-10-06','金属/X線探知機記録の差し戻しを機械器具点検と同じ流れにした。React の確認待ちの詳細（差し戻し）に黄色の帯と、最後までスクロールで「差し戻し対応完了」を足した（入口は確認待ちなので確認者の選択のまま。「点検内容を修正する」で実施者を選んで機器の詳細（編集）へ）。画面設計は A3-5-1 の説明・操作と、ユースケース「差し戻された記録を直す」の経路（機器の詳細で「編集を保存」）を直した'],
   ['2026-10-06','データ検索の清掃記録・薬品管理・添加物管理のデータ一覧から、絞り込み検索の「異常があるものだけ表示」を外した（React と UI遷移仕様の両方）'],
   ['2026-10-06','前提の「誰が、どこで、何のために使うか」を実装に合わせて直した。確認者はアプリの確認待ちを使い管理画面に入らない、承認者は 1 件ずつ・まとめて承認しデータ検索から CSV・PDF で出す、管理者は帳票ごとの設定まで。実在しない「西原商会」の名前を外した'],
   ['2026-10-06','管理画面でデータが無いときの文言（「該当するデータがありません」「登録された金属探知機がありません」「対象の申請はありません」「コメントはありません」など）をやめ、開発環境（stg）に合わせて空欄にした。あわせて 職員・企業・工場・製品・保管場所・ログ・ログイン端末・金属/X線探知機・ウェイトチェッカーの管理の一覧が、状態の「データが無い」で空になるようにした。アプリの文言はそのまま'],
+  ['2026-10-06','製品管理（Ver.2.0〜）・保管場所管理（Ver.3.0〜）も Ver の切替で出し入れするようにした。リリースの各 Ver に「この Ver から実装したメニュー」として残した'],
   ['2026-10-06','プロトタイプの右下のフローティングに「バージョン」を足した。画面設計と同じく選んだ Ver より後で足す帳票を隠し、選んでいなければ開発中の Ver（Ver.3.0）で開く。選んだ Ver は画面設計と共通で覚える'],
   ['2026-10-06','ヘッダー右上に Ver の切替を足した。開いたときは開発中の Ver（Ver.3.0）で出す。Ver.3.0 などを選ぶと、その Ver より後で足す帳票（Ver.3.0 なら 機械器具点検・清掃記録・薬品管理・添加物管理）の画面を、画面一覧・検索・フロー・ユースケースから外し、枠の中の React（帳票のタイル・絞り込み・一覧の行・承認申請管理のバッジ・点検予定）からも外す。選んだ Ver の帳票は出す。帳票の出し入れだけで、同じ画面の Ver ごとの違いは切り替えない'],
   ['2026-10-05','点検予定の「予定の新規登録」のポップアップ（機械器具点検・清掃記録・官能検査記録・検体の管理）を、画面の大きさに対して Figma（1440×960 の画面に 640×686）と同じ比率で出すようにした。画面が 1440×960 より小さければ全体を縮める（1280×760 で 507×543、1100×700 で 467×500）。React の useDesignScale','15:55'],
@@ -9608,6 +9727,11 @@ const LOG_DOC = [
   ['2026-10-05','承認申請管理のユースケースを、どの帳票も機械器具点検と同じ「【詳細で承認】承認待ちの記録を 1 件ずつ承認する」「【一括承認】データ一覧でまとめて承認する」の 2 本にそろえた（「承認して検索に残す」は【詳細で承認】に置き換え。ガラス・プラスチック管理はデータ一覧が無いので【詳細で承認】だけ）'],
   ['2026-10-05','【詳細で承認】の再生で、データ一覧の「詳細」は承認待ちの行のものを押すようにした（使用水の点検は先頭の行が承認済み）。ガラス・プラスチック管理で、ステータスのプルダウンを一度開いて閉じてしまい承認できていなかったのを直した'],
   ['2026-10-05','薬品管理の編集で「保存」を押すと、添加物管理と同じく詳細へ戻って「更新しました。」のトーストが出るようにした（React）。ユースケース「【編集】登録したものを修正する」の再生も、薬品管理・添加物管理では「保存」を押して詳細のトーストを囲むようにした'],
+  ['2026-10-06','ユースケース「【編集】登録したものを修正する」の再生で、どの帳票も編集画面の「保存」を押して詳細へ戻り、「更新しました。」のトーストを囲むようにした（これまでは薬品管理・添加物管理以外は「保存」を囲むだけで終わっていた。官能検査記録はトーストが無いので戻った詳細を見せる）'],
+  ['2026-10-06','金属探知機・X線探知機記録の【Admin】帳票管理に、ユースケース「【金属探知機管理】金属探知機を新規登録して修正する」「【X線探知機管理】X線探知機を新規登録して修正する」「【ウェイトチェッカー管理】ウェイトチェッカーを新規登録して修正する」を【編集】の下に足した（それぞれの管理 →「+ 新規登録」で 4 号機を登録 → 登録完了から一覧へ戻り、その行の詳細 → 編集 →「保存」で詳細へ戻り、「更新しました。」のトーストを囲む）。ユースケースに fill（見出し → 入れる値）を書けるようにした'],
+  ['2026-10-06','ユースケースの札で手順のチップ（2. A3-5-1 など）を押してから「▶ 再生」を押すと、その手順から再生するようにした（これまでは 1 から始まっていた）。再生を始めたら選びは外れ、次の「▶ 再生」は 1 から'],
+  ['2026-10-06','金属探知機・X線探知機記録のユースケース「進捗一覧から未点検のものを記録する」の再生で、進捗一覧の金属探知機のまとまりの未点検の行（金探1号機（500g以下の場合））を押すようにした（見出しが「金属探知機」で画面名と違い、機械器具点検の行を押していた）。経路も 機器の詳細 → 記録入力 → 提出内容の確認 → 提出完了 → 進捗一覧 にした'],
+  ['2026-10-06','検体の管理の【Admin】帳票管理に、ユースケース「【点検予定】登録した製品が検体の一覧に表示される」を足した（検体（製品）の一覧 → 点検予定 → 予定の新規登録で日付と製品 2 つを入れて登録 → 登録完了 → 点検予定 → アプリの検体の一覧）'],
   ['2026-10-02','フローの「帳票」と「ユースケース」のプルダウンを、デザインシステムのセレクトボックス／プルダウン項目と同じ見た目にした（内側 4px・角丸 8px の項目・選んでいる項目とホバーは緑に白文字・▼ の山形）'],
   ['2026-10-02','ユースケース「登録したものを直す」の最後の編集画面で、入力欄を 1 文字ずつ書き換える動き（数字の欄は打ち直し、無ければ名前の後ろに「（修正）」を足す）と「保存」の囲みを足した'],
   ['2026-10-02','ユースケース「承認済みの記録を探して見る」の再生で、データ一覧の「承認済み」の行の「詳細」を開くようにした（前は先頭の承認待ちの行を開いていた）。機械器具点検・清掃記録のデータ検索の見本は全件が承認待ちだったので、React の mockRecords の先頭 2 件を承認済みにした'],
@@ -11577,6 +11701,7 @@ function ledgerFlow(n){
 
 /* 図の材料。出すのは画面の遷移だけ（記録の状態の図は 2026-09-25 に凡例の切替ごと外した） */
 let flowCase = null, flowLedger = 1, stepK = -1;   /* stepK = ユースケースの札で押した手順（何番目） */
+let chipK = -1;   /* 手順のチップを自分で押した番号。「▶ 再生」はここから始める。再生を始めたら・ユースケースを変えたら外す（2026-10-06） */
 /* 帳票の枝の根（M5-7 など）と最初の画面（M5-7-1 工場選択 など）は同じ画面（同じ hash）。
    フロー図とユースケースの経路では 1 つにまとめ、最初の画面の方を残す（2026-10-01） */
 const FLOW_SAME = {};
@@ -11624,7 +11749,7 @@ function caseList(){
         path.push(id);
       });
       const fill = t => (t || '').replace(/\{L\}/g, label);
-      return {key:`${n}.${ci}`, n, ledger:label, grp:c.grp || '', pick:c.pick || null, end:(c.endBy && c.endBy[slug]) || c.end || null, ng:c.ng || null, state:c.state || '',
+      return {key:`${n}.${ci}`, n, ledger:label, grp:c.grp || '', pick:c.pick || null, fill:c.fill || null, end:(c.endBy && c.endBy[slug]) || c.end || null, ng:c.ng || null, state:c.state || '',
               name: fill(n === 1 ? c.name : ((c.gnameBy && c.gnameBy[slug]) || c.gname || c.name)),
               note: fill(n === 1 ? c.note : ((c.gnoteBy && c.gnoteBy[slug]) || c.gnote || c.note)), path};
     })()).filter(Boolean);
@@ -11809,7 +11934,7 @@ function flowEdges(g, gi, L){
 function pickCase(key){
   if (PLAY && PLAY.key !== key) stopPlay();   /* 別のユースケースにしたら止める（描き直しで同じものを選び直すときは止めない） */
   const c = caseOf(key);
-  flowCase = c ? c.key : null; stepK = -1;
+  flowCase = c ? c.key : null; stepK = -1; chipK = -1;
   const box = document.getElementById('fwrap');
   box.classList.toggle('picked', !!c);
   box.querySelectorAll('.pk, .stp').forEach(e => e.classList.remove('pk', 'stp'));
@@ -11856,7 +11981,8 @@ function paintCaseNote(note, c){
     <p class="pcap" aria-live="polite" hidden></p>`;
   /* 操作手順の開閉は覚える（既定は閉じる。再生を始めたときは開く） */
   note.querySelector('.pscr').addEventListener('toggle', e => { if (e.isTrusted) LS.set('script', e.target.open); placeNote(); });
-  note.querySelector('[data-play]')?.addEventListener('click', () => { if (PLAY && PLAY.key === c.key) stopPlay(); else playCase(c.key); });
+  /* 手順のチップを選んでいれば、その手順から再生する（2026-10-06） */
+  note.querySelector('[data-play]')?.addEventListener('click', () => { if (PLAY && PLAY.key === c.key) stopPlay(); else playCase(c.key, chipK > 0 && flowCase === c.key ? {k: chipK, j: 0} : undefined); });
   /* 操作手順の行（または手順の見出し）を押すと、そこから再生する */
   note.querySelector('.pscript').addEventListener('click', e => {
     const li = e.target.closest('.psk'); if (!li || narrow()) return;
@@ -11875,7 +12001,7 @@ function paintCaseNote(note, c){
     e.stopPropagation();
     stopPlay();   /* 手順を自分で押したら、再生は止める */
     if (narrow()){ setView('screen', {fromHash:true}); go(b.dataset.step); return; }
-    stepK = Number(b.dataset.k);
+    stepK = chipK = Number(b.dataset.k);
     go(b.dataset.step, {fromHash:true});
     zoomToStep();
   });
@@ -12000,6 +12126,8 @@ function playActs(path, k, n){
   }
   /* 操作が無い：枠の外へ渡る（記録の受け渡し）か、画面の部品から行けない。図の線の名前があればそれを字幕に */
   const e = ledgerFlow(n).find(([a, b]) => sameId(a) === id && sameId(b) === next);
+  /* 進捗一覧 → アプリの帳票の画面は、図に線が無くても（金属/X線探知機記録の機器の詳細）行を押して移る（2026-10-06） */
+  if (!(e && e[2]) && id === 'A2' && /^A1-\d+-/.test(next)) return [{c:'jump', cap:`行を開く（${to} へ）`}];
   return [{c:'jump', cap: e && e[2] ? `${e[2]}（${to} へ）` : `${to} へ移る`}];
 }
 /* ---- 枠の中のカーソル・囲み・字幕。枠を縮めて映しているぶん大きくする（opPaint と同じ倍率） ---- */
@@ -12190,15 +12318,23 @@ async function pForm(P, d, el){
 /* 異常ありのユースケース（CASES の ng:{cause, action}）。最初の項目の ×（異常あり）を押し、ポップアップで原因と対応を選んで「完了」。
    記録された項目（原因・対応が出る）を囲んで見せる（2026-10-02） */
 async function pNg(P, d){
-  const ng = (caseOf(P.key) || {}).ng; if (!ng) return true;
-  const x = [...d.querySelectorAll('button[aria-label="異常あり"]')].find(b => opVis(b) && !opDialog(d)); if (!x) return true;
+  const ng = (caseOf(P.key) || {}).ng; if (!ng || P.ngDone) return true;
+  /* × は aria-label か、中の画像の alt（金属/X線探知機記録）で見つける */
+  const x = [...d.querySelectorAll('button[aria-label="異常あり"],button:has(> img[alt="異常あり"])')].find(b => opVis(b) && !opDialog(d)); if (!x) return true;
+  P.ngDone = true;
   pSub('項目の「×」を押して、異常ありにする'); if (!await pPress(P, x)) return false;
   const end = Date.now() + 1500; while (PLAY === P && !opDialog(d) && Date.now() < end) await pSleep(100);
   const dl = opDialog(d); if (!dl || PLAY !== P) return PLAY === P;
   const by = t => [...dl.querySelectorAll('button')].find(b => opVis(b) && opNorm(opTxt(b)) === opNorm(t));
   for (const [k, t] of [['原因', ng.cause], ['対応', ng.action]]){
-    const b = by(t); if (!b) continue;
-    pSub(`${k}の「${t}」を選ぶ`); if (!await pPress(P, b)) return false; await pDelay(P, 300);
+    const b = by(t);
+    if (b){ pSub(`${k}の「${t}」を選ぶ`); if (!await pPress(P, b)) return false; await pDelay(P, 300); continue; }
+    /* 選ぶボタンが無く記入欄のとき（金属/X線探知機記録の「原因」「対応」。2026-10-06）は、1 文字ずつ書く */
+    const ta = [...dl.querySelectorAll('textarea,input[type=text]')].find(i => opVis(i) && !i.value && pFieldLabel(i).label.startsWith(k));
+    if (!ta) continue;
+    pSub(`「${k}」に「${t}」と書く`);
+    if (!await pTap(P, ta, false)) return false; await pDelay(P, pJit(260)); if (PLAY !== P) return false;
+    if (!await pKeys(P, ta, t)) return false; await pDelay(P, 300);
   }
   const ok = by('完了'); if (ok){ pSub('「完了」を押す'); if (!await pPress(P, ok)) return false; }
   await pDelay(P, 500); if (PLAY !== P) return false;
@@ -12234,9 +12370,14 @@ function pFieldLabel(el){
 /* 入れる値。placeholder の見本（例）給湯室・6.5）があればそれ、無ければ見出しから */
 function pValueFor(inp, label){
   const ph = (inp.placeholder || '').replace(/^例[)）]\s*/, '').trim();
-  if (ph && !/選択|入力|してください|検索|日付|YYYY|^-+$/.test(ph)) return /^[\d,.]+$/.test(ph) ? ph.replace(/,/g, '') : ph;
+  /* 「例）XXXXXXX」「例）012345」のような伏せ字・連番は見本にしない（2026-10-06） */
+  const dummy = /^[XxＸ×〇○*＊]+$|X{3,}|^0?12345/.test(ph);
+  if (ph && !dummy && !/選択|入力|してください|検索|日付|YYYY|^-+$/.test(ph)) return /^[\d,.]+$/.test(ph) ? ph.replace(/,/g, '') : ph;
   const L = label || '';
-  const T = [[/温度|℃/, '18.5'], [/塩素/, '0.4'], [/ph|pH|ｐＨ/i, '7.0'], [/時間/, '1200'], [/重量|重さ|kg|ｇ|\bg\b/, '1000'],
+  const T = [[/点検構成/, '第1製造ライン 充填工程'], [/工場名/, '鹿児島第2工場'], [/企業名|会社名/, '株式会社みなみ食品'],
+    [/製品名|商品名/, 'マンゴープリン 1kg'], [/薬品名/, '次亜塩素酸ナトリウム'], [/添加物名/, 'クエン酸'], [/保管場所/, '小型物置'],
+    [/秤/, '秤-03'], [/探知機|チェッカー/, 'MD-2025-01'], [/電話/, '099-123-4567'], [/メール/, 'yamada@example.com'], [/住所/, '鹿児島県鹿児島市本名町1744番地1号'],
+    [/コード/, '012345'], [/温度|℃/, '18.5'], [/塩素/, '0.4'], [/ph|pH|ｐＨ/i, '7.0'], [/時間/, '1200'], [/重量|重さ|kg|ｇ|\bg\b/, '1000'],
     [/個数|枚数|本数|数量|件数|数/, '3'], [/備考|コメント|メモ|理由/, '異常なし'], [/氏名|担当|実施者/, '山田太郎'],
     [/ロット/, 'L-0402'], [/型番|番号|No/, 'A-102'], [/場所|ライン|フロア|室/, '第2ライン'], [/名/, L.replace(/名$|名称$/, '') + 'テスト']];
   const hit = T.find(([re]) => re.test(L)); if (hit) return hit[1];
@@ -12299,6 +12440,14 @@ function pFields(d, scope){
     const bg = bs.map(x => W.getComputedStyle(x).backgroundColor);
     if (bs.some(on) || new Set(bg).size > 1) return;
     const {label, box} = pFieldLabel(g); if (optional(box)) return;
+    /* 枠線・文字が緑のものは選ばれている（点検頻度の「毎日」、記録しない／記録する の「記録しない」）。
+       良いほう（記録する）が選ばれていなければそれを押し、ほかは選ばれたままにする（2026-10-06） */
+    const sel = bs.find(x => { const c = W.getComputedStyle(x); return /0,\s*153,\s*68/.test(c.color + c.borderTopColor); });
+    if (sel){
+      const pref = bs.find(x => P_PREF.test(opNorm(opLabel(x))));
+      if (pref && pref !== sel) out.push({k:'pick', el:pref, label});
+      return;
+    }
     /* 点数（1〜5）は 4 か 5 を。ほかは良いほう、無ければ右端（×／✓ の ✓） */
     const pick = bs.every(x => /^\d+$/.test(opTxt(x))) ? bs[bs.length - 1 - (Math.random() < .5 ? 1 : 0)]
       : bs.find(x => P_PREF.test(opNorm(opLabel(x)))) || bs[bs.length - 1];
@@ -12311,9 +12460,17 @@ function pFields(d, scope){
     const {label, box} = pFieldLabel(b); if (optional(box)) return;
     out.push({k:'pick', el:b, label});
   });
+  /* 時刻の欄で「現在時刻」のボタンがあるもの（金属/X線探知機記録の点検時間。欄は --:-- のボタン）は「現在時刻」を押す（2026-10-06） */
+  root.querySelectorAll('button').forEach(b => {
+    if (!live(b) || b.disabled || opTxt(b) !== '現在時刻') return;
+    const t = [...b.parentElement.querySelectorAll('button')].find(x => x !== b && /^-+:-+$/.test(opTxt(x))); if (!t) return;
+    const {label, box} = pFieldLabel(b); if (optional(box)) return;
+    out.push({k:'pick', el:b, label});
+  });
   /* 自前のプルダウン（「選択してください」のボタン。押すと選択肢のボタンが出る） */
   root.querySelectorAll('button,[role=combobox]').forEach(b => {
-    if (!live(b) || b.disabled || !/^選択(を)?してください$|^選択$/.test(opTxt(b))) return;   /* 添加物管理の区分は「選択をしてください」 */
+    const blank = !opTxt(b) && b.querySelector('svg') && b.querySelector('span') && /208,\s*208,\s*208/.test(b.style.color || '');   /* 機器名のプルダウン（未選択は空の文字。2026-10-06） */
+    if (!live(b) || b.disabled || !(blank || /^選択(を)?してください$|^選択$/.test(opTxt(b)))) return;   /* 添加物管理の区分は「選択をしてください」 */
     const {label, box} = pFieldLabel(b); if (optional(box)) return;
     out.push({k:'menu', el:b, label});
   });
@@ -12361,7 +12518,11 @@ async function pSchedFill(P, d){
     }
     await pDelay(P, pJit(500)); if (PLAY !== P) return false;
   }
-  /* 「+ 追加」でポップアップを開き、行を選んで「追加」 */
+  return pAddPick(P, d, add);
+}
+/* 「+ 追加」（「+ 製品追加」）でポップアップを開き、行を選んで「追加」。並んだ一覧を囲む */
+async function pAddPick(P, d, add){
+  const wait = async (f, ms) => { const end = Date.now() + ms; let v = null; while (PLAY === P && !(v = f()) && Date.now() < end) await pSleep(100); return v; };
   const card = add.parentElement?.parentElement || add.parentElement;
   const what = opTxt(add.parentElement?.querySelector('p') || null) || '';
   pSub(`「${opTxt(add)}」を押して、ポップアップを開く`);
@@ -12401,10 +12562,21 @@ async function pFormFill(P, d){
     if (!b.isConnected) continue;
     pSub(`「${opTxt(b)}」を押す`); if (!await pTap(P, b, true)) return false; await pDelay(P, pJit(350));
   }
-  const list = pFields(d, dl || null); if (!list.length){ pBox(null); return PLAY === P; }
+  /* 点検時間は項目より上にあるので、異常ありの × より先に入れる（2026-10-06） */
+  if (!dl && (caseOf(P.key) || {}).ng && !P.ngDone){
+    for (const f of pFields(d, null).filter(f => opTxt(f.el) === '現在時刻')){
+      pSub(`${f.label ? `「${f.label}」は` : ''}「現在時刻」を押す`); if (!await pTap(P, f.el, true)) return false; await pDelay(P, pJit(300));
+    }
+  }
+  if (!dl && !await pNg(P, d)) return false;   /* 異常ありのユースケースは、最初の項目を × にしてから残りを埋める（2026-10-06） */
+  /* 1 つ埋めるたびに集め直す（「記録する」を押すと機器名のプルダウンが出るなど、あとから欄が増えるため。2026-10-06） */
+  const done = new Set(), key = f => f.k === 'pick' ? f.el.parentElement : f.el;
   let n = 0;
-  for (const f of list){
+  for (let guard = 0; guard < 80; guard++){
     if (PLAY !== P) return false;
+    const f = pFields(d, dl || null).find(x => !done.has(key(x)));
+    if (!f) break;
+    done.add(key(f));
     if (!f.el.isConnected) continue;
     /* 欄が多い画面（ガラス・プラスチックの配置図の項目など）は、6 つ目から手早く進める */
     P.quick = n >= 6 ? (n >= 14 ? .3 : .55) : 0;
@@ -12414,7 +12586,7 @@ async function pFormFill(P, d){
       pSub(`${L}${L ? 'を' : ''}選ぶ`);
       if (!await pTap(P, f.el, true)) return false;
       let o = null; const end = Date.now() + 1500;
-      while (PLAY === P && !o && Date.now() < end){ await pSleep(120); o = [...d.querySelectorAll('[role=option],button')].find(x => opVis(x) && !before.has(x) && opTxt(x) && !x.disabled) || null; }
+      while (PLAY === P && !o && Date.now() < end){ await pSleep(120); o = [...d.querySelectorAll('[role=option],button')].find(x => opVis(x) && !before.has(x) && opTxt(x) && !x.disabled && !/^選択(を)?してください$/.test(opTxt(x))) || null; }
       if (PLAY !== P) return false;
       if (o){ pSub(`${L}${L ? 'で' : ''}「${opTxt(o)}」を選ぶ`); if (!await pTap(P, o, true)) return false; await pDelay(P, pJit(250)); }
       n++; continue;
@@ -12432,7 +12604,9 @@ async function pFormFill(P, d){
       const W = d.defaultView; Object.getOwnPropertyDescriptor(W.HTMLSelectElement.prototype, 'value').set.call(f.el, o.value);
       f.el.dispatchEvent(new W.Event('change', {bubbles:true})); await pDelay(P, 300);
     } else {
-      const v = pValueFor(f.el, f.label);
+      /* fill：ユースケースで決めた値（見出し → 値）。見本の名前が既存と同じになるのを避ける（2026-10-06） */
+      const cf = (caseOf(P.key) || {}).fill, fk = cf && Object.keys(cf).find(k => opNorm(f.label || '').startsWith(opNorm(k)));
+      const v = fk ? cf[fk] : pValueFor(f.el, f.label);
       pSub(`${L}${L ? 'に' : ''}「${v}」と入れる`);
       if (!await pTap(P, f.el, false)) return false;
       await pDelay(P, pJit(260)); if (PLAY !== P) return false;
@@ -12442,6 +12616,10 @@ async function pFormFill(P, d){
     n++;
   }
   P.quick = 0;
+  if (!dl && /新規登録$/.test(pName(cur.id)) && !/^予定の/.test(pName(cur.id))){
+    const add = [...(d.getElementById('root') || d.body).querySelectorAll('button')].find(b => opVis(b) && !b.closest(P_SKIP) && /^\+?製品追加$/.test(opNorm(opTxt(b))));   /* 「+ 追加」は行を足すだけの画面もあるので、ポップアップの出る「+ 製品追加」だけ */
+    if (add && !await pAddPick(P, d, add)) return false;
+  }
   /* 「自動計算」のボタン（添加物管理・薬品管理の現在庫数）は、区分・数量を入れたあとに押して計算した値を入れて見せる（2026-10-02） */
   for (const b of [...scope.querySelectorAll('button')].filter(b => opVis(b) && !b.disabled && !b.closest(P_SKIP) && opTxt(b).trim() === '自動計算')){
     if (PLAY !== P) return false;
@@ -12486,7 +12664,9 @@ async function pRun(P, a, next){
     if (a.scroll){
       const box = [...d.querySelectorAll('*')].filter(x => { const cs = d.defaultView.getComputedStyle(x); return /(auto|scroll)/.test(cs.overflowY) && x.scrollHeight > x.clientHeight + 4 && opVis(x); })
         .sort((x, y) => y.clientHeight - x.clientHeight)[0];
-      if (box){ box.scrollTo({top: box.scrollHeight, behavior:'smooth'}); await pDelay(P, 1400); if (PLAY !== P) return; box.dispatchEvent(new Event('scroll')); }
+      if (box){ box.scrollTo({top: box.scrollHeight, behavior:'smooth'}); await pDelay(P, 1400); if (PLAY !== P) return;
+        /* 長い画面（機械器具点検）は滑らかに巻くと下まで届かないことがあるので、最後は下端に合わせる（2026-10-06） */
+        box.scrollTop = box.scrollHeight; await pDelay(P, 200); box.dispatchEvent(new Event('scroll')); }
       const b = a.need && opFind(d, `「${a.need}」`)[0];
       if (b){ await pDelay(P, 300); if (!await pLook(P, b)) return; }
       return;
@@ -12639,6 +12819,9 @@ async function pRun(P, a, next){
 /* 操作の書いていない手順（jump）でも、画面のどこを見ているかを枠で示す（2026-10-02）。
    字幕の頭が押せる部品の名前（編集を保存・戻る・点検内容を修正する・進捗・行を開く）なら、それを囲んで押す。
    別の端末へ渡る手順（〜に並ぶ・〜に出る・〜に回る）は、その手順の元になる部品（完了の知らせ・差し戻し・承認・一覧）を囲んで見せてから移る */
+/* アプリの進捗一覧の帳票のまとまりの見出し。React の ledgers.ts の appLabel で、画面名（A1-n）と違う帳票だけ書く（2026-10-06） */
+const P_APP_LABEL = {'metal-xray-detection':'金属探知機', 'sample-management':'検体管理'};
+const pAppLabel = n => P_APP_LABEL[(FLOW_LEDGERS[n - 1] || [])[0]] || (IDX['A1-' + n] || {}).name || '';
 async function pJump(P, d, a, next){
   const cap = String(a.cap || ''), head = cap.replace(/（[^（）]*へ）$/, '').replace(/（[^（）]*）/g, '').trim();
   const find = q => { try{ return opFind(d, q)[0] || null; }catch(e){ return null; } };
@@ -12648,13 +12831,16 @@ async function pJump(P, d, a, next){
   if (head && !/(並ぶ|出る|回る|移る)$/.test(head)){
     /* 行を開く：ユースケースが「未点検の…」なら、未点検の行を開く */
     /* 行は、いま選んでいる帳票の行から（進捗一覧は帳票ごとのまとまり。見出しに帳票名、未点検のタブなら行の中に帳票名）。2026-10-02 */
-    const cs = caseOf(P.key) || {}, lab = opNorm((IDX['A1-' + cs.n] || {}).name || '');
+    const cs = caseOf(P.key) || {}, lab = opNorm(pAppLabel(cs.n));
     const wide = x => opVis(x) && x.getBoundingClientRect().width > 200 && !x.closest('[data-nq-part="app-rail"]');
     const rows = opClickables(d).filter(wide);
     /* 帳票名の見出し（どの帳票のものも）。まとまりは、その見出しを含み、ほかの帳票の見出しを含まない範囲 */
-    const labs = new Set(FLOW_LEDGERS.map((_, i) => opNorm((IDX['A1-' + (i + 1)] || {}).name || '')).filter(Boolean));
-    const allH = [...d.querySelectorAll('span,p,h2,h3,div')].filter(x => opVis(x) && labs.has(opNorm(opTxt(x))) && ![...x.children].some(c => labs.has(opNorm(opTxt(c)))));
-    const heads = allH.filter(x => opNorm(opTxt(x)) === lab);
+    const labs = new Set(FLOW_LEDGERS.map((_, i) => opNorm(pAppLabel(i + 1))).filter(Boolean));
+    /* 見出しの文字は、中の小さい文字（金属探知機の「金属探知機1号機」）を除いた自分の文字でも見る（2026-10-06） */
+    const own = x => opNorm([...x.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join(''));
+    const hTxt = x => labs.has(opNorm(opTxt(x))) ? opNorm(opTxt(x)) : own(x);
+    const allH = [...d.querySelectorAll('span,p,h2,h3,div')].filter(x => opVis(x) && labs.has(hTxt(x)) && ![...x.children].some(c => labs.has(hTxt(c))));
+    const heads = allH.filter(x => hTxt(x) === lab);
     const inLed = r => opNorm(opTxt(r)).includes(lab) || heads.some(h => { for (let g = h.parentElement, k = 0; g && k < 4; g = g.parentElement, k++){ if (allH.some(o => o !== h && g.contains(o))) return false; if (g.contains(r)) return true; } return false; });
     const mine = lab ? rows.filter(inLed) : rows;
     const pickRow = (/未点検/.test(cs.name || '') && mine.find(x => /未点検$/.test(opNorm(opTxt(x))))) || mine[0] || null;
@@ -12789,7 +12975,7 @@ let playState = false;   /* 再生がユースケースの state で状態を入
 /* from = {k, j}：操作手順の行を押したとき、その手順のその操作から再生する（2026-10-02）。
    前の手順は飛ばしてその画面を開き、同じ手順の前の操作（ポップアップを開くなど）は待たずに済ませてから始める */
 async function playCase(key, from){
-  stopPlay(); const c = caseOf(key); if (!c || narrow()) return;
+  stopPlay(); chipK = -1; const c = caseOf(key); if (!c || narrow()) return;
   const path = casePath(c); if (!path.length) return;
   const k0 = from ? Math.max(0, Math.min(path.length - 1, from.k | 0)) : 0;
   const P = PLAY = {key, k:0, j:-1, paused:false, busy:false, hurry:false, next:0, up:null, tok:'p' + Date.now(), acts:caseActs(c, path),
@@ -13178,7 +13364,7 @@ function renderRef(){
   const mark = v => v === '○' ? '<b class="ok">○</b>' : v === '△' ? '<b class="mid">△</b>'
               : v === '－' ? '<span class="no">－</span>' : '<span class="no">・</span>';
   const nav = [['r-who','利用者','users'],['r-scale','規模','chart'],['r-role','役割と権限','shield'],['r-approve','承認の経路','route'],['r-audit','操作ログ','list'],['r-terms','言葉','book']];
-  box.innerHTML = `<div class="docgrid"><nav class="docside" aria-label="前提の目次"><div><h4>前提</h4>
+  box.innerHTML = `<div class="docgrid"><nav class="docside" aria-label="概要の目次"><div><h4>概要</h4>
     <ul>${nav.map(([id, n, ic]) => `<li><a href="#${id}" data-jump="${id}">${hIcon(ic)}${n}</a></li>`).join('')}</ul></div></nav>
     <div class="docmain"><div class="refwrap">
     <section class="refsec" id="r-who"><h3>${hIcon('users')}誰が、どこで、何のために使うか</h3>
@@ -13592,6 +13778,7 @@ function paintState(){
   /* 通常しか無い端末では出さない */
   const show = list.length > 1 && !!DEMO_HREF && !!cur.hash;
   stateWrap.hidden = !show; if (sep) sep.hidden = !show;
+  paintTbarRole();
   if (!show){ curState = ''; paintNvState(); return; }
   if (!list.some(x => x.key === curState)) curState = '';
   stateSel.innerHTML = list.map(x =>
@@ -13621,7 +13808,7 @@ function nvTip(o){ nvStTip.hidden = !o; nvStQ.setAttribute('aria-expanded', Stri
 /* 開いたら「状態」の見出しがパネルのいちばん上に来るまで、パネルの中だけを送る。
    scrollIntoView だと、吹き出しがパネルより高いとき下の端に合わせて上が切れ、ページごと動いてしまう */
 function nvTipShow(){
-  const p = document.getElementById('nvPanel'), h = document.querySelector('#nvStateSec .nvh');
+  const p = document.querySelector('#nvPanel .nvbody'), h = document.querySelector('#nvStateSec .nvh');
   p.scrollTop += h.getBoundingClientRect().top - p.getBoundingClientRect().top - 12;
 }
 nvStQ.addEventListener('click', e => { e.stopPropagation(); nvTip(nvStTip.hidden); });
@@ -13635,9 +13822,10 @@ function paintNvState(){
   if (sec.hidden) return;
   /* 押すと中身を組み直すので、押した要素が外れて「パネルの外を押した」と取られないよう、ここで止める */
   const pick = e => { e.stopPropagation(); curState = e.currentTarget.dataset.st; paintState(); sendState(); };
-  grid.innerHTML = list.map(x => `<button type="button" class="nvit" data-st="${esc(x.key)}" aria-current="${x.key === curState}">
-    <span class="tx"><b class="t1">${esc(x.name)}</b></span></button>`).join('');
-  grid.querySelectorAll('[data-st]').forEach(b => b.onclick = pick);
+  /* 通常以外を 1 行ずつスイッチで出す。入れられるのは 1 つだけで、入っているものを切ると通常に戻る（2026-10-06） */
+  grid.innerHTML = list.filter(x => x.key).map(x => `<button type="button" class="nvsw1" role="switch" data-st="${esc(x.key)}" aria-checked="${x.key === curState}">
+    <span>${esc(x.name)}</span><span class="tg" aria-hidden="true"></span></button>`).join('');
+  grid.querySelectorAll('[data-st]').forEach(b => b.onclick = e => { if (b.dataset.st === curState) b.dataset.st = ''; pick(e); });
   sb.textContent = (list.find(x => x.key === curState) || list[0]).name;
   const help = STATE_HELP[cur.pf] || {};
   nvStTip.innerHTML = `<dl>${list.map(x => { const h = help[x.key] || {when:'未記入', texts:[]};
@@ -13802,6 +13990,13 @@ const nvSw=document.getElementById('nvSw'), nvFab=document.getElementById('nvFab
 function nvOpen(v){ const o = v===undefined ? nvPanel.hidden : v;
   nvPanel.hidden=!o; nvSw.classList.toggle('open',o); nvFab.setAttribute('aria-expanded',String(o)); if (!o) nvTip(false); }
 nvFab.addEventListener('click', e=>{ e.stopPropagation(); nvOpen(); });
+document.getElementById('nvClose').addEventListener('click', e => { e.stopPropagation(); nvOpen(false); });
+/* リセット：状態を通常に、ログイン中を最初の権限に戻す */
+document.getElementById('nvReset').addEventListener('click', e => {
+  e.stopPropagation(); curState = ''; nvRoleOpen = false;
+  if (ROLE_LIST.length){ curRole = ROLE_LIST[0].key; LS.set('role', curRole); }
+  paintRole(); paintState(); sendState();
+});
 /* フィードバック：枠の中の React（frameBridge）に開くよう頼む。React は中身を fb-state で返し、それを右パネルに出す（fbPaint）。対象は枠に出ているいまの画面。
    予備のプロトタイプ HTML には受け口が無いので、React が映っていないときは押せない */
 const nvFb = document.getElementById('nvFb');
@@ -13819,26 +14014,86 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !nvPanel.hidden
 document.getElementById('pjTitle').textContent = [PROJECT.name, PROJECT.doc].filter(Boolean).join(' ');
 document.title = [PROJECT.name, PROJECT.doc].filter(Boolean).join(' ');
 document.querySelector('.nvfab .lb').textContent = PROJECT.doc;
-document.getElementById('nvDocs').insertAdjacentHTML('beforeend', [
-  PROJECT.asIs && [PROJECT.asIs.href, PROJECT.asIs.label, PROJECT.asIs.desc],
-  ['', PROJECT.doc, `画面ごとの仕様・画面のつながりをまとめた資料。全${SCREENS.length}画面`],
-  PROJECT.demo && [PROJECT.demo.href, PROJECT.demo.label, PROJECT.demo.desc],
-].filter(Boolean).map(([href, label, desc]) => {
-  const inner = `<span class="tx"><b class="t1">${esc(label)}</b><span class="t2">${esc(desc)}</span></span>`;
-  return href ? `<a class="nvit" href="${esc(href)}" aria-current="false">${inner}</a>`
-              : `<span class="nvit" aria-current="true">${inner}</span>`;
-}).join(''));
+/* 資料の切替（現行調査／画面設計／プロトタイプ）。いま開いている画面設計が選ばれた状態で、プロトタイプはいまの画面のまま新しいタブで開く */
+(() => {
+  const docs = [PROJECT.asIs && {href:PROJECT.asIs.href, label:PROJECT.asIs.label}, {label:PROJECT.doc, cur:true},
+    PROJECT.demo && DEMO_HREF && {href:PROJECT.demo.href, label:PROJECT.demo.label, demo:true}].filter(Boolean);
+  const seg = document.getElementById('nvDocSeg');
+  seg.innerHTML = docs.map(d => d.cur ? `<span aria-current="true">${esc(d.label)}</span>`
+    : `<a href="${esc(d.href)}"${d.demo ? ' data-proto' : ' target="_blank" rel="noopener"'} aria-current="false">${esc(d.label)}</a>`).join('');
+  const pr = seg.querySelector('[data-proto]'); if (pr) pr.addEventListener('click', e => { openProto(e); nvOpen(false); });
+  document.getElementById('nvDocCap').textContent = pr ? `${PROJECT.demo.label}は、いまの画面・状態・ログイン中のまま開きます` : '';
+})();
 
 /* ---------- 権限（管理画面のロール）。右下のフローティングで切り替える ----------
    プロトタイプの右下切替と同じ並び・同じ説明。押すと flags.role を送り直すので、開いている画面はそのまま */
+/* 下の帯の「権限」。右下の「ログイン中」と同じ値で、どちらで変えても両方に出る */
+function paintTbarRole(){
+  const w = document.getElementById('stRoleWrap'), sel = document.getElementById('stRole');
+  if (!w || !sel || typeof cur === 'undefined' || !cur) return;
+  w.hidden = !(ROLE_LIST.length && DEMO_HREF && cur.pf === 'admin' && cur.hash);
+  if (w.hidden) return;
+  sel.innerHTML = ROLE_LIST.map(r => `<option value="${esc(r.key)}"${r.key === roleNow() ? ' selected' : ''}>${esc(r.name)}</option>`).join('');
+  sel.title = (ROLE_LIST.find(r => r.key === roleNow()) || {}).desc || '';
+}
+document.getElementById('stRole').addEventListener('change', e => {
+  curRole = e.target.value; LS.set('role', curRole); paintRole();
+  if (cur.pf === 'admin') sendState();
+});
+/* 「状態」「権限」の select は値の置き場として残し、押したときはブラウザの一覧ではなく NQ のプルダウンの形の一覧（.nqpop）を出す */
+let nqPopEl = null;
+function nqPopClose(){ if (nqPopEl){ nqPopEl.remove(); nqPopEl = null; } }
+function nqPopOpen(sel){
+  nqPopClose();
+  const wrap = sel.closest('.stw') || sel, r = wrap.getBoundingClientRect();
+  const pop = document.createElement('div'); pop.className = 'nqpop'; pop.setAttribute('role', 'listbox');
+  pop.innerHTML = [...sel.options].map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}">${esc(o.text)}</button>`).join('');
+  document.body.appendChild(pop); nqPopEl = pop;
+  pop.style.minWidth = r.width + 'px';
+  pop.style.left = Math.max(8, Math.min(r.left, innerWidth - pop.offsetWidth - 8)) + 'px';
+  pop.style.bottom = (innerHeight - r.top + 6) + 'px';
+  pop.querySelectorAll('[data-v]').forEach(b => b.onclick = e => {
+    e.stopPropagation(); nqPopClose();
+    if (sel.value !== b.dataset.v){ sel.value = b.dataset.v; sel.dispatchEvent(new Event('change')); }
+    sel.focus();
+  });
+  (pop.querySelector('[aria-selected="true"]') || pop.firstElementChild)?.focus();
+}
+['stState', 'stRole'].forEach(id => {
+  const sel = document.getElementById(id);
+  sel.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); if (nqPopEl) nqPopClose(); else { sel.focus(); nqPopOpen(sel); } });
+  sel.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter' || (e.altKey && e.key === 'ArrowDown')){ e.preventDefault(); nqPopOpen(sel); } });
+});
+document.addEventListener('mousedown', e => { if (nqPopEl && !e.target.closest('.nqpop')) nqPopClose(); });
+document.addEventListener('keydown', e => {
+  if (!nqPopEl) return;
+  if (e.key === 'Escape'){ e.stopPropagation(); nqPopClose(); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    e.preventDefault(); const bs = [...nqPopEl.querySelectorAll('button')], i = bs.indexOf(document.activeElement);
+    bs[(i + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length].focus();
+  }
+}, true);
+addEventListener('resize', nqPopClose);
+let nvRoleOpen = false;
 function paintRole(){
   const sec = document.getElementById('nvRoleSec'), box = document.getElementById('nvRole');
   if (!sec || !box) return;
   sec.hidden = !(ROLE_LIST.length && DEMO_HREF);
-  box.innerHTML = ROLE_LIST.map(r => `<button type="button" class="nvit" data-role="${esc(r.key)}" aria-current="${r.key === roleNow()}">
-    <span class="tx"><b class="t1">${esc(r.name)}</b></span></button>`).join('');   /* 2 列。説明（desc）は出さない */
+  const now = ROLE_LIST.find(r => r.key === roleNow()) || ROLE_LIST[0] || {};
+  const av = r => `<span class="nvav" aria-hidden="true">${esc((r.name || '').slice(0, 1))}</span>`;
+  const cr = `<svg class="cr" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
+  /* カードはいまの権限。押すと下に権限の一覧（説明つき）が開く */
+  box.innerHTML = `<div class="nvwho">
+    <button type="button" class="nvcard" aria-expanded="${nvRoleOpen}" aria-controls="nvRoleMenu">${av(now)}
+      <span class="tx"><b class="t1">${esc(now.name || '')}<span class="nvbadge">権限</span></b><span class="t2">${esc(now.desc || '')}</span></span>${cr}</button>
+    <div class="nvmenu" id="nvRoleMenu" role="menu"${nvRoleOpen ? '' : ' hidden'}>${ROLE_LIST.map(r =>
+      `<button type="button" role="menuitemradio" data-role="${esc(r.key)}" aria-current="${r.key === now.key}" aria-checked="${r.key === now.key}">${av(r)}
+        <span class="tx"><b class="t1">${esc(r.name)}</b><span class="t2">${esc(r.desc || '')}</span></span></button>`).join('')}</div></div>`;
+  paintTbarRole();
+  /* 描き直すと押した要素が外れ、「パネルの外を押した」と取られて閉じてしまうので、どれも止める */
+  box.querySelector('.nvcard').onclick = e => { e.stopPropagation(); nvRoleOpen = !nvRoleOpen; paintRole(); };
   box.querySelectorAll('[data-role]').forEach(b => b.onclick = e => {
-    e.stopPropagation();   /* 描き直すと押した要素が外れ、「パネルの外を押した」と取られて閉じてしまうため */
+    e.stopPropagation(); nvRoleOpen = false;
     curRole = b.dataset.role; LS.set('role', curRole); paintRole();
     if (cur.pf === 'admin') sendState();   /* アプリの画面を見ているときは、次に管理画面を開いたときに効く */
   });
@@ -13870,6 +14125,9 @@ function renderRelease(){
       <p class="relaim">${esc(r.aim)}</p>
       ${r.st === '予定' && !r.ledgers.length ? '<p class="relnone" style="margin-top:12px">帳票の画面はまだありません</p>'
         : `<div class="relsub">${r.st === 'リリース済み' ? '追加した帳票' : '追加する帳票'}<b>${r.ledgers.length}</b></div>${ledgers(r)}`}
+      ${(r.menus || []).length ? `<div class="relsub">この Ver から実装したメニュー<b>${r.menus.length}</b></div><div class="relleds" style="--vf:${r.c}">${r.menus.map(nm => { const sc = SCREENS.find(x => x.name === nm && x.pf === 'admin');
+        return sc ? `<button type="button" class="relled" data-go="${sc.id}" title="${esc(dispId(sc.id) + ' ' + sc.name)} を画面設計で開く"><i></i>${esc(nm)}<span class="sid">${dispId(sc.id)}</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>`
+          : `<span class="relled"><i></i>${esc(nm)}</span>`; }).join('')}</div>` : ''}
     </section>`;
   box.innerHTML = `<div class="docgrid"><nav class="docside" aria-label="バージョンの目次">
       <div><h4>バージョン</h4><ul>${RELEASES.map(r => `<li><a href="#${relId(r.ver)}" data-jump="${relId(r.ver)}"><i class="${cls(r)}"></i>${esc(r.ver)}<span class="vs">${esc(r.st)}</span></a></li>`).join('')}</ul></div>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { ADDITIVES, type Additive } from "../../../data/additives";
 
 type NewAdditiveInput = {
@@ -58,5 +59,7 @@ export function AdditiveManagementProviderOutlet() {
 export function useAdditiveManagement() {
   const ctx = useContext(AdditiveManagementContext);
   if (!ctx) throw new Error("useAdditiveManagement must be used within AdditiveManagementProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, additives: [] } : ctx), [ctx, empty]);
 }

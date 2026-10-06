@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { initialEntries, initialLines } from "./mockData";
 import type { Line, ScheduleEntry } from "./types";
 
@@ -54,5 +55,7 @@ export function CleaningRecordProviderOutlet() {
 export function useCleaningRecord() {
   const ctx = useContext(CleaningRecordContext);
   if (!ctx) throw new Error("useCleaningRecord must be used within CleaningRecordProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, lines: [], entries: {} } : ctx), [ctx, empty]);
 }

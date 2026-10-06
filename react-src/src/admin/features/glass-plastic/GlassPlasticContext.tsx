@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { floors as initialFloors } from "./mockData";
 import type { Floor, RepairStatus } from "./types";
 
@@ -56,5 +57,7 @@ export function GlassPlasticProviderOutlet() {
 export function useGlassPlastic() {
   const ctx = useContext(GlassPlasticContext);
   if (!ctx) throw new Error("useGlassPlastic must be used within GlassPlasticProvider");
-  return ctx;
+  // 右下の「状態を試す › データが無い」のときは、登録物も予定も無いものとして見せる
+  const empty = useDemoEmpty();
+  return useMemo(() => (empty ? { ...ctx, floors: [] } : ctx), [ctx, empty]);
 }
