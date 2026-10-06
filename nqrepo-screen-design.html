@@ -9682,6 +9682,7 @@ function pendingDecide(s){
 }
 
 const LOG_DOC = [
+  ['2026-10-06','URL の画面ID（#M4-1 など）を、サイドメニューに出す番号と同じにした。確認管理を隠して番号を詰めているので、これまでは帳票管理が URL では M5、一覧では M4 になっていた'],
   ['2026-10-06','中央下の帯の「状態」「権限」を開いたときの一覧を、NQ の管理画面のプルダウンと同じ形にした（白地・行は高さ 42px・選んでいる行は緑地に白文字）'],
   ['2026-10-06','中央下の帯の「状態」の右に「権限」（管理者・承認者）を足した。管理画面の画面のときだけ出る。右下の「ログイン中」と同じ値'],
   ['2026-10-06','右下のフローティングボタンを、緑の丸に重なった 2 枚の四角のアイコンだけにした（文字といまの状態は出さない）。プロトタイプの右下も同じ'],
@@ -10258,7 +10259,7 @@ function go(id, opt={}){
   lastPfId[s.pf] = s.id; LS.set('lastPfId', lastPfId);   /* この端末で最後に見ていた画面として覚える */
   /* 現在地を URL に残す。リロードしても同じ画面に戻り、リンクで共有もできる */
   if (!opt.fromHash){
-    const h = '#' + s.id;
+    const h = '#' + dispId(s.id);   /* URL もサイドメニューと同じ番号（M4 を隠して詰めた番号）にする（2026-10-06） */
     if (location.hash !== h){ hashLock = true; location.hash = h; setTimeout(()=>{ hashLock = false; }, 0); }
   }
   paintSize();
@@ -13464,7 +13465,7 @@ function setView(v, opt){
   if (v === 'feedback') renderFbManage();
   applyFit();     /* 枠の幅が変わるので、どの表示でも合わせ直す */
   if (!opt || !opt.fromHash){
-    const h = v === 'flow' ? '#flow' : v === 'ref' ? '#ref' : v === 'release' ? '#release' : v === 'feedback' ? '#feedback' : '#' + cur.id;
+    const h = v === 'flow' ? '#flow' : v === 'ref' ? '#ref' : v === 'release' ? '#release' : v === 'feedback' ? '#feedback' : '#' + dispId(cur.id);
     if (location.hash !== h){ hashLock = true; location.hash = h; setTimeout(()=>{ hashLock = false; }, 0); }
   }
 }
@@ -14396,7 +14397,11 @@ window.addEventListener('storage', e => { if (e.key === FBM_KEY && view === 'fee
 
 /* ---------- 起動 ---------- */
 const rawHash = () => { try{ return decodeURIComponent(location.hash.replace(/^#/, '')); }catch(e){ return ''; } };
-const hashId = () => rawHash().toUpperCase();
+/* URL の画面IDは画面に出す番号（dispId）。中の ID に読み替える。出す番号に無いものは中の ID のまま読む */
+let DISP2ID = null;
+const hashId = () => { const h = rawHash().toUpperCase();
+  if (!DISP2ID) DISP2ID = new Map(SCREENS.map(s => [dispId(s.id), s.id]));
+  return DISP2ID.get(h) || h; };
 const isFlowHash = () => rawHash().toLowerCase() === 'flow';
 const isRefHash  = () => rawHash().toLowerCase() === 'ref';
 const isRelHash  = () => rawHash().toLowerCase() === 'release';
@@ -14462,7 +14467,7 @@ pickDemo().then(() => {
   go(IDX[hashId()] ? hashId() : SCREENS[0].id, {fromHash:true});
   setView(isFlowHash() ? 'flow' : isRefHash() ? 'ref' : isRelHash() ? 'release' : isFbmHash() ? 'feedback' : 'screen', {fromHash:true});
   /* 起動時に hash が無ければ、いまの画面を書いておく（次のリロードで戻れる） */
-  if (!IDX[hashId()] && !isFlowHash() && !isRefHash() && !isRelHash() && !isFbmHash()){ try{ history.replaceState(null, '', '#' + cur.id); }catch(e){} }
+  if (!IDX[hashId()] && !isFlowHash() && !isRefHash() && !isRelHash() && !isFbmHash()){ try{ history.replaceState(null, '', '#' + dispId(cur.id)); }catch(e){} }
 });
 </script>
 

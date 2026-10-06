@@ -68,7 +68,7 @@ NVIDEO は台本（`CASES` の `play`）をプロトタイプの中の `pbRun` �
 画面設計側は読み込みのときに `SCREEN_HIDE`（`verHidden()`。帳票の番号 n の `M2-n`〜`M5-n`・`A1-n`・`A3-n` と、hash に帳票の slug がある画面＝点検予定の設定）で `SCREENS` を絞る。切り替えると `?ver=` を書き換えて読み込み直す（端末にも覚える）。`FLOW_LEDGERS` は隠す帳票を外すが、番号 n がずれないのは隠す帳票が `DS_LEDGERS` の後ろにまとまっている（Ver の順）ため。帳票を Ver の順でない場所に足したら直すこと。
 React には `flags.ver`（選んだ Ver。すべては `all`）と `flags.hide`（隠す slug のカンマ区切り）で送り、`src/data/ledgerVisibility.ts` が持つ。プロトタイプ（`?kit=1`。Vercel の `/` も）は右下のフローティングの「バージョン」で切り替えられ、何も選んでいなければ開発中の Ver で開く。選んだ Ver は画面設計と同じ localStorage（`nqrepo:ver`）に覚えるので、画面設計とプロトタイプは同じ Ver で開く。React 側の Ver と帳票の対応 `KIT_VERSIONS` は ⑬ `RELEASES` の写しなので、`RELEASES` を直したら両方直す。キットの外（`npm run dev` でふつうに開いたとき）は何も隠さない。`visibleLedgerCategories()` をタイル・絞り込みに、`useDemoList()` が `ledgerSlug` を持つ一覧の行を自動で外す。帳票を並べる画面を足したら `ledgerCategories` ではなく `visibleLedgerCategories()` を使う。`RELEASES` は `SCREEN_HIDE` で使うので `SCREENS` の手前に置いてある。
 
-- 画面設計 … `nqrepo-screen-design.html`（#M3 のように画面IDで直接開ける。`#flow` `#ref` `#release` で フロー・前提・リリース）
+- 画面設計 … `nqrepo-screen-design.html`（#M3 のように画面IDで直接開ける。URL の番号はサイドメニューに出す番号（`dispId()`。確認管理を隠して詰めた番号）で、`hashId()` が中の ID に読み替える（2026-10-06）。`#flow` `#ref` `#release` で フロー・前提・リリース）
 - 画面の実体 … `react-src/` をビルドした dist-kit（`http://127.0.0.1:8791/react/?frame=1#admin/approvals` のように単体でも開ける）。ブリッジは React 側の `src/frameBridge.tsx`（`main.tsx` と `App.tsx` から呼ぶ）
 - プロトタイプ（予備） … `nqrepo-demo.html`（右下の切替で 管理画面／アプリ、ロール、状態を変える。`1` `2` キーで端末切替）
 - デザインガイド … `../NQrepoDesignSystem/nqrepo-design-guide.html`（別フォルダ）

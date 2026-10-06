@@ -387,7 +387,7 @@ export function KitSwitch() {
               <a href={back} aria-current="false">{info.doc}</a>
               <span aria-current="true">{info.demo}</span>
             </div>
-            <p className="nvcap">{info.doc}は、いまの画面・状態・ログイン中のまま開きます</p>
+            <p className="nvcap">仕様は今の画面のままと使用中の人のまま開きます。</p>
           </div>
           <div className="nvsec">
             <p className="nvh">画面</p>
