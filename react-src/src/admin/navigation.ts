@@ -14,8 +14,10 @@ import iconHelp from "../assets/figma/icons/nav/help.svg";
 import type { PrototypeRoleId } from "../data/roleStore";
 import { approvalRequests } from "./data/approvals";
 import { pendingConfirmationCount } from "./data/confirmations";
+import { withoutHiddenLedgers } from "../data/ledgerVisibility";
 
-const pendingApprovalCount = approvalRequests.filter((item) => item.status === "pending").length;
+// 画面設計の Ver の切替で隠している帳票の申請は数えない（枠の URL の ?hide= を読み込みのときに見る）
+const pendingApprovalCount = withoutHiddenLedgers(approvalRequests).filter((item) => item.status === "pending").length;
 
 export type AdminNavItem = {
   label: string;

@@ -133,9 +133,7 @@ export function FloorPlanEditor({
 
         <div className="flex flex-col gap-3 items-start shrink-0 w-[240px] bg-[#f1efea] rounded-lg p-4 h-[560px] overflow-y-auto">
           <p className="text-sm text-[var(--semantic-text-primary)]">並び順</p>
-          {groupByRoom(items).length === 0 ? (
-            <p className="text-sm text-[var(--semantic-text-secondary)]">まだ配置されていません</p>
-          ) : (
+          {groupByRoom(items).length === 0 ? null : (
             groupByRoom(items).map((group) => (
               <div key={group.room} className="flex flex-col gap-1 items-start w-full">
                 <p className="text-sm text-[var(--semantic-brand-primary)]">{group.room}</p>

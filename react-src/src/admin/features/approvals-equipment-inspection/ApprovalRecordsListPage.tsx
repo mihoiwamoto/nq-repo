@@ -103,11 +103,6 @@ export function ApprovalRecordsListPage() {
                     )
                   )}
                 </div>
-                {records.length === 0 && (
-                  <p className="text-sm text-[var(--semantic-text-secondary)] text-center py-6">
-                    該当するデータがありません
-                  </p>
-                )}
                 {records.map((record, index) => (
                   <div
                     key={record.id}

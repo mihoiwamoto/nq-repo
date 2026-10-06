@@ -199,7 +199,7 @@ function quotedWords(text: string): string[] {
 
 /* ───────────────────────── 検出 ───────────────────────── */
 
-type Candidate = Omit<CoachMark, "points">;
+type Candidate = Omit<CoachMark, "points"> & { points?: string[] };
 
 type RowsResult = {
   kind: "table" | "list";
@@ -322,7 +322,22 @@ function detectRows(root: ParentNode, exclude: HTMLElement | null): RowsResult |
   return best?.result ?? null;
 }
 
-function detectAuto(doc: Document, isAdmin: boolean, isHome: boolean, scope?: HTMLElement): Candidate[] {
+/** 検出の細かい指定 */
+export type CoachMarkOptions = {
+  /** 点検の事前準備（点検予定・確認項目の設定）を 1 つにまとめず、ボタンごとに番号を付ける */
+  splitPrep?: boolean;
+  /** 番号バッジの左上が重なるとき、後のバッジを右へずらす（ScreenCoachMarks が使う） */
+  spreadBadges?: boolean;
+  /** 右下の説明カードを見出しでつかんで動かせるようにする（ScreenCoachMarks が使う） */
+  draggableCard?: boolean;
+};
+
+const PREP_BODY: { re: RegExp; body: string }[] = [
+  { re: /点検予定/, body: "いつ・どこを点検するかの予定を組みます。" },
+  { re: /確認項目|点検項目/, body: "点検のときに確認する項目を登録します。" },
+];
+
+function detectAuto(doc: Document, isAdmin: boolean, isHome: boolean, scope?: HTMLElement, opts: CoachMarkOptions = {}): Candidate[] {
   // ポップアップが出ているときは、その中だけを案内する（裏の画面は幕の下で触れないため）
   const root: ParentNode = scope ?? doc.getElementById("root") ?? doc.body;
   const out: Candidate[] = [];
@@ -395,7 +410,18 @@ function detectAuto(doc: Document, isAdmin: boolean, isHome: boolean, scope?: HT
   const prepLinks = q(root, "a, button").filter(
     (el) => PREP_LABEL.test(buttonLabel(el)) && !el.closest("table, nav, header, [role=tablist], dialog"),
   );
-  if (prepLinks.length) {
+  if (prepLinks.length && opts.splitPrep) {
+    prepLinks.forEach((el, i) => {
+      const label = buttonLabel(el);
+      push({
+        id: `prep:${i}`,
+        kind: "prep",
+        el,
+        title: `「${label}」`,
+        body: `点検を始める前の準備をする入口です。${PREP_BODY.find((b) => b.re.test(label))?.body ?? ""}`,
+      });
+    });
+  } else if (prepLinks.length) {
     const labels = prepLinks.map(buttonLabel);
     const container =
       (prepLinks.length > 1 ? commonAncestor(prepLinks[0], prepLinks[prepLinks.length - 1]) : prepLinks[0].parentElement) ??
@@ -719,7 +745,7 @@ function resolveSpecs(from: Document | HTMLElement, specs: CoachMarkSpec[]): Can
         el = null;
       }
     }
-    if (el) out.push({ id: `custom:${i}`, kind: "custom", el, title: spec.title, body: spec.body });
+    if (el) out.push({ id: `custom:${i}`, kind: "custom", el, title: spec.title, body: spec.body, points: spec.points });
   });
   return out;
 }
@@ -762,15 +788,20 @@ export function detectCoachMarks(
   isHome: boolean,
   /** ポップアップが出ているとき、その土台。指定するとこの中だけを案内する */
   scope?: HTMLElement,
+  opts?: CoachMarkOptions,
 ): CoachMarkDetection {
   const custom = description?.marks?.length ? resolveSpecs(scope ?? doc, description.marks) : [];
-  const auto = detectAuto(doc, isAdmin, isHome, scope);
+  const hide = description?.hideAuto ?? [];
+  const auto = detectAuto(doc, isAdmin, isHome, scope, opts).filter((a) => !hide.some((h) => a.id === h || a.id.startsWith(`${h}:`)));
 
   // 手書きが同じ要素を指していたら自動のほうを外す
   const merged: Candidate[] = [...custom, ...auto.filter((a) => !custom.some((c) => c.el === a.el))];
   merged.sort((a, b) => byDocumentOrder(a.el, b.el));
 
-  const marks: CoachMark[] = merged.slice(0, MAX_MARKS).map((c) => ({ ...c, points: [] }));
+  const marks: CoachMark[] = merged.slice(0, MAX_MARKS).map((c) => ({ ...c, points: [...(c.points ?? [])] }));
+  // 手書きのマークに直に書いた箇条書きと、本文で言い換えた箇条書きは、ほかへ振り分けない
+  const taken = new Set(marks.filter((m) => m.kind === "custom").flatMap((m) => m.points));
+  const consumed = description?.marks?.flatMap((m) => m.consume ?? []) ?? [];
 
   // 概要は画面タイトルのマークに載せる（タイトルが無ければ先頭のマーク）
   const titleMark = marks.find((m) => m.kind === "title") ?? marks[0];
@@ -780,6 +811,7 @@ export function detectCoachMarks(
 
   const leftoverPoints: string[] = [];
   for (const point of description?.points ?? []) {
+    if (taken.has(point) || consumed.some((c) => point.includes(c))) continue;
     let target: CoachMark | undefined;
 
     // 「登録」のような語 → その文字のボタン

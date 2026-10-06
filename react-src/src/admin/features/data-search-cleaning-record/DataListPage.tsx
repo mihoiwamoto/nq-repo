@@ -63,7 +63,6 @@ export function DataListPage() {
   const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [lineFilter, setLineFilter] = useState("");
-  const [onlyAbnormal, setOnlyAbnormal] = useState(false);
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
@@ -78,7 +77,6 @@ export function DataListPage() {
     if (ry !== year || rm !== month + 1) return false;
     if (dateFilter && r.date !== dateFilter) return false;
     if (lineFilter && r.lineLabel !== lineFilter) return false;
-    if (onlyAbnormal && r.cleaned) return false;
     return true;
   });
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
@@ -92,7 +90,6 @@ export function DataListPage() {
   function handleReset() {
     setDateFilter("");
     setLineFilter("");
-    setOnlyAbnormal(false);
   }
 
   function handleDownload() {
@@ -189,15 +186,6 @@ export function DataListPage() {
                     />
                   </div>
                 </div>
-                <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
-                  <input
-                    type="checkbox"
-                    checked={onlyAbnormal}
-                    onChange={(e) => setOnlyAbnormal(e.target.checked)}
-                    className="size-4 accent-[var(--semantic-brand-primary)]"
-                  />
-                  異常があるものだけ表示
-                </label>
               </div>
               <div className="flex gap-2 items-center">
                 <button
@@ -365,11 +353,7 @@ export function DataListPage() {
                   )
                 )}
               </div>
-              {filtered.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  該当するデータがありません
-                </p>
-              ) : (
+              {filtered.length === 0 ? null : (
                 filtered.map((record, index) => (
                   <div
                     key={record.id}

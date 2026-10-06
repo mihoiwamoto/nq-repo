@@ -101,11 +101,7 @@ export function MachineSelectionPage() {
           </div>
 
           <div className="flex flex-col gap-6 w-full">
-            {filteredMachines.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                該当する機器がありません
-              </p>
-            ) : (
+            {filteredMachines.length === 0 ? null : (
               filteredMachines.map((machine) => (
                 <Link
                   key={machine.id}

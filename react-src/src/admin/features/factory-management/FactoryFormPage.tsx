@@ -4,7 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { INITIAL_COMPANIES } from "../../../data/companies";
-import { ledgerCategories } from "../../../data/ledgers";
+import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { buildMonthGrid, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
 import { useFactoryManagement } from "./FactoryManagementContext";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
@@ -286,7 +286,7 @@ export function FactoryFormPage() {
               <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
             <div className="flex flex-wrap gap-6 items-start">
-              {ledgerCategories.map((category) => {
+              {visibleLedgerCategories().map((category) => {
                 const checked = ledgerSlugs.includes(category.slug);
                 return (
                   <button

@@ -239,11 +239,7 @@ export function CalendarPage() {
               </div>
             </div>
             <div className="flex flex-col px-4 py-2">
-              {!selectedLines || selectedLines.length === 0 ? (
-                <p className="py-4 text-base text-[var(--semantic-text-secondary)]">
-                  登録された点検予定がありません
-                </p>
-              ) : (
+              {!selectedLines || selectedLines.length === 0 ? null : (
                 selectedLines.map((line, i) => (
                   <div key={`${line.id}-${i}`}>
                     <div className="flex gap-4 h-12 items-center">

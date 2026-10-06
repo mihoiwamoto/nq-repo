@@ -3,8 +3,9 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput as DateInput } from "../../components/DateFilterInput";
 import { FACTORIES, getFactoryName } from "../../../data/factories";
-import { ledgerCategories } from "../../../data/ledgers";
+import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { LOG_ENTRIES } from "./mockData";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { SCREEN_TYPE_LABELS, SCREEN_TYPE_OPTIONS, type LogScreenType } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
@@ -34,10 +35,11 @@ export function LogListPage() {
   const [form, setForm] = useState<Filters>(EMPTY_FILTERS);
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
+  const entries = useDemoList(LOG_ENTRIES);
 
   const filtered = useMemo(
     () =>
-      LOG_ENTRIES.filter((entry) => {
+      entries.filter((entry) => {
         const entryDate = entry.timestamp.slice(0, 10);
         if (applied.dateFrom && entryDate < applied.dateFrom) return false;
         if (applied.dateTo && entryDate > applied.dateTo) return false;
@@ -52,7 +54,7 @@ export function LogListPage() {
           return false;
         return true;
       }),
-    [applied]
+    [entries, applied]
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -105,7 +107,7 @@ export function LogListPage() {
               <Pulldown
                 value={form.ledgerSlug}
                 onChange={(value) => setForm((f) => ({ ...f, ledgerSlug: value }))}
-                options={ledgerCategories.map((category) => ({ value: category.slug, label: category.adminLabel }))}
+                options={visibleLedgerCategories().map((category) => ({ value: category.slug, label: category.adminLabel }))}
                 placeholder="帳票選択"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
               />
@@ -157,11 +159,7 @@ export function LogListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">操作内容</p>
             </div>
           </div>
-          {pageItems.length === 0 ? (
-            <div className="bg-white flex h-14 items-center w-full px-2">
-              <p className="text-sm text-[var(--semantic-text-secondary)]">該当するログがありません</p>
-            </div>
-          ) : (
+          {pageItems.length === 0 ? null : (
             pageItems.map((entry, index) => {
               const factoryName = getFactoryName(entry.factoryId);
               const displayFactoryName = factoryName.length > 10 ? factoryName.slice(0, 10) + "..." : factoryName;

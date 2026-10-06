@@ -5,6 +5,7 @@ import { Pulldown } from "../../components/Pulldown";
 import { Toast } from "../../components/Toast";
 import { FACTORIES, getFactoryName } from "../../../data/factories";
 import { loadDevices, saveDevices, popNewDeviceQueue, NEW_DEVICE_EVENT } from "../../../data/deviceStore";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { DEVICE_STATUS_LABELS, type DeviceStatus, type LoginDevice } from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
@@ -17,6 +18,7 @@ export function DeviceListPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [devices, setDevices] = useState<LoginDevice[]>(() => loadDevices());
+  const shownDevices = useDemoList(devices);
   const [filterOpen, setFilterOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [factoryInput, setFactoryInput] = useState("");
@@ -77,17 +79,17 @@ export function DeviceListPage() {
 
   const filtered = useMemo(
     () =>
-      devices.filter((device) => {
+      shownDevices.filter((device) => {
         if (appliedFilters.name && !device.name.includes(appliedFilters.name)) return false;
         if (appliedFilters.factoryId && device.factoryId !== appliedFilters.factoryId) return false;
         return true;
       }),
-    [devices, appliedFilters]
+    [shownDevices, appliedFilters]
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
-  const notifiedDevice = devices.find((d) => d.id === notifiedDeviceId) ?? null;
+  const notifiedDevice = shownDevices.find((d) => d.id === notifiedDeviceId) ?? null;
 
   function handleSearch() {
     setAppliedFilters({ name: nameInput, factoryId: factoryInput });
@@ -230,13 +232,7 @@ export function DeviceListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full">操作</p>
             </div>
           </div>
-          {pageItems.length === 0 ? (
-            <div className="bg-white flex h-14 items-center w-full px-2">
-              <p className="text-sm text-[var(--semantic-text-secondary)]">
-                該当するログイン端末がありません
-              </p>
-            </div>
-          ) : (
+          {pageItems.length === 0 ? null : (
             pageItems.map((device, index) => (
               <div
                 key={device.id}

@@ -83,11 +83,7 @@ export function LineDetailPage() {
           <Row label="点検頻度">{FREQUENCY_LABEL[line.frequency]}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          {line.inspectionPoints.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)]">
-              点検箇所は登録されていません
-            </p>
-          ) : (
+          {line.inspectionPoints.length === 0 ? null : (
             line.inspectionPoints.map((point, index) => (
               <div key={point.id} className="flex flex-col gap-2 w-full">
                 <Row label="点検箇所">{point.location}</Row>

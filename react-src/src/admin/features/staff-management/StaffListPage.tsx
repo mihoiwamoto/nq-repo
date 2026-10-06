@@ -6,13 +6,15 @@ import { FACTORIES, getFactoryName } from "../../../data/factories";
 import { getCompanyName } from "../../../data/companies";
 import { ROLE_COLORS, ROLE_LABELS, ROLE_OPTIONS, type StaffRole } from "./types";
 import { useStaffManagement } from "./StaffManagementContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 
 const PAGE_SIZE = 10;
 
 export function StaffListPage() {
-  const { staff } = useStaffManagement();
+  const { staff: allStaff } = useStaffManagement();
+  const staff = useDemoList(allStaff);
   const [filterOpen, setFilterOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [factoryInput, setFactoryInput] = useState("");
@@ -135,11 +137,7 @@ export function StaffListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
             </div>
           </div>
-          {pageItems.length === 0 ? (
-            <div className="bg-white flex h-14 items-center w-full px-2">
-              <p className="text-sm text-[var(--semantic-text-secondary)]">該当する職員がいません</p>
-            </div>
-          ) : (
+          {pageItems.length === 0 ? null : (
             pageItems.map((member, index) => {
               const primary = member.assignments[0];
               return (

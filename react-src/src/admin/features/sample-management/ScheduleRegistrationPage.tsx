@@ -131,11 +131,7 @@ export function ScheduleRegistrationPage() {
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
             <div className="bg-white flex flex-col items-center px-4 w-full">
-              {selectedProducts.length === 0 ? (
-                <p className="py-4 text-sm text-[var(--semantic-text-primary)] w-full">
-                  登録された製品がありません
-                </p>
-              ) : (
+              {selectedProducts.length === 0 ? null : (
                 selectedProducts.map((product, index) => (
                   <div
                     key={product.id}

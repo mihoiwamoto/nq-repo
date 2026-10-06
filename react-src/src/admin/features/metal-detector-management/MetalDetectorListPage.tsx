@@ -4,6 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useMetalDetector } from "./MetalDetectorContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowUp from "@images/Icon/Button.svg";
 import iconArrowDown from "@images/Icon/Button-1.svg";
 
@@ -17,7 +18,8 @@ function ArrowDownIcon() {
 
 export function MetalDetectorListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
-  const { units, moveUnit } = useMetalDetector();
+  const { units: allUnits, moveUnit } = useMetalDetector();
+  const units = useDemoList(allUnits);
   const location = useLocation();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
   const [showToast, setShowToast] = useState(false);
@@ -77,13 +79,7 @@ export function MetalDetectorListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
             </div>
           </div>
-          {units.length === 0 ? (
-            <div className="bg-white flex items-center justify-center w-full py-6">
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                登録された金属探知機がありません
-              </p>
-            </div>
-          ) : (
+          {units.length === 0 ? null : (
             units.map((unit, index) => (
               <div
                 key={unit.id}

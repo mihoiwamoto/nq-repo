@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { LineFrequency } from "./types";
 import { useSchedule } from "./ScheduleContext";
+import { useDesignScale } from "../../hooks/useDesignScale";
 
 const FREQUENCY_LABEL: Record<LineFrequency, string> = {
   daily: "毎日",
@@ -24,6 +25,7 @@ export function AddLineDialog({
   onConfirm: (ids: string[]) => void;
 }) {
   const { lines } = useSchedule();
+  const scale = useDesignScale();
   const [activeTab, setActiveTab] = useState<LineFrequency>("weekly");
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState<string[]>(selectedIds);
@@ -43,7 +45,10 @@ export function AddLineDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[686px]">
+      <div
+        className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[686px]"
+        style={{ transform: `scale(${scale})` }}
+      >
         <h2 className="text-2xl text-black text-center w-full">持ち場/ライン名</h2>
         <div className="flex flex-col gap-4 items-start w-full">
           <div className="flex gap-4 items-start w-full">
@@ -78,11 +83,7 @@ export function AddLineDialog({
             ))}
           </div>
           <div className="bg-white flex flex-col h-[308px] overflow-y-auto px-4 rounded-lg w-full">
-            {filteredLines.length === 0 ? (
-              <p className="py-4 text-sm text-[var(--semantic-text-secondary)]">
-                該当する持ち場/ラインがありません
-              </p>
-            ) : (
+            {filteredLines.length === 0 ? null : (
               filteredLines.map((line) => (
                 <button
                   key={line.id}

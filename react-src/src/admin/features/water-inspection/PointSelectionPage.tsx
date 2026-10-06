@@ -77,11 +77,7 @@ export function PointSelectionPage() {
         </div>
 
         <div className="flex flex-wrap gap-6">
-          {filteredPoints.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)]">
-              該当する点検場所がありません
-            </p>
-          ) : (
+          {filteredPoints.length === 0 ? null : (
             filteredPoints.map((point) => (
               <Link
                 key={point.id}

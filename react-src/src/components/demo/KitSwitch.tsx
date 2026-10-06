@@ -4,6 +4,8 @@
  *   資料 … 画面設計（押すといまの画面・状態・ロールのまま画面設計へ戻る）／ React 実装（いま見ているもの）
  *   権限（管理画面のロール） … 画面設計の PROJECT.roles と同じ 4 つ・同じ並び。2 列で、説明は出さない
  *   状態 … 画面設計の PROJECT.screenStates と同じ。見出しの ? で出す説明は画面設計の STATE_HELP の写し
+ *   バージョン … 画面設計のヘッダー右上の Ver の切替と同じ（2026-10-06）。選んだ Ver より後で足す帳票を隠す。
+ *              選んだものは画面設計と同じ localStorage に覚えるので、画面設計へ戻っても同じ Ver（data/ledgerVisibility.ts）
  * 見た目も画面設計の .nvsw の CSS をそのまま写してある（画面設計側を直したらここも写し直す）。
  */
 import { useEffect, useRef, useState } from "react";
@@ -22,6 +24,27 @@ import {
   setKitState,
 } from "../../frameBridge";
 import { openFeedbackPanel } from "../feedback/feedbackStore";
+import { KIT_VERSIONS, chooseKitVer, getKitVer } from "../../data/ledgerVisibility";
+import { ScreenCoachMarks } from "../screen-description/ScreenCoachMarks";
+import { setSectionNotesOpen, useSectionNotesOpen } from "../section-notes/sectionNotesStore";
+import type { CoachMarkKind } from "../screen-description/coachMarks";
+
+/**
+ * 右下の切替の左に「?」（画面説明）を出す画面。押すとその画面の各部分に番号付きの説明（ScreenCoachMarks）を重ねる。
+ * 2026-10-05 にまず 帳票管理 › 機械器具点検 の持ち場/ラインの一覧だけで試す。広げるときはここへ足す
+ */
+const COACH_PATHS = [/^\/admin\/ledger-management\/equipment-inspection\/factories\/[^/]+\/?$/];
+/** 画面タイトルとパンくずは説明に入れない（2026-10-05 ユーザー指示） */
+const COACH_SKIP: CoachMarkKind[] = ["title", "breadcrumb"];
+/** 点検の事前準備は「点検予定」「確認項目の設定」それぞれに番号を付ける。一覧と「毎日」のように左上が同じ番号は横にずらす。説明カードは見出しをつかんで動かせる */
+const COACH_OPTIONS = { splitPrep: true, spreadBadges: true, draggableCard: true };
+const hasCoach = (path: string) => COACH_PATHS.some((re) => re.test(path));
+/**
+ * 「?」の左に「i」（注釈）を出す画面。押すと部品の下に文字だけの注釈（SectionNote）が出る。
+ * 注釈の文は各ページに直に書く。2026-10-06 に 帳票管理 › 機械器具点検 の持ち場/ラインの一覧だけで試す。広げるときはここへ足す
+ */
+const NOTE_PATHS = [/^\/admin\/ledger-management\/equipment-inspection\/factories\/[^/]+\/?$/];
+const hasNotes = (path: string) => NOTE_PATHS.some((re) => re.test(path));
 
 type Pf = "admin" | "app";
 
@@ -103,8 +126,8 @@ const STATE_HELP: Record<
     empty: {
       when: "対象の記録が 1 件も無いとき",
       texts: [
-        ["確認・承認・データ検索の一覧", "該当するデータがありません"],
-        ["承認申請管理", "対象の申請はありません"],
+        ["確認・承認・データ検索・帳票管理などの一覧", "表は見出しだけになり、文字は出さない（空欄）"],
+        ["承認申請管理", "帳票のタブだけになり、文字は出さない（空欄）"],
       ],
     },
   },
@@ -112,7 +135,7 @@ const STATE_HELP: Record<
 
 /* 画面設計の「右下の切替」の CSS の写し（暗い配色の段は外した。React の画面は明るいまま） */
 const CSS = `
-.nvsw{position:fixed;right:20px;bottom:20px;z-index:200;font-weight:400;
+.nvsw{position:fixed;right:20px;bottom:20px;z-index:200;font-weight:400;display:flex;flex-direction:column;align-items:flex-end;gap:10px;
   --nb:#fff;--nl:#E2E5E7;--nt:#2B3134;--nm:#7A828A;--na:#009E5E;--nad:#1E7A4C;--nal:#DFF3E9;--ns:#F4F5F6;
   --nsh:0 4px 14px rgba(20,26,30,.10), 0 18px 44px -18px rgba(20,26,30,.36);
   font-family:"Noto Sans JP",system-ui,-apple-system,sans-serif}
@@ -146,6 +169,15 @@ const CSS = `
 .nvgrid .nvit .t1{font-size:12.5px}
 .nvgrid .nvit[aria-current="true"],.nvgrid .nvit[aria-current="true"]:hover{background:#009E5E;border-color:#009E5E;color:#fff}
 .nvgrid .nvit[aria-current="true"] .t1{font-weight:700}
+/* バージョンのプルダウン（パネルのいちばん下） */
+.nvsel{position:relative;display:flex;align-items:center;border:1px solid var(--nl);border-radius:9px;background:var(--nb)}
+.nvsel:hover,.nvsel:focus-within{border-color:var(--na)}
+.nvsel .vd{position:absolute;left:12px;width:8px;height:8px;border-radius:99px;background:var(--vf,#808080);pointer-events:none}
+.nvsel select{appearance:none;-webkit-appearance:none;width:100%;border:0;background:none;font:inherit;font-size:12.5px;font-weight:500;color:var(--nt);
+  padding:8px 32px 8px 28px;cursor:pointer;outline:none}
+.nvsel .cr{position:absolute;right:12px;color:var(--nm);pointer-events:none}
+.nvfab .vb{display:flex;align-items:center;gap:6px;color:var(--nt);white-space:nowrap;border-left:1px solid var(--nl);padding-left:9px;font-weight:500}
+.nvfab .vb i{width:7px;height:7px;border-radius:99px;background:var(--vf,#808080)}
 .nvflow{margin:9px 4px 0;font-size:11px;color:var(--nm);line-height:1.65}
 .nvflow b{color:var(--nt);font-weight:500}
 .nvfoot{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:14px;padding-top:12px;border-top:1px solid var(--nl)}
@@ -173,7 +205,17 @@ const CSS = `
 .nvtip dd.q{color:var(--nt)}
 @keyframes nvpop{from{transform:scale(.9) translateY(-4px)}to{transform:none}}
 .nvkey{margin-left:auto;font-size:10.5px;color:var(--nm);text-align:right;line-height:1.6}
-@media (max-width:700px){ .nvfab .sb{display:none} .nvpanel{width:min(300px,calc(100vw - 40px))} }
+/* 画面説明の ?（切替の左。押して開いているあいだは緑） */
+.nvrow{display:flex;align-items:center;gap:10px}
+.nvhelp{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:999px;background:var(--nb);color:var(--nad);
+  border:1px solid var(--nl);box-shadow:var(--nsh);font:700 18px/1 system-ui,sans-serif;cursor:pointer;padding:0;transition:transform .14s}
+.nvhelp:hover{transform:translateY(-1px);border-color:var(--na)}
+.nvhelp[aria-pressed="true"]{background:var(--na);border-color:var(--na);color:#fff}
+/* セクションごとの注釈の i（? の左）。注釈の箱と同じ青 */
+.nvinfo{color:#3D7BB8;font:700 18px/1 Georgia,"Times New Roman",serif}
+.nvinfo:hover{border-color:#3D7BB8}
+.nvinfo[aria-pressed="true"]{background:#3D7BB8;border-color:#3D7BB8;color:#fff}
+@media (max-width:700px){ .nvfab .sb,.nvfab .vb{display:none} .nvpanel{width:min(300px,calc(100vw - 40px))} }
 @media (prefers-reduced-motion:reduce){.nvfab,.nvpanel,.nvfab .cr,.nvtip{transition:none!important;animation:none!important}}
 `;
 
@@ -220,6 +262,7 @@ function lastPath(pf: Pf): string {
 export function KitSwitch() {
   const [open, setOpen] = useState(false);
   const [tip, setTip] = useState(false); // 「状態」の ? の吹き出し
+  const [coach, setCoach] = useState(false); // 画面説明（? ボタン）
   const role = useCurrentRole(loadCurrentRole("administrator"));
   const location = useLocation();
   const navigate = useNavigate();
@@ -247,6 +290,15 @@ export function KitSwitch() {
     return () => window.removeEventListener(KIT_FLAGS_EVENT, on);
   }, []);
   const state = getKitState();
+  const ver = getKitVer();
+  const verInfo = KIT_VERSIONS.find((v) => v.ver === ver);
+  const coachHere = hasCoach(location.pathname);
+  const notesHere = hasNotes(location.pathname);
+  const notes = useSectionNotesOpen();
+  // 説明のある画面から離れたら閉じる
+  useEffect(() => {
+    if (!coachHere) setCoach(false);
+  }, [coachHere]);
 
   // 端末ごとに最後に見ていた画面を覚える（ログイン画面は除く）
   useEffect(() => {
@@ -400,6 +452,29 @@ export function KitSwitch() {
             ))}
           </div>
         </div>
+        <div className="nvsec">
+          <p className="nvh">バージョン</p>
+          {/* プルダウン。左の丸は選んでいる Ver の色 */}
+          <label className="nvsel" style={verInfo ? { ["--vf" as string]: verInfo.c } : undefined}>
+            <span className="vd" aria-hidden="true" />
+            <select
+              aria-label="バージョン"
+              value={ver}
+              title={verInfo ? `${verInfo.ver}（${verInfo.st}）の時点の画面。これより後で足す帳票を隠す` : "すべての帳票を出す"}
+              onChange={(e) => e.target.value !== ver && chooseKitVer(e.target.value)}
+            >
+              <option value="">すべての Ver</option>
+              {KIT_VERSIONS.map((v) => (
+                <option key={v.ver} value={v.ver}>
+                  {v.ver}（{v.st}）
+                </option>
+              ))}
+            </select>
+            <svg className="cr" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </label>
+        </div>
         <div className="nvfoot">
           <button
             type="button"
@@ -413,6 +488,40 @@ export function KitSwitch() {
           </button>
         </div>
       </div>
+      {coach && <ScreenCoachMarks onClose={() => setCoach(false)} cardBottom={130} skipKinds={COACH_SKIP} options={COACH_OPTIONS} />}
+      <div className="nvrow">
+      {notesHere && (
+        <button
+          className="nvhelp nvinfo"
+          type="button"
+          aria-pressed={notes}
+          aria-label={notes ? "セクションの注釈を閉じる" : "セクションごとの注釈を出す"}
+          title="セクションごとの注釈"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(false);
+            setSectionNotesOpen(!notes);
+          }}
+        >
+          i
+        </button>
+      )}
+      {coachHere && (
+        <button
+          className="nvhelp"
+          type="button"
+          aria-pressed={coach}
+          aria-label={coach ? "画面説明を閉じる" : "この画面の説明"}
+          title="この画面の説明"
+          onClick={(e) => {
+            e.stopPropagation();
+            setOpen(false);
+            setCoach((v) => !v);
+          }}
+        >
+          ?
+        </button>
+      )}
       <button
         className="nvfab"
         type="button"
@@ -424,6 +533,10 @@ export function KitSwitch() {
       >
         <span className="dt"></span>
         <span className="lb">{info.demo}</span>
+        <span className="vb" style={verInfo ? { ["--vf" as string]: verInfo.c } : undefined}>
+          {verInfo && <i />}
+          {verInfo ? verInfo.ver : "すべての Ver"}
+        </span>
         <span className="sb">
           {(STATES.find((x) => x.key === state) || STATES[0]).name}
         </span>
@@ -440,6 +553,7 @@ export function KitSwitch() {
           <path d="M6 15l6-6 6 6" />
         </svg>
       </button>
+      </div>
     </div>
   );
 }

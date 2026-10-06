@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { ledgerCategories } from "../../../data/ledgers";
+import { isLedgerHidden } from "../../../data/ledgerVisibility";
 import { useInspection } from "./InspectionContext";
 import { buildMonthGrid, formatDateLabel, isClosedDay, toDateKey } from "./calendarUtils";
 import { useSensorySchedule } from "../sensory-inspection/ScheduleContext";
@@ -58,7 +59,7 @@ export function SchedulePage() {
         hasEntry: !!sensoryEntry && sensoryEntry.products.length > 0,
         targetPath: `/app/schedule/sensory-inspection/${dateKey}`,
       },
-    ];
+    ].filter((ledger) => !isLedgerHidden(ledger.slug)); // 画面設計の Ver の切替で隠している帳票は出さない
   }
 
   const selectedLedgers = ledgersForDate(selectedDateKey);

@@ -7,6 +7,7 @@
  *   3. 画面が変わるたびに親へ {nvideo:'loc', hash} を postMessage で知らせる
  *   4. 親からの {nvideo:'go', hash, flags} で画面と状態を切り替える
  *   5. flags（empty／off／err／session／unsent／role）を demoStore の「状態を試す」と roleStore のロールに写す
+ *      flags.ver／flags.hide（画面設計の Ver の切替。隠す帳票の slug）は data/ledgerVisibility.ts に写す
  *
  * `nvideo` というキー名はキット共通の合言葉。案件名に変えない。
  * frame のときは何も保存せず、Basic 認証も通す（資料はローカルで開く前提）。
@@ -16,6 +17,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getDemoTrial, setDemoTrial, type DemoTrial } from "./components/demo/demoStore";
 import { saveCurrentRole, type PrototypeRoleId } from "./data/roleStore";
 import { openFeedbackPanel } from "./components/feedback/feedbackStore";
+import { kitVerParam, setLedgerFlags } from "./data/ledgerVisibility";
 
 /** 画面設計の「プロトタイプで開く」から来たときに、画面設計から受け取った資料名などを置く。あれば右下は KitSwitch になる */
 export const KIT_INFO_KEY = "nq_kit_info";
@@ -72,6 +74,7 @@ function applyFlags(flags: Record<string, unknown>) {
   // 状態が前と同じ（画面だけ切り替えた）なら、端末の中で起きたこと（オフラインで提出した未送信など）は消さない
   const changed = cur !== next || prevUnsent !== kitUnsent;
   kitFresh = FRAME && !!flags.fresh && flags.fresh !== "0";
+  setLedgerFlags(flags);
   if (!FRAME) {
     try {
       if (kitUnsent) sessionStorage.setItem(KIT_UNSENT_KEY, "1");
@@ -90,7 +93,8 @@ export function getKitState(): string {
   return (t && Object.keys(FLAG_TRIAL).find((k) => FLAG_TRIAL[k] === t)) || "";
 }
 export function setKitState(key: string) {
-  applyFlags(key ? { [key]: 1 } : {});
+  // 右下の「状態」を変えても、Ver はそのまま
+  applyFlags({ ...(key ? { [key]: 1 } : {}), ver: kitVerParam() });
 }
 
 function postLoc(pathname: string) {

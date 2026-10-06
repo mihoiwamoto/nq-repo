@@ -5,6 +5,7 @@ import iconUnsent from "../../../assets/figma/icons/common/unsent.svg";
 import iconSearch from "@images/Icon/search.svg";
 import { AppHeader } from "../../layout/AppHeader";
 import { ledgerCategories } from "../../../data/ledgers";
+import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { StatusChip } from "../../components/StatusChip";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { useAnnouncementBar } from "../../layout/AnnouncementBarContext";
@@ -389,7 +390,7 @@ export function ProgressListPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[754px]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">絞り込み条件</h2>
             <div className="grid grid-cols-3 gap-6 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
-              {FILTER_LEDGERS.map((ledger) => {
+              {visibleLedgerCategories(FILTER_LEDGERS).map((ledger) => {
                 const selected = pickerSelected.has(ledger.slug);
                 return (
                   <button

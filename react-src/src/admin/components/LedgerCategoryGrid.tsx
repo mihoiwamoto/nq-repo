@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ledgerCategories } from "../../data/ledgers";
+import { visibleLedgerCategories } from "../../data/ledgerVisibility";
 
 export function LedgerCategoryGrid({
   basePath,
@@ -10,7 +10,7 @@ export function LedgerCategoryGrid({
 }) {
   return (
     <div className="flex flex-wrap gap-6 p-6">
-      {ledgerCategories.map((category) => (
+      {visibleLedgerCategories().map((category) => (
         <Link
           key={category.slug}
           to={`${basePath}/${category.slug}`}

@@ -57,6 +57,12 @@ NVIDEO は台本（`CASES` の `play`）をプロトタイプの中の `pbRun` �
 帳票管理の使用水以外の画面に sub・note・決めることを書き足すときは `LM_OVER`（帳票の slug → 何番目の画面か。使用水は `LM_WATER_OVER`）。
 「画面概要」の本文は ⑧-4 `OVERVIEW`（2026-09-30 に Confluence「NQリポ」スペースの `[cms]`／`[app]` 画面仕様書から起こした。`lead` が一行説明の代わりに出て、`body` の箇条書き（2026-10-01 に 1 項目 1 事実・2〜5 項目へ要約した。長い段落で書き足さない）。2026-10-01 に、`body` と「この画面でできること」（`SCREEN_DESC`）が両方ある 197 画面は 1 つの箇条書きにまとめ直して `merged:true` を付けた（できることは出さない。補足は出す。データ検索のデータ一覧は `solo:true` で補足も出さない）。この画面では React の画面説明を直しても右パネルには出ないので、`body` も手で直す、手書きの `note`（「補足」に畳む）の順。元のページ `pages` は取り直し用に持つだけで、2026-09-30 から画面には出さない）。仕様書と React が違うところは React に合わせて書いてある。Confluence の一覧 API は本文が大きいと「Body omitted」になるので、取り直すときはページごとに markdown で取る。
 
+**管理画面のデータが無いときは空欄（2026-10-06）。** 開発環境（stg-lanstech.nq-repo.com）に合わせ、管理画面の一覧・表・カード・コメント・ポップアップの検索結果などで、データが無いときに「該当するデータがありません」のような文言を出さない（`length === 0 ? null : (…)`。表は見出しだけになる）。管理画面に一覧を足すときも文言は書かない。詳細画面の「データが見つかりません」（id が無いとき）とアプリの文言は別で、そのまま。一覧は `useDemoList()` に通して、右下の「データが無い」で空になるようにする。
+
+**ヘッダー右上の Ver の切替（2026-10-06）。** ⑬ `RELEASES` の Ver を選ぶと、その Ver より後で足す帳票（`ledgers` に書いた帳票名）の画面を隠す。選んだ Ver の帳票は出す。何も選んでいないときは `RELEASES` の `st` が「開発中」の Ver（`VER_DEFAULT`。いまは Ver.3.0）で開き、「すべての Ver」は `?ver=all` として覚える。帳票の出し入れだけで、同じ画面の Ver ごとの違いは切り替えない。
+画面設計側は読み込みのときに `SCREEN_HIDE`（`verHidden()`。帳票の番号 n の `M2-n`〜`M5-n`・`A1-n`・`A3-n` と、hash に帳票の slug がある画面＝点検予定の設定）で `SCREENS` を絞る。切り替えると `?ver=` を書き換えて読み込み直す（端末にも覚える）。`FLOW_LEDGERS` は隠す帳票を外すが、番号 n がずれないのは隠す帳票が `DS_LEDGERS` の後ろにまとまっている（Ver の順）ため。帳票を Ver の順でない場所に足したら直すこと。
+React には `flags.ver`（選んだ Ver。すべては `all`）と `flags.hide`（隠す slug のカンマ区切り）で送り、`src/data/ledgerVisibility.ts` が持つ。プロトタイプ（`?kit=1`。Vercel の `/` も）は右下のフローティングの「バージョン」で切り替えられ、何も選んでいなければ開発中の Ver で開く。選んだ Ver は画面設計と同じ localStorage（`nqrepo:ver`）に覚えるので、画面設計とプロトタイプは同じ Ver で開く。React 側の Ver と帳票の対応 `KIT_VERSIONS` は ⑬ `RELEASES` の写しなので、`RELEASES` を直したら両方直す。キットの外（`npm run dev` でふつうに開いたとき）は何も隠さない。`visibleLedgerCategories()` をタイル・絞り込みに、`useDemoList()` が `ledgerSlug` を持つ一覧の行を自動で外す。帳票を並べる画面を足したら `ledgerCategories` ではなく `visibleLedgerCategories()` を使う。`RELEASES` は `SCREEN_HIDE` で使うので `SCREENS` の手前に置いてある。
+
 - 画面設計 … `nqrepo-screen-design.html`（#M3 のように画面IDで直接開ける。`#flow` `#ref` `#release` で フロー・前提・リリース）
 - 画面の実体 … `react-src/` をビルドした dist-kit（`http://127.0.0.1:8791/react/?frame=1#admin/approvals` のように単体でも開ける）。ブリッジは React 側の `src/frameBridge.tsx`（`main.tsx` と `App.tsx` から呼ぶ）
 - プロトタイプ（予備） … `nqrepo-demo.html`（右下の切替で 管理画面／アプリ、ロール、状態を変える。`1` `2` キーで端末切替）

@@ -2,13 +2,15 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useCompanyManagement } from "./CompanyManagementContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 
 const PAGE_SIZE = 10;
 
 export function CompanyListPage() {
-  const { companies } = useCompanyManagement();
+  const { companies: allCompanies } = useCompanyManagement();
+  const companies = useDemoList(allCompanies);
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
@@ -96,13 +98,7 @@ export function CompanyListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">操作</p>
             </div>
           </div>
-          {pageItems.length === 0 ? (
-            <div className="bg-white flex h-14 items-center w-full px-2">
-              <p className="text-sm text-[var(--semantic-text-secondary)]">
-                該当する企業がありません
-              </p>
-            </div>
-          ) : (
+          {pageItems.length === 0 ? null : (
             pageItems.map((company, index) => (
               <div
                 key={company.id}

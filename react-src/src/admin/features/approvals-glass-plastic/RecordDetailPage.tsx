@@ -243,9 +243,7 @@ export function RecordDetailView({
         </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
-          {visibleRooms.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)]">該当する点検箇所がありません</p>
-          ) : (
+          {visibleRooms.length === 0 ? null : (
             visibleRooms.map((room, roomIndex) => (
               <div key={room.id} className="flex flex-col gap-4 items-start w-full">
                 {roomIndex > 0 && <div className="border-t border-[#d0d0d0] w-full my-2" />}

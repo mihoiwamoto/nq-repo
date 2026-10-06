@@ -155,11 +155,6 @@ export function ApprovalRecordsListPage() {
                     </div>
                   ))}
                 </div>
-                {batchRecords.length === 0 && (
-                  <p className="text-sm text-[var(--semantic-text-secondary)] text-center py-6">
-                    該当するデータがありません
-                  </p>
-                )}
                 {batchRecords.map((record, index) => (
                   <div
                     key={record.id}

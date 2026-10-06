@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppHeader } from "../layout/AppHeader";
-import { ledgerCategories } from "../../data/ledgers";
+import { visibleLedgerCategories } from "../../data/ledgerVisibility";
 import { ACTORS } from "../features/cleaning-record/mockData";
 
 const ACTOR_PICKER_SLUGS = [
@@ -40,7 +40,7 @@ export function LedgerListPage() {
       <AppHeader title="帳票一覧" />
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-4 justify-items-start content-start items-start gap-x-8 gap-y-6">
-          {ledgerCategories.map((category) =>
+          {visibleLedgerCategories().map((category) =>
             ACTOR_PICKER_SLUGS.includes(category.slug) ? (
               <button
                 key={category.slug}

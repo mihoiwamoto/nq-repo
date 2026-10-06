@@ -26,7 +26,7 @@ import { findScreenByPathname } from "../../admin/features/guide/screenCatalog";
 import { screenBreadcrumb } from "../feedback/screenBreadcrumb";
 import { describeScreenFile, type ScreenDescription } from "./screenDescriptions";
 import { descriptionOfState, findOpenScreenState } from "./screenStates";
-import { COACH_OWN_ATTR, detectCoachMarks, isHomePath, type CoachMark } from "./coachMarks";
+import { COACH_OWN_ATTR, detectCoachMarks, isHomePath, type CoachMark, type CoachMarkKind, type CoachMarkOptions } from "./coachMarks";
 import {
   COACH_MARKS_CLOSE_EVENT,
   COACH_MARKS_MESSAGE_TYPE,
@@ -146,7 +146,23 @@ export function ScreenCoachMarksHost() {
 
 /* ───────────────────────── 本体 ───────────────────────── */
 
-export function ScreenCoachMarks({ onClose }: { onClose: () => void }) {
+/**
+ * cardBottom: 説明カードの下端（px）。既定は右下のピルのすぐ上（76px）。
+ * 「プロトタイプで開く」の右下は ? ボタンをピルの上に積むので、その上へずらすときに渡す
+ * options: 検出の細かい指定（splitPrep で点検の事前準備をボタンごとに分ける）
+ * skipKinds: 番号を付けない部分の種類（例 "title" で画面タイトルを外す）。そこに振り分けられた箇条書きは「ほかにできること」へ回す
+ */
+export function ScreenCoachMarks({
+  onClose,
+  cardBottom = 76,
+  skipKinds,
+  options,
+}: {
+  onClose: () => void;
+  cardBottom?: number;
+  skipKinds?: CoachMarkKind[];
+  options?: CoachMarkOptions;
+}) {
   const location = useLocation();
   const screen = useMemo(() => findScreenByPathname(location.pathname), [location.pathname]);
   const pageDescription = screen ? describeScreenFile(screen.filePath) : undefined;
@@ -166,6 +182,32 @@ export function ScreenCoachMarks({ onClose }: { onClose: () => void }) {
   const description = stateDescription ?? pageDescription;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  /* 説明カードを見出しでつかんで動かす（options.draggableCard のとき）。null のあいだは右下の既定の位置 */
+  const cardRef = useRef<HTMLElement>(null);
+  const [cardAt, setCardAt] = useState<{ left: number; top: number } | null>(null);
+  const onCardGrab = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!options?.draggableCard || e.button !== 0 || (e.target as HTMLElement).closest("button")) return;
+    const card = cardRef.current;
+    if (!card) return;
+    e.preventDefault();
+    const start = card.getBoundingClientRect();
+    const dx = e.clientX - start.left;
+    const dy = e.clientY - start.top;
+    const move = (ev: PointerEvent) => {
+      const w = card.offsetWidth;
+      const h = card.offsetHeight;
+      setCardAt({
+        left: Math.max(8, Math.min(ev.clientX - dx, window.innerWidth - w - 8)),
+        top: Math.max(8, Math.min(ev.clientY - dy, window.innerHeight - Math.min(h, 48) - 8)),
+      });
+    };
+    const up = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+  };
   const [rects, setRects] = useState<Record<string, Rect>>({});
   const [viewport, setViewport] = useState({ w: window.innerWidth, h: window.innerHeight });
 
@@ -177,7 +219,9 @@ export function ScreenCoachMarks({ onClose }: { onClose: () => void }) {
     const shown = descriptionOfState(pageDescription, active);
     setStateLabel(active?.state.label ?? null);
     setStateDescription(active ? shown : undefined);
-    const { marks: next, leftoverPoints } = detectCoachMarks(document, shown, isAdmin, isHome, active?.root);
+    const found = detectCoachMarks(document, shown, isAdmin, isHome, active?.root, options);
+    const next = skipKinds?.length ? found.marks.filter((m) => !skipKinds.includes(m.kind)) : found.marks;
+    const leftoverPoints = [...found.leftoverPoints, ...found.marks.filter((m) => !next.includes(m)).flatMap((m) => m.points)];
     setMarks((prev) => {
       // 要素・件数が同じなら state を変えない（無駄な再描画を避ける）
       if (prev.length === next.length && prev.every((m, i) => m.el === next[i].el && m.body === next[i].body && m.points.length === next[i].points.length)) {
@@ -186,7 +230,8 @@ export function ScreenCoachMarks({ onClose }: { onClose: () => void }) {
       return next;
     });
     setLeftover(leftoverPoints);
-  }, [pageDescription, isAdmin, isHome]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageDescription, isAdmin, isHome, skipKinds?.join(","), options?.splitPrep]);
 
   useEffect(() => {
     setActiveId(null);
@@ -307,6 +352,24 @@ export function ScreenCoachMarks({ onClose }: { onClose: () => void }) {
     return { left: clampX(r.left + 24), top: clampY(r.top + 24), side: "inside" as const };
   }, [active, rects, viewport, calloutH]);
 
+  /* 番号バッジの位置。対象の左上。options.spreadBadges のときは、左上が重なる（一覧とその中のタブ等）バッジを右へずらす */
+  const badgePos = useMemo(() => {
+    const out: Record<string, { left: number; top: number }> = {};
+    const placed: { left: number; top: number }[] = [];
+    for (const m of marks) {
+      const r = rects[m.id];
+      if (!r) continue;
+      let left = Math.max(2, Math.min(r.left - PAD - BADGE / 2, viewport.w - BADGE - 2));
+      const top = Math.max(2, Math.min(r.top - PAD - BADGE / 2, viewport.h - BADGE - 2));
+      if (options?.spreadBadges) {
+        while (placed.some((p) => Math.abs(p.left - left) < BADGE + 4 && Math.abs(p.top - top) < BADGE)) left += BADGE + 6;
+      }
+      placed.push({ left, top });
+      out[m.id] = { left, top };
+    }
+    return out;
+  }, [marks, rects, viewport, options?.spreadBadges]);
+
   const linkTo = screen && isAdmin ? `/admin/guide/descriptions/${encodeURIComponent(screen.id)}` : null;
 
   return createPortal(
@@ -354,11 +417,10 @@ export function ScreenCoachMarks({ onClose }: { onClose: () => void }) {
 
       {/* 番号バッジ */}
       {marks.map((m, i) => {
-        const r = rects[m.id];
-        if (!r) return null;
+        const pos = badgePos[m.id];
+        if (!pos) return null;
         const isActive = active?.id === m.id;
-        const left = Math.max(2, Math.min(r.left - PAD - BADGE / 2, viewport.w - BADGE - 2));
-        const top = Math.max(2, Math.min(r.top - PAD - BADGE / 2, viewport.h - BADGE - 2));
+        const { left, top } = pos;
         return (
           <button
             key={m.id}
@@ -450,13 +512,18 @@ export function ScreenCoachMarks({ onClose }: { onClose: () => void }) {
       {/* 説明カード（左下） */}
       <aside
         {...own}
+        ref={cardRef}
         role="complementary"
         aria-label="画面説明"
         // 右下のピル（動作デモ）の上に置く。左下だとサイドメニューや一覧の「操作」列（左端）に重なるため
-        className="nq-coach-card fixed right-6 bottom-[76px] rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.28)] border border-[#e6e6e6] text-[var(--semantic-text-primary)] flex flex-col"
-        style={{ width: collapsed ? "auto" : 340, maxWidth: "calc(100vw - 2rem)", maxHeight: collapsed ? undefined : "min(70vh, 640px)", zIndex: Z_INDEX + 2 }}
+        className={`nq-coach-card fixed ${cardAt ? "" : "right-6"} rounded-2xl bg-white shadow-[0_8px_30px_rgba(0,0,0,0.28)] border border-[#e6e6e6] text-[var(--semantic-text-primary)] flex flex-col`}
+        style={{ ...(cardAt ?? { bottom: cardBottom }), width: collapsed ? "auto" : 340, maxWidth: "calc(100vw - 2rem)", maxHeight: collapsed ? undefined : "min(70vh, 640px)", zIndex: Z_INDEX + 2 }}
       >
-        <div className="h-12 px-3.5 flex items-center gap-2 border-b border-[#eee] shrink-0">
+        <div
+          className={`h-12 px-3.5 flex items-center gap-2 border-b border-[#eee] shrink-0 ${options?.draggableCard ? "cursor-move select-none touch-none" : ""}`}
+          onPointerDown={onCardGrab}
+          title={options?.draggableCard ? "ドラッグして動かせます" : undefined}
+        >
           <IconInfo className="w-5 h-5 text-[var(--semantic-brand-primary)] shrink-0" />
           <h2 className="flex-1 text-[14px] font-bold whitespace-nowrap">
             画面説明

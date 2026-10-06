@@ -4,6 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useWeightChecker } from "./WeightCheckerContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowUp from "@images/Icon/Button.svg";
 import iconArrowDown from "@images/Icon/Button-1.svg";
 
@@ -18,7 +19,8 @@ function ArrowDownIcon() {
 export function WeightCheckerListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
   const location = useLocation();
-  const { units, moveUnit } = useWeightChecker();
+  const { units: allUnits, moveUnit } = useWeightChecker();
+  const units = useDemoList(allUnits);
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
   const [showToast, setShowToast] = useState(false);
 
@@ -78,13 +80,7 @@ export function WeightCheckerListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
             </div>
           </div>
-          {units.length === 0 ? (
-            <div className="bg-white flex items-center justify-center w-full py-6">
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                登録されたウェイトチェッカーがありません
-              </p>
-            </div>
-          ) : (
+          {units.length === 0 ? null : (
             units.map((unit, index) => (
               <div
                 key={unit.id}

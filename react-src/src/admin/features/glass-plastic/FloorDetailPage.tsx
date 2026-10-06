@@ -167,11 +167,7 @@ export function FloorDetailPage() {
             </p>
           </div>
           <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
-            {floor.repairItems.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                現在、対応が必要な箇所はありません
-              </p>
-            ) : (
+            {floor.repairItems.length === 0 ? null : (
               groupByRoom(floor.repairItems).map((group) => (
                 <div key={group.room} className="flex flex-col gap-2 items-start w-full">
                   <p className="text-base text-[var(--semantic-brand-primary)]">{group.room}</p>

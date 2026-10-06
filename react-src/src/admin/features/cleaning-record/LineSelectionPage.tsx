@@ -113,11 +113,7 @@ export function LineSelectionPage() {
               ))}
             </div>
 
-            {filteredLines.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                該当する持ち場/ラインがありません
-              </p>
-            ) : (
+            {filteredLines.length === 0 ? null : (
               filteredLines.map((line) => (
                 <Link
                   key={line.id}

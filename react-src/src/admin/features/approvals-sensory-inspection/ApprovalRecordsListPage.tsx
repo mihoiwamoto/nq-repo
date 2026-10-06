@@ -73,11 +73,7 @@ export function ApprovalRecordsListPage() {
                   </div>
                 ))}
               </div>
-              {records.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  該当するデータがありません
-                </p>
-              ) : (
+              {records.length === 0 ? null : (
                 records.map((record, index) => {
                   const abnormal = isRecordAbnormal(record);
                   return (

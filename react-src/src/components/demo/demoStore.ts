@@ -16,6 +16,7 @@
  * 同じタブ内の親子ウィンドウへ postMessage でも流す（storage イベントは
  * ブラウザによって同一タブの iframe に届かないことがあるため）。
  */
+import { withoutHiddenLedgers } from "../../data/ledgerVisibility";
 import {
   useEffect,
   useMemo,
@@ -121,10 +122,10 @@ const TRIAL_GUIDES: Record<DemoTrial, Record<TrialArea, TrialGuide>> = {
     },
     admin: {
       effect:
-        "管理画面の記録一覧（承認・データ検索）が空になり、「該当するデータがありません」の文言が出る。サイドメニューの承認待ちの件数バッジも消える。",
+        "管理画面の一覧（承認・データ検索・帳票管理・職員などの管理）が空になる。文言は出さず空欄になる（開発環境に合わせた）。サイドメニューの承認待ちの件数バッジも消える。",
       steps: [
         "承認申請管理・データ検索の一覧を開く",
-        "「該当するデータがありません」の文言を確かめる",
+        "表が見出しだけの空欄になっていることを確かめる",
         "サイドメニューの赤い件数バッジが消えていることを確かめる",
       ],
     },
@@ -345,7 +346,8 @@ export function useDemoTrial(): DemoTrial | null {
  */
 export function useDemoList<T>(items: T[]): T[] {
   const t = useDemoTrial();
-  return t === "empty" ? EMPTY : items;
+  // 画面設計の Ver の切替で隠している帳票の行（ledgerSlug）も外す
+  return t === "empty" ? EMPTY : withoutHiddenLedgers(items);
 }
 const EMPTY: never[] = [];
 

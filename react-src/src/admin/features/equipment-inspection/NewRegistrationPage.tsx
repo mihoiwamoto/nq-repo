@@ -83,11 +83,7 @@ export function NewRegistrationPage() {
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
             <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
-              {selectedLines.length === 0 ? (
-                <p className="text-base text-[var(--semantic-text-primary)] w-full">
-                  登録された持ち場/ラインがありません
-                </p>
-              ) : (
+              {selectedLines.length === 0 ? null : (
                 selectedLines.map((line) => (
                   <div key={line.id} className="flex items-center w-full gap-4">
                     <span className="flex-1 text-base text-[var(--semantic-text-primary)]">

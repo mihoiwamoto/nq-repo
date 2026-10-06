@@ -131,11 +131,7 @@ export function MetalDetectorDetailPage() {
                     </div>
                   </div>
                 ))
-              ) : (
-                <div className="bg-white flex items-center justify-center w-full py-4">
-                  <p className="text-sm text-[var(--semantic-text-secondary)]">設定がありません</p>
-                </div>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

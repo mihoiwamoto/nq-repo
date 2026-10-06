@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
+import { SectionNote } from "../../../components/section-notes/SectionNote";
 import type { LineFrequency } from "./types";
 
 const FREQUENCY_TABS: { key: LineFrequency; label: string }[] = [
@@ -56,12 +57,16 @@ export function LineSelectionPage() {
         title="機械器具点検"
         showBack
         action={
+          // 右下の「i」を押すと、ボタンの下に注釈が出る（場所を取らないよう absolute で置く）
+          <div className="relative">
           <Link
             to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/lines/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
+            <SectionNote className="absolute right-0 top-full mt-1.5">①持ち場/ラインの登録はここから</SectionNote>
+          </div>
         }
       />
       <Breadcrumb
@@ -83,21 +88,27 @@ export function LineSelectionPage() {
               <p className="text-sm text-[var(--semantic-text-primary)]">
                 点検する持ち場/ラインの予定を組む
               </p>
-              <Link
-                to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/schedule`}
-                className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
-              >
-                点検予定
-              </Link>
+              <div className="relative">
+                <Link
+                  to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/schedule`}
+                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+                >
+                  点検予定
+                </Link>
+                <SectionNote className="absolute left-0 top-full mt-1">②点検する日の予定はここから</SectionNote>
+              </div>
             </div>
             <div className="flex flex-col gap-2 items-start">
               <p className="text-sm text-[var(--semantic-text-primary)]">点検する確認内容を登録する</p>
-              <Link
-                to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/checklist-settings`}
-                className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
-              >
-                確認項目の設定
-              </Link>
+              <div className="relative">
+                <Link
+                  to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/checklist-settings`}
+                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+                >
+                  確認項目の設定
+                </Link>
+                <SectionNote className="absolute left-0 top-full mt-1">③確認項目の登録はここから</SectionNote>
+              </div>
             </div>
           </div>
         </div>
@@ -121,7 +132,8 @@ export function LineSelectionPage() {
           </div>
 
           <div className="flex flex-col gap-6 w-full">
-            <div className="bg-white flex h-10 items-center rounded-lg w-full">
+            {/* 画面説明（コーチマーク）の「点検頻度の切り替えボタン」はこの並びを囲む */}
+            <div className="relative bg-white flex h-10 items-center rounded-lg w-full" data-nq-part="frequency-tabs">
               {FREQUENCY_TABS.map((tab) => (
                 <button
                   key={tab.key}
@@ -136,14 +148,14 @@ export function LineSelectionPage() {
                   {tab.label}
                 </button>
               ))}
+              <SectionNote className="absolute left-0 bottom-full mb-1">④点検頻度（毎日・毎週・毎月・毎年）で持ち場/ラインを切り替え</SectionNote>
+              <SectionNote className="absolute left-0 top-full mt-1">⑤カードを押すと、点検箇所と点検項目の詳細画面へ</SectionNote>
             </div>
 
-            {filteredLines.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                該当する持ち場/ラインがありません
-              </p>
-            ) : (
-              filteredLines.map((line) => (
+            {/* 画面説明（コーチマーク）の「持ち場/ラインのカード」はこの並びを囲む */}
+            {filteredLines.length === 0 ? null : (
+              <div className="flex flex-col gap-6 w-full" data-nq-part="line-cards">
+              {filteredLines.map((line) => (
                 <Link
                   key={line.id}
                   to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/lines/${line.id}`}
@@ -151,7 +163,8 @@ export function LineSelectionPage() {
                 >
                   {line.name}
                 </Link>
-              ))
+              ))}
+              </div>
             )}
           </div>
         </div>

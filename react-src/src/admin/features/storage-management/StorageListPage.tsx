@@ -4,9 +4,11 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { getFactoryName } from "../../../data/factories";
 import { useStorageManagement } from "./StorageManagementContext";
+import { useDemoList } from "../../../components/demo/demoStore";
 
 export function StorageListPage() {
-  const { storageLocations } = useStorageManagement();
+  const { storageLocations: allLocations } = useStorageManagement();
+  const storageLocations = useDemoList(allLocations);
   const [filterOpen, setFilterOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [factoryFilter, setFactoryFilter] = useState("");

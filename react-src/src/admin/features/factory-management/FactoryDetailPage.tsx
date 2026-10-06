@@ -4,7 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { getCompanyName } from "../../../data/companies";
-import { ledgerCategories } from "../../../data/ledgers";
+import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { buildMonthGrid, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
 import { useFactoryManagement } from "./FactoryManagementContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
@@ -67,7 +67,7 @@ export function FactoryDetailPage() {
 
   const grid = buildMonthGrid(year, month);
   const closedDaySet = new Set(factory.closedDays);
-  const enabledCategories = ledgerCategories.filter((category) =>
+  const enabledCategories = visibleLedgerCategories().filter((category) =>
     factory.ledgerSlugs.includes(category.slug)
   );
 
@@ -207,11 +207,7 @@ export function FactoryDetailPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
 
           <Row label="点検項目">
-            {enabledCategories.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                点検項目は登録されていません
-              </p>
-            ) : (
+            {enabledCategories.length === 0 ? null : (
               <div className="flex flex-wrap gap-6 items-start">
                 {enabledCategories.map((category) => (
                   <div

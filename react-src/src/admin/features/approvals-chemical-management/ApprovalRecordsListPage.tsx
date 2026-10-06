@@ -236,11 +236,7 @@ export function ApprovalRecordsListPage() {
                     </div>
                   ))}
                 </div>
-                {filtered.length === 0 ? (
-                  <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                    該当するデータがありません
-                  </p>
-                ) : (
+                {filtered.length === 0 ? null : (
                   filtered.map((record, index) => (
                     <div
                       key={record.id}

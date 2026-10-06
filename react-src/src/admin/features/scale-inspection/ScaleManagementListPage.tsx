@@ -138,11 +138,7 @@ export function ScaleManagementListPage() {
                 </div>
               ))}
             </div>
-            {filtered.length === 0 ? (
-              <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                該当する秤がありません
-              </p>
-            ) : (
+            {filtered.length === 0 ? null : (
               filtered.map((scale, index) => (
                 <div
                   key={scale.id}

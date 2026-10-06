@@ -68,7 +68,6 @@ export function DataListPage() {
   const [dateFilter, setDateFilter] = useState("");
   const [additiveFilter, setAdditiveFilter] = useState("");
   const [storageLocationFilter, setStorageLocationFilter] = useState("");
-  const [onlyRejected, setOnlyRejected] = useState(false);
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
@@ -89,7 +88,6 @@ export function DataListPage() {
     if (dateFilter && r.date !== dateFilter) return false;
     if (additiveFilter && r.additiveName !== additiveFilter) return false;
     if (storageLocationFilter && r.storageLocation !== storageLocationFilter) return false;
-    if (onlyRejected && r.approvalStatus !== "rejected") return false;
     return true;
   });
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
@@ -104,7 +102,6 @@ export function DataListPage() {
     setDateFilter("");
     setAdditiveFilter("");
     setStorageLocationFilter("");
-    setOnlyRejected(false);
   }
 
   function handleDownload() {
@@ -208,15 +205,6 @@ export function DataListPage() {
                     placeholder="保管場所"
                   />
                 </div>
-                <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
-                  <input
-                    type="checkbox"
-                    checked={onlyRejected}
-                    onChange={(e) => setOnlyRejected(e.target.checked)}
-                    className="size-4 accent-[var(--semantic-brand-primary)]"
-                  />
-                  差し戻しのものだけ表示
-                </label>
               </div>
               <div className="flex gap-2 items-center">
                 <button
@@ -380,11 +368,7 @@ export function DataListPage() {
                   </div>
                 ))}
               </div>
-              {filtered.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  該当するデータがありません
-                </p>
-              ) : (
+              {filtered.length === 0 ? null : (
                 filtered.map((record, index) => (
                   <div
                     key={record.id}
