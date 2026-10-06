@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import { PageTitleBar } from "../components/PageTitleBar";
 import { HIDDEN_NAV_PATHS } from "../navigation";
+import { isMenuHidden } from "../../data/ledgerVisibility";
 import iconDataSearch from "../../assets/figma/icons/nav/data-search.svg";
 import iconApproval from "../../assets/figma/icons/nav/approval.svg";
 import iconConfirmation from "../../assets/figma/icons/nav/confirmation.svg";
 import iconLedgerManagement from "../../assets/figma/icons/nav/ledger-management.svg";
+import iconProduct from "../../assets/figma/icons/nav/product.svg";
 import iconCompany from "../../assets/figma/icons/nav/company.svg";
 import iconFactory from "../../assets/figma/icons/nav/factory.svg";
+import iconStorage from "../../assets/figma/icons/nav/storage.svg";
 import iconStaff from "../../assets/figma/icons/nav/staff.svg";
 import iconLog from "../../assets/figma/icons/nav/log.svg";
 import iconDevice from "../../assets/figma/icons/nav/device.svg";
@@ -38,6 +41,12 @@ const HOME_SHORTCUTS = [
     description: "帳票のテンプレート管理の画面です。帳票の作成・項目の修正が必要な際に使用する画面です",
   },
   {
+    label: "製品管理",
+    icon: iconProduct,
+    path: "/admin/products",
+    description: "製品の登録・編集・削除ができます。基幹システムから取り込んだ製品も確認できます",
+  },
+  {
     label: "企業管理",
     icon: iconCompany,
     path: "/admin/company",
@@ -48,6 +57,12 @@ const HOME_SHORTCUTS = [
     icon: iconFactory,
     path: "/admin/factory",
     description: "工場の登録・編集・削除ができます",
+  },
+  {
+    label: "保管場所管理",
+    icon: iconStorage,
+    path: "/admin/storage",
+    description: "添加物・薬品・検体などを置く保管場所の登録・編集・削除ができます",
   },
   {
     label: "職員管理",
@@ -81,7 +96,7 @@ export function AdminHomePage() {
       <PageTitleBar title="ホーム" />
       <div className="flex-1 flex flex-col justify-start p-6 overflow-auto">
         <div className="w-full flex flex-col gap-4">
-          {HOME_SHORTCUTS.filter((item) => !HIDDEN_NAV_PATHS.includes(item.path)).map((item) => (
+          {HOME_SHORTCUTS.filter((item) => !HIDDEN_NAV_PATHS.includes(item.path) && !isMenuHidden(item.path)).map((item) => (
             <Link
               key={item.path}
               to={item.path}
