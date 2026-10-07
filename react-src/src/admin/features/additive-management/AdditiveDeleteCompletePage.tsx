@@ -1,12 +1,14 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 
 export function AdditiveDeleteCompletePage() {
   const { factoryId } = useParams<{ factoryId: string }>();
+  /* 確定デザイン 7139:163529：見出しは「帳票管理」、文言は「{添加物}の削除が完了しました」「添加物管理一覧に戻る」 */
+  const name = (useLocation().state as { name?: string } | null)?.name ?? "添加物";
 
   return (
     <div>
-      <PageTitleBar title="添加物管理" />
+      <PageTitleBar title="帳票管理" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
@@ -25,13 +27,13 @@ export function AdditiveDeleteCompletePage() {
               strokeLinejoin="round"
             />
           </svg>
-          <p className="text-2xl text-[var(--semantic-text-primary)]">添加物の削除が完了しました</p>
+          <p className="text-2xl text-[var(--semantic-text-primary)]">{name}の削除が完了しました</p>
         </div>
         <Link
           to={`/admin/ledger-management/additive-management/factories/${factoryId}`}
           className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
         >
-          添加物一覧に戻る
+          添加物管理一覧に戻る
         </Link>
       </div>
     </div>

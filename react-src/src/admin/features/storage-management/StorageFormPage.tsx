@@ -4,17 +4,19 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { FACTORIES } from "../../../data/factories";
-import { useStorageManagement } from "./StorageManagementContext";
+import { storageOriginCrumbs, useStorageManagement } from "./StorageManagementContext";
 
 export function StorageFormPage() {
   const { locationId } = useParams<{ locationId: string }>();
   const isEditing = Boolean(locationId);
-  const { storageLocations, addStorageLocation, updateStorageLocation } = useStorageManagement();
+  const { storageLocations, addStorageLocation, updateStorageLocation, origin } = useStorageManagement();
   const navigate = useNavigate();
   const existing = storageLocations.find((item) => item.id === locationId);
 
   const [name, setName] = useState(existing?.name ?? "");
-  const [factoryId, setFactoryId] = useState(existing?.factoryId ?? "");
+  /* 帳票管理 › 薬品管理／添加物管理 から入ったときは、その工場の保管場所として登録する（確定デザイン 7139:162503 は保管場所だけ） */
+  const [factoryId, setFactoryId] = useState(existing?.factoryId ?? origin?.factoryId ?? "");
+  const askFactory = !origin;
   const [error, setError] = useState("");
 
   function handleSubmit() {
@@ -36,7 +38,9 @@ export function StorageFormPage() {
       <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
+          ...storageOriginCrumbs(origin),
           { label: "保管場所管理", to: "/admin/storage" },
+          ...(isEditing ? [{ label: "詳細", to: `/admin/storage/${locationId}` }] : []),
           { label: isEditing ? "編集" : "新規登録" },
         ]}
       />
@@ -56,6 +60,7 @@ export function StorageFormPage() {
             />
           </div>
 
+          {askFactory && (
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">工場</p>
@@ -72,6 +77,7 @@ export function StorageFormPage() {
               }}
             />
           </div>
+          )}
         </div>
 
         {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
@@ -89,7 +95,7 @@ export function StorageFormPage() {
             onClick={handleSubmit}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
-            登録
+            {isEditing ? "保存" : "登録"}
           </button>
         </div>
       </div>

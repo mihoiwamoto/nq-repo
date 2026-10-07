@@ -10,9 +10,8 @@ import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { StatusChip } from "../../components/StatusChip";
 import { useDemoList } from "../../../components/demo/demoStore";
 
-const FILTER_LEDGERS = ledgerCategories.filter(
-  (c) => c.slug !== "chemical-management" && c.slug !== "additive-management"
-);
+// 絞り込み条件は確定デザインどおり 10 帳票すべて（薬品管理・添加物管理も含む。進捗一覧と同じ。2026-10-07）
+const FILTER_LEDGERS = ledgerCategories;
 
 function ledgerFor(slug: string) {
   return ledgerCategories.find((c) => c.slug === slug);

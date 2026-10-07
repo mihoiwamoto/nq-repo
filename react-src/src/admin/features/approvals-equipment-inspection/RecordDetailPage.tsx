@@ -24,6 +24,44 @@ function formatDate(date: string) {
   return date.replaceAll("-", "/");
 }
 
+/**
+ * 異常ありの「対応」。確定デザイン（7139:258764）は「対応：その他」の下に内容を字下げして 2 行で出す。
+ * 見本は「その他　内容」のように全角スペースで種別と内容をつないでいるので、そこで分ける。
+ */
+function ActionLines({ action }: { action?: string }) {
+  const text = action ?? "";
+  const sep = text.indexOf("　");
+  const kind = sep >= 0 ? text.slice(0, sep) : text;
+  const detail = sep >= 0 ? text.slice(sep + 1).trim() : "";
+  return (
+    <div className="flex flex-col gap-1 mt-4">
+      <p>対応：{kind}</p>
+      {detail && <p className="pl-[3em]">{detail}</p>}
+    </div>
+  );
+}
+
+/** 備考。空のときは確定デザインどおり薄い文字の案内を出す */
+function RemarksText({ remarks }: { remarks?: string }) {
+  if (!remarks) {
+    return (
+      <p className="text-sm text-[var(--semantic-text-secondary)] font-normal text-left">
+        点検内容に関する補足を入力できます（任意）
+      </p>
+    );
+  }
+  /* 点検見送りの記録は「点検見送り」と理由を 2 行に分けて出す（確定デザイン 7139:259043。W3・16px・行間 1.6） */
+  const SKIP = "点検見送り";
+  const lines = remarks.startsWith(SKIP) ? [SKIP, remarks.slice(SKIP.length).trim()].filter(Boolean) : [remarks];
+  return (
+    <div className="text-base leading-[1.6] text-[var(--semantic-text-primary)] font-normal text-left">
+      {lines.map((line, i) => (
+        <p key={i}>{line}</p>
+      ))}
+    </div>
+  );
+}
+
 export function RecordDetailPage() {
   const { factoryId, recordId } = useParams<{ factoryId?: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
@@ -97,7 +135,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -140,11 +178,7 @@ export function RecordDetailView({
         {record.sessions.length === 0 ? (
           <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">備考</p>
-            {record.remarks && (
-              <p className="text-base text-[var(--semantic-text-primary)] font-normal text-left">
-                {record.remarks}
-              </p>
-            )}
+            <RemarksText remarks={record.remarks} />
           </div>
         ) : (
           record.sessions.map((session, sIndex) => (
@@ -176,7 +210,7 @@ export function RecordDetailView({
                         {item.status === "ng" && (
                           <div className="flex flex-col gap-1 items-start px-2 text-base text-[var(--semantic-text-secondary)] w-full font-normal">
                             <p>原因：{item.cause}</p>
-                            <p>対応：{item.action}</p>
+                            <ActionLines action={item.action} />
                           </div>
                         )}
                         {item.timestamp && (
@@ -192,11 +226,7 @@ export function RecordDetailView({
               <div className="border-t border-[#d0d0d0] w-full" />
               <div className="flex flex-col gap-2 items-start w-full">
                 <p className="text-xl text-[var(--semantic-text-primary)]">備考</p>
-                {session.remarks && (
-                  <p className="text-base text-[var(--semantic-text-primary)] font-normal text-left">
-                    {session.remarks}
-                  </p>
-                )}
+                <RemarksText remarks={session.remarks} />
               </div>
             </div>
           ))
@@ -205,6 +235,8 @@ export function RecordDetailView({
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
+          {/* 確定デザイン：承認申請管理（7139:258764）・データ検索（7139:259043）とも
+              見出し → これまでのコメント（古い順） → 入力欄 → 「コメントを残す」 */}
           <CommentInputBox
             value={comment}
             onChange={setComment}
@@ -212,6 +244,7 @@ export function RecordDetailView({
               addComment(record.id, comment);
               setComment("");
             }}
+            placeholder="コメントを入力"
           />
         </div>
       </div>

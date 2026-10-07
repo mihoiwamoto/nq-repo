@@ -136,7 +136,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -243,7 +243,9 @@ export function RecordDetailView({
         </div>
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
-          {visibleRooms.length === 0 ? null : (
+          {visibleRooms.length === 0 ? (
+            <p className="text-base text-[var(--semantic-text-secondary)]">データがありません</p>
+          ) : (
             visibleRooms.map((room, roomIndex) => (
               <div key={room.id} className="flex flex-col gap-4 items-start w-full">
                 {roomIndex > 0 && <div className="border-t border-[#d0d0d0] w-full my-2" />}

@@ -102,9 +102,9 @@ export function LineRegistrationPage() {
             日付指定が無い場合は、常にアプリ上に表示されます。
           </p>
           <div className="flex gap-2 items-center">
-            <DateFilterInput value={displayFrom} onChange={setDisplayFrom} />
+            <DateFilterInput variant="form" value={displayFrom} onChange={setDisplayFrom} />
             <span className="text-[var(--semantic-text-primary)]">〜</span>
-            <DateFilterInput value={displayTo} onChange={setDisplayTo} />
+            <DateFilterInput variant="form" value={displayTo} onChange={setDisplayTo} />
           </div>
         </div>
 

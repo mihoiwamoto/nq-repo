@@ -32,6 +32,8 @@ export function CommentInputBox({
           className="w-full text-base font-light text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] resize-none outline-none"
         />
       </div>
+      {/* 未入力のときは押せない（グレー）、入力すると緑で押せる（2026-10-07 ユーザー指定）。
+          Figma の確定デザインと AI書き出しは緑で描いているが、実装はこの挙動 */}
       <button
         type="button"
         onClick={onSubmit}

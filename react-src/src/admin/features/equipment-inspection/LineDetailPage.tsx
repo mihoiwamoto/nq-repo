@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 const FREQUENCY_LABEL = { daily: "毎日", weekly: "毎週", monthly: "毎月", yearly: "毎年" } as const;
 
@@ -28,6 +29,7 @@ export function LineDetailPage() {
   const { factoryId, lineId } = useParams<{ factoryId: string; lineId: string }>();
   const { lines } = useSchedule();
   const location = useLocation();
+  const navigate = useNavigate();
   const basePath = `/admin/ledger-management/equipment-inspection/factories/${factoryId}`;
   const factoryName = getFactoryName(factoryId);
   const line = lines.find((l) => l.id === lineId);
@@ -37,7 +39,7 @@ export function LineDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新しました。");
+      setToastMessage("更新されました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);
@@ -73,6 +75,18 @@ export function LineDetailPage() {
           <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
         </div>
 
+        {/* 確定デザイン（7139:258606）に合わせ、カードの右上に「編集」を置く。押すと編集（7139:258646）へ */}
+        <div className="flex items-center justify-end w-full">
+          <button
+            type="button"
+            onClick={() => navigate(`${basePath}/lines/${line.id}/edit`)}
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+          >
+            <img src={iconEdit} alt="" aria-hidden className="size-5" />
+            編集
+          </button>
+        </div>
+
         <div className="bg-white flex flex-col gap-6 items-start px-4 py-6 rounded-lg w-full">
           <Row label="アプリ表示期間">{formatPeriod(line.displayFrom, line.displayTo)}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
@@ -83,9 +97,14 @@ export function LineDetailPage() {
           <Row label="点検頻度">{FREQUENCY_LABEL[line.frequency]}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          {line.inspectionPoints.length === 0 ? null : (
+          {line.inspectionPoints.length === 0 ? (
+            <p className="text-base text-[var(--semantic-text-secondary)]">
+              データがありません
+            </p>
+          ) : (
             line.inspectionPoints.map((point, index) => (
-              <div key={point.id} className="flex flex-col gap-2 w-full">
+              <div key={point.id} className="flex flex-col gap-6 w-full">
+                {/* 確定デザイン（7139:258606）：行 28px ＋ 間 24px */}
                 <Row label="点検箇所">{point.location}</Row>
                 {point.items.map((item, i) => (
                   <Row key={i} label={i === 0 ? "点検項目" : ""}>
@@ -93,7 +112,7 @@ export function LineDetailPage() {
                   </Row>
                 ))}
                 {index < line.inspectionPoints.length - 1 && (
-                  <div className="border-t border-[#d0d0d0] w-full mt-2" />
+                  <div className="border-t border-[#d0d0d0] w-full" />
                 )}
               </div>
             ))

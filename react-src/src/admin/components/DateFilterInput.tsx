@@ -96,12 +96,16 @@ export function DateFilterInput({
   onChange,
   placeholder = "日付を選択",
   className = "w-[200px]",
+  variant = "filter",
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  /** filter = 白いカードの上の絞り込み（灰色の枠線）。form = 登録・編集の入力欄（白地・枠線なし・アイコン 24px。確定デザイン 7139:258473） */
+  variant?: "filter" | "form";
 }) {
+  const isForm = variant === "form";
   const [isOpen, setIsOpen] = useState(false);
 
   const displayValue = value ? value.replaceAll("-", "/") : "";
@@ -118,12 +122,14 @@ export function DateFilterInput({
           type="text"
           value={displayValue}
           readOnly
-          className="bg-white border border-[#d0d0d0] h-12 px-4 pr-12 rounded-lg text-base text-[var(--semantic-text-primary)] w-full cursor-pointer"
+          className={`bg-white h-12 px-4 pr-12 rounded-lg text-base text-[var(--semantic-text-primary)] w-full cursor-pointer ${
+            isForm ? "" : "border border-[#d0d0d0]"
+          }`}
         />
         <img
           src={iconCalendar}
           alt=""
-          className="absolute right-4 w-5 h-5 cursor-pointer"
+          className={`absolute right-4 cursor-pointer ${isForm ? "size-6" : "w-5 h-5"}`}
           onClick={() => setIsOpen(true)}
         />
       </label>

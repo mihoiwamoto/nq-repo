@@ -655,7 +655,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
       "毎日・毎週・毎月・毎年の点検頻度タブで、その頻度で登録した持ち場/ラインだけに絞る（初期は「毎日」）",
       "持ち場/ラインのカードを押して、点検箇所と点検項目の詳細へ",
       "「+ 新規登録」で持ち場/ラインを足す。点検箇所（機械）と点検項目もその場で組む",
-      "条件に合うものが無いときは何も出さない（空欄）",
+      "条件に合うものが無いときは「データがありません」と出す",
     ],
     note: "ここで「アプリ表示中」の持ち場/ラインが、点検予定に組んだ日にアプリの「機械器具点検」の同じ頻度のタブに並びます。",
     // 頻度タブとカードの入った箱が「一覧」と見なされ、「毎日」と番号が重なるので、一覧と「毎日」は出さず、頻度タブの並びを 1 つの番号で囲む
@@ -667,7 +667,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
         body: "毎日・毎週・毎月・毎年を押すと、下に並ぶ持ち場/ラインがその点検頻度のものに切り替わります。",
         points: [
           "毎日・毎週・毎月・毎年の点検頻度タブで、その頻度で登録した持ち場/ラインだけに絞る（初期は「毎日」）",
-          "条件に合うものが無いときは何も出さない（空欄）",
+          "条件に合うものが無いときは「データがありません」と出す",
         ],
       },
       {
@@ -683,8 +683,8 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     points: [
       "アプリ表示期間を「開始日〜終了日」で表示。指定が無ければ「指定なし（常に表示）」",
       "持ち場/ライン名と点検頻度（毎日・毎週・毎月・毎年）を表示",
-      "点検箇所ごとに、その下の点検項目を並べる。点検箇所が無ければ空欄（文字は出さない）",
-      "見るだけの画面で、編集・削除のボタンは無い",
+      "点検箇所ごとに、その下の点検項目を並べる。点検箇所が無ければ「データがありません」と出す",
+      "右上に「編集」のボタンがある（編集画面はまだ無く、押しても移らない）。削除のボタンは無い",
     ],
   },
 
@@ -728,10 +728,11 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
       "点検日を選び、「+ 追加」で点検する持ち場/ラインを選ぶ",
       "選んだ持ち場/ラインは【頻度】付きで並び、ごみ箱で外せる",
       "点検日か持ち場/ラインが空だと「点検日と持ち場/ラインは必須です」",
-      "予定のある日を開くと「点検予定の編集」になり、「保存」でカレンダーへ戻る",
+      "予定のある日を開くと「編集」になり、「保存」でカレンダーへ戻る",
     ],
     states: [{
       label: "持ち場/ライン名の選択",
+      whenHeading: "持ち場/ライン名",
       summary: "点検する持ち場/ラインを選ぶポップアップです。登録済みの持ち場/ラインから探して選びます。",
       points: ["持ち場/ライン名を入力して探す", "毎週・毎月・毎年のタブで切り替える（初期は毎週）", "チェックを付けて「追加」で対象に加える", "「閉じる」で選ばずに戻る"],
     }],
@@ -976,7 +977,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
 
   "src/admin/features/data-search-chemical-management/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "薬品管理", "データ一覧"),
   "src/admin/features/data-search-chemical-management/DataListPage.tsx": searchList("薬品管理", "日付・薬品名・区分（入庫/出庫）・数量・現在庫数・保管場所・備考・実施者・確認者"),
-  "src/admin/features/data-search-chemical-management/RecordDetailPage.tsx": searchDetail("薬品管理", "薬品名・保管場所・区分・元在庫数・数量・現在庫数・備考"),
+  "src/admin/features/data-search-chemical-management/RecordDetailPage.tsx": searchDetail("薬品管理", "薬品名・保管場所・区分・現在庫数（元の在庫）・数量・在庫（いまの在庫）・備考"),
 
   /* ===== アプリ: 共通 ===== */
   "src/app/features/login/AppLoginPage.tsx": {
@@ -1037,8 +1038,8 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     ],
   },
   "src/app/features/equipment-inspection/SchedulePage.tsx": {
-    summary: "アプリの点検予定カレンダーです。機械器具点検の点検管理と、官能検査の検査商品設定を日付ごとに確認・登録します。",
-    points: ["前の月・次の月で切り替える。休業日は色分け", "日付を押すと、その日の機械器具点検 点検設定 / 官能検査 検査商品設定へ", "「新規登録」で予定を追加"],
+    summary: "アプリの点検予定カレンダーです。機械器具点検の持ち場/ライン設定と、官能検査の検査商品設定を日付ごとに確認・登録します。",
+    points: ["前の月・次の月で切り替える。休業日は色分け", "日付を押すと、その日の機械器具点検 持ち場/ライン設定 / 官能検査 検査商品設定へ", "「新規登録」で予定を追加"],
     states: [
       {
         whenHeading: "新規登録",
@@ -1050,8 +1051,16 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     ],
   },
   "src/app/features/equipment-inspection/SchedulePointSettingPage.tsx": {
-    summary: "点検予定カレンダーから開く、その日の機械器具点検の点検設定です。点検する持ち場/ラインを登録・編集・削除します。",
+    summary: "点検予定カレンダーから開く、その日の機械器具点検の持ち場/ライン設定です。点検する持ち場/ラインを登録・編集・削除します。",
     points: ["持ち場/ライン名を入力または選んで「登録」", "登録済みなら「保存」「削除」ができる"],
+  },
+  "src/app/features/cleaning-record/SchedulePointSettingPage.tsx": {
+    summary: "点検予定カレンダーから開く、その日の清掃記録の持ち場/ライン設定です。清掃する持ち場/ラインを登録・編集・削除します。",
+    points: [
+      "「追加」で毎週・毎月・毎年の持ち場/ラインを選んで「登録」",
+      "登録済みの日は「編集」で足したり外したりして「保存」する",
+      "全部外して「保存」すると、その日の予定を削除する",
+    ],
   },
   "src/app/features/sensory-inspection/ScheduleRegisterPage.tsx": {
     summary: "点検予定カレンダーから開く、その日の官能検査の検査商品設定です。検査する商品と比較商品を登録します。",
@@ -1320,7 +1329,15 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   /* ===== アプリ: 添加物管理 ===== */
   "src/app/features/additive-management/ProductSelectionPage.tsx": {
     summary: "アプリの「添加物管理」の入口です。在庫を記録する添加物を選びます。",
-    points: ["管理画面で登録した添加物が並ぶ", "添加物を押すとその記録一覧へ", "「帳票一覧に戻る」で帳票一覧へ"],
+    points: ["管理画面で登録した添加物が並ぶ", "点検中・点検済みだけ札が付く（毎日の点検ではないので「未点検」の札は無い）", "添加物を押すとその記録一覧へ", "「帳票一覧に戻る」で帳票一覧へ"],
+  },
+  "src/app/features/additive-management/AdditiveRejectionReview.tsx": {
+    summary: "確認待ちで差し戻された添加物管理の記録を直す画面です。記録の一覧（ステータス列つき）と、記録 1 件の詳細の 2 枚があります。",
+    points: [
+      "一覧で差し戻し・承認済み・承認待ちの記録を見て、行の「詳細」で中身と差し戻しコメントを見る",
+      "詳細の「点検内容を修正する」で実施者を選び、記録入力で直して「編集を保存」で戻る",
+      "一覧を最後まで見ると「差し戻し対応完了」が押せる",
+    ],
   },
   "src/app/features/additive-management/RecordsListPage.tsx": {
     summary: "添加物 1 つの入庫・出庫の記録一覧です。ここから新しい記録を追加し、まとめて提出します。",
@@ -1356,6 +1373,14 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   },
   "src/app/features/chemical-management/ChemicalConfirmPage.tsx": appConfirm("薬品管理", "入庫・出庫の記録（保管場所・区分・数量・現在庫数・備考）"),
   "src/app/features/chemical-management/ChemicalSubmitCompletePage.tsx": appComplete("薬品管理", "薬品の一覧"),
+  "src/app/features/chemical-management/ChemicalRejectionReview.tsx": {
+    summary: "確認待ちで差し戻された薬品管理の記録を直す画面です。記録の一覧（ステータス列つき）と、記録 1 件の詳細の 2 枚があります。",
+    points: [
+      "一覧で差し戻し・承認済み・承認待ちの記録を見て、行の「詳細」で中身と差し戻しコメントを見る",
+      "詳細の「点検内容を修正する」で実施者を選び、記録入力で直して「編集を保存」で戻る",
+      "一覧を最後まで見ると「差し戻し対応完了」が押せる",
+    ],
+  },
 };
 
 /** ファイルパスから説明を引く。無ければ undefined */

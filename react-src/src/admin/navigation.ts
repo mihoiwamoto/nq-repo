@@ -47,11 +47,15 @@ export const primaryNav: AdminNavItem[] = [
   { label: "職員管理", icon: iconStaff, path: "/admin/staff" },
   { label: "ログ管理", icon: iconLog, path: "/admin/logs" },
   { label: "ログイン端末管理", icon: iconDevice, path: "/admin/devices" },
-  { label: "ヘルプ", icon: iconHelp, path: "/admin/help" },
 ];
 
-/** サイドメニュー下部の固定枠。現在は空（ヘルプはサイドメニューのいちばん下に単独項目として配置。フィードバック管理はメニューに出さず、URL で直接開く）。 */
-export const secondaryNav: AdminNavItem[] = [];
+/**
+ * サイドメニュー下部の枠。確定デザイン（Figma Navigation Manager 7139:258605 の Secondary Menu）どおり、
+ * ヘルプはメニューの続きではなくサイドメニューのいちばん下に置く（2026-10-07）。
+ * メニューが長くて画面に収まらないときは、サイドメニュー全体をスクロールしてメニューの後ろに出る。
+ * フィードバック管理はメニューに出さず、URL で直接開く。
+ */
+export const secondaryNav: AdminNavItem[] = [{ label: "ヘルプ", icon: iconHelp, path: "/admin/help" }];
 
 /** 確認者に表示するサイドメニュー（これ以外は非表示） */
 const CHECKER_NAV_PATHS = [

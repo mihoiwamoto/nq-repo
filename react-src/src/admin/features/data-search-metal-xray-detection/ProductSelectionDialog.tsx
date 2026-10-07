@@ -158,7 +158,11 @@ export function ProductSelectionDialog({
                   </button>
                 ))}
               </div>
-            ) : null}
+            ) : (
+              <div className="flex items-center justify-center h-full text-[#808080]">
+                データがありません
+              </div>
+            )}
           </div>
         </div>
 

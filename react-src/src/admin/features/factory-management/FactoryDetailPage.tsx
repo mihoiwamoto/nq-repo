@@ -207,7 +207,11 @@ export function FactoryDetailPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
 
           <Row label="点検項目">
-            {enabledCategories.length === 0 ? null : (
+            {enabledCategories.length === 0 ? (
+              <p className="text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            ) : (
               <div className="flex flex-wrap gap-6 items-start">
                 {enabledCategories.map((category) => (
                   <div
@@ -258,7 +262,7 @@ export function FactoryDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
       {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );

@@ -27,7 +27,7 @@ export function ChemicalSelectionPage() {
 
   return (
     <div>
-      {showToast && <Toast message="更新しました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="薬品管理"
         showBack
@@ -58,6 +58,7 @@ export function ChemicalSelectionPage() {
           </p>
           <Link
             to="/admin/storage"
+            state={{ storageFrom: { ledger: "chemical-management", factoryId } }}
             className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
           >
             保管場所管理
@@ -67,6 +68,11 @@ export function ChemicalSelectionPage() {
         <div className="flex flex-col gap-2 items-start w-full">
           <p className="text-2xl text-[var(--semantic-text-primary)]">薬品一覧</p>
           <div className="flex flex-col gap-6 items-start w-full">
+            {chemicals.length === 0 && (
+              <p className="text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            )}
             {chemicals.map((chemical) => (
               <Link
                 key={chemical.id}

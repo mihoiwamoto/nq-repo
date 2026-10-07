@@ -6,10 +6,12 @@ import { recordTimestamp, todayString } from "../../utils/date";
 import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
 import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { AppHeader } from "../../layout/AppHeader";
+import { useFromProgress } from "../../layout/ProgressFlowContext";
 import { useCleaningRecord } from "./CleaningRecordContext";
 import {
   ACTORS,
   cleaningPoints,
+  FREQUENCY_LABELS,
   initialRecords,
   initialRemarks,
   pendingReviewRecords,
@@ -86,6 +88,11 @@ export function RecordingPage() {
 
   const lineName = line?.name ?? "ゆばライン";
   const isDaily = (line?.frequency ?? "daily") === "daily";
+  // 見出しのライン名。帳票一覧から来たときは名前だけ、進捗一覧・差し戻しから来たときは頻度を頭に付ける
+  // （確定デザイン 7139:221756 と 7139:229303 / 7139:228907）
+  const fromProgress = useFromProgress();
+  const lineTitle =
+    fromProgress || editReturn ? `【${FREQUENCY_LABELS[line?.frequency ?? "daily"]}】${lineName}` : lineName;
   const allDone = isAllDone(records);
 
   function setStatus(location: string, item: string, status: "done" | null) {
@@ -121,20 +128,20 @@ export function RecordingPage() {
     if (!skipReason.trim()) return;
     if (!isDaily && deferToTomorrow === null) return;
     navigate(`/app/ledger-list/cleaning-record/lines/${lineId}/skip-confirm`, {
-      state: { lineName, date, skipReason, inspectorName, deferToTomorrow: isDaily ? undefined : deferToTomorrow ?? undefined },
+      state: { lineName, lineTitle, date, skipReason, inspectorName, deferToTomorrow: isDaily ? undefined : deferToTomorrow ?? undefined },
     });
   }
 
   function goToConfirm() {
     navigate(`/app/ledger-list/cleaning-record/lines/${lineId}/confirm`, {
-      state: { lineName, date, records, remarks, inspectorName },
+      state: { lineName, lineTitle, date, records, remarks, inspectorName },
     });
   }
 
   return (
     <>
       <AppHeader
-        title={`清掃記録_${lineName}`}
+        title={`清掃記録_${lineTitle}`}
         action={
           <button
             type="button"
@@ -361,7 +368,7 @@ export function RecordingPage() {
               <button
                 type="button"
                 onClick={closeSkipDialog}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+                className="bg-white border border-[#333] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
               >
                 キャンセル
               </button>

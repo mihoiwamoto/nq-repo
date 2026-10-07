@@ -28,7 +28,11 @@ export function PointSelectionPage() {
           <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
         </div>
         <div className="flex flex-wrap gap-6">
-          {locations.length === 0 ? null : (
+          {locations.length === 0 ? (
+            <p className="text-base text-[var(--semantic-text-secondary)]">
+              データがありません
+            </p>
+          ) : (
             locations.map((location) => (
               <Link
                 key={location}

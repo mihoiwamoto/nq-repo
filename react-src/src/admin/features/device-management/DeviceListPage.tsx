@@ -26,7 +26,7 @@ export function DeviceListPage() {
   const [page, setPage] = useState(1);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("更新しました。");
+  const [toastMessage, setToastMessage] = useState("更新されました。");
   const [notifiedDeviceId, setNotifiedDeviceId] = useState<string | null>(null);
   const [notificationQueue, setNotificationQueue] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -109,7 +109,7 @@ export function DeviceListPage() {
       saveDevices(next);
       return next;
     });
-    setToastMessage("更新しました。");
+    setToastMessage("更新されました。");
     setShowToast(true);
   }
 
@@ -232,7 +232,13 @@ export function DeviceListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full">操作</p>
             </div>
           </div>
-          {pageItems.length === 0 ? null : (
+          {pageItems.length === 0 ? (
+            <div className="bg-white flex h-14 items-center w-full px-2">
+              <p className="text-sm text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            </div>
+          ) : (
             pageItems.map((device, index) => (
               <div
                 key={device.id}

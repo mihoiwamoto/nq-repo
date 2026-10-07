@@ -12,7 +12,9 @@ interface CommentsProps {
 export function Comments({ comments }: CommentsProps) {
   return (
     <div className="bg-white rounded-lg w-full">
-        {comments.length === 0 ? null : (
+        {comments.length === 0 ? (
+          <p className="text-base text-[var(--semantic-text-secondary)] py-6 px-4">データがありません</p>
+        ) : (
           comments.map((comment, index) => (
             <div key={comment.id}>
               <div className="flex flex-col gap-2 py-4 px-4">

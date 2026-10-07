@@ -27,11 +27,11 @@ export const APP_VIEWPORT_HEIGHT = 1024;
 /** iPad の縁の太さと、周りの余白（index.css の .app-viewport--bezel と合わせること） */
 const BEZEL = 11;
 const BEZEL_GAP = 24;
-const BEZELED = !FRAME && isKit();
-
 export function AppViewport({ children }: { children: ReactNode }) {
   const outerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  // ?kit=1 の印は installFrameBridge() が読み込みのあとで sessionStorage へ写すので、描くときに見る
+  const BEZELED = !FRAME && isKit();
 
   // 窓の大きさに合わせて枠を縮める。窓ではなく外側の箱を測るので、
   // 端末枠（iframe）の中に入っているときもそのまま効く
@@ -50,7 +50,7 @@ export function AppViewport({ children }: { children: ReactNode }) {
     const observer = new ResizeObserver(fit);
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [BEZELED]);
 
   return (
     <div ref={outerRef} className={`app-viewport${BEZELED ? " app-viewport--bezel" : ""}`}>

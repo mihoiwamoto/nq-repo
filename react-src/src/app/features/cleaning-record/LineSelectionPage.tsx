@@ -2,10 +2,9 @@ import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { useCleaningRecord } from "./CleaningRecordContext";
-import { LineProgressPanel } from "./LineProgressPanel";
+import { LineProgressButton, LineProgressPanel } from "./LineProgressPanel";
 import { ACTORS, FREQUENCY_LABELS, LINE_STATUS_COLORS, LINE_STATUS_LABELS, type Frequency, type Line } from "./mockData";
 import { formatMonthDay } from "../../utils/date";
-import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import { StatusChip } from "../../components/StatusChip";
 
 const FREQUENCY_TABS: { key: Frequency; label: string }[] = [
@@ -68,31 +67,11 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
       <AppHeader
         title="清掃記録"
         action={
-          <button
-            type="button"
+          <LineProgressButton
+            inspectedCount={inspectedCount}
+            total={visibleLines.length}
             onClick={() => setProgressOpen(true)}
-            className="bg-[var(--semantic-brand-primary)] flex items-center rounded-lg overflow-hidden shrink-0 hover:opacity-90 transition-opacity"
-          >
-            <span
-              aria-hidden
-              className="inline-block size-5 shrink-0 mx-2 text-white"
-              style={{
-                WebkitMaskImage: `url("${iconArrowLeft}")`,
-                maskImage: `url("${iconArrowLeft}")`,
-                WebkitMaskSize: "contain",
-                maskSize: "contain",
-                WebkitMaskRepeat: "no-repeat",
-                maskRepeat: "no-repeat",
-                backgroundColor: "currentColor",
-              }}
-            />
-            <span className="bg-white flex flex-col items-center justify-center gap-0 px-2 py-1">
-              <span className="text-xs text-[var(--semantic-brand-primary)] font-semibold">点検済み</span>
-              <span className="text-lg text-[var(--semantic-brand-primary)] leading-none font-bold">
-                {inspectedCount}/{visibleLines.length}
-              </span>
-            </span>
-          </button>
+          />
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-6 items-center">

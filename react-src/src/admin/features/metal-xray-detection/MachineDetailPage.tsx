@@ -30,7 +30,7 @@ export function MachineDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新しました。");
+      setToastMessage("更新されました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);

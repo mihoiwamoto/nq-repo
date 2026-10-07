@@ -138,7 +138,11 @@ export function ScaleManagementListPage() {
                 </div>
               ))}
             </div>
-            {filtered.length === 0 ? null : (
+            {filtered.length === 0 ? (
+              <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            ) : (
               filtered.map((scale, index) => (
                 <div
                   key={scale.id}

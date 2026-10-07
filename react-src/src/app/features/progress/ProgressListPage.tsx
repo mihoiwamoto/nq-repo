@@ -124,7 +124,7 @@ export function ProgressListPage() {
     return keys;
   });
   const [actorPickerEntry, setActorPickerEntry] = useState<ProgressEntry | null>(null);
-  const [selectedActorId, setSelectedActorId] = useState(ACTORS[0].id);
+  const [selectedActorId, setSelectedActorId] = useState<string | null>(null);
   const [unsupportedNotice, setUnsupportedNotice] = useState(false);
 
   const notInspectedCount = entries.filter((e) => e.status === "not_inspected").length;
@@ -186,7 +186,8 @@ export function ProgressListPage() {
 
   function handleEntryClick(entry: ProgressEntry) {
     setActorPickerEntry(entry);
-    setSelectedActorId(ACTORS[0].id);
+    // 確定デザイン（7139:293786）どおり、開いた時点では誰も選ばない（選ぶまで「次へ」は押せない）
+    setSelectedActorId(null);
   }
 
   function closeActorPicker() {
@@ -194,7 +195,7 @@ export function ProgressListPage() {
   }
 
   function confirmActorPicker() {
-    if (!actorPickerEntry) return;
+    if (!actorPickerEntry || !selectedActorId) return;
     const actor = ACTORS.find((a) => a.id === selectedActorId) ?? ACTORS[0];
     const entry = actorPickerEntry;
     setActorPickerEntry(null);
@@ -387,7 +388,8 @@ export function ProgressListPage() {
       {filterDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFilterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[754px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-h-[calc(100vh-48px)]">
+            {/* 高さは中身に合わせる（10 帳票だと固定の 754px では 4 段目が切れていた） */}
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">絞り込み条件</h2>
             <div className="grid grid-cols-3 gap-6 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
               {visibleLedgerCategories(FILTER_LEDGERS).map((ledger) => {
@@ -464,7 +466,10 @@ export function ProgressListPage() {
               <button
                 type="button"
                 onClick={confirmActorPicker}
-                className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-lg text-white font-semibold"
+                disabled={!selectedActorId}
+                className={`h-16 w-60 rounded-lg text-lg text-white font-semibold ${
+                  selectedActorId ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
+                }`}
               >
                 次へ
               </button>

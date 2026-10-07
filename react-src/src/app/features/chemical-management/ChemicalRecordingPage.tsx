@@ -37,8 +37,15 @@ export function ChemicalRecordingPage() {
         inspectorName?: string;
         editRecord?: EditRecord;
         editReturn?: { to: string; state?: unknown };
+        fromProgress?: boolean;
+        progressStatus?: string;
+        editing?: boolean;
       }
     | null;
+  // 進捗一覧から来た一覧（点検中・点検済みの「編集」）へ戻るときは、進捗のステータスも一緒に戻す
+  const progressCarry = state?.fromProgress
+    ? { fromProgress: true, progressStatus: state.progressStatus, editing: state.editing }
+    : {};
   // 確認待ちの差し戻しから「点検内容を修正する」で来たときの戻り先と、直す記録（2026-10-02）。
   // このときは記録を足さず、「編集を保存」で元の詳細画面に戻すだけにする
   const editReturn = state?.editReturn;
@@ -102,7 +109,7 @@ export function ChemicalRecordingPage() {
     if (chemical?.status === "not_inspected" && chemicalId) {
       updateChemicalStatus(chemicalId, "in_progress");
     }
-    navigate(basePath, { state: { date, inspectorName } });
+    navigate(basePath, { state: { ...progressCarry, date, inspectorName } });
   }
 
   return (
@@ -154,6 +161,8 @@ export function ChemicalRecordingPage() {
 
             <div className="border-t border-[#d0d0d0] w-full" />
 
+            {/* 確定デザイン 7139:245259：「自動計算」は 80×48 の白地・緑の枠、欄の下に右寄せで在庫数を直したときの注記 */}
+            <div className="flex flex-col gap-2 items-end w-full">
             <div className="flex items-center justify-between w-full">
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                 現在庫数 <span className="text-[var(--semantic-brand-danger)]">※</span>
@@ -162,7 +171,7 @@ export function ChemicalRecordingPage() {
                 <button
                   type="button"
                   onClick={handleAutoCalculate}
-                  className="bg-white border border-[var(--semantic-brand-primary)] flex h-12 items-center justify-center px-2 rounded-lg text-base text-[var(--semantic-brand-primary)] shrink-0"
+                  className="bg-white border border-[var(--semantic-brand-primary)] flex h-12 w-20 items-center justify-center px-0 whitespace-nowrap rounded-lg text-base font-bold text-[var(--semantic-brand-primary)] shrink-0"
                 >
                   自動計算
                 </button>
@@ -177,6 +186,10 @@ export function ChemicalRecordingPage() {
                   className="bg-white h-12 px-4 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
                 />
               </div>
+            </div>
+            <p className="text-sm font-normal text-[var(--semantic-text-primary)] text-right">
+              ※在庫数を修正した場合は、備考欄に理由を記載してください。
+            </p>
             </div>
 
             <div className="border-t border-[#d0d0d0] w-full" />
@@ -218,7 +231,7 @@ export function ChemicalRecordingPage() {
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => navigate(basePath, { state: { inspectorName } })}
+            onClick={() => navigate(basePath, { state: { ...progressCarry, date, inspectorName } })}
             className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
             一覧へ戻る

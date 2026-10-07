@@ -24,7 +24,7 @@ export function AdditiveDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新しました。");
+      setToastMessage("更新されました。");
       setShowToast(true);
       // 画面設計の枠の中では消さない（ユースケースの再生でトーストを囲んで見せるため。Toast も同じ。2026-10-05）
       if (FRAME) return;
@@ -43,7 +43,7 @@ export function AdditiveDetailPage() {
     if (!additive) return;
     removeAdditive(additive.id);
     setDeleteDialogOpen(false);
-    navigate(`${basePath}/additives/deleted`, { state: { deleted: true } });
+    navigate(`${basePath}/additives/deleted`, { state: { deleted: true, name: additive.name } });
   }
 
   return (

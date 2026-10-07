@@ -1,0 +1,1009 @@
+[
+{
+"id": "G008",
+"name": "帳票管理 › 機械器具点検 › 確認項目の設定（ダイアログ：確認項目の削除）",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/checklist-settings",
+"steps": [
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"w": 1280,
+"h": 760,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"old": "帳票管理 › 機械器具点検 › 確認項目の設定（ダイアログ：確認項目の削除）"
+},
+{
+"id": "G045",
+"name": "点検予定",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検",
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定"
+},
+{
+"id": "G046",
+"name": "点検予定（ポップアップ：新規登録）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "新規登録",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検",
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定（ポップアップ：新規登録）"
+},
+{
+"id": "G047",
+"name": "点検予定（ポップアップ：新規登録・登録済み）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "新規登録",
+"exact": 1
+},
+{
+"click": "機械器具点検",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定（ポップアップ：新規登録・登録済み）"
+},
+{
+"id": "G048",
+"name": "点検予定（ポップアップ：新規登録・帳票なし）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"eval": "window.postMessage({nvideo:'go',hash:'app/schedule',flags:{hide:'equipment-inspection,cleaning-record,sensory-inspection'}},'*')",
+"after": 900
+},
+{
+"click": "2",
+"exact": 1,
+"nth": 0
+},
+{
+"click": "1",
+"exact": 1,
+"nth": 0
+},
+{
+"click": "新規登録",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定（ポップアップ：新規登録・帳票なし）"
+},
+{
+"id": "G049",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（新規登録）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-09",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（新規登録）"
+},
+{
+"id": "G050",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（登録済みの詳細）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（登録済みの詳細）"
+},
+{
+"id": "G051",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（編集）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（編集）"
+},
+{
+"id": "G052",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（ポップアップ：持ち場/ライン名の追加）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-09",
+"steps": [
+{
+"click": "追加"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（ポップアップ：持ち場/ライン名の追加）"
+},
+{
+"id": "G053",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（ダイアログ：削除）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（ダイアログ：削除）"
+},
+{
+"id": "G054",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（保存完了）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"click": "保存",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（保存完了）"
+},
+{
+"id": "G061",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（予定なしの日）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "2",
+"exact": 1,
+"nth": 0
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（予定なしの日）"
+},
+{
+"id": "G062",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（休業日）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "6 休業日",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（休業日）"
+},
+{
+"id": "G063",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（登録完了）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-09",
+"steps": [
+{
+"click": "追加"
+},
+{
+"click": "【毎週】原料受入ライン",
+"in": 1
+},
+{
+"click": "追加",
+"exact": 1,
+"in": 1
+},
+{
+"click": "登録",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"old": "点検予定 › 機械器具点検 点検設定（登録完了）"
+},
+{
+"id": "G074",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（登録済みの詳細）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-01",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（登録済みの詳細）"
+},
+{
+"id": "G075",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（編集）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（編集）"
+},
+{
+"id": "G076",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（ダイアログ：削除）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（ダイアログ：削除）"
+},
+{
+"id": "G077",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（保存完了）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"click": "保存",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（保存完了）"
+},
+{
+"id": "G078",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（削除完了）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"eval": "(()=>{const go=()=>{const b=document.querySelector('img[alt=\"削除\"]');if(!b)return;b.closest('button').click();setTimeout(()=>{const d=[...document.querySelectorAll('button')].find(x=>x.innerText.trim()==='削除');d&&d.click();setTimeout(go,300)},300)};go();})()",
+"after": 4000
+},
+{
+"click": "保存",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（削除完了）"
+},
+{
+"id": "G079",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（新規登録）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-09",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（新規登録）"
+},
+{
+"id": "G080",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（ポップアップ：持ち場/ライン名の追加）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-09",
+"steps": [
+{
+"click": "追加"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（ポップアップ：持ち場/ライン名の追加）"
+},
+{
+"id": "G081",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（ライン追加後）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-09",
+"steps": [
+{
+"click": "追加"
+},
+{
+"click": "【毎週】豆乳ライン",
+"in": 1
+},
+{
+"click": "【毎週】殺菌ライン",
+"in": 1
+},
+{
+"click": "追加",
+"exact": 1,
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（ライン追加後）"
+},
+{
+"id": "G082",
+"name": "点検予定 › 清掃記録 持ち場/ライン設定（登録完了）",
+"pf": "app",
+"hash": "app/schedule/cleaning-record/2025-04-09",
+"steps": [
+{
+"click": "追加"
+},
+{
+"click": "【毎週】豆乳ライン",
+"in": 1
+},
+{
+"click": "追加",
+"exact": 1,
+"in": 1
+},
+{
+"click": "登録",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_清掃記録"
+],
+"old": "点検予定 › 清掃記録 記録管理（登録完了）"
+},
+{
+"id": "G111",
+"name": "確認待ち › 機械器具点検 › 確認待ちの詳細（差し戻し）（ポップアップ：確認者の選択）",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"old": "確認待ち › 機械器具点検 › 確認待ちの詳細（差し戻し）（ポップアップ：確認者の選択）"
+},
+{
+"id": "G112",
+"name": "確認待ち › 機械器具点検 › 差し戻しの内容",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"old": "確認待ち › 機械器具点検 › 差し戻しの内容"
+},
+{
+"id": "G113",
+"name": "確認待ち › 機械器具点検 › 点検内容の修正",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"old": "確認待ち › 機械器具点検 › 点検内容の修正"
+},
+{
+"id": "G114",
+"name": "確認待ち › 機械器具点検 › 差し戻しの内容（ポップアップ：差し戻し対応完了）",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "編集を保存",
+"exact": 1
+},
+{
+"eval": "[...document.querySelectorAll('*')].filter(e=>e.scrollHeight>e.clientHeight+10&&/(auto|scroll)/.test(getComputedStyle(e).overflowY)).forEach(e=>{e.scrollTop=e.scrollHeight;e.dispatchEvent(new Event('scroll'))})"
+},
+{
+"click": "差し戻し対応完了",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"old": "確認待ち › 機械器具点検 › 差し戻しの内容（ポップアップ：差し戻し対応完了）"
+},
+{
+"id": "G115",
+"name": "確認待ち › 機械器具点検 › 差し戻しの内容（ポップアップ：実施者の選択）",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"old": "確認待ち › 機械器具点検 › 差し戻しの内容（ポップアップ：実施者の選択）"
+},
+{
+"id": "G116",
+"name": "確認待ち › 機械器具点検 › 内容の修正（ポップアップ：点検見送り）",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検見送り"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"old": "確認待ち › 機械器具点検 › 内容の修正（ポップアップ：点検見送り）"
+},
+{
+"id": "G118",
+"name": "確認待ち › 清掃記録 › 確認待ちの詳細（差し戻し）（ポップアップ：確認者の選択）",
+"pf": "app",
+"hash": "app/pending-review/p15",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_清掃記録"
+],
+"old": "確認待ち › 清掃記録 › 確認待ちの詳細（差し戻し）（ポップアップ：確認者の選択）"
+},
+{
+"id": "G119",
+"name": "確認待ち › 清掃記録 › 差し戻しの内容",
+"pf": "app",
+"hash": "app/pending-review/p15",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_清掃記録"
+],
+"old": "確認待ち › 清掃記録 › 差し戻しの内容"
+},
+{
+"id": "G121",
+"name": "確認待ち › 清掃記録 › 差し戻しの内容（ポップアップ：差し戻し対応完了）",
+"pf": "app",
+"hash": "app/pending-review/p15",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "編集を保存",
+"exact": 1
+},
+{
+"eval": "[...document.querySelectorAll('*')].filter(e=>e.scrollHeight>e.clientHeight+10&&/(auto|scroll)/.test(getComputedStyle(e).overflowY)).forEach(e=>{e.scrollTop=e.scrollHeight;e.dispatchEvent(new Event('scroll'))})"
+},
+{
+"click": "差し戻し対応完了",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_清掃記録"
+],
+"old": "確認待ち › 清掃記録 › 差し戻しの内容（ポップアップ：差し戻し対応完了）"
+},
+{
+"id": "G122",
+"name": "確認待ち › 清掃記録 › 差し戻しの内容（ポップアップ：実施者の選択）",
+"pf": "app",
+"hash": "app/pending-review/p15",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_清掃記録"
+],
+"old": "確認待ち › 清掃記録 › 差し戻しの内容（ポップアップ：実施者の選択）"
+},
+{
+"id": "G233",
+"name": "進捗一覧 › 薬品管理 › 記録の一覧（確認完了）",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"click": "グルコノデルタラクトン",
+"nth": 0
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_薬品管理"
+],
+"old": "進捗一覧 › 薬品管理 › 記録の一覧（確認完了）"
+},
+{
+"pf": "admin",
+"w": 1280,
+"h": 760,
+"q": "&role=administrator",
+"new": 1,
+"id": "N034",
+"name": "帳票管理 › 機械器具点検 › 予定の編集（ダイアログ：持ち場/ライン設定の削除）",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+]
+},
+{
+"pf": "admin",
+"w": 1280,
+"h": 760,
+"q": "&role=administrator",
+"new": 1,
+"id": "N035",
+"name": "帳票管理 › 機械器具点検 › 予定の削除完了",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+},
+{
+"click": "削除",
+"exact": 1,
+"in": 1
+}
+],
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+]
+},
+{
+"pf": "admin",
+"w": 1280,
+"h": 760,
+"q": "&role=administrator",
+"new": 1,
+"id": "N036",
+"name": "帳票管理 › 清掃記録 › 予定の編集（ダイアログ：持ち場/ライン設定の削除）",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"sections": [
+"（Admin）帳票管理_清掃記録"
+]
+},
+{
+"pf": "admin",
+"w": 1280,
+"h": 760,
+"q": "&role=administrator",
+"new": 1,
+"id": "N037",
+"name": "帳票管理 › 清掃記録 › 予定の削除完了",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+},
+{
+"click": "削除",
+"exact": 1,
+"in": 1
+}
+],
+"sections": [
+"（Admin）帳票管理_清掃記録"
+]
+},
+{
+"pf": "admin",
+"w": 1280,
+"h": 760,
+"q": "&role=administrator",
+"new": 1,
+"id": "N038",
+"name": "帳票管理 › 清掃記録 › ラインの編集",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/lines/c1/edit",
+"steps": [],
+"sections": [
+"（Admin）帳票管理_清掃記録"
+]
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"new": 1,
+"id": "N039",
+"name": "確認待ち › 薬品管理（絞り込み後）",
+"hash": "app/pending-review",
+"steps": [
+{
+"click": "絞り込み検索"
+},
+{
+"click": "薬品管理",
+"in": 1
+},
+{
+"click": "絞り込み",
+"exact": 1,
+"in": 1
+}
+],
+"sections": [
+"（App）確認待ち_薬品管理"
+]
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"new": 1,
+"id": "N040",
+"name": "進捗一覧 › 薬品管理 › 記録の一覧（点検済み）",
+"hash": "app/progress",
+"steps": [
+{
+"click": "ソルビン酸",
+"nth": 0
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"sections": [
+"（App）進捗一覧_薬品管理"
+]
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"new": 1,
+"id": "N041",
+"name": "確認待ち › 添加物管理（絞り込み後）",
+"hash": "app/pending-review",
+"steps": [
+{
+"click": "絞り込み検索"
+},
+{
+"click": "添加物管理",
+"in": 1
+},
+{
+"click": "絞り込み",
+"exact": 1,
+"in": 1
+}
+],
+"sections": [
+"（App）確認待ち_添加物管理"
+]
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"new": 1,
+"id": "N042",
+"name": "進捗一覧 › 添加物管理 › 記録の一覧（点検済み）",
+"hash": "app/progress",
+"steps": [
+{
+"click": "ソルビン酸",
+"nth": 1
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"sections": [
+"（App）進捗一覧_添加物管理"
+]
+}
+]

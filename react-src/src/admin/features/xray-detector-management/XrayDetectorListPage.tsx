@@ -36,7 +36,7 @@ export function XrayDetectorListPage() {
 
   return (
     <div>
-      {showToast && <Toast message="更新しました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="X線探知機管理"
         showBack
@@ -80,7 +80,13 @@ export function XrayDetectorListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
             </div>
           </div>
-          {units.length === 0 ? null : (
+          {units.length === 0 ? (
+            <div className="bg-white flex items-center justify-center w-full py-6">
+              <p className="text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            </div>
+          ) : (
             units.map((unit, index) => (
               <div
                 key={unit.id}

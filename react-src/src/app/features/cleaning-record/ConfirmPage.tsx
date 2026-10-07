@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { useFromProgress } from "../../layout/ProgressFlowContext";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { useCleaningRecord } from "./CleaningRecordContext";
+import { LineProgressButton, LineProgressPanel } from "./LineProgressPanel";
 import { ACTORS, cleaningPoints, type CleaningItemRecord } from "./mockData";
 
 function keyFor(location: string, item: string) {
@@ -10,6 +13,8 @@ function keyFor(location: string, item: string) {
 
 type ConfirmState = {
   lineName: string;
+  /** 見出しに出すライン名（進捗一覧・差し戻しから来たときは【頻度】付き） */
+  lineTitle?: string;
   date: string;
   records: Record<string, CleaningItemRecord>;
   remarks: string;
@@ -19,7 +24,10 @@ type ConfirmState = {
 export function ConfirmPage() {
   const { lineId } = useParams<{ lineId: string }>();
   const navigate = useNavigate();
-  const { updateLineStatus } = useCleaningRecord();
+  const { lines, updateLineStatus } = useCleaningRecord();
+  const [progressOpen, setProgressOpen] = useState(false);
+  // 進捗一覧から来た確認画面には「点検済み n/m」のつまみを出さない（確定デザイン 7139:229260）
+  const fromProgress = useFromProgress();
   const location = useLocation();
   const state = location.state as ConfirmState | null;
   const basePath = `/app/ledger-list/cleaning-record/lines/${lineId}`;
@@ -44,7 +52,12 @@ export function ConfirmPage() {
     );
   }
 
-  const { lineName, date, records, remarks, inspectorName = ACTORS[0].name } = state;
+  const { lineName, lineTitle = lineName, date, records, remarks, inspectorName = ACTORS[0].name } = state;
+
+  // ヘッダー右の「点検済み n/m」は、このラインと同じ頻度のラインで数える（ラインの一覧と同じ）
+  const frequency = lines.find((l) => l.id === lineId)?.frequency ?? "daily";
+  const sameFrequency = lines.filter((l) => l.frequency === frequency);
+  const inspectedCount = sameFrequency.filter((l) => l.status === "inspected" || l.status === "confirmed").length;
 
   function handleSubmit() {
     if (lineId) updateLineStatus(lineId, "inspected");
@@ -53,7 +66,16 @@ export function ConfirmPage() {
 
   return (
     <>
-      <AppHeader title={`清掃記録_${lineName}`} />
+      <AppHeader
+        title={`清掃記録_${lineTitle}`}
+        action={
+          fromProgress ? undefined : <LineProgressButton
+            inspectedCount={inspectedCount}
+            total={sameFrequency.length}
+            onClick={() => setProgressOpen(true)}
+          />
+        }
+      />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
         <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
@@ -73,41 +95,44 @@ export function ConfirmPage() {
           </div>
         </div>
 
-        {cleaningPoints.map((point) => (
-          <div key={point.id} className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
-            <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-2 rounded-lg w-full">
-              <p className="text-base text-white">清掃箇所</p>
-              <p className="text-base text-white">{point.location}</p>
-            </div>
-            <div className="flex flex-col gap-3 items-start px-2 w-full">
-              <p className="text-base text-[var(--semantic-brand-primary)]">清掃項目</p>
-              {point.items.map((item) => {
-                const record = records[keyFor(point.location, item)];
-                return (
-                  <div key={item} className="flex flex-col gap-2 items-start w-full">
-                    <div className="flex items-center justify-between w-full gap-4">
-                      <p className="text-base text-[var(--semantic-text-primary)]">{item}</p>
-                      <span className="bg-[#19c95f] flex h-6 w-16 items-center justify-center rounded-lg text-xs text-white">
-                        清掃済み
-                      </span>
+        {/* 清掃箇所と備考は 1 枚のカードにまとめる（確定デザイン 7139:221957） */}
+        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
+          {cleaningPoints.map((point) => (
+            <div key={point.id} className="flex flex-col gap-3 items-start w-full">
+              <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between p-2 rounded-lg w-full">
+                <p className="text-base text-white">清掃箇所</p>
+                <p className="text-base text-white">{point.location}</p>
+              </div>
+              <div className="flex flex-col gap-3 items-start px-2 w-full">
+                <p className="text-base text-[var(--semantic-brand-primary)]">清掃項目</p>
+                {point.items.map((item) => {
+                  const record = records[keyFor(point.location, item)];
+                  return (
+                    <div key={item} className="flex flex-col gap-2 items-end w-full">
+                      <div className="flex items-center justify-between w-full gap-6">
+                        <p className="text-base text-[var(--semantic-text-primary)]">{item}</p>
+                        <span className="bg-[#19c95f] flex h-6 w-16 items-center justify-center rounded-lg text-xs text-white">
+                          清掃済
+                        </span>
+                      </div>
+                      {record?.timestamp && (
+                        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                          {record.inspector} {record.timestamp}
+                        </p>
+                      )}
                     </div>
-                    {record?.timestamp && (
-                      <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
-                        {record.inspector} {record.timestamp}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+              <div className="border-t border-[#d0d0d0] w-full" />
             </div>
+          ))}
+          <div className="flex flex-col gap-2 items-start w-full">
+            <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+            <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)] whitespace-pre-wrap">
+              {remarks}
+            </p>
           </div>
-        ))}
-
-        <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full max-w-full">
-          <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-          <p className="text-base text-[var(--semantic-text-secondary)]">
-            {remarks}
-          </p>
         </div>
       </div>
 
@@ -127,6 +152,14 @@ export function ConfirmPage() {
           提出
         </button>
       </div>
+
+      {progressOpen && (
+        <LineProgressPanel
+          lines={lines}
+          inspectedLines={lines.filter((l) => l.status === "inspected")}
+          onClose={() => setProgressOpen(false)}
+        />
+      )}
     </>
   );
 }

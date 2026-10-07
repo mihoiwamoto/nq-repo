@@ -1,6 +1,7 @@
 import { Fragment, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
@@ -89,27 +90,15 @@ export function SchedulePointSettingPage() {
         : result === "saved"
           ? "保存が完了しました！"
           : "登録が完了しました！";
+    // 確定デザイン（7139:283879・7139:283906）：進捗一覧の提出完了と同じ上寄せの完了画面（ボタン 360×64）
     return (
-      <>
-        <AppHeader title="機械器具点検 点検設定" />
-        <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-[var(--semantic-brand-primary)]">
-            <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" />
-            <path d="M24 41L34 51L56 29" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <p className="text-2xl text-[var(--semantic-brand-primary)]">{message}</p>
-          {result !== "deleted" && (
-            <p className="text-base text-[var(--semantic-text-primary)]">ご登録ありがとうございます。</p>
-          )}
-          <button
-            type="button"
-            onClick={() => navigate("/app/schedule")}
-            className="bg-white border border-[var(--semantic-brand-primary)] h-12 px-6 rounded-lg text-base text-[var(--semantic-brand-primary)]"
-          >
-            点検予定に戻る
-          </button>
-        </div>
-      </>
+      <ProgressSubmitComplete
+        ledgerTitle="機械器具点検 持ち場/ライン設定"
+        title={message}
+        message={result === "deleted" ? "" : "ご登録ありがとうございます。"}
+        backLabel="点検予定に戻る"
+        onBack={() => navigate("/app/schedule")}
+      />
     );
   }
 
@@ -119,35 +108,17 @@ export function SchedulePointSettingPage() {
 
   return (
     <>
-      <AppHeader title="機械器具点検 点検管理" />
+      {/* 見出しは一覧（点検予定）と完了画面に合わせて「持ち場/ライン設定」（確定デザイン 7782:358） */}
+      <AppHeader title="機械器具点検 持ち場/ライン設定" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
-        {/* 日付（点検予定日。ルートで決まるため変更不可） */}
-        <div className="flex items-center justify-between w-full">
-          <p className="flex gap-1 items-center text-lg text-[var(--semantic-text-primary)]">
-            日付
-            <span className="text-[var(--semantic-brand-danger)]">※</span>
-          </p>
-          <div className="bg-[#d0d0d0] flex gap-2 h-12 items-center justify-end px-4 rounded-lg w-[200px] max-w-[50%] shrink-0">
-            <p className="flex-1 min-w-0 text-base text-[var(--semantic-text-primary)]">
-              {formatDateSlash(dateKey)}
-            </p>
-            <img src={iconCalendar} alt="" aria-hidden className="size-6 shrink-0" />
-          </div>
-        </div>
-
-        <div className="h-px w-full bg-[#d0d0d0]" />
-
-        <div className="flex flex-col items-start overflow-hidden rounded-lg w-full">
-          <div className="bg-white flex gap-2 h-16 items-center justify-between p-2 w-full">
-            <p className="flex gap-1 items-center text-lg text-[var(--semantic-text-primary)]">
-              持ち場/ライン名
-              <span className="text-[var(--semantic-brand-danger)]">※</span>
-            </p>
-            {viewMode === "view" ? (
+        {viewMode === "view" ? (
+          <>
+            {/* 詳細（確定デザイン 7139:283279）：右上に「編集」、カードに「日時」と「持ち場/ライン名（左）／値（右寄せ）」の行 */}
+            <div className="flex items-center justify-end w-full">
               <button
                 type="button"
                 onClick={() => setViewMode("edit")}
-                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-1 h-12 items-center justify-center rounded-lg text-base text-[var(--semantic-brand-primary)] w-[200px] max-w-[50%] shrink-0"
+                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-1 h-12 items-center justify-center rounded-lg text-lg text-[var(--semantic-brand-primary)] px-4 shrink-0"
               >
                 <span
                   aria-hidden
@@ -164,60 +135,106 @@ export function SchedulePointSettingPage() {
                 />
                 編集
               </button>
-            ) : (
-              <button
-                type="button"
-                onClick={openPicker}
-                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-1 h-12 items-center justify-center rounded-lg text-base text-[var(--semantic-brand-primary)] w-[200px] max-w-[50%] shrink-0"
-              >
-                <span
-                  aria-hidden
-                  className="inline-block size-5 shrink-0"
-                  style={{
-                    WebkitMaskImage: `url("${iconPlus}")`,
-                    maskImage: `url("${iconPlus}")`,
-                    WebkitMaskSize: "contain",
-                    maskSize: "contain",
-                    WebkitMaskRepeat: "no-repeat",
-                    maskRepeat: "no-repeat",
-                    backgroundColor: "var(--semantic-brand-primary)",
-                  }}
-                />
-                追加
-              </button>
-            )}
-          </div>
-          <div className="h-px w-full bg-[#d0d0d0]" />
-          <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
-            {lineIds.length === 0 ? (
-              <div className="flex h-12 items-center w-full">
-                <p className="text-sm text-[var(--semantic-text-primary)]">
-                  登録された持ち場/ライン名がありません
-                </p>
+            </div>
+            <div className="bg-white flex flex-col items-start overflow-hidden rounded-lg w-full">
+              <div className="flex h-16 items-center justify-between px-4 w-full">
+                <p className="text-base text-[var(--semantic-text-primary)]">日時</p>
+                <p className="text-lg text-[var(--semantic-text-primary)]">{formatDateSlash(dateKey)}</p>
               </div>
-            ) : (
-              lineIds.map((lineId, index) => (
-                <Fragment key={lineId}>
-                  {index > 0 && <div className="h-px w-full bg-[#d0d0d0]" />}
-                  <div className="flex gap-2 h-12 items-center pr-2 w-full">
-                    <p className="flex-1 min-w-0 text-sm text-[var(--semantic-text-primary)]">
-                      {lineLabel(lineId)}
+              <div className="h-px w-full bg-[#d0d0d0]" />
+              <div className="flex flex-col items-center px-4 w-full">
+                {lineIds.map((lineId, index) => (
+                  <Fragment key={lineId}>
+                    {index > 0 && <div className="h-px w-full bg-[#d0d0d0]" />}
+                    <div className="flex gap-4 h-16 items-center w-full">
+                      <p className="shrink-0 text-base text-[var(--semantic-text-primary)]">持ち場/ライン名</p>
+                      <p className="flex-1 min-w-0 text-base text-right text-[var(--semantic-text-primary)]">
+                        {lineLabel(lineId)}
+                      </p>
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* 日付（点検予定日。ルートで決まるため変更不可） */}
+            <div className="flex items-center justify-between w-full">
+              <p className="flex gap-1 items-center text-lg text-[var(--semantic-text-primary)]">
+                日付
+                <span className="text-[var(--semantic-brand-danger)]">※</span>
+              </p>
+              <div className="bg-[#d0d0d0] flex gap-2 h-12 items-center justify-end px-4 rounded-lg w-[200px] max-w-[50%] shrink-0">
+                <p className="flex-1 min-w-0 text-base text-[var(--semantic-text-primary)]">
+                  {formatDateSlash(dateKey)}
+                </p>
+                <img src={iconCalendar} alt="" aria-hidden className="size-6 shrink-0" />
+              </div>
+            </div>
+
+            <div className="h-px w-full bg-[#d0d0d0]" />
+
+            {/* 新規登録・編集（確定デザイン 7139:284073・7139:284129）：行は「持ち場/ライン名（左）／値（右寄せ）」とゴミ箱 */}
+            <div className="flex flex-col items-start overflow-hidden rounded-lg w-full">
+              <div className="bg-white flex gap-2 h-16 items-center justify-between p-2 w-full">
+                <p className="flex gap-1 items-center text-lg text-[var(--semantic-text-primary)]">
+                  持ち場/ライン名
+                  <span className="text-[var(--semantic-brand-danger)]">※</span>
+                </p>
+                <button
+                  type="button"
+                  onClick={openPicker}
+                  className="bg-white border border-[var(--semantic-brand-primary)] flex gap-1 h-12 items-center justify-center rounded-lg text-base text-[var(--semantic-brand-primary)] w-[200px] max-w-[50%] shrink-0"
+                >
+                  <span
+                    aria-hidden
+                    className="inline-block size-5 shrink-0"
+                    style={{
+                      WebkitMaskImage: `url("${iconPlus}")`,
+                      maskImage: `url("${iconPlus}")`,
+                      WebkitMaskSize: "contain",
+                      maskSize: "contain",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskRepeat: "no-repeat",
+                      backgroundColor: "var(--semantic-brand-primary)",
+                    }}
+                  />
+                  追加
+                </button>
+              </div>
+              <div className="h-px w-full bg-[#d0d0d0]" />
+              <div className="bg-white flex flex-col items-center px-4 w-full">
+                {lineIds.length === 0 ? (
+                  <div className="flex h-16 items-center w-full">
+                    <p className="text-sm text-[var(--semantic-text-primary)]">
+                      登録された持ち場/ライン名がありません
                     </p>
-                    {viewMode === "edit" && (
-                      <button
-                        type="button"
-                        onClick={() => setDeleteTarget(lineId)}
-                        className="bg-white border border-[var(--semantic-brand-danger)] size-8 rounded-lg flex items-center justify-center shrink-0"
-                      >
-                        <img src={iconTrash} alt="削除" className="size-5" />
-                      </button>
-                    )}
                   </div>
-                </Fragment>
-              ))
-            )}
-          </div>
-        </div>
+                ) : (
+                  lineIds.map((lineId, index) => (
+                    <Fragment key={lineId}>
+                      {index > 0 && <div className="h-px w-full bg-[#d0d0d0]" />}
+                      <div className="flex gap-4 h-16 items-center w-full">
+                        <p className="shrink-0 text-base text-[var(--semantic-text-primary)]">持ち場/ライン名</p>
+                        <p className="flex-1 min-w-0 text-base text-right text-[var(--semantic-text-primary)]">
+                          {lineLabel(lineId)}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(lineId)}
+                          className="bg-white border border-[var(--semantic-brand-danger)] size-10 rounded-lg flex items-center justify-center shrink-0"
+                        >
+                          <img src={iconTrash} alt="削除" className="size-6" />
+                        </button>
+                      </div>
+                    </Fragment>
+                  ))
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-10 py-6 flex gap-6 items-center justify-center">
@@ -342,7 +359,8 @@ export function SchedulePointSettingPage() {
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteTarget(null)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          {/* 確定デザイン（7139:284185）：幅 640、題は「{持ち場/ライン名}の削除」、ボタンは大きい「キャンセル」（枠線）と「削除」 */}
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 {lineLabel(deleteTarget)}の削除
@@ -355,14 +373,14 @@ export function SchedulePointSettingPage() {
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+                className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 max-w-full rounded-lg text-xl text-[var(--semantic-text-primary)] shrink-0"
               >
                 キャンセル
               </button>
               <button
                 type="button"
                 onClick={confirmDelete}
-                className="bg-[var(--semantic-brand-danger)] h-12 w-[200px] rounded-lg text-base text-white"
+                className="bg-[var(--semantic-brand-danger)] h-16 w-60 max-w-full rounded-lg text-xl text-white shrink-0"
               >
                 削除
               </button>

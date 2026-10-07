@@ -2,6 +2,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { AppHeader } from "../../layout/AppHeader";
 import { useInspection } from "./InspectionContext";
+import { FREQUENCY_LABELS } from "./mockData";
 
 const INSPECTOR_NAME = "佐藤健一";
 
@@ -12,16 +13,19 @@ type SkipConfirmState = {
   /** 毎日以外の見送りで選んだ「明日に見送る」。翌日分のラインの一覧の出方が変わる */
   deferToTomorrow?: boolean;
   fromProgress?: boolean;
+  /** 実施者の選択で選んだ人（点検画面から受け取る） */
+  inspectorName?: string;
 };
 
 export function SkipConfirmPage() {
   const { lineId } = useParams<{ lineId: string }>();
   const navigate = useNavigate();
-  const { updateLineStatus } = useInspection();
+  const { updateLineStatus, lines } = useInspection();
   const location = useLocation();
   const state = location.state as SkipConfirmState | null;
   const basePath = `/app/ledger-list/equipment-inspection/lines/${lineId}`;
   const fromProgress = state?.fromProgress ?? false;
+  const line = lines.find((l) => l.id === lineId);
 
   if (!state) {
     return (
@@ -52,7 +56,7 @@ export function SkipConfirmPage() {
 
   return (
     <>
-      <AppHeader title={`機械器具点検_${lineName}`} />
+      <AppHeader title={`機械器具点検_${fromProgress && line ? `【${FREQUENCY_LABELS[line.frequency]}】` : ""}${lineName}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
         <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
@@ -68,7 +72,7 @@ export function SkipConfirmPage() {
           </div>
           <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{INSPECTOR_NAME}</p>
+            <p className="text-base text-[var(--semantic-text-primary)]">{state.inspectorName ?? INSPECTOR_NAME}</p>
           </div>
         </div>
 

@@ -7,7 +7,7 @@
 <title>NQリポ プロトタイプ</title>
 <style>
 /* ===========================================================
-   NQリポ プロトタイプ（管理画面＝PC 1280×760 ／ アプリ＝タブレット 768×1024）
+   NQリポ プロトタイプ（管理画面＝PC 1440×960 ／ アプリ＝タブレット 768×1024）
    見た目は NQrepo（React 実装）の Tailwind クラスをそのまま CSS に写している。
    色は src/index.css の --semantic-* と同じ値。文字は body で bold（React の body と同じ）。
    =========================================================== */
@@ -67,7 +67,7 @@ input,textarea{outline:none;background:#fff}
 /* タブレット枡。中の座標は常に 768×1024（React 側の .app-viewport-frame と同じ） */
 .tab{width:768px;height:1024px;background:var(--g);border-radius:26px;border:11px solid #1c2226;box-shadow:0 26px 60px rgba(0,0,0,.30);overflow:hidden;position:relative;display:flex;flex-direction:column;flex:none}
 /* PC 枡（ブラウザ風） */
-.win{width:1280px;height:760px;background:var(--page);border-radius:12px;box-shadow:0 26px 60px rgba(0,0,0,.24);overflow:hidden;position:relative;display:flex;flex:none}
+.win{width:1440px;height:960px;background:var(--page);border-radius:12px;box-shadow:0 26px 60px rgba(0,0,0,.24);overflow:hidden;position:relative;display:flex;flex:none}
 /* ---- 画面設計（nqrepo-screen-design.html）から ?frame=1 で呼ばれるとき ----
    枡は呼び出し側が描くので、中身だけを iframe いっぱいに出す */
 html.frame body{background:var(--page)}
@@ -288,7 +288,7 @@ html.frame .nvsw{display:none}
 .nvfoot{display:flex;align-items:center;gap:9px;flex:none;padding:10px 13px;border-top:1px solid var(--nl);background:var(--nb)}
 .nvbtn{font-size:12px;border:1px solid var(--nl);border-radius:8px;padding:6px 12px;color:var(--nm);background:none;cursor:pointer;font-family:inherit}
 .nvbtn:hover{border-color:var(--na);color:var(--nad)}
-@media (max-width:1320px){ .hold.wide{justify-content:flex-start;overflow-x:auto} }
+@media (max-width:1480px){ .hold.wide{justify-content:flex-start;overflow-x:auto} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -606,7 +606,7 @@ document.addEventListener('mousedown', e => {
 </script>
 <script>
 /* =========================================================================
-   管理画面（PC 1280×760）— AdminLayout と同じ組み立て。
+   管理画面（PC 1440×960）— AdminLayout と同じ組み立て。
    各画面の className は React 実装（src/admin/**）をそのまま CSS に写している
    ========================================================================= */
 function adGo(sc, extra={}){ Object.assign(S.ad, {sc, rid:null, menu:false, dlg:null, pd:null, cal:null, mp:null, dl:false}, extra); render(); }

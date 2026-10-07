@@ -29,10 +29,27 @@ export function NewRegistrationPage() {
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [lineToDelete, setLineToDelete] = useState<string | null>(null);
 
   const selectedLines = lineIds
     .map((id) => lines.find((l) => l.id === id))
     .filter((l): l is NonNullable<typeof l> => Boolean(l));
+
+  // 確定デザイン（7139:161537 → 7139:161414）：ごみ箱 →「持ち場/ライン設定の削除」→「削除」。
+  // 登録済みの日の編集ではその場で保存して削除完了へ。新規登録ではまだ保存していないので外してトーストだけ
+  function confirmDeleteLine() {
+    if (!lineToDelete) return;
+    const remaining = lineIds.filter((id) => id !== lineToDelete);
+    setLineToDelete(null);
+    if (isEditing) {
+      upsertEntry(initialDate, remaining);
+      navigate(`${basePath}/schedule/deleted?date=${initialDate}`);
+      return;
+    }
+    setLineIds(remaining);
+    setToastMessage("削除されました。");
+    setShowToast(true);
+  }
 
   function handleSubmit() {
     if (!date || lineIds.length === 0) {
@@ -49,7 +66,7 @@ export function NewRegistrationPage() {
 
   return (
     <div>
-      <PageTitleBar title={isEditing ? "点検予定の編集" : "新規登録"} showBack />
+      <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -66,7 +83,7 @@ export function NewRegistrationPage() {
               <p className="text-xl text-[var(--semantic-text-primary)]">点検日</p>
               <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
-            <DateFilterInput value={date} onChange={setDate} className="w-full" />
+            <DateFilterInput variant="form" value={date} onChange={setDate} className="w-full" />
           </div>
 
           <div className="flex flex-col items-start rounded-lg w-full overflow-hidden">
@@ -86,23 +103,31 @@ export function NewRegistrationPage() {
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
             <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
-              {selectedLines.length === 0 ? null : (
-                selectedLines.map((line) => (
-                  <div key={line.id} className="flex items-center w-full gap-4">
-                    <span className="flex-1 text-sm text-[var(--semantic-text-primary)]">
-                      【{FREQUENCY_LABEL[line.frequency]}】{line.name}
-                    </span>
+              {selectedLines.length === 0 ? (
+                <p className="text-sm text-[var(--semantic-text-primary)] w-full">
+                  データがありません
+                </p>
+              ) : (
+                selectedLines.map((line, i) => (
+                  <div key={line.id} className="flex flex-col gap-4 w-full">
+                  {i > 0 && <div className="border-t border-[#d0d0d0] w-full" />}
+                  <div className="flex items-center w-full gap-6">
+                    <div className="flex-1 flex gap-2 items-center min-w-0">
+                      <span className="w-[162px] shrink-0 text-base text-[var(--semantic-text-primary)] whitespace-nowrap">
+                        持ち場/ライン名
+                      </span>
+                      <span className="flex-1 text-base text-[var(--semantic-text-primary)]">
+                        【{FREQUENCY_LABEL[line.frequency]}】{line.name}
+                      </span>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => {
-                        setLineIds((prev) => prev.filter((id) => id !== line.id));
-                        setToastMessage("削除されました。");
-                        setShowToast(true);
-                      }}
+                      onClick={() => setLineToDelete(line.id)}
                       className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center shrink-0"
                     >
                       <img src={iconTrash} alt="削除" className="size-6" />
                     </button>
+                  </div>
                   </div>
                 ))
               )}
@@ -139,6 +164,38 @@ export function NewRegistrationPage() {
             setDialogOpen(false);
           }}
         />
+      )}
+
+      {lineToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setLineToDelete(null)} />
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+            <div className="flex flex-col gap-6 items-start w-full">
+              <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+                持ち場/ライン設定の削除
+              </h2>
+              <p className="text-base text-[var(--semantic-text-primary)]">
+                削除した情報は元に戻せません。本当に削除しますか？
+              </p>
+            </div>
+            <div className="flex gap-6 items-center justify-center w-full">
+              <button
+                type="button"
+                onClick={() => setLineToDelete(null)}
+                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteLine}
+                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+              >
+                削除
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}

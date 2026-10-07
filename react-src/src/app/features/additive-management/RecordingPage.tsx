@@ -37,11 +37,14 @@ export function RecordingPage() {
         inspectorName?: string;
         editRecord?: EditRecord;
         editReturn?: { to: string; state?: unknown };
+        addReturn?: { to: string; state?: unknown };
       }
     | null;
   // 確認待ちの差し戻しから「点検内容を修正する」で来たときの戻り先と、直す記録（2026-10-02）
   const editReturn = state?.editReturn;
   const editRecord = state?.editRecord;
+  // 確認待ちの一覧から「＋記録を追加」で来たときの戻り先（確定デザイン 7139:233626。2026-10-06）。「一覧へ戻る」「保存」で確認待ちへ戻る
+  const addReturn = state?.addReturn;
   const date = existingRecord?.date ?? state?.date ?? "2025/04/01";
   const actor = existingRecord?.actor ?? state?.inspectorName ?? ACTORS[0].name;
 
@@ -169,7 +172,7 @@ export function RecordingPage() {
                   <button
                     type="button"
                     onClick={handleAutoCalculate}
-                    className="bg-white border border-[var(--semantic-brand-primary)] flex h-12 items-center justify-center px-2 rounded-lg text-base text-[var(--semantic-brand-primary)] shrink-0"
+                    className="bg-white border border-[var(--semantic-brand-primary)] flex h-12 w-20 items-center justify-center p-2 rounded-lg text-base font-bold text-[var(--semantic-brand-primary)] shrink-0"
                   >
                     自動計算
                   </button>
@@ -185,7 +188,8 @@ export function RecordingPage() {
                   />
                 </div>
               </div>
-              <p className="text-sm text-[var(--semantic-text-primary)] leading-relaxed">
+              {/* 確定デザイン 7139:234090：「自動計算」は 80×48 の白地・緑の枠、注記は太字にしない */}
+              <p className="text-sm font-normal text-[var(--semantic-text-primary)] leading-relaxed">
                 ※在庫数を修正した場合は、備考欄に理由を記載してください。
               </p>
             </div>
@@ -229,7 +233,7 @@ export function RecordingPage() {
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-10 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => navigate(basePath)}
+            onClick={() => (addReturn ? navigate(addReturn.to, { state: addReturn.state }) : navigate(basePath))}
             className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
             一覧へ戻る
@@ -237,7 +241,7 @@ export function RecordingPage() {
           <button
             type="button"
             disabled={!canSave}
-            onClick={handleSave}
+            onClick={() => (addReturn ? navigate(addReturn.to, { state: addReturn.state }) : handleSave())}
             className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
               canSave ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
             }`}

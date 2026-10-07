@@ -7,7 +7,7 @@ export function LineRegistrationCompletePage() {
 
   return (
     <div>
-      <PageTitleBar title="帳票管理" />
+      <PageTitleBar title="機械器具点検" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg

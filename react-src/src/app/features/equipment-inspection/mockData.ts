@@ -42,6 +42,8 @@ export const lines: Line[] = [
   { id: "l2", name: "ゆばライン（その他）", frequency: "weekly", status: "inspected", scheduledDate: "2025-04-01", inspectorName: "高橋和子", inspectionDate: "2025-04-01" },
   { id: "l3", name: "殺菌ライン", frequency: "weekly", status: "inspected", scheduledDate: "2025-04-01", inspectorName: "渡辺真由", inspectionDate: "2025-04-01" },
   { id: "l5", name: "充填・包装ライン", frequency: "weekly", status: "not_inspected", scheduledDate: "2025-04-01" },
+  // 確認待ちの「見送り」の見本（確定デザイン 7139:346491）。2026-10-07
+  { id: "l20", name: "自動計量機・風力選別機ライン", frequency: "weekly", status: "skipped", scheduledDate: "2025-04-01", inspectorName: "佐藤健一", inspectionDate: "2025-04-01" },
   { id: "l7", name: "豆乳ライン", frequency: "yearly", status: "not_inspected" },
   { id: "l8", name: "豆乳ライン", frequency: "daily", status: "not_inspected" },
   { id: "l9", name: "ゆばライン（つまみ関係）", frequency: "daily", status: "in_progress", inspectorName: "小林誠司", inspectionDate: "2026-08-25" },
@@ -169,6 +171,15 @@ export type LineRejectionComment = {
 };
 
 export const LINE_REJECTION_COMMENTS: Record<string, LineRejectionComment[]> = {
+  // 見送った記録の差し戻し（確定デザイン 7139:345916）
+  l11: [
+    {
+      id: "c2",
+      authorName: "鈴木一郎",
+      timestamp: "25.04.02 10:16",
+      body: "見送りの理由を具体的に記載してください。再開予定日も追記のうえ、再度ご提出をお願いします。",
+    },
+  ],
   l8: [
     {
       id: "c1",

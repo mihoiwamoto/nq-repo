@@ -36,7 +36,10 @@ export function ChemicalSelectionPage() {
               <div className="flex-1 flex flex-col gap-2 min-w-0">
                 <p className="text-lg text-[var(--semantic-text-primary)]">{chemical.name}</p>
               </div>
-              <StatusChip color={CHEMICAL_STATUS_COLORS[chemical.status]}>{CHEMICAL_STATUS_LABELS[chemical.status]}</StatusChip>
+              {/* 薬品・添加物は毎日の点検ではないので「未点検」の札は出さない（確定デザイン 7139:245326 の注記。2026-10-06） */}
+              {chemical.status !== "not_inspected" && (
+                <StatusChip color={CHEMICAL_STATUS_COLORS[chemical.status]}>{CHEMICAL_STATUS_LABELS[chemical.status]}</StatusChip>
+              )}
             </button>
           ))}
         </div>

@@ -51,6 +51,11 @@ export function ProductSelectionPage() {
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-2xl text-[var(--semantic-text-primary)]">検体対象製品一覧</p>
           <div className="flex flex-col gap-6 items-start w-full">
+            {products.length === 0 && (
+              <p className="text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            )}
             {products.map((product) => (
               <Link
                 key={product.id}

@@ -24,9 +24,12 @@ import {
   type CauseOption,
   type InspectionItemRecord,
   type ItemStatus,
+  FREQUENCY_LABELS,
 } from "./mockData";
 
 const INSPECTOR_NAME = "佐藤健一";
+/** 確認待ち（差し戻し）の見本の記録の実施日。確認待ちの詳細の「実施日 2025/04/01」と同じ */
+const REVIEW_RECORD_DATE = "2025-04-01";
 
 /** 確認待ちの差し戻しから編集に来たときの戻り先（金属/X線探知機の差し戻し編集と同じ仕組み） */
 type EditReturn = { to: string; state?: unknown };
@@ -77,7 +80,7 @@ export function LineInspectionPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const stateData = location.state as
-    | { inspectorName?: string; fromProgress?: boolean; editReturn?: EditReturn }
+    | { inspectorName?: string; fromProgress?: boolean; editReturn?: EditReturn; nextDay?: boolean; skipped?: boolean }
     | null;
   const inspectorName = stateData?.inspectorName ?? INSPECTOR_NAME;
   const fromProgress = stateData?.fromProgress ?? false;
@@ -87,20 +90,27 @@ export function LineInspectionPage() {
   const line = lines.find((l) => l.id === lineId);
   // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
   const progressFill = useProgressRecordFill();
+  // 翌日分の一覧から来たときは、前の日の状態（見送りなど）を持ち越さず未点検として空で開く
+  const nextDay = stateData?.nextDay ?? false;
   const lineFill: RecordFill =
-    line?.status === "not_inspected" || line?.status === "skipped"
+    nextDay || line?.status === "not_inspected" || line?.status === "skipped"
       ? "none"
       : line?.status === "in_progress"
         ? "partial"
         : "full";
   // 差し戻しの編集は「提出済みの記録を直す」ので、記録は入り切った状態で開く
-  const fill = progressFill ?? (editReturn ? "full" : lineFill);
+  // 見送った記録の差し戻しを直すときは、点検していない状態（備考に見送り理由だけ）で開く
+  const reviewSkipped = !!editReturn && (stateData?.skipped ?? false);
+  const fill = progressFill ?? (editReturn ? (reviewSkipped ? "none" : "full") : lineFill);
   const hasStarted = fill !== "none";
   // 見送りのラインは点検自体を行っていないので、記録は空・備考に見送り理由だけを表示する
-  const isSkipped = progressFill === null && line?.status === "skipped";
+  const isSkipped = reviewSkipped || (progressFill === null && !nextDay && line?.status === "skipped");
 
   const [tab, setTab] = useState<Tab>("start");
-  const [date, setDate] = useState(() => (hasStarted ? line?.inspectionDate || todayString() : todayString()));
+  // 差し戻しの編集は提出済みの記録を直すので、実施日は元の記録の日のまま（確定デザイン 7139:294330・7139:346150。確認待ちの見本は 2025/04/01）
+  const [date, setDate] = useState(() =>
+    editReturn ? REVIEW_RECORD_DATE : hasStarted ? line?.inspectionDate || todayString() : todayString()
+  );
   // 点検が終わっている記録（点検済み・確認完了）は始業だけでなく終業も入り切っている状態にする。
   // 終業の専用モックは無いので始業と同じ記録を流用する。
   const isFinished = fill === "full" && !isSkipped;
@@ -233,8 +243,13 @@ export function LineInspectionPage() {
   function handleSkip() {
     if (!skipReason.trim()) return;
     if (!isDaily && deferToTomorrow === null) return;
+    // 差し戻しの編集で見送ったときは、提出の流れに入らず「編集を保存」と同じく確認待ちの詳細へ戻る
+    if (editReturn) {
+      navigate(editReturn.to, { state: editReturn.state });
+      return;
+    }
     navigate(`/app/ledger-list/equipment-inspection/lines/${lineId}/skip-confirm`, {
-      state: { lineName, date, skipReason, fromProgress, deferToTomorrow: isDaily ? undefined : deferToTomorrow ?? undefined },
+      state: { lineName, date, skipReason, fromProgress, inspectorName, deferToTomorrow: isDaily ? undefined : deferToTomorrow ?? undefined },
     });
   }
 
@@ -254,7 +269,8 @@ export function LineInspectionPage() {
   return (
     <>
       <AppHeader
-        title={`機械器具点検_${lineName}`}
+        // 進捗一覧から来たときは確定デザイン（7139:293723）どおり頻度を頭に付ける
+        title={`機械器具点検_${(fromProgress || editReturn) && line ? `【${FREQUENCY_LABELS[line.frequency]}】` : ""}${lineName}`}
         action={
           <button
             type="button"

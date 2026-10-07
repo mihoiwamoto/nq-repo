@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
-import { SubmitComplete } from "../../components/SubmitComplete";
+import { SUBMIT_DONE_TITLE, SubmitComplete } from "../../components/SubmitComplete";
 import { useFromProgress } from "../../layout/ProgressFlowContext";
 import { useInspection } from "./InspectionContext";
 
@@ -15,12 +15,13 @@ export function SubmitCompletePage() {
 
   // 進捗一覧から入った場合は、帳票を続ける導線は出さず進捗一覧に戻すだけ
   if (fromProgress) {
-    return <ProgressSubmitComplete ledgerTitle="機械器具点検" />;
+    return <ProgressSubmitComplete ledgerTitle="機械器具点検" title={SUBMIT_DONE_TITLE} />;
   }
 
   return (
     <SubmitComplete
       ledgerTitle="機械器具点検"
+      title={SUBMIT_DONE_TITLE}
       primary={{ label: "機械器具点検を続ける", onClick: () => navigate("/app/ledger-list/equipment-inspection", { state: frequency ? { frequency } : undefined }) }}
       secondary={{ label: "帳票一覧に戻る", onClick: () => navigate("/app/ledger-list") }}
     />

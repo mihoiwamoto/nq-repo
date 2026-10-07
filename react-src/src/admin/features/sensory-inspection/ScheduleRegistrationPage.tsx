@@ -131,7 +131,11 @@ export function ScheduleRegistrationPage() {
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
             <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
-              {selectedProducts.length === 0 ? null : (
+              {selectedProducts.length === 0 ? (
+                <p className="text-sm text-[var(--semantic-text-primary)] w-full">
+                  データがありません
+                </p>
+              ) : (
                 selectedProducts.map((product) => (
                   <div key={product.id} className="flex items-center w-full gap-4">
                     <span className="w-[112px] text-base text-[var(--semantic-text-primary)]">

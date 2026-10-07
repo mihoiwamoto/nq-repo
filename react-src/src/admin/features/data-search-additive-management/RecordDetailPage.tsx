@@ -3,7 +3,7 @@ import { getFactoryName } from "../../../data/factories";
 import { RecordDetailView } from "../approvals-additive-management/RecordDetailPage";
 import { useRecords } from "./RecordsContext";
 
-/** データ検索の詳細は承認申請管理の詳細（承認ステータスの変更・コメント入力つき）をそのまま使う */
+/** データ検索の詳細は承認申請管理の詳細の中身を mode="search" で使う。承認ステータスのプルダウンとコメントの入力欄は承認申請管理と同じに出す（確定デザイン 7139:259043 と同じ配置。2026-10-07） */
 export function RecordDetailPage() {
   const { factoryId, recordId } = useParams<{ factoryId: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
@@ -11,6 +11,7 @@ export function RecordDetailPage() {
 
   return (
     <RecordDetailView
+      mode="search"
       record={records.find((r) => r.id === recordId)}
       factoryName={getFactoryName(factoryId)}
       breadcrumb={[

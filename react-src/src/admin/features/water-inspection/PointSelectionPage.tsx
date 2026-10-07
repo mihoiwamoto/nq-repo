@@ -77,7 +77,11 @@ export function PointSelectionPage() {
         </div>
 
         <div className="flex flex-wrap gap-6">
-          {filteredPoints.length === 0 ? null : (
+          {filteredPoints.length === 0 ? (
+            <p className="text-base text-[var(--semantic-text-secondary)]">
+              データがありません
+            </p>
+          ) : (
             filteredPoints.map((point) => (
               <Link
                 key={point.id}

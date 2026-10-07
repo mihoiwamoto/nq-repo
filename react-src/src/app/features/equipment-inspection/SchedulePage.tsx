@@ -6,6 +6,7 @@ import { isLedgerHidden } from "../../../data/ledgerVisibility";
 import { useInspection } from "./InspectionContext";
 import { buildMonthGrid, formatDateLabel, isClosedDay, toDateKey } from "./calendarUtils";
 import { useSensorySchedule } from "../sensory-inspection/ScheduleContext";
+import { useCleaningSchedule } from "../cleaning-record/ScheduleContext";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
@@ -15,6 +16,9 @@ const todayKey = toDateKey(2025, 3, 3);
 const equipmentInspectionIcon = ledgerCategories.find(
   (category) => category.slug === "equipment-inspection"
 )?.appIcon;
+const cleaningRecordIcon = ledgerCategories.find(
+  (category) => category.slug === "cleaning-record"
+)?.appIcon;
 const sensoryInspectionIcon = ledgerCategories.find(
   (category) => category.slug === "sensory-inspection"
 )?.appIcon;
@@ -23,6 +27,8 @@ type SchedulableLedger = {
   slug: string;
   icon?: string;
   label: string;
+  /** 新規登録のポップアップに出す名前（無ければ label）。いまはどの帳票も一覧と同じ名前 */
+  dialogLabel?: string;
   hasEntry: boolean;
   targetPath: string;
 };
@@ -31,6 +37,7 @@ export function SchedulePage() {
   const navigate = useNavigate();
   const { entries } = useInspection();
   const { entries: sensoryEntries } = useSensorySchedule();
+  const { entries: cleaningEntries } = useCleaningSchedule();
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3); // 0-indexed: April
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
@@ -44,13 +51,21 @@ export function SchedulePage() {
   function ledgersForDate(dateKey: string): SchedulableLedger[] {
     const equipmentEntry = entries[dateKey];
     const sensoryEntry = sensoryEntries[dateKey];
+    const cleaningEntry = cleaningEntries[dateKey];
     return [
       {
         slug: "equipment-inspection",
         icon: equipmentInspectionIcon,
-        label: "機械器具点検 点検管理",
+        label: "機械器具点検 持ち場/ライン設定",
         hasEntry: !!equipmentEntry && equipmentEntry.lineIds.length > 0,
         targetPath: `/app/schedule/equipment-inspection/${dateKey}`,
+      },
+      {
+        slug: "cleaning-record",
+        icon: cleaningRecordIcon,
+        label: "清掃記録 持ち場/ライン設定",
+        hasEntry: !!cleaningEntry && cleaningEntry.lineIds.length > 0,
+        targetPath: `/app/schedule/cleaning-record/${dateKey}`,
       },
       {
         slug: "sensory-inspection",
@@ -275,23 +290,25 @@ export function SchedulePage() {
       {registerDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setRegisterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[520px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">新規登録</h2>
+            <div className="flex flex-col gap-3 w-full">
             {selectedLedgers.map((ledger) => (
               <button
                 key={ledger.slug}
                 type="button"
                 onClick={() => chooseLedger(ledger)}
-                className="bg-white border border-[#d0d0d0] flex items-center gap-2 h-14 px-4 rounded-lg w-full text-left"
+                className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex items-center gap-2 h-14 px-4 rounded-lg w-full text-left"
               >
                 {ledger.icon && <img src={ledger.icon} alt="" className="size-5" />}
-                <span className="text-base text-[var(--semantic-text-primary)]">{ledger.label}</span>
+                <span className="text-base text-[var(--semantic-text-primary)]">{ledger.dialogLabel ?? ledger.label}</span>
               </button>
             ))}
+            </div>
             <button
               type="button"
               onClick={() => setRegisterDialogOpen(false)}
-              className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-40 rounded-lg text-base text-[var(--semantic-text-primary)]"
+              className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 max-w-full rounded-lg text-xl text-[var(--semantic-text-primary)] shrink-0"
             >
               閉じる
             </button>
@@ -302,15 +319,15 @@ export function SchedulePage() {
       {alreadyRegisteredOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setAlreadyRegisteredOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[520px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">新規登録</h2>
-            <p className="text-base text-[var(--semantic-text-primary)] text-center">
-              すでに点検予定が登録されているため新規登録できません。詳細画面の「編集」から登録内容を変更できます。
+            <p className="text-base text-[var(--semantic-text-primary)] w-full">
+              すでに当日の点検が登録されている為、新規登録できません。「編集」から登録内容を変更できます。
             </p>
             <button
               type="button"
               onClick={() => setAlreadyRegisteredOpen(false)}
-              className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-40 rounded-lg text-base text-[var(--semantic-text-primary)]"
+              className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 max-w-full rounded-lg text-xl text-[var(--semantic-text-primary)] shrink-0"
             >
               閉じる
             </button>
@@ -321,7 +338,7 @@ export function SchedulePage() {
       {unavailableOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setUnavailableOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[520px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">新規登録</h2>
             <p className="text-base text-[var(--semantic-text-primary)] text-center">
               点検予定に使用する帳票が設定されていないため、新規登録できません。管理画面より帳票を設定してから、再度登録してください。
@@ -329,7 +346,7 @@ export function SchedulePage() {
             <button
               type="button"
               onClick={() => setUnavailableOpen(false)}
-              className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-40 rounded-lg text-base text-[var(--semantic-text-primary)]"
+              className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 max-w-full rounded-lg text-xl text-[var(--semantic-text-primary)] shrink-0"
             >
               閉じる
             </button>

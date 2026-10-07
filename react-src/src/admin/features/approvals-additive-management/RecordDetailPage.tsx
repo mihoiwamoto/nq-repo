@@ -50,7 +50,11 @@ export function RecordDetailView({
   breadcrumb,
   setApprovalStatus,
   addComment,
+  mode = "approval",
 }: {
+  /** "search" はデータ検索の詳細。承認ステータスのプルダウンとコメントの入力欄は承認申請管理と同じに出し、
+   *  入力欄の見本の文字だけ確定デザイン 7139:259043 の「コメントを入力」にする（2026-10-07） */
+  mode?: "approval" | "search";
   record: AdditiveApprovalRecord | undefined;
   factoryName: string;
   breadcrumb: BreadcrumbItem[];
@@ -81,6 +85,7 @@ export function RecordDetailView({
   } = useApprovalConfirm();
 
   const [comment, setComment] = useState("");
+  const isSearch = mode === "search";
 
   if (!record) {
     return (
@@ -108,7 +113,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -185,6 +190,8 @@ export function RecordDetailView({
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
+          {/* 確定デザイン：承認申請管理（7139:163707）は入力欄の見本の文字が「コメント・補足事項を入力できます（任意）」、
+              データ検索（7139:259043 と同じ配置）は「コメントを入力」 */}
           <CommentInputBox
             value={comment}
             onChange={setComment}
@@ -193,6 +200,7 @@ export function RecordDetailView({
               setComment("");
             }}
             maxLength={255}
+            placeholder={isSearch ? "コメントを入力" : "コメント・補足事項を入力できます（任意）"}
           />
         </div>
       </div>

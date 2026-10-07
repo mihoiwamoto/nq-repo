@@ -50,6 +50,10 @@ function ResultBadge({ icon }: { icon: ResultIcon }) {
   );
 }
 
+/** 列の幅。最小は中身の幅（備考だけ 0）、余りは確定デザインの列幅の比で分ける */
+const COLS =
+  "minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,280fr) minmax(max-content,80fr) minmax(0,272fr) minmax(max-content,104fr) minmax(max-content,104fr)";
+
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
   const { records: allRecords, setApprovalStatus } = useRecords();
@@ -87,56 +91,63 @@ export function ApprovalRecordsListPage() {
           </div>
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">25年4月1日点検分</p>
-            <div className="w-full rounded-lg overflow-x-auto">
-              <div className="flex flex-col min-w-[1000px]">
-                <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-                  {["操作", "ステータス", "実施日", "持ち場名/ライン名", "点検結果", "備考", "実施者", "確認者"].map(
-                    (h, i) => (
-                      <div
-                        key={h}
-                        className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${
-                          i === 5 ? "flex-1 min-w-[200px]" : i === 3 ? "w-[240px]" : "w-[104px]"
-                        }`}
-                      >
-                        {h}
-                      </div>
-                    )
-                  )}
+            {/* 確定デザイン 7139:258984 の列幅（104/104/104/280/80/272/104/104、幅 1440 で表 1152px）を比にして、
+                管理画面の幅 1280 でも全部の列が収まるようにする。持ち場名/ライン名は折り返さず、備考だけ 2 行まで折り返す */}
+            <div className="w-full rounded-lg overflow-hidden">
+              <div className="grid w-full" style={{ gridTemplateColumns: COLS }}>
+                <div className="col-span-full grid grid-cols-subgrid bg-[#f6f6f6] h-[50px] items-center">
+                  {["操作", "ステータス", "実施日", "持ち場名/ライン名", "点検結果", "備考", "実施者", "確認者"].map((h) => (
+                    <div
+                      key={h}
+                      className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-brand-primary)]"
+                    >
+                      {h}
+                    </div>
+                  ))}
                 </div>
+                {records.length === 0 && (
+                  <p className="col-span-full text-sm text-[var(--semantic-text-secondary)] text-center py-6">
+                    データがありません
+                  </p>
+                )}
                 {records.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                    data-row
+                    className={`col-span-full grid grid-cols-subgrid h-14 items-center ${rowStripeClasses[index]}`}
                   >
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                    <div className="flex items-center justify-center p-2 h-full">
                       <Link
                         to={`/admin/approvals/equipment-inspection/records/${record.id}`}
-                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
                       >
                         詳細
                       </Link>
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                    <div className="flex items-center justify-center p-2 h-full">
                       <ApprovalStatusBadge status={record.approvalStatus} />
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {formatDateShort(record.date)}
                     </div>
-                    <div className="w-[240px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
+                    <div className="flex items-center justify-start p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)] text-left">
                       {record.lineLabel}
                     </div>
                     <div
-                      className={`w-[104px] flex items-center justify-center p-2 h-full ${record.resultIcon === "ng" ? "bg-[#f85c5c]" : ""}`}
+                      className={`flex items-center justify-center p-2 h-full ${record.resultIcon === "ng" ? "bg-[#f85c5c]" : ""}`}
                     >
                       <ResultBadge icon={record.resultIcon} />
                     </div>
-                    <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left">
-                      {record.remarks.length > 20 ? `${record.remarks.substring(0, 20)}...` : record.remarks}
+                    <div
+                      className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left"
+                      title={record.remarks}
+                    >
+                      <span className="line-clamp-2">{record.remarks}</span>
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.implementer}
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.confirmer}
                     </div>
                   </div>

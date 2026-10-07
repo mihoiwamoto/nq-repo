@@ -188,6 +188,44 @@ textarea::placeholder {
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
 }
 
+/* 画面設計の「プロトタイプで開く」の先の管理画面は 1440×960 の枠に収める（AdminViewport.tsx。2026-10-07）。
+   余白は AdminViewport.tsx の GAP と合わせる。枠の中では h-screen / min-h-screen を枠の高さに読み替える */
+.admin-viewport {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: #dfe3e8;
+}
+.admin-viewport-frame {
+  width: 1440px;
+  height: 960px;
+  flex: none;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--semantic-background-page);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+}
+.admin-viewport-frame .h-screen,
+.admin-viewport-frame .md\:h-screen {
+  height: 100%;
+}
+.admin-viewport-frame .min-h-screen {
+  min-height: 100%;
+}
+.admin-viewport-frame > * {
+  overflow: auto;
+  height: 100%;
+}
+/* 枠の外の右下に切替が出るので、画面説明パネル（枠の中）を避けてずらさない */
+body.kit-admin-framed.kit-desc-open .nvsw {
+  right: 20px;
+}
+
 /* 画面設計キットの枠の中（?frame=1）は、枠の大きさ＝端末の大きさ。768×1024 に固定せず枠いっぱいに広げる */
 .app-viewport-frame--fill {
   width: 100%;

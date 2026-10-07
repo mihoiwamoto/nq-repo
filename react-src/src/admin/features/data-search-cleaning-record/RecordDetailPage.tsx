@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { RecordDetailView } from "../approvals-cleaning-record/RecordDetailPage";
 import type { CleaningApprovalRecord } from "../approvals-cleaning-record/mockData";
 import { useRecords } from "./RecordsContext";
+import { getFactoryName } from "../../../data/factories";
 import type { CleaningSearchRecord } from "./types";
 
 /** データ検索の記録を承認申請管理の詳細の形に直す */
@@ -28,7 +29,7 @@ function toApprovalRecord(r: CleaningSearchRecord): CleaningApprovalRecord {
   };
 }
 
-/** データ検索の詳細は承認申請管理の詳細（承認ステータスの変更・コメント入力つき）をそのまま使う */
+/** データ検索の詳細は承認申請管理の詳細をそのまま使う（承認ステータスのプルダウン・コメントの入力欄つき。確定デザイン 7139:259043。2026-10-07） */
 export function RecordDetailPage() {
   const { factoryId, recordId } = useParams<{ factoryId: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
@@ -38,6 +39,7 @@ export function RecordDetailPage() {
   return (
     <RecordDetailView
       record={record ? toApprovalRecord(record) : undefined}
+      factoryName={getFactoryName(factoryId)}
       breadcrumb={[
         { label: "データ検索", to: "/admin/data-search" },
         { label: "工場選択", to: "/admin/data-search/cleaning-record" },

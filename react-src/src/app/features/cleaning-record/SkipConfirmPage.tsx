@@ -6,6 +6,8 @@ import { ACTORS } from "./mockData";
 
 type SkipConfirmState = {
   lineName: string;
+  /** 見出しに出すライン名（進捗一覧・差し戻しから来たときは【頻度】付き） */
+  lineTitle?: string;
   date: string;
   skipReason: string;
   /** 毎日以外の見送りで選んだ「明日に見送る」。翌日分のラインの一覧の出方が変わる */
@@ -41,16 +43,16 @@ export function SkipConfirmPage() {
     );
   }
 
-  const { lineName, date, skipReason, inspectorName = ACTORS[0].name } = state;
+  const { lineName, lineTitle = lineName, date, skipReason, inspectorName = ACTORS[0].name } = state;
 
   function handleSubmit() {
-    if (lineId) updateLineStatus(lineId, "skipped", { deferToTomorrow: state.deferToTomorrow });
+    if (lineId) updateLineStatus(lineId, "skipped", { deferToTomorrow: state?.deferToTomorrow });
     navigate(`${basePath}/complete`);
   }
 
   return (
     <>
-      <AppHeader title={`清掃記録_${lineName}`} />
+      <AppHeader title={`清掃記録_${lineTitle}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
         <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
@@ -72,7 +74,7 @@ export function SkipConfirmPage() {
 
         <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full max-w-full">
           <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-          <p className="text-base text-[var(--semantic-text-primary)]">{skipReason}</p>
+          <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)] whitespace-pre-wrap">{skipReason}</p>
         </div>
       </div>
 

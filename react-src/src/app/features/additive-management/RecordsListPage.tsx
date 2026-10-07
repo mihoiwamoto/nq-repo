@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { DateFilterInput } from "../../components/DateFilterInput";
 import { todayString } from "../../utils/date";
 import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
@@ -7,6 +7,8 @@ import { AppHeader } from "../../layout/AppHeader";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { ACTORS } from "./mockData";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
+import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 const COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -42,17 +44,51 @@ export function RecordsListPage() {
   );
   const hasRecords = productRecords.length > 0;
   const basePath = `/app/ledger-list/additive-management/products/${productId}`;
+  const navigate = useNavigate();
+  // 進捗一覧で点検済み・確認完了の添加物を開いたときは見るだけの一覧（確定デザイン 7139:238039・7139:238104）。
+  // 実施日は文字で出し、「＋記録を追加」と「確認画面へ」は無く、下は「戻る」だけ。点検済みは右上の「編集」で記録入力へ
+  const progressState = location.state as { fromProgress?: boolean; progressStatus?: string } | null;
+  const readOnlyStatus =
+    progressState?.fromProgress &&
+    (progressState.progressStatus === "inspected" || progressState.progressStatus === "confirmed")
+      ? progressState.progressStatus
+      : null;
 
   return (
     <>
       <AppHeader title={`添加物管理_${additive?.name ?? ""}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-            実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
-          </p>
-          <DateFilterInput value={date} onChange={setDate} />
-        </div>
+        {readOnlyStatus ? (
+          <>
+            {readOnlyStatus === "inspected" && (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => navigate(`${basePath}/new`, { state: { date: date.replaceAll("-", "/"), inspectorName } })}
+                  className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
+                >
+                  <img src={iconEdit} alt="" className="size-5" />
+                  編集
+                </button>
+              </div>
+            )}
+            <div className="bg-white flex items-center justify-between px-4 py-6 rounded-lg">
+              <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
+              <p className="text-base text-[var(--semantic-text-primary)]">{date.replaceAll("-", "/")}</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
+                実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
+              </p>
+              <DateFilterInput value={date} onChange={setDate} />
+            </div>
+            {/* 確定デザイン 7139:233987・7139:234120：実施日の段と表のあいだに区切り線 */}
+            <div className="border-t border-[#d0d0d0] w-full" />
+          </>
+        )}
 
         <div className="bg-white rounded-lg overflow-x-auto">
           <table className="border-collapse w-full">
@@ -110,25 +146,29 @@ export function RecordsListPage() {
           </table>
         </div>
 
+        {!readOnlyStatus && (
         <Link
           to={`${basePath}/new`}
           state={{ date, inspectorName }}
-          className="bg-white border border-[var(--semantic-brand-primary)] h-16 w-full rounded-lg flex items-center justify-center gap-2 text-xl text-[var(--semantic-brand-primary)]"
+          className="bg-white border border-[var(--semantic-brand-primary)] h-12 w-full rounded-lg flex items-center justify-center gap-1 text-lg text-[var(--semantic-brand-primary)]"
         >
-          <span className="text-2xl leading-none">＋</span>
+          {/* 確定デザイン 7139:233987：高さ 48px・18px の文字・20px の＋アイコン */}
+          <img src={iconPlus} alt="" className="size-5" />
           記録を追加
         </Link>
+        )}
       </div>
 
       <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
         <Link
-          to="/app/ledger-list/additive-management"
+          // 進捗一覧から開いた一覧（点検中も）の「戻る」は進捗一覧へ
+          to={readOnlyStatus || progressState?.fromProgress ? "/app/progress" : "/app/ledger-list/additive-management"}
           state={{ inspectorName }}
           className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
         >
           戻る
         </Link>
-        {hasRecords ? (
+        {readOnlyStatus ? null : hasRecords ? (
           <Link
             to={`${basePath}/confirm`}
             state={{ date, inspectorName }}

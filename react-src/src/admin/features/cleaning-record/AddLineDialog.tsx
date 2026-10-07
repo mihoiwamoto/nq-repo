@@ -83,7 +83,11 @@ export function AddLineDialog({
             ))}
           </div>
           <div className="bg-white flex flex-col h-[308px] overflow-y-auto px-4 rounded-lg w-full">
-            {filteredLines.length === 0 ? null : (
+            {filteredLines.length === 0 ? (
+              <p className="py-4 text-sm text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            ) : (
               filteredLines.map((line) => (
                 <button
                   key={line.id}

@@ -13,6 +13,7 @@ import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { CleaningApprovalRecord } from "./mockData";
+import { getFactoryName } from "../../../data/factories";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -25,13 +26,14 @@ function formatDate(date: string) {
 }
 
 export function RecordDetailPage() {
-  const { recordId } = useParams<{ recordId: string }>();
+  const { factoryId, recordId } = useParams<{ factoryId?: string; recordId: string }>();
   const { records, addComment } = useRecords();
   // 承認申請管理の見本は承認ステータスを持たないので画面の中だけで持つ
   const [status, setStatus] = useState<ApprovalStatus>("pending");
   return (
     <RecordDetailView
       record={records.find((r) => r.id === recordId)}
+      factoryName={getFactoryName(factoryId ?? "f1")}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },
         { label: "データ一覧", to: "/admin/approvals/cleaning-record" },
@@ -47,12 +49,15 @@ export function RecordDetailPage() {
 /** 詳細の中身。データ検索の詳細（data-search-cleaning-record/RecordDetailPage）もこれを使う */
 export function RecordDetailView({
   record,
+  factoryName,
   breadcrumb,
   approvalStatus: status,
   setApprovalStatus,
   addComment,
 }: {
   record: CleaningApprovalRecord | undefined;
+  /** 札に出す工場名（確定デザイン 7139:161756 / 7139:162131） */
+  factoryName: string;
   breadcrumb: BreadcrumbItem[];
   approvalStatus: ApprovalStatus;
   setApprovalStatus: (id: string, status: ApprovalStatus) => void;
@@ -99,13 +104,13 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">
         <div className="flex items-center justify-between w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.lineLabel}</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
           <Pulldown
             value={status}
@@ -184,9 +189,22 @@ export function RecordDetailView({
           )}
         </div>
 
+        {/* 点検見送りの記録（清掃箇所が無い）は備考を別のカードで出す（確定デザイン 7139:162009 / 7139:162447） */}
+        {locations.length === 0 && record.remarks && (
+          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
+            <p className="text-xl text-[var(--semantic-text-primary)]">備考</p>
+            <div className="text-base leading-[1.6] text-[var(--semantic-text-primary)] font-normal text-left">
+              {!record.cleaned && <p>点検見送り</p>}
+              <p>{record.remarks}</p>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
+          {/* 確定デザイン：承認申請管理（7139:161756）・データ検索（7139:259043 と同じ配置）とも
+              見出し → これまでのコメント（古い順） → 入力欄 → 「コメントを残す」 */}
           <CommentInputBox
             value={comment}
             onChange={setComment}
@@ -195,6 +213,7 @@ export function RecordDetailView({
               setComment("");
             }}
             maxLength={255}
+            placeholder="コメントを入力"
           />
         </div>
       </div>

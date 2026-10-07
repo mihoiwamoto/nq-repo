@@ -74,7 +74,8 @@ export function RecordDetailPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-            <p className="text-base text-[var(--semantic-text-secondary)]">{record.remarks}</p>
+            {/* 確定デザイン 7139:233879：備考の本文は通常の文字色 */}
+            <p className="text-base font-normal text-[var(--semantic-text-primary)]">{record.remarks}</p>
           </div>
         </div>
       </div>

@@ -160,7 +160,7 @@ export function AdminSidebar() {
       // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「サイドメニュー」を見つけるための印
       data-nq-part="admin-sidebar"
       onScroll={handleScroll}
-      className="admin-sidebar-scroll hidden md:flex w-64 shrink-0 bg-[var(--semantic-brand-primary)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex-col justify-between px-2 py-0 md:h-screen sticky top-0 overflow-y-auto overscroll-contain">
+      className="admin-sidebar-scroll hidden md:flex w-60 shrink-0 bg-[var(--semantic-brand-primary)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex-col justify-between px-2 py-0 md:h-screen sticky top-0 overflow-y-auto overscroll-contain">
       <div className="flex flex-col items-start w-full shrink-0">
         <div className="h-16 flex items-center px-6 w-full">
           <span

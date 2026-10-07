@@ -24,19 +24,20 @@ export function Toast({ message, onClose, autoCloseDuration = 3000 }: ToastProps
 
   if (!isVisible) return null;
 
+  // 確定デザイン（7139:258062 の toast）：340×64・#19c95f・角丸 8・内側 12/16・間 8、チェック 40px、文字 20px 太字、× 24px、右端・下から 88px
   return (
-    <div className="fixed bottom-6 right-0 z-50">
-      <div className="text-white rounded-2xl px-4 py-3 shadow-lg flex items-center gap-3 max-w-sm" style={{ backgroundColor: '#22c55e' }}>
-        <img src={iconCheck} alt="" className="w-5 h-5 shrink-0 brightness-0 invert" />
-        <span className="text-sm font-medium">{message}</span>
+    <div className="fixed bottom-[88px] right-0 z-50">
+      <div className="text-white rounded-lg px-4 py-3 flex items-center gap-2 w-[340px] h-16" style={{ backgroundColor: "#19c95f" }}>
+        <img src={iconCheck} alt="" className="size-10 shrink-0 brightness-0 invert" />
+        <span className="flex-1 min-w-0 text-xl font-semibold">{message}</span>
         <button
           onClick={() => {
             setIsVisible(false);
             onClose();
           }}
-          className="ml-2 text-white hover:opacity-80 flex-shrink-0"
+          className="text-white hover:opacity-80 flex-shrink-0"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="size-6" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
         </button>

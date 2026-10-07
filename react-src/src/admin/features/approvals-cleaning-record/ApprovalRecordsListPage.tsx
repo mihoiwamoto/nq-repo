@@ -5,16 +5,13 @@ import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { cleaningApprovalRecords } from "./mockData";
 import { getDateStripeClasses } from "../../utils/tableStripe";
+import { useDemoList } from "../../../components/demo/demoStore";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
   return `${y.slice(2)}.${m}.${d}`;
-}
-
-function truncateRemarks(text: string) {
-  return text.length >= 26 ? `${text.slice(0, 25)}…` : text;
 }
 
 function CleanedIcon({ cleaned }: { cleaned: boolean }) {
@@ -30,9 +27,15 @@ function CleanedIcon({ cleaned }: { cleaned: boolean }) {
   );
 }
 
+/** 列の幅。最小は中身の幅（備考だけ 0）、余りは確定デザイン 7139:161890 の列幅の比で分ける */
+const COLS =
+  "minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,280fr) minmax(max-content,80fr) minmax(0,272fr) minmax(max-content,104fr) minmax(max-content,104fr)";
+
 export function ApprovalRecordsListPage() {
   const navigate = useNavigate();
-  const rowStripeClasses = getDateStripeClasses(cleaningApprovalRecords, (r) => r.date);
+  // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
+  const records = useDemoList(cleaningApprovalRecords);
+  const rowStripeClasses = getDateStripeClasses(records, (r) => r.date);
   const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
   const request = approvalRequests.find((r) => r.ledgerSlug === "cleaning-record");
 
@@ -62,57 +65,61 @@ export function ApprovalRecordsListPage() {
           </div>
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">25年4月1日点検分</p>
-            <div className="w-full rounded-lg overflow-x-auto">
-              <div className="flex flex-col min-w-[1000px]">
-                <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-                  {["操作", "ステータス", "実施日", "持ち場名/ライン名", "清掃済み", "備考", "実施者", "確認者"].map(
-                    (h, i) => (
-                      <div
-                        key={h}
-                        className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${
-                          i === 5 ? "flex-1 min-w-[200px]" : i === 3 ? "w-[240px]" : "w-[104px]"
-                        }`}
-                      >
-                        {h}
-                      </div>
-                    )
-                  )}
+            {/* 確定デザイン 7139:161890 の列幅（104/104/104/280/80/272/104/104）を比にして、管理画面の幅 1280 でも
+                全部の列が収まるようにする。持ち場名/ライン名は折り返さず、備考だけ 2 行まで折り返す */}
+            <div className="w-full rounded-lg overflow-hidden">
+              <div className="grid w-full" style={{ gridTemplateColumns: COLS }}>
+                <div className="col-span-full grid grid-cols-subgrid bg-[#f6f6f6] h-[50px] items-center">
+                  {["操作", "ステータス", "実施日", "持ち場名/ライン名", "清掃済み", "備考", "実施者", "確認者"].map((h) => (
+                    <div
+                      key={h}
+                      className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-brand-primary)]"
+                    >
+                      {h}
+                    </div>
+                  ))}
                 </div>
-                {cleaningApprovalRecords.map((record, index) => (
+                {records.length === 0 && (
+                  <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
+                    データがありません
+                  </p>
+                )}
+                {records.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                    data-row
+                    className={`col-span-full grid grid-cols-subgrid h-14 items-center ${rowStripeClasses[index]}`}
                   >
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                    <div className="flex items-center justify-center p-2 h-full">
                       <Link
                         to={`/admin/approvals/cleaning-record/records/${record.id}`}
-                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
                       >
                         詳細
                       </Link>
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                    <div className="flex items-center justify-center p-2 h-full">
                       <ApprovalStatusBadge status="pending" />
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {formatDateShort(record.date)}
                     </div>
-                    <div className="w-[240px] flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left">
+                    <div className="flex items-center justify-start p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)] text-left">
                       {record.lineLabel}
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                    <div className="flex items-center justify-center p-2 h-full">
                       <CleanedIcon cleaned={record.cleaned} />
                     </div>
                     <div
-                      className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left"
+                      className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left"
                       title={record.remarks}
                     >
-                      {truncateRemarks(record.remarks)}
+                      <span className="line-clamp-2">{record.remarks}</span>
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.implementer}
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.confirmer}
                     </div>
                   </div>

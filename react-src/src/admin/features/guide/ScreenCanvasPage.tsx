@@ -84,7 +84,7 @@ function screensForDevice(device: DeviceMode): ScreenEntry[] {
 }
 
 const DEVICE_MODE_LABELS: Record<DeviceMode, { title: string; hint: string }> = {
-  pc: { title: "管理画面", hint: "管理画面を PC 幅（1280px）で表示" },
+  pc: { title: "管理画面", hint: "管理画面を PC 幅（1440px）で表示" },
   tablet: { title: "アプリ", hint: "アプリをタブレット縦（768×1024）で表示" },
 };
 /** 「変わった部分」を選んでいないときに、まとめて囲む数の上限（画面が枠だらけにならないように） */

@@ -95,7 +95,9 @@ export function SettingsPage() {
           </div>
 
           <div className="flex flex-col gap-6 w-full">
-            {filteredScales.length === 0 ? null : (
+            {filteredScales.length === 0 ? (
+              <p className="text-base text-[var(--semantic-text-secondary)]">データがありません</p>
+            ) : (
               filteredScales.map((scale) => (
                 <Link
                   key={scale.id}

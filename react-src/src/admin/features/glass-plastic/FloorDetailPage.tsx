@@ -167,7 +167,11 @@ export function FloorDetailPage() {
             </p>
           </div>
           <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
-            {floor.repairItems.length === 0 ? null : (
+            {floor.repairItems.length === 0 ? (
+              <p className="text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            ) : (
               groupByRoom(floor.repairItems).map((group) => (
                 <div key={group.room} className="flex flex-col gap-2 items-start w-full">
                   <p className="text-base text-[var(--semantic-brand-primary)]">{group.room}</p>
@@ -280,7 +284,7 @@ export function FloorDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
       {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );

@@ -6,6 +6,8 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { AddLineDialog } from "./AddLineDialog";
+import iconTrash from "../../../assets/figma/icons/common/trash.svg";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 
 const FREQUENCY_LABEL = { daily: "毎日", weekly: "毎週", monthly: "毎月", yearly: "毎年" } as const;
 
@@ -27,10 +29,26 @@ export function NewRegistrationPage() {
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [lineToDelete, setLineToDelete] = useState<string | null>(null);
 
   const selectedLines = lineIds
     .map((id) => lines.find((l) => l.id === id))
     .filter((l): l is NonNullable<typeof l> => Boolean(l));
+  // 確定デザイン（7139:258366 → 7139:258392）：ごみ箱 →「持ち場/ライン設定の削除」→「削除」。
+  // 登録済みの日の編集ではその場で保存して削除完了へ。新規登録ではまだ保存していないので外してトーストだけ
+  function confirmDeleteLine() {
+    if (!lineToDelete) return;
+    const remaining = lineIds.filter((id) => id !== lineToDelete);
+    setLineToDelete(null);
+    if (isEditing) {
+      upsertEntry(initialDate, remaining);
+      navigate(`${basePath}/schedule/deleted?date=${initialDate}`);
+      return;
+    }
+    setLineIds(remaining);
+    setToastMessage("削除されました。");
+    setShowToast(true);
+  }
 
   function handleSubmit() {
     if (!date || lineIds.length === 0) {
@@ -47,7 +65,7 @@ export function NewRegistrationPage() {
 
   return (
     <div>
-      <PageTitleBar title={isEditing ? "点検予定の編集" : "新規登録"} showBack />
+      <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -64,7 +82,7 @@ export function NewRegistrationPage() {
               <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">点検日</p>
               <span className="text-sm font-semibold text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
-            <DateFilterInput value={date} onChange={setDate} />
+            <DateFilterInput variant="form" value={date} onChange={setDate} />
           </div>
 
           <div className="flex flex-col items-start rounded-lg w-full overflow-hidden">
@@ -78,33 +96,48 @@ export function NewRegistrationPage() {
                 onClick={() => setDialogOpen(true)}
                 className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
               >
-                + 追加
+                <span
+                  aria-hidden
+                  className="inline-block size-5 shrink-0"
+                  style={{
+                    WebkitMaskImage: `url("${iconPlus}")`,
+                    maskImage: `url("${iconPlus}")`,
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    backgroundColor: "var(--semantic-brand-primary)",
+                  }}
+                />
+                追加
               </button>
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
+            {/* 確定デザイン（7139:258341・7139:258316）：行ごとに「持ち場/ライン名（左）／値」とゴミ箱、行の間に線 */}
             <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
-              {selectedLines.length === 0 ? null : (
-                selectedLines.map((line) => (
-                  <div key={line.id} className="flex items-center w-full gap-4">
-                    <span className="flex-1 text-base text-[var(--semantic-text-primary)]">
-                      【{FREQUENCY_LABEL[line.frequency]}】{line.name}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setLineIds((prev) => prev.filter((id) => id !== line.id));
-                        setToastMessage("削除されました。");
-                        setShowToast(true);
-                      }}
-                      className="flex items-center justify-center w-8 h-8 rounded border border-[var(--semantic-brand-danger)] text-[var(--semantic-brand-danger)]"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="削除">
-                        <path
-                          d="M7.3077 20.5C6.80898 20.5 6.38302 20.3234 6.02982 19.9702C5.67661 19.617 5.5 19.191 5.5 18.6923V6.00005H4.5V4.50008H8.99997V3.61548H15V4.50008H19.5V6.00005H18.5V18.6923C18.5 19.1975 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6922 20.5H7.3077ZM17 6.00005H6.99997V18.6923C6.99997 18.7821 7.02883 18.8558 7.08652 18.9135C7.14422 18.9712 7.21795 19.0001 7.3077 19.0001H16.6922C16.7692 19.0001 16.8397 18.968 16.9038 18.9039C16.9679 18.8398 17 18.7693 17 18.6923V6.00005ZM9.40385 17.0001H10.9038V8.00005H9.40385V17.0001ZM13.0961 17.0001H14.5961V8.00005H13.0961V17.0001Z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                    </button>
+              {selectedLines.length === 0 ? (
+                <p className="text-base text-[var(--semantic-text-primary)] w-full">
+                  データがありません
+                </p>
+              ) : (
+                selectedLines.map((line, i) => (
+                  <div key={line.id} className="flex flex-col gap-4 w-full">
+                    {i > 0 && <div className="border-t border-[#d0d0d0] w-full" />}
+                    <div className="flex items-center w-full gap-4 h-10">
+                      <span className="w-40 shrink-0 text-base text-[var(--semantic-text-primary)] whitespace-nowrap">
+                        持ち場/ライン名
+                      </span>
+                      <span className="flex-1 min-w-0 text-base text-[var(--semantic-text-primary)]">
+                        【{FREQUENCY_LABEL[line.frequency]}】{line.name}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setLineToDelete(line.id)}
+                        className="bg-white border border-[var(--semantic-brand-danger)] size-10 rounded-lg flex items-center justify-center shrink-0"
+                      >
+                        <img src={iconTrash} alt="削除" className="size-6" />
+                      </button>
+                    </div>
                   </div>
                 ))
               )}
@@ -141,6 +174,38 @@ export function NewRegistrationPage() {
             setDialogOpen(false);
           }}
         />
+      )}
+
+      {lineToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setLineToDelete(null)} />
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+            <div className="flex flex-col gap-6 items-start w-full">
+              <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+                持ち場/ライン設定の削除
+              </h2>
+              <p className="text-base text-[var(--semantic-text-primary)]">
+                削除した情報は元に戻せません。本当に削除しますか？
+              </p>
+            </div>
+            <div className="flex gap-6 items-center justify-center w-full">
+              <button
+                type="button"
+                onClick={() => setLineToDelete(null)}
+                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteLine}
+                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+              >
+                削除
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}

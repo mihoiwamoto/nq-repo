@@ -3,7 +3,10 @@ export type PendingReview = {
   date: string;
   name: string;
   ledgerSlug: string;
-  status: "点検済み" | "差し戻し";
+  /** 見送り = 実施者が点検を見送った記録（確定デザイン 7139:346491）。確認者が見て提出する流れは点検済みと同じ */
+  status: "点検済み" | "見送り" | "差し戻し";
+  /** 差し戻しのうち、見送った記録が差し戻されたもの（確定デザイン 7139:345916）。全項目「ー」と見送り理由を出す */
+  skipped?: boolean;
   lineId?: string;
   pointId?: string;
   recordId?: string;
@@ -27,10 +30,20 @@ export const PENDING_REVIEWS: PendingReview[] = [
   {
     id: "p2",
     date: "04/01",
-    name: "豆乳ライン",
+    // 確定デザイン（7139:293969）どおり頻度を頭に付ける
+    name: "【毎日】豆乳ライン",
     ledgerSlug: "equipment-inspection",
     status: "点検済み",
     lineId: "l8",
+  },
+  // 見送りの記録（確定デザイン 7139:346491 の「【毎週】自動計量機・風力選別機ライン」）
+  {
+    id: "p20",
+    date: "04/01",
+    name: "【毎週】自動計量機・風力選別機ライン",
+    ledgerSlug: "equipment-inspection",
+    status: "見送り",
+    lineId: "l20",
   },
   { id: "p4", date: "04/01", name: "添加物", ledgerSlug: "scale-inspection", status: "点検済み", postId: "additive" },
   {
@@ -63,7 +76,8 @@ export const PENDING_REVIEWS: PendingReview[] = [
   {
     id: "p8",
     date: "04/01",
-    name: "ゆばライン",
+    // 確定デザイン（7139:221204 / 7139:229123）どおり頻度を頭に付ける
+    name: "【毎日】ゆばライン",
     ledgerSlug: "cleaning-record",
     status: "点検済み",
     lineId: "c1",
@@ -79,7 +93,8 @@ export const PENDING_REVIEWS: PendingReview[] = [
   {
     id: "p10",
     date: "04/01",
-    name: "ゆばライン（つまみ関係）",
+    // 確定デザイン（7139:293969）どおり頻度を頭に付ける
+    name: "【毎日】ゆばライン（つまみ関係）",
     ledgerSlug: "equipment-inspection",
     status: "点検済み",
     lineId: "l9",
@@ -110,16 +125,28 @@ export const PENDING_REVIEWS: PendingReview[] = [
   {
     id: "p14",
     date: "04/01",
-    name: "豆乳ライン",
+    // 確定デザイン（7139:293969）どおり頻度を頭に付ける
+    name: "【毎日】豆乳ライン",
     ledgerSlug: "equipment-inspection",
     status: "差し戻し",
     lineId: "l8",
+  },
+  // 見送った記録が差し戻された場合（確定デザイン「確認待ち_機械器具点検_点検見送り後_差し戻し_再度点検見送りする場合」）
+  {
+    id: "p19",
+    date: "04/01",
+    name: "【毎日】自動計量機・風力選別機ライン",
+    ledgerSlug: "equipment-inspection",
+    status: "差し戻し",
+    skipped: true,
+    lineId: "l11",
   },
   // 清掃記録の差し戻し（機械器具点検の p14 と同じ流れ）
   {
     id: "p15",
     date: "04/01",
-    name: "ゆばライン",
+    // 確定デザイン（7139:221204 / 7139:229123）どおり頻度を頭に付ける
+    name: "【毎日】ゆばライン",
     ledgerSlug: "cleaning-record",
     status: "差し戻し",
     lineId: "c1",

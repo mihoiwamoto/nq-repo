@@ -4,12 +4,12 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
-import { useStorageManagement } from "./StorageManagementContext";
+import { storageOriginCrumbs, useStorageManagement } from "./StorageManagementContext";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 export function StorageDetailPage() {
   const { locationId } = useParams<{ locationId: string }>();
-  const { storageLocations } = useStorageManagement();
+  const { storageLocations, origin } = useStorageManagement();
   const routeLocation = useLocation();
   const location = storageLocations.find((item) => item.id === locationId);
 
@@ -23,15 +23,22 @@ export function StorageDetailPage() {
 
   return (
     <div>
-      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
+          ...storageOriginCrumbs(origin),
           { label: "保管場所管理", to: "/admin/storage" },
           { label: "詳細" },
         ]}
       />
       <div className="flex flex-col gap-4 items-start p-6">
+        {/* 確定デザイン 7139:162525：工場は項目の行ではなく、上の札で出す */}
+        <div className="bg-white inline-flex items-center px-4 py-2 rounded-lg self-start">
+          <p className="text-xl text-[var(--semantic-text-primary)]">
+            {getFactoryName(location?.factoryId)}
+          </p>
+        </div>
         <div className="flex items-center justify-end w-full gap-2">
           <Link
             to={`/admin/storage/${locationId}/edit`}
@@ -45,13 +52,6 @@ export function StorageDetailPage() {
           <div className="flex items-center px-6 py-6 gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">保管場所</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">{location?.name}</p>
-          </div>
-          <div className="h-px bg-[#e0e0e0] mx-6"></div>
-          <div className="flex items-center px-6 py-6 gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">工場</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">
-              {getFactoryName(location?.factoryId)}
-            </p>
           </div>
         </div>
       </div>

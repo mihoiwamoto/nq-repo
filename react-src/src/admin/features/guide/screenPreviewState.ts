@@ -42,7 +42,16 @@ export const PREVIEW_STATE: Record<string, unknown> = {
   "src/app/features/cleaning-record/ConfirmPage.tsx": {
     lineName: "ゆばライン",
     date: DATE,
-    records: {},
+    // 各清掃項目の「実施者 日時」を出す（確定デザイン 7139:221957）
+    records: Object.fromEntries(
+      [
+        ["つまみ上げパック機|シール部", "07:08"],
+        ["つまみ上げパック機|コンベアベルト", "07:12"],
+        ["つまみ上げパック機|充填ノズル", "07:18"],
+        ["充填包装機|コンベア清掃", "20:12"],
+        ["充填包装機|充填ノズル洗浄", "20:19"],
+      ].map(([key, time]) => [key, { status: "done", timestamp: `${DATE} ${time}`, inspector: INSPECTOR }])
+    ),
     remarks: "",
     inspectorName: INSPECTOR,
   },
@@ -53,11 +62,41 @@ export const PREVIEW_STATE: Record<string, unknown> = {
     inspectorName: INSPECTOR,
   },
   // 機械器具点検
+  // 機械器具点検：各項目の「正常／異常あり」の下に「実施者 日時」を出す（確定デザイン 7139:282126）
   "src/app/features/equipment-inspection/ConfirmPage.tsx": {
     lineName: "豆乳ライン",
     date: DATE,
-    records: { start: {}, end: {} },
-    remarks: { start: "", end: "" },
+    records: Object.fromEntries(
+      (
+        [
+          ["start", ["07:15", "07:08", "06:52", "06:52"]],
+          ["end", ["17:15", "17:08", "16:52", "16:45"]],
+        ] as const
+      ).map(([tab, times]) => [
+        tab,
+        Object.fromEntries(
+          ["エコスター|定量部", "エコスター|タンク部", "エコスター|駆動ベルト", "ボイル槽|温度計・水位"].map((key, i) => {
+            const ng = key === "エコスター|タンク部";
+            return [
+              key,
+              {
+                status: ng ? "ng" : "ok",
+                cause: ng ? "汚れ" : null,
+                causeDetail: "",
+                actionType: ng ? "その他" : null,
+                actionDetail: ng ? "内部に油汚れを確認、分解洗浄を実施済み" : "",
+                timestamp: `${DATE} ${times[i]}`,
+                inspector: INSPECTOR,
+              },
+            ];
+          })
+        ),
+      ])
+    ),
+    remarks: {
+      start: "エコスター タンク部に油汚れを確認。分解洗浄にて対応済み。次回点検時に再確認予定。その他の点検項目は異常なし。",
+      end: "",
+    },
     inspectorName: INSPECTOR,
   },
   "src/app/features/equipment-inspection/SkipConfirmPage.tsx": {

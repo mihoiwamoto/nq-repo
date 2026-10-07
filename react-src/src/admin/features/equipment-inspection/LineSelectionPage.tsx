@@ -144,7 +144,11 @@ export function LineSelectionPage() {
             </div>
 
             {/* 画面説明（コーチマーク）の「持ち場/ラインのカード」はこの並びを囲む */}
-            {filteredLines.length === 0 ? null : (
+            {filteredLines.length === 0 ? (
+              <p className="text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            ) : (
               <div className="flex flex-col gap-6 w-full" data-nq-part="line-cards">
               {filteredLines.map((line) => (
                 <Link

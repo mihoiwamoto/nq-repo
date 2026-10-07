@@ -3,7 +3,7 @@ import { AppHeader } from "../../layout/AppHeader";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { useAnnouncementBar } from "../../layout/AnnouncementBarContext";
 import { useInspection } from "./InspectionContext";
-import { inspectionPoints, type InspectionItemRecord } from "./mockData";
+import { FREQUENCY_LABELS, inspectionPoints, type InspectionItemRecord } from "./mockData";
 
 const INSPECTOR_NAME = "佐藤健一";
 const TAB_LABEL = { start: "始業", end: "終業" } as const;
@@ -39,7 +39,7 @@ type ConfirmState = {
 export function ConfirmPage() {
   const { lineId } = useParams<{ lineId: string }>();
   const navigate = useNavigate();
-  const { updateLineStatus } = useInspection();
+  const { lines, updateLineStatus } = useInspection();
   const { notifyOfflineInspection } = useAnnouncementBar();
   const location = useLocation();
   const state = location.state as ConfirmState | null;
@@ -67,6 +67,7 @@ export function ConfirmPage() {
   }
 
   const { lineName, date, records, remarks, inspectorName = INSPECTOR_NAME } = state;
+  const line = lines.find((l) => l.id === lineId);
 
   function handleSubmit() {
     if (lineId) updateLineStatus(lineId, "inspected");
@@ -76,7 +77,8 @@ export function ConfirmPage() {
 
   return (
     <>
-      <AppHeader title={`機械器具点検_${lineName}`} />
+      {/* 進捗一覧から来たときは確定デザイン（7139:293872）どおり頻度を頭に付ける */}
+      <AppHeader title={`機械器具点検_${fromProgress && line ? `【${FREQUENCY_LABELS[line.frequency]}】` : ""}${lineName}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
         <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
@@ -122,23 +124,12 @@ export function ConfirmPage() {
                         </div>
                         {record?.status === "ng" && (
                           <div className="flex flex-col gap-1 items-start px-2 w-full">
+                            {/* 確定デザイン（7139:282126）：「その他」を選んで書いたときは、書いた内容をそのまま出す */}
                             <p className="text-base text-[var(--semantic-text-secondary)]">
-                              原因：{record.cause}
-                              {record.causeDetail && (
-                                <>
-                                  <br />
-                                  {record.causeDetail}
-                                </>
-                              )}
+                              原因：{record.cause === "その他" && record.causeDetail ? record.causeDetail : record.cause}
                             </p>
                             <p className="text-base text-[var(--semantic-text-secondary)]">
-                              対応：{record.actionType}
-                              {record.actionDetail && (
-                                <>
-                                  <br />
-                                  {record.actionDetail}
-                                </>
-                              )}
+                              対応：{record.actionType === "その他" && record.actionDetail ? record.actionDetail : record.actionType}
                             </p>
                           </div>
                         )}
@@ -157,8 +148,9 @@ export function ConfirmPage() {
 
             <div className="flex flex-col gap-2 items-start px-2 w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                {remarks[tab]}
+              {/* 備考が空のときは確定デザインどおり薄い文字の案内を出す */}
+              <p className={`text-base ${remarks[tab] ? "text-[var(--semantic-text-primary)]" : "text-[var(--semantic-text-secondary)]"}`}>
+                {remarks[tab] || "点検内容に関する補足を入力できます（任意）"}
               </p>
             </div>
           </div>

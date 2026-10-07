@@ -65,7 +65,9 @@ export function ApprovalManagementPage() {
           })}
         </div>
 
-        {items.length === 0 ? null : (
+        {items.length === 0 ? (
+          <p className="text-[var(--semantic-text-secondary)]">データがありません</p>
+        ) : (
           <div className="flex flex-col gap-6 w-full">
             {items.map((item) => {
               const category = ledgerCategories.find((c) => c.slug === item.ledgerSlug);

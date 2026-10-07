@@ -30,7 +30,7 @@ export function XrayDetectorDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新しました。");
+      setToastMessage("更新されました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);
@@ -108,7 +108,11 @@ export function XrayDetectorDetailPage() {
                 </div>
               ))}
             </div>
-            {unit.settings.length === 0 ? null : (
+            {unit.settings.length === 0 ? (
+              <div className="bg-white flex items-center justify-center w-full py-6">
+                <p className="text-base text-[var(--semantic-text-secondary)]">データがありません</p>
+              </div>
+            ) : (
               unit.settings.map((row, index) => (
                 <div
                   key={row.id}

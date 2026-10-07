@@ -22,7 +22,7 @@ type DeviceFilter = "all" | "pc" | "tablet";
 
 const DEVICE_FILTERS: { key: DeviceFilter; label: string; hint: string }[] = [
   { key: "all", label: "すべて", hint: "管理画面とアプリを両方表示" },
-  { key: "pc", label: "管理画面", hint: "管理画面（PC 幅 1280px の実画面）だけ表示" },
+  { key: "pc", label: "管理画面", hint: "管理画面（PC 幅 1440px の実画面）だけ表示" },
   { key: "tablet", label: "アプリ", hint: "アプリ（タブレット縦 768×1024 の実画面）だけ表示" },
 ];
 
@@ -61,7 +61,7 @@ const VERSION_ORDER = ["Ver.4.0", "Ver.3.0", "Ver.2.0", "Ver.1.5", "Ver.1.0"];
 const LEGEND_ROLES: FlowRole[] = ["list", "detail", "new", "edit", "confirm", "complete", "approve", "delete-confirm", "settings", "other"];
 
 // ノードの寸法。
-// ノードには実画面を iframe で読み込み、その端末の実寸（管理画面は PC 1280×800、
+// ノードには実画面を iframe で読み込み、その端末の実寸（管理画面は PC 1440×960、
 // アプリはタブレット縦 768×1024）で描いたものをノード幅に縮小して表示する。
 // 撮影済みサムネイルは PC 幅でしか撮っていないため、アプリ画面が別物に見えてしまうのと、
 // 撮り直さないと古いままになるので、遷移図では常に今の実画面を出す。
@@ -134,7 +134,7 @@ function acquireLoadSlot(start: () => void): () => void {
 }
 
 /**
- * 実画面をその端末の実寸（PC 1280×800 / タブレット縦 768×1024）で iframe に読み込み、
+ * 実画面をその端末の実寸（PC 1440×960 / タブレット縦 768×1024）で iframe に読み込み、
  * ノード幅に縮小して表示する。
  * 画面数が多いので、画面内に近づいたときだけ読み込み、離れたら破棄してメモリを抑える。
  * 読み込み中は撮影済みサムネイル（あれば）か役割のプレースホルダを出す。
@@ -211,7 +211,7 @@ function LivePreview({ node, device }: { node: FlowNode; device: DeviceMode }) {
 
 /**
  * ノードをクリックしたときのポップアップ。
- * 余計な枠や説明は付けず、その画面だけを端末の実寸（PC 1280×800 / タブレット縦 768×1024）で
+ * 余計な枠や説明は付けず、その画面だけを端末の実寸（PC 1440×960 / タブレット縦 768×1024）で
  * iframe に読み込み、ウィンドウに収まるよう縮小して真ん中に出す。中は実際に触って動かせる。
  * 背景クリック・Esc・右上の × で閉じる。
  * 層はフィードバックの右パネル（z-60）より上に置く。

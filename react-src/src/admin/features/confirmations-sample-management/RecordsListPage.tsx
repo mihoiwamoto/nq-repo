@@ -338,7 +338,11 @@ export function RecordsListPage() {
                   </div>
                 ))}
               </div>
-              {filtered.length === 0 ? null : (
+              {filtered.length === 0 ? (
+                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
+                  データがありません
+                </p>
+              ) : (
                 filtered.map((record, index) => (
                   <div key={record.id} className={`flex h-14 items-center ${rowStripeClasses[index]}`}>
                     <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">

@@ -11,7 +11,8 @@ export const PROGRESS_STATUS_COLORS: Record<ProgressStatus, string> = {
   not_inspected: "#808080",
   inspecting: "#4B9FF8",
   inspected: "var(--semantic-status-caution)",
-  confirmed: "var(--semantic-brand-primary)",
+  // 確定デザイン（7139:293830）の「確認完了」は明るい緑（--semantic-status-success #19c95f）
+  confirmed: "var(--semantic-status-success)",
 };
 
 export type ProgressEntry = {
@@ -174,14 +175,7 @@ export const PROGRESS_ENTRIES: ProgressEntry[] = [
     status: "inspected",
     productId: "c1",
   },
-  {
-    id: "g19",
-    date: "04/01",
-    ledgerSlug: "chemical-management",
-    name: "消泡剤（シリコーン樹脂）",
-    status: "not_inspected",
-    productId: "c4",
-  },
+  // 薬品管理は毎日の点検ではないので「未点検」の行は出さない（確定デザイン 7139:250287 の注記。2026-10-06 に g19 を外した）
   {
     id: "g19b",
     date: "04/01",
@@ -203,7 +197,8 @@ export const PROGRESS_ENTRIES: ProgressEntry[] = [
     date: "04/01",
     ledgerSlug: "additive-management",
     name: "ソルビン酸",
-    status: "not_inspected",
+    // 添加物管理は毎日の点検ではないので「未点検」は無い（確定デザイン 7139:238645 と注記 7139:298922。2026-10-06）
+    status: "inspected",
     productId: "a1",
   },
   {
@@ -211,7 +206,7 @@ export const PROGRESS_ENTRIES: ProgressEntry[] = [
     date: "04/01",
     ledgerSlug: "additive-management",
     name: "にがり（塩化マグネシウム）",
-    status: "inspected",
+    status: "inspecting",
     productId: "a2",
   },
   {

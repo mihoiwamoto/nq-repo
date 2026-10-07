@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { FACTORIES } from "../../../data/factories";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
+import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 
 export function FactorySelectionPage() {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -26,7 +28,23 @@ export function FactorySelectionPage() {
             onClick={() => setFilterOpen((v) => !v)}
             className="flex gap-2 items-center text-base text-[var(--semantic-brand-primary)]"
           >
-            絞り込み検索 {filterOpen ? "−" : "+"}
+            {/* 確定デザイン 7139:163661：文字と 20px のアイコンを 8px あけて並べる */}
+            <span>絞り込み検索</span>
+            <span
+              aria-hidden
+              className="inline-block size-5 shrink-0"
+              style={{
+                WebkitMaskImage: `url("${filterOpen ? iconMinus : iconPlus}")`,
+                maskImage: `url("${filterOpen ? iconMinus : iconPlus}")`,
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+                backgroundColor: "var(--semantic-brand-primary)",
+              }}
+            />
           </button>
           {filterOpen && (
             <input

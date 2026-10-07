@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AdminLayout } from "./admin/layout/AdminLayout";
+import { AdminViewport } from "./admin/layout/AdminViewport";
 import { AdminHomePage } from "./admin/pages/AdminHomePage";
 import { LedgerManagementPage } from "./admin/pages/LedgerManagementPage";
 import { DataSearchPage } from "./admin/pages/DataSearchPage";
@@ -50,6 +51,8 @@ import { LineRegistrationCompletePage } from "./admin/features/equipment-inspect
 import { FactorySelectionPage } from "./admin/features/equipment-inspection/FactorySelectionPage";
 import { LineSelectionPage } from "./admin/features/equipment-inspection/LineSelectionPage";
 import { LineDetailPage } from "./admin/features/equipment-inspection/LineDetailPage";
+import { LineEditPage } from "./admin/features/equipment-inspection/LineEditPage";
+import { ScheduleDeleteCompletePage } from "./admin/features/equipment-inspection/ScheduleDeleteCompletePage";
 import { RecordsProviderOutlet } from "./admin/features/data-search-equipment/RecordsContext";
 import { SearchFactorySelectionPage } from "./admin/features/data-search-equipment/SearchFactorySelectionPage";
 import { DataListPage } from "./admin/features/data-search-equipment/DataListPage";
@@ -66,6 +69,8 @@ import { LineRegistrationCompletePage as CleaningRecordLineRegistrationCompleteP
 import { CalendarPage as CleaningRecordCalendarPage } from "./admin/features/cleaning-record/CalendarPage";
 import { NewRegistrationPage as CleaningRecordNewRegistrationPage } from "./admin/features/cleaning-record/NewRegistrationPage";
 import { ScheduleRegistrationCompletePage as CleaningRecordScheduleRegistrationCompletePage } from "./admin/features/cleaning-record/ScheduleRegistrationCompletePage";
+import { ScheduleDeleteCompletePage as CleaningRecordScheduleDeleteCompletePage } from "./admin/features/cleaning-record/ScheduleDeleteCompletePage";
+import { LineEditPage as CleaningRecordLineEditPage } from "./admin/features/cleaning-record/LineEditPage";
 import { ApprovalRecordsListPage } from "./admin/features/approvals-cleaning-record/ApprovalRecordsListPage";
 import { RecordDetailPage as CleaningApprovalRecordDetailPage } from "./admin/features/approvals-cleaning-record/RecordDetailPage";
 import { RecordsProviderOutlet as CleaningApprovalRecordsProviderOutlet } from "./admin/features/approvals-cleaning-record/RecordsContext";
@@ -316,6 +321,8 @@ import { ConfirmPage as AppCleaningConfirmPage } from "./app/features/cleaning-r
 import { SkipConfirmPage as AppCleaningSkipConfirmPage } from "./app/features/cleaning-record/SkipConfirmPage";
 import { SubmitCompletePage as AppCleaningSubmitCompletePage } from "./app/features/cleaning-record/SubmitCompletePage";
 import { CleaningRecordProviderOutlet as AppCleaningRecordProviderOutlet } from "./app/features/cleaning-record/CleaningRecordContext";
+import { CleaningScheduleProviderOutlet as AppCleaningScheduleProviderOutlet } from "./app/features/cleaning-record/ScheduleContext";
+import { SchedulePointSettingPage as AppCleaningSchedulePointSettingPage } from "./app/features/cleaning-record/SchedulePointSettingPage";
 import { FloorSelectionPage as AppGlassPlasticFloorSelectionPage } from "./app/features/glass-plastic/FloorSelectionPage";
 import { FloorInspectionPage as AppGlassPlasticFloorInspectionPage } from "./app/features/glass-plastic/FloorInspectionPage";
 import { FloorInspectionConfirmPage as AppGlassPlasticFloorInspectionConfirmPage } from "./app/features/glass-plastic/FloorInspectionConfirmPage";
@@ -407,11 +414,11 @@ function App() {
     <Routes>
       {/* 管理画面/アプリ画面を選ぶトップ画面は廃止。ルートは管理画面ログインへ */}
       <Route path="/" element={<Navigate to="/admin/login" replace />} />
-      <Route path="/admin/login" element={<AdminLoginPage />} />
-      <Route path="/admin/logout" element={<LogoutCompletePage />} />
+      <Route path="/admin/login" element={<AdminViewport><AdminLoginPage /></AdminViewport>} />
+      <Route path="/admin/logout" element={<AdminViewport><LogoutCompletePage /></AdminViewport>} />
       <Route path="/app/login" element={<AppLoginPage />} />
 
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/admin" element={<AdminViewport><AdminLayout /></AdminViewport>}>
         <Route index element={<Navigate to="home" replace />} />
         <Route path="home" element={<AdminHomePage />} />
         <Route path="ledger-management" element={<LedgerManagementPage />} />
@@ -424,6 +431,7 @@ function App() {
             path="factories/:factoryId/schedule/register/complete"
             element={<ScheduleRegistrationCompletePage />}
           />
+          <Route path="factories/:factoryId/schedule/deleted" element={<ScheduleDeleteCompletePage />} />
           <Route
             path="factories/:factoryId/checklist-settings"
             element={<ChecklistSettingsPage />}
@@ -438,6 +446,7 @@ function App() {
             element={<LineRegistrationCompletePage />}
           />
           <Route path="factories/:factoryId/lines/:lineId" element={<LineDetailPage />} />
+          <Route path="factories/:factoryId/lines/:lineId/edit" element={<LineEditPage />} />
         </Route>
         <Route path="ledger-management/cleaning-record" element={<CleaningRecordProviderOutlet />}>
           <Route index element={<CleaningRecordFactorySelectionPage />} />
@@ -455,6 +464,10 @@ function App() {
             element={<CleaningRecordScheduleRegistrationCompletePage />}
           />
           <Route
+            path="factories/:factoryId/schedule/deleted"
+            element={<CleaningRecordScheduleDeleteCompletePage />}
+          />
+          <Route
             path="factories/:factoryId/lines/new"
             element={<CleaningRecordLineRegistrationPage />}
           />
@@ -465,6 +478,10 @@ function App() {
           <Route
             path="factories/:factoryId/lines/:lineId"
             element={<CleaningRecordLineDetailPage />}
+          />
+          <Route
+            path="factories/:factoryId/lines/:lineId/edit"
+            element={<CleaningRecordLineEditPage />}
           />
         </Route>
         <Route
@@ -1140,15 +1157,22 @@ function App() {
             element={<AppEquipmentSubmitCompletePage />}
           />
           <Route element={<SensoryScheduleProviderOutlet />}>
+          <Route element={<AppCleaningScheduleProviderOutlet />}>
             <Route path="schedule" element={<AppEquipmentSchedulePage />} />
             <Route
               path="schedule/equipment-inspection/:dateKey"
               element={<AppEquipmentSchedulePointSettingPage />}
             />
+            {/* 清掃記録 記録管理（確定デザイン 7139:220443）。機械器具点検と同じ作り */}
+            <Route
+              path="schedule/cleaning-record/:dateKey"
+              element={<AppCleaningSchedulePointSettingPage />}
+            />
             <Route
               path="schedule/sensory-inspection/:dateKey"
               element={<AppSensoryScheduleRegisterPage />}
             />
+          </Route>
           </Route>
         </Route>
         <Route element={<AppCleaningRecordProviderOutlet />}>
@@ -1357,6 +1381,8 @@ function App() {
         <Route path="progress" element={<ProgressListPage />} />
         <Route path="pending-review" element={<PendingReviewListPage />} />
         <Route path="pending-review/:id" element={<PendingReviewDetailPage />} />
+        {/* 薬品管理の差し戻しの詳細（記録 1 件。確定デザイン 7139:248955。2026-10-06） */}
+        <Route path="pending-review/:id/records/:recordId" element={<PendingReviewDetailPage />} />
         <Route path="settings" element={<AppSettingsPage />} />
         <Route path="settings/license" element={<AppLicensePage />} />
         <Route path="text-size" element={<AppTextSizePage />} />

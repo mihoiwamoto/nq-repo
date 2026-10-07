@@ -77,7 +77,9 @@ export function LineSelectionPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col gap-2 w-full">
+          <p className="text-2xl text-[var(--semantic-text-primary)]">持ち場/ライン一覧</p>
+          <div className="flex flex-col gap-6 w-full">
           <div className="flex items-center border-b-2 border-[#d0d0d0] w-full">
             {(["visible", "hidden"] as const).map((key) => (
               <button
@@ -113,7 +115,11 @@ export function LineSelectionPage() {
               ))}
             </div>
 
-            {filteredLines.length === 0 ? null : (
+            {filteredLines.length === 0 ? (
+              <p className="text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            ) : (
               filteredLines.map((line) => (
                 <Link
                   key={line.id}
@@ -124,6 +130,7 @@ export function LineSelectionPage() {
                 </Link>
               ))
             )}
+          </div>
           </div>
         </div>
       </div>

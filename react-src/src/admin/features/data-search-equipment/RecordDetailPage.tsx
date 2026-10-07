@@ -16,7 +16,7 @@ function toApprovalRecord(record: InspectionRecord): EquipmentApprovalRecord {
   };
 }
 
-/** データ検索の詳細は承認申請管理の詳細（承認ステータスの変更・コメント入力つき）をそのまま使う */
+/** データ検索の詳細は承認申請管理の詳細をそのまま使う（承認ステータスのプルダウン・コメントの入力欄つき。確定デザイン 7139:259043。2026-10-07） */
 export function RecordDetailPage() {
   const { factoryId, recordId } = useParams<{ factoryId: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();

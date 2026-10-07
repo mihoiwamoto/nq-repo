@@ -21,6 +21,13 @@ type SubmitCompleteProps = {
   secondary: CompleteAction;
 };
 
+/**
+ * 確定デザイン（Figma 帳票一覧_〇〇_提出完了 7139:282111 など・進捗一覧_〇〇_提出完了 7139:293858 など）の見出し。
+ * 確定デザインのある 4 帳票（機械器具点検・清掃記録・薬品管理・添加物管理）の提出完了で使う。
+ * ほかの帳票は確定デザインがまだ無いので、既定の「保存が完了しました！」のまま（2026-10-07）。
+ */
+export const SUBMIT_DONE_TITLE = "提出が完了しました！";
+
 /** 丸を塗ったチェック印（Figma「使用水の点検_保存完了」） */
 function CircleCheck() {
   return (

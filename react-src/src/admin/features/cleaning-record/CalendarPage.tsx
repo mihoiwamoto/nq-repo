@@ -27,7 +27,7 @@ export function CalendarPage() {
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("更新しました。");
+  const [toastMessage, setToastMessage] = useState("更新されました。");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -40,7 +40,7 @@ export function CalendarPage() {
         setYear(y);
         setMonth(m - 1);
       }
-      setToastMessage("更新しました。");
+      setToastMessage("更新されました。");
       setShowToast(true);
       const timer = setTimeout(() => setShowToast(false), 3000);
       navigate(location.pathname, { replace: true });
@@ -239,7 +239,11 @@ export function CalendarPage() {
               </div>
             </div>
             <div className="flex flex-col px-4 py-2">
-              {!selectedLines || selectedLines.length === 0 ? null : (
+              {!selectedLines || selectedLines.length === 0 ? (
+                <p className="py-4 text-base text-[var(--semantic-text-secondary)]">
+                  データがありません
+                </p>
+              ) : (
                 selectedLines.map((line, i) => (
                   <div key={`${line.id}-${i}`}>
                     <div className="flex gap-4 h-12 items-center">

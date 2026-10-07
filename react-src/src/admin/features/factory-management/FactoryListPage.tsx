@@ -102,7 +102,13 @@ export function FactoryListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)] text-center w-full">操作</p>
             </div>
           </div>
-          {pageItems.length === 0 ? null : (
+          {pageItems.length === 0 ? (
+            <div className="bg-white flex h-14 items-center w-full px-2">
+              <p className="text-sm text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            </div>
+          ) : (
             pageItems.map((factory, index) => (
               <div
                 key={factory.id}

@@ -11,6 +11,7 @@ const UNIT_OPTIONS = ["g", "kg", "ml", "L", "%"];
 export function NewRegistrationPage() {
   const { factoryId, additiveId } = useParams<{ factoryId: string; additiveId: string }>();
   const isEditing = Boolean(additiveId);
+  /* 確定デザイン 7139:163508：編集では項目名に「※必須」を付けない（新規登録 7139:163598 だけに付く） */
   const { additives, addAdditive, updateAdditive } = useAdditiveManagement();
   const navigate = useNavigate();
   const basePath = `/admin/ledger-management/additive-management/factories/${factoryId}`;
@@ -55,7 +56,7 @@ export function NewRegistrationPage() {
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">添加物名</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+              {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
             </div>
             <input
               type="text"
@@ -70,7 +71,7 @@ export function NewRegistrationPage() {
             <div className="flex flex-col gap-1 items-start w-[480px]">
               <div className="flex gap-2 items-center">
                 <p className="text-xl text-[var(--semantic-text-primary)]">規格</p>
-                <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+                {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
               </div>
               <input
                 type="text"
@@ -92,7 +93,7 @@ export function NewRegistrationPage() {
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">保管場所</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+              {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
             </div>
             <Pulldown
               value={storageLocation}

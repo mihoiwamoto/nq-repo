@@ -74,6 +74,10 @@ const MONTH_LABELS = [
   "7月", "8月", "9月", "10月", "11月", "12月",
 ];
 
+/** 列の幅。最小は中身の幅（備考だけ 0。2 行まで折り返す）、余りは確定デザイン 7139:259318 の列幅の比で分ける */
+const COLS =
+  "minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,280fr) minmax(max-content,80fr) minmax(0,272fr) minmax(max-content,104fr) minmax(max-content,104fr)";
+
 export function DataListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
   const { records: allRecords } = useRecords();
@@ -372,57 +376,63 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1104px]">
-              <div className="bg-[#f6f6f6] flex h-[50px] items-center">
+          <div ref={tableRef} className="w-full rounded-lg overflow-hidden">
+            <div className="grid w-full" style={{ gridTemplateColumns: COLS }}>
+              <div className="col-span-full grid grid-cols-subgrid bg-[#f6f6f6] h-[50px] items-center">
                 {["操作", "ステータス", "実施日", "持ち場名/ライン名", "点検結果", "備考", "実施者", "確認者"].map(
-                  (h, i) => (
+                  (h) => (
                     <div
                       key={h}
-                      className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${
-                        i === 5 ? "flex-1 min-w-[200px]" : i === 3 ? "w-[240px]" : "w-[104px]"
-                      }`}
+                      className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-brand-primary)]"
                     >
                       {h}
                     </div>
                   )
                 )}
               </div>
-            {filtered.length === 0 ? null : (
+            {filtered.length === 0 ? (
+              <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
+                データがありません
+              </p>
+            ) : (
               filtered.map((record, index) => (
                 <div
                   key={record.id}
-                  className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                  data-row
+                  className={`col-span-full grid grid-cols-subgrid h-14 items-center ${rowStripeClasses[index]}`}
                 >
-                  <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                  <div className="flex items-center justify-center p-2 h-full">
                     <Link
                       to={`${basePath}/records/${record.id}`}
-                      className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                      className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
                     >
                       詳細
                     </Link>
                   </div>
-                  <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
+                  <div className="flex items-center justify-center p-2 h-full">
                     <ApprovalStatusBadge status={record.approvalStatus} />
                   </div>
-                  <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                  <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                     {formatDateShort(record.date)}
                   </div>
-                  <div className="w-[240px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                  <div className="flex items-center justify-start p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                     {record.lineLabel}
                   </div>
                   <div
-                    className={`w-[104px] flex items-center justify-center p-2 h-full ${record.resultIcon === "ng" ? "bg-[#f85c5c]" : ""}`}
+                    className={`flex items-center justify-center p-2 h-full ${record.resultIcon === "ng" ? "bg-[#f85c5c]" : ""}`}
                   >
                     <ResultBadge icon={record.resultIcon} />
                   </div>
-                  <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
-                    {record.remarks.length > 20 ? `${record.remarks.substring(0, 20)}...` : record.remarks}
+                  <div
+                    className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)] text-left"
+                    title={record.remarks}
+                  >
+                    <span className="line-clamp-2">{record.remarks}</span>
                   </div>
-                  <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                  <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                     {record.implementer}
                   </div>
-                  <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                  <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                     {record.confirmer}
                   </div>
                 </div>

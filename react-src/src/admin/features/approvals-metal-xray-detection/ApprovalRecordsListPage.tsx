@@ -90,7 +90,11 @@ export function ApprovalRecordsListPage() {
                   </div>
                 ))}
               </div>
-              {records.length === 0 ? null : (
+              {records.length === 0 ? (
+                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
+                  データがありません
+                </p>
+              ) : (
                 records.map((record, index) => (
                   <div
                     key={record.id}

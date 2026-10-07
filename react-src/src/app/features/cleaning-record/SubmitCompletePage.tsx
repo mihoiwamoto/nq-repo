@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
-import { SubmitComplete } from "../../components/SubmitComplete";
+import { SUBMIT_DONE_TITLE, SubmitComplete } from "../../components/SubmitComplete";
 import { useFromProgress } from "../../layout/ProgressFlowContext";
 
 export function SubmitCompletePage() {
@@ -10,12 +10,13 @@ export function SubmitCompletePage() {
 
   // 進捗一覧から入った場合は、帳票を続ける導線は出さず進捗一覧に戻すだけ
   if (fromProgress) {
-    return <ProgressSubmitComplete ledgerTitle="清掃記録" />;
+    return <ProgressSubmitComplete ledgerTitle="清掃記録" title={SUBMIT_DONE_TITLE} />;
   }
 
   return (
     <SubmitComplete
       ledgerTitle="清掃記録"
+      title={SUBMIT_DONE_TITLE}
       primary={{ label: "清掃記録を続ける", onClick: () => navigate("/app/ledger-list/cleaning-record") }}
       secondary={{ label: "帳票一覧に戻る", onClick: () => navigate("/app/ledger-list") }}
     />

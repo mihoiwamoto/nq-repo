@@ -17,6 +17,47 @@ const ACTOR_PICKER_SLUGS = [
   "additive-management",
 ];
 
+/**
+ * 帳票一覧のタイルの並び。確定デザイン（Figma 帳票一覧 7139:282835）では官能検査記録が秤点検記録の前に来る
+ * （管理画面の帳票の並び＝data/ledgers.ts とはここだけ違う）。ここに無い帳票は ledgers.ts の順で後ろに並ぶ。
+ */
+const APP_TILE_ORDER = [
+  "water-inspection",
+  "glass-plastic",
+  "sensory-inspection",
+  "scale-inspection",
+  "metal-xray-detection",
+  "sample-management",
+  "equipment-inspection",
+  "cleaning-record",
+  "chemical-management",
+  "additive-management",
+];
+const tileRank = (slug: string) => {
+  const i = APP_TILE_ORDER.indexOf(slug);
+  return i < 0 ? APP_TILE_ORDER.length : i;
+};
+
+/** タイルの中で改行する位置を決めている帳票名（確定デザインは「金属探知機・」で折り返す） */
+const TILE_LINES: Record<string, string[]> = {
+  "metal-xray-detection": ["金属探知機・", "X線探知機"],
+};
+function TileLabel({ slug, label }: { slug: string; label: string }) {
+  const lines = TILE_LINES[slug];
+  return (
+    <span className="text-base text-[var(--semantic-brand-primary)] text-center leading-[1.4]">
+      {lines
+        ? lines.map((line, i) => (
+            <span key={line}>
+              {i > 0 && <br />}
+              {line}
+            </span>
+          ))
+        : label}
+    </span>
+  );
+}
+
 export function LedgerListPage() {
   const navigate = useNavigate();
   const [actorPickerSlug, setActorPickerSlug] = useState<string | null>(null);
@@ -40,7 +81,7 @@ export function LedgerListPage() {
       <AppHeader title="帳票一覧" />
       <div className="flex-1 overflow-y-auto p-4">
         <div className="grid grid-cols-4 justify-items-start content-start items-start gap-x-8 gap-y-6">
-          {visibleLedgerCategories().map((category) =>
+          {[...visibleLedgerCategories()].sort((a, b) => tileRank(a.slug) - tileRank(b.slug)).map((category) =>
             ACTOR_PICKER_SLUGS.includes(category.slug) ? (
               <button
                 key={category.slug}
@@ -49,9 +90,7 @@ export function LedgerListPage() {
                 className="size-36 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
               >
                 <img src={category.appIcon} alt={category.appLabel} className="size-16" />
-                <span className="text-base text-[var(--semantic-brand-primary)] text-center leading-[1.4]">
-                  {category.appLabel}
-                </span>
+                <TileLabel slug={category.slug} label={category.appLabel} />
               </button>
             ) : (
               <Link
@@ -60,9 +99,7 @@ export function LedgerListPage() {
                 className="size-36 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
               >
                 <img src={category.appIcon} alt="" className="size-16" />
-                <span className="text-base text-[var(--semantic-brand-primary)] text-center leading-[1.4]">
-                  {category.appLabel}
-                </span>
+                <TileLabel slug={category.slug} label={category.appLabel} />
               </Link>
             )
           )}

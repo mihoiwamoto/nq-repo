@@ -118,7 +118,13 @@ export function NewRegistrationPage() {
                 <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
               </div>
             </div>
-            {settings.length === 0 ? null : (
+            {settings.length === 0 ? (
+              <div className="bg-white flex items-center justify-center w-full py-6">
+                <p className="text-base text-[var(--semantic-text-secondary)]">
+                  データがありません
+                </p>
+              </div>
+            ) : (
               settings.map((row, index) => (
                 <div
                   key={row.id}

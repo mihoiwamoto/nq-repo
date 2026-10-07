@@ -9,7 +9,6 @@ import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
-import type { ChemicalTransactionType } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
@@ -40,18 +39,20 @@ const MONTH_LABELS = [
 ];
 
 const COLUMNS = [
-  { label: "操作", width: "w-[104px]" },
-  { label: "ステータス", width: "w-[104px] shrink-0" },
-  { label: "日付", width: "w-[80px]" },
-  { label: "薬品名", width: "w-[104px]" },
-  { label: "区分", width: "w-[104px]" },
-  { label: "数量", width: "w-[104px]" },
-  { label: "現在庫数", width: "w-[104px]" },
-  { label: "保管場所", width: "w-[104px]" },
-  { label: "備考", width: "flex-1 min-w-[200px]" },
-  { label: "実施者", width: "w-[100px]" },
-  { label: "確認者", width: "w-[100px]" },
+  { label: "操作", track: "minmax(max-content,104fr)" },
+  { label: "ステータス", track: "minmax(max-content,96fr)" },
+  { label: "日付", track: "minmax(max-content,80fr)" },
+  { label: "薬品名", track: "minmax(0,104fr)" },
+  { label: "区分", track: "minmax(max-content,104fr)" },
+  { label: "数量", track: "minmax(max-content,104fr)" },
+  { label: "現在庫数", track: "minmax(max-content,104fr)" },
+  { label: "保管場所", track: "minmax(0,104fr)" },
+  { label: "備考", track: "minmax(0,152fr)" },
+  { label: "実施者", track: "minmax(max-content,100fr)" },
+  { label: "確認者", track: "minmax(max-content,100fr)" },
 ];
+/** 列の幅。最小は中身の幅（薬品名・保管場所・備考は 0 で「…」）、余りは確定デザイン 7139:163226 の列幅の比で分ける */
+const COLS = COLUMNS.map((c) => c.track).join(" ");
 
 export function DataListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -202,7 +203,7 @@ export function DataListPage() {
                     value={storageLocationFilter}
                     onChange={setStorageLocationFilter}
                     options={storageLocationOptions.map((label) => ({ value: label, label }))}
-                    placeholder="保管場所"
+                    placeholder="保管場所名"
                   />
                 </div>
               </div>
@@ -356,60 +357,65 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1204px]">
-              <div className="bg-[#f6f6f6] flex h-[50px] items-center">
+          <div ref={tableRef} className="w-full rounded-lg overflow-hidden">
+            <div className="grid w-full" style={{ gridTemplateColumns: COLS }}>
+              <div className="col-span-full grid grid-cols-subgrid bg-[#f6f6f6] h-[50px] items-center">
                 {COLUMNS.map((col) => (
                   <div
                     key={col.label}
-                    className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
+                    className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-brand-primary)]"
                   >
                     {col.label}
                   </div>
                 ))}
               </div>
-              {filtered.length === 0 ? null : (
+              {filtered.length === 0 ? (
+                <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
+                  データがありません
+                </p>
+              ) : (
                 filtered.map((record, index) => (
                   <div
                     key={record.id}
-                    className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                    data-row
+                    className={`col-span-full grid grid-cols-subgrid h-14 items-center ${rowStripeClasses[index]}`}
                   >
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                    <div className="flex items-center justify-center p-2 h-full">
                       <Link
                         to={`${basePath}/records/${record.id}`}
-                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
                       >
                         詳細
                       </Link>
                     </div>
-                    <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
+                    <div className="flex items-center justify-center p-2 h-full">
                       <ApprovalStatusBadge status={record.approvalStatus} />
                     </div>
-                    <div className="w-[80px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {formatDateShort(record.date)}
                     </div>
-                    <div className="w-[104px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
-                      {record.chemicalName}
+                    <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-semibold text-[var(--semantic-text-primary)]" title={record.chemicalName}>
+                      <span className="block w-full truncate">{record.chemicalName}</span>
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {record.type}
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {record.quantity}
                     </div>
-                    <div className="w-[104px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {record.currentStock}
                     </div>
-                    <div className="w-[104px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                      {record.storageLocation}
+                    <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.storageLocation}>
+                      <span className="block w-full truncate">{record.storageLocation}</span>
                     </div>
-                    <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                      {record.remarks}
+                    <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.remarks}>
+                      <span className="block w-full truncate">{record.remarks}</span>
                     </div>
-                    <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.implementer}
                     </div>
-                    <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                    <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.confirmer}
                     </div>
                   </div>

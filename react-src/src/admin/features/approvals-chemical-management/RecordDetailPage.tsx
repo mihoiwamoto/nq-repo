@@ -50,7 +50,12 @@ export function RecordDetailView({
   breadcrumb,
   setApprovalStatus,
   addComment,
+  mode = "approval",
 }: {
+  /** "search" はデータ検索の詳細。承認ステータスのプルダウンとコメントの入力欄は承認申請管理と同じに出し（2026-10-07）、
+   *  コメントは確定デザイン 7139:259043 と同じ 見出し → これまでのコメント → 入力欄 の順。
+   *  在庫の項目名は承認申請管理と同じ「元在庫数／数量／現在庫数」（確定デザイン 6322:249986。2026-10-07 にユーザーが確定デザインを直した） */
+  mode?: "approval" | "search";
   record: ChemicalApprovalRecord | undefined;
   factoryName: string;
   breadcrumb: BreadcrumbItem[];
@@ -82,6 +87,7 @@ export function RecordDetailView({
 
   const [comment, setComment] = useState("");
   const comments = record?.comments ?? [];
+  const isSearch = mode === "search";
 
   if (!record) {
     return (
@@ -109,7 +115,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -183,9 +189,12 @@ export function RecordDetailView({
           </div>
         </div>
 
+        {/* 確定デザイン：承認申請管理（7139:162823）は これまでのコメント → 見出し「コメント」 → 入力欄、
+            データ検索（7139:259043 と同じ配置）は 見出し「コメント」 → これまでのコメント → 入力欄 */}
         <div className="flex flex-col gap-4 items-start w-full">
-          <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
+          {isSearch && <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>}
           <Comments comments={comments} />
+          {!isSearch && <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>}
           <CommentInputBox
             value={comment}
             onChange={setComment}
@@ -193,6 +202,7 @@ export function RecordDetailView({
               addComment(record.id, comment);
               setComment("");
             }}
+            placeholder="コメントを入力"
           />
         </div>
       </div>

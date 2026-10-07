@@ -164,7 +164,7 @@ const SURFACES: Record<
     label: "管理画面",
     home: "/admin/home",
     start: "/",
-    hint: "管理画面を PC 幅（1280px）で表示（1）",
+    hint: "管理画面を PC 幅（1440px）で表示（1）",
   },
   tablet: {
     label: "アプリ",

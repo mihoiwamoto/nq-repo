@@ -302,7 +302,11 @@ export function ProductListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full whitespace-nowrap">賞味期限</p>
             </div>
           </div>
-          {pageItems.length === 0 ? null : (
+          {pageItems.length === 0 ? (
+            <div className="bg-white flex h-14 items-center w-full px-2">
+              <p className="text-sm text-[var(--semantic-text-secondary)]">データがありません</p>
+            </div>
+          ) : (
             pageItems.map((product, index) => (
               <div
                 key={product.id}

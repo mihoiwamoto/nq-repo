@@ -26,14 +26,14 @@ export function ChemicalRegistrationCompletePage() {
             />
           </svg>
           <p className="text-2xl text-[var(--semantic-text-primary)]">
-            薬品の新規登録が完了しました
+            薬品管理の新規登録が完了しました
           </p>
         </div>
         <Link
           to={`/admin/ledger-management/chemical-management/factories/${factoryId}`}
           className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
         >
-          薬品一覧に戻る
+          薬品管理一覧に戻る
         </Link>
       </div>
     </div>

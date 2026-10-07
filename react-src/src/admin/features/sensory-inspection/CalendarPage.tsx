@@ -224,7 +224,11 @@ export function CalendarPage() {
               )}
             </div>
             <div className="flex flex-col px-4 py-2">
-              {!selectedProducts || selectedProducts.length === 0 ? null : (
+              {!selectedProducts || selectedProducts.length === 0 ? (
+                <p className="py-4 text-base text-[var(--semantic-text-secondary)]">
+                  データがありません
+                </p>
+              ) : (
                 selectedProducts.map((product, i) => (
                   <div key={`${product.id}-${i}`}>
                     <div className="flex gap-4 h-12 items-center">
@@ -277,7 +281,7 @@ export function CalendarPage() {
       )}
 
       {showDeletedToast && <Toast message="削除されました。" onClose={() => setShowDeletedToast(false)} />}
-      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );
 }

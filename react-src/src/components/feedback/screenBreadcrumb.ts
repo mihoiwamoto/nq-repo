@@ -5,7 +5,7 @@
  * サイドメニュー（admin/navigation・app/navigation）のラベルをたどって
  * 日本語の道順に直す。見つからないときはカテゴリ + 画面名だけになる。
  */
-import { primaryNav } from "../../admin/navigation";
+import { primaryNav, secondaryNav } from "../../admin/navigation";
 import { railNav } from "../../app/navigation";
 
 const under = (pathname: string, path: string) => pathname === path || pathname.startsWith(`${path}/`);
@@ -15,7 +15,7 @@ export function screenBreadcrumb(pathname: string, title: string): string[] {
 
   if (pathname.startsWith("/admin")) {
     trail.push("管理画面");
-    for (const item of primaryNav) {
+    for (const item of [...primaryNav, ...secondaryNav]) {
       const child = item.children?.find((c) => under(pathname, c.path));
       if (!child && !under(pathname, item.path)) continue;
       trail.push(item.label);

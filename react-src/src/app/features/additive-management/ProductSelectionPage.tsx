@@ -29,7 +29,10 @@ export function ProductSelectionPage() {
               <div className="flex-1 flex flex-col gap-2 min-w-0">
                 <p className="text-lg text-[var(--semantic-text-primary)]">{additive.name}</p>
               </div>
-              <StatusChip color={ADDITIVE_STATUS_COLORS[additive.status]}>{ADDITIVE_STATUS_LABELS[additive.status]}</StatusChip>
+              {/* 薬品・添加物は毎日の点検ではないので「未点検」の札は出さない（確定デザイン 7139:234163・注記 7139:298922。2026-10-06） */}
+              {additive.status !== "not_inspected" && (
+                <StatusChip color={ADDITIVE_STATUS_COLORS[additive.status]}>{ADDITIVE_STATUS_LABELS[additive.status]}</StatusChip>
+              )}
             </button>
           ))}
         </div>

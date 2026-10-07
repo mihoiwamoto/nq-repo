@@ -10,7 +10,7 @@
  */
 import codeEdges from "virtual:screen-flow-edges";
 import { groupOf, groupOrder, roleOf, type ScreenEntry, type ScreenGroup } from "./screenCatalog";
-import { flattenNavPaths, primaryNav } from "../../navigation";
+import { flattenNavPaths, primaryNav, secondaryNav } from "../../navigation";
 import { ledgerCategories } from "../../../data/ledgers";
 
 /** 画面の役割（一覧・詳細・編集…）。ノードの色分けとセクション見出しに使う */
@@ -307,7 +307,7 @@ export function buildFlowModule(
 // 画面の URL がどのメニュー項目のパスに属するかで位置を決めるので、メニューを並べ替えればここも追従する。
 // ---------------------------------------------------------------------------
 
-const NAV_PATHS: string[] = flattenNavPaths(primaryNav).map((n) => n.path);
+const NAV_PATHS: string[] = flattenNavPaths([...primaryNav, ...secondaryNav]).map((n) => n.path);
 /** 帳票同士の順番は「帳票管理」画面のカード順（data/ledgers.ts）に合わせる */
 const LEDGER_SLUGS: string[] = ledgerCategories.map((c) => c.slug);
 

@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
-import { SubmitComplete } from "../../components/SubmitComplete";
+import { SUBMIT_DONE_TITLE, SubmitComplete } from "../../components/SubmitComplete";
 import { useFromProgress } from "../../layout/ProgressFlowContext";
 
 export function ChemicalSubmitCompletePage() {
@@ -18,12 +18,13 @@ export function ChemicalSubmitCompletePage() {
 
   // 進捗一覧から入った場合は、帳票を続ける導線は出さず進捗一覧に戻すだけ
   if (fromProgress) {
-    return <ProgressSubmitComplete ledgerTitle="薬品管理" />;
+    return <ProgressSubmitComplete ledgerTitle="薬品管理" title={SUBMIT_DONE_TITLE} />;
   }
 
   return (
     <SubmitComplete
       ledgerTitle="薬品管理"
+      title={SUBMIT_DONE_TITLE}
       primary={{
         label: "薬品管理記録を続ける",
         onClick: () => handleNavigate("/app/ledger-list/chemical-management"),

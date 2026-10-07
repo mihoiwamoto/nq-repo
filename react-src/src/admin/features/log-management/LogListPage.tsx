@@ -159,7 +159,11 @@ export function LogListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">操作内容</p>
             </div>
           </div>
-          {pageItems.length === 0 ? null : (
+          {pageItems.length === 0 ? (
+            <div className="bg-white flex h-14 items-center w-full px-2">
+              <p className="text-sm text-[var(--semantic-text-secondary)]">データがありません</p>
+            </div>
+          ) : (
             pageItems.map((entry, index) => {
               const factoryName = getFactoryName(entry.factoryId);
               const displayFactoryName = factoryName.length > 10 ? factoryName.slice(0, 10) + "..." : factoryName;

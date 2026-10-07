@@ -19,6 +19,7 @@ const FREQUENCY_TABS: { key: Frequency; label: string }[] = [
  * 持ち場/ライン選択画面。
  * nextDay = 翌日（04/02）の状態。毎週は、当日（04/01）に見送ったときの「明日に見送る」で出方が変わる。
  * はい → そのラインが 04/02 に「未点検」で並ぶ。いいえ・見送っていない → 点検自体がなくなるので、毎週の点検予定は残らない。
+ * 毎日は前の日の状態を持ち越さず、全部「未点検」で並ぶ。翌日分から開いた点検は空の記録で始める（state の nextDay）。
  */
 export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {}) {
   const { lines: allLines } = useInspection();
@@ -53,6 +54,7 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
       <Link
         key={line.id}
         to={`/app/ledger-list/equipment-inspection/lines/${line.id}`}
+        state={nextDay ? { nextDay: true } : undefined}
         className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg w-full"
       >
         <p className="flex-1 text-lg text-[var(--semantic-text-primary)]">{line.name}</p>
@@ -166,6 +168,9 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
 /** 翌日（当日の 1 日後）の毎週の並び。「明日に見送る：はい」で見送ったものだけが、翌日の日付で未点検に戻って並ぶ */
 function nextDayLines(lines: Line[]): Line[] {
   return lines.flatMap((line) => {
+    // 毎日は日ごとの点検なので、翌日は見送り・点検中・点検済みを持ち越さず全部「未点検」に戻す（確定デザイン 7139:345776）
+    if (line.frequency === "daily")
+      return [{ ...line, status: "not_inspected" as const, inspectorName: undefined, inspectionDate: undefined }];
     if (line.frequency !== "weekly") return [line];
     if (line.status !== "skipped" || line.deferToTomorrow !== true) return [];
     return [{ ...line, status: "not_inspected" as const, scheduledDate: addDay(line.scheduledDate), inspectorName: undefined, inspectionDate: undefined }];
