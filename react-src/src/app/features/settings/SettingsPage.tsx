@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
+import { appFactoryName, useAppFactory } from "../../../data/appFactoryStore";
 
-const FACTORY_NAME = "㈱西原食品 本社工場";
 const APP_VERSION = "NQリポ 0.0.00";
 
 export function SettingsPage() {
+  // プロトタイプの「ログイン中」で選んだ工場（既定は f1 ＝ ㈱西原食品 本社工場）
+  const factoryName = appFactoryName(useAppFactory());
   const navigate = useNavigate();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
@@ -19,7 +21,7 @@ export function SettingsPage() {
       <AppHeader
         title="設定"
         action={
-          <p className="text-xl text-[var(--semantic-brand-primary)]">{FACTORY_NAME}</p>
+          <p className="text-xl text-[var(--semantic-brand-primary)]">{factoryName}</p>
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col items-center">

@@ -37,6 +37,7 @@ export function ProgressSubmitComplete({
       title={title}
       message={message}
       secondary={{ label: backLabel, onClick: handleBack }}
+      fromProgress
     />
   );
 }

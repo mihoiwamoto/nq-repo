@@ -8,6 +8,7 @@ import {
   RESULT_COLORS,
   RESULT_LABELS,
 } from "./mockData";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 const COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -24,7 +25,7 @@ export function MachineReviewPage() {
   const { machineId } = useParams<{ machineId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const machine = MACHINES.find((m) => m.id === machineId);
+  const machine = findFactoryItem(MACHINES, machineId);
   const records = MACHINE_RECORDS[machineId ?? ""] ?? [];
   const inspectionDate = MACHINE_INSPECTION_DATES[machineId ?? ""] ?? "";
   const locked = (location.state as { locked?: boolean } | null)?.locked ?? false;

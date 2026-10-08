@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { CURRENT_ACCOUNT } from "../account/mockData";
 import { mockRecords } from "./mockRecords";
 import type { ApprovalStatus, CleaningSearchRecord } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type RecordsContextValue = {
   records: CleaningSearchRecord[];
@@ -13,7 +14,7 @@ type RecordsContextValue = {
 const RecordsContext = createContext<RecordsContextValue | null>(null);
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
-  const [records, setRecords] = useState<CleaningSearchRecord[]>(mockRecords);
+  const [records, setRecords] = useFactoryList<CleaningSearchRecord>("cleaning-record", mockRecords, "records");
 
   function setApprovalStatus(id: string, status: ApprovalStatus) {
     setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, approvalStatus: status } : r)));

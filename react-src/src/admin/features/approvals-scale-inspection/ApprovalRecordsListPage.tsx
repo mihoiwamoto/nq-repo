@@ -157,7 +157,7 @@ export function ApprovalRecordsListPage() {
                 </div>
                 {batchRecords.length === 0 && (
                   <p className="text-sm text-[var(--semantic-text-secondary)] text-center py-6">
-                    データがありません
+                    データがありません。
                   </p>
                 )}
                 {batchRecords.map((record, index) => (

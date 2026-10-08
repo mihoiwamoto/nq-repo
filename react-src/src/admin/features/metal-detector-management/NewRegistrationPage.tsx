@@ -121,7 +121,7 @@ export function NewRegistrationPage() {
             {settings.length === 0 ? (
               <div className="bg-white flex items-center justify-center w-full py-6">
                 <p className="text-base text-[var(--semantic-text-secondary)]">
-                  データがありません
+                  データがありません。
                 </p>
               </div>
             ) : (

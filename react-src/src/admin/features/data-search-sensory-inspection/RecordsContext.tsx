@@ -1,9 +1,10 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import type { ApprovalStatus } from "../../data/approvals";
 import { sensoryRecords } from "./mockRecords";
 import { CURRENT_ACCOUNT } from "../account/mockData";
 import type { SensoryRecord } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type RecordsContextValue = {
   records: SensoryRecord[];
@@ -14,7 +15,7 @@ type RecordsContextValue = {
 const RecordsContext = createContext<RecordsContextValue | null>(null);
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
-  const [records, setRecords] = useState<SensoryRecord[]>(sensoryRecords);
+  const [records, setRecords] = useFactoryList<SensoryRecord>("sensory-inspection", sensoryRecords, "records");
 
   const value = useMemo<RecordsContextValue>(
     () => ({

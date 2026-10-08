@@ -20,6 +20,15 @@ http.createServer((req,res)=>{
       fs.readFile(f,send(f)); });
     return;
   }
+  /* React の控え（snapshots/react/<日付>/。.claude/react_snapshot.py が /snapshots/react/<日付>/ 用にビルドしたもの）も SPA として配る */
+  const rs=/^\/snapshots\/react\/([^/]+)\/(.*)$/.exec(p);
+  if(rs){
+    const dir=path.join(root,'snapshots','react',rs[1]);
+    if(rs[2].startsWith('.claude/')){ const g=path.join(root,'react-src',rs[2]); fs.readFile(g,send(g)); return; }
+    let f=path.join(dir,rs[2]);
+    fs.stat(f,(e,st)=>{ if(e||st.isDirectory()) f=path.join(dir,'index.html'); fs.readFile(f,send(f)); });
+    return;
+  }
   const f=path.join(root,p);
   /* snapshots/ の控え（プロトタイプの丸ごとのコピー）が images/ を相対で引くと snapshots/images/ になる。無ければ 1 つ上を見る */
   fs.readFile(f,(e,d)=>{ if(e && /^\/snapshots\//.test(p)) fs.readFile(path.join(root,p.replace(/^\/snapshots/,'')),send(f)); else send(f)(e,d); });

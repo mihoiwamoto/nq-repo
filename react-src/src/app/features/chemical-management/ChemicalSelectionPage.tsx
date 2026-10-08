@@ -4,6 +4,7 @@ import { useChemicalManagement } from "./ChemicalManagementContext";
 import { useLocation } from "react-router-dom";
 import { ACTORS, CHEMICAL_STATUS_LABELS, CHEMICAL_STATUS_COLORS } from "./mockData";
 import { StatusChip } from "../../components/StatusChip";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 export function ChemicalSelectionPage() {
   const { chemicals } = useChemicalManagement();
@@ -26,6 +27,8 @@ export function ChemicalSelectionPage() {
       <AppHeader title="薬品管理" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-6 items-center">
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
+          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中） */}
+          {chemicals.length === 0 && <AppEmptyState />}
           {chemicals.map((chemical) => (
             <button
               key={chemical.id}

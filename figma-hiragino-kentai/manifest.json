@@ -1,0 +1,8 @@
+{
+  "name": "NQ 書き換えた文字をヒラギノに戻す",
+  "id": "nq-hiragino-kentai",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page"
+}

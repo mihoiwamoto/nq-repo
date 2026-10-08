@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 export type ProductStatus = "not_inspected" | "inspected";
 
 export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
@@ -59,12 +61,12 @@ export type SensoryRecord = {
   timestamps?: Record<string, string>;
 };
 
-export const recordsByProduct: Record<string, SensoryRecord | null> = {
+export const recordsByProduct: Record<string, SensoryRecord | null> = withTplFallback({
   p1: null,
   p2: null,
   p3: null,
   p4: null,
-};
+});
 
 export const ACTORS = [
   { id: "2103458", name: "西村あかり" },

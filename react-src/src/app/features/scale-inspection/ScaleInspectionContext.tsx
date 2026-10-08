@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useRef, type ReactNode } from "react";
 import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
@@ -8,6 +8,7 @@ import {
   type Scale,
   type ScaleRecord,
 } from "./mockData";
+import { useFactoryKeyed } from "../../data/factoryAppData";
 
 type ScaleInspectionContextValue = {
   posts: Post[];
@@ -45,7 +46,8 @@ const ScaleInspectionContext = createContext<ScaleInspectionContextValue | null>
 export function ScaleInspectionProvider({ children }: { children: ReactNode }) {
   // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
   const [posts, setPosts] = useDemoInspectionState<Post>(initialPosts);
-  const [scalesByPost, setScalesByPost] = useState<Record<string, Scale[]>>(initialScalesByPost);
+  // 工場ごとの見本（プロトタイプの「ログイン中」）。増やした持ち場には元の持ち場の秤を写す
+  const [scalesByPost, setScalesByPost] = useFactoryKeyed<Scale[], Post>(initialScalesByPost, initialPosts);
   // 進捗一覧由来の記録を流し込み済みの持ち場。一覧を開き直すたびに上書きしないための目印。
   // 値は流し込んだときの seedKey（持ち場 + 記録の入り具合）
   const seededPosts = useRef<Map<string, string>>(new Map());

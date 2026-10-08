@@ -13,6 +13,7 @@ import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadElementAsPdf } from "../../utils/pdf";
 
@@ -156,33 +157,32 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+            className="flex items-center gap-2 text-base leading-5 text-[var(--semantic-brand-primary)]"
           >
             <span>絞り込み検索</span>
-            {filterOpen ? (
-              <span
-                aria-hidden
-                className="inline-block size-5 shrink-0"
-                style={{
-                  WebkitMaskImage: `url("${iconMinus}")`,
-                  maskImage: `url("${iconMinus}")`,
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  backgroundColor: "var(--semantic-brand-primary)",
-                }}
-              />
-            ) : (
-              <span>+</span>
-            )}
+            {/* 確定デザインは「＋」を文字ではなく 20px のアイコンで出す（2026-10-07） */}
+            <span
+              aria-hidden
+              className="inline-block size-5 shrink-0"
+              style={{
+                WebkitMaskImage: `url("${filterOpen ? iconMinus : iconPlus}")`,
+                maskImage: `url("${filterOpen ? iconMinus : iconPlus}")`,
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+                backgroundColor: "var(--semantic-brand-primary)",
+              }}
+            />
           </button>
           {filterOpen && (
             <div className="flex gap-6 items-center justify-end w-full">
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex gap-4 items-center">
                   <DateFilterInput value={dateFilter} onChange={setDateFilter} />
-                  <div className="w-[200px]">
+                  <div className="w-[240px]">
                     <Pulldown
                       value={lineFilter}
                       onChange={setLineFilter}
@@ -359,7 +359,7 @@ export function DataListPage() {
               </div>
               {filtered.length === 0 ? (
                 <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません
+                  データがありません。
                 </p>
               ) : (
                 filtered.map((record, index) => (
@@ -371,7 +371,7 @@ export function DataListPage() {
                     <div className="flex items-center justify-center p-2 h-full">
                       <Link
                         to={`${basePath}/records/${record.id}`}
-                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
                       >
                         詳細
                       </Link>

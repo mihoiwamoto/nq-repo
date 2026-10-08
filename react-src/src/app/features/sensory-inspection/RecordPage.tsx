@@ -18,6 +18,7 @@ import {
   type CriterionRecord,
   type SensoryRecord,
 } from "./mockData";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 const EMPTY_SCORES: Record<Criterion, CriterionRecord | null> = {
   味: null,
@@ -77,7 +78,7 @@ export function RecordPage() {
   const location = useLocation();
   const { recordsByProduct } = useSensoryInspection();
 
-  const product = products.find((p) => p.id === productId);
+  const product = findFactoryItem(products, productId);
   const inspectorName =
     (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
   const existing = productId ? recordsByProduct[productId] : null;

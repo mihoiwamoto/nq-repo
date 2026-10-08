@@ -1,8 +1,9 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { initialScaleInspectionPosts, initialScaleInspectionScales } from "./mockData";
 import type { ScaleInspectionPost, ScaleInspectionScale, ScaleRepairStatus } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type PostInput = Omit<ScaleInspectionPost, "id">;
 type ScaleInput = Omit<ScaleInspectionScale, "id">;
@@ -24,8 +25,8 @@ type ScaleInspectionContextValue = {
 const ScaleInspectionContext = createContext<ScaleInspectionContextValue | null>(null);
 
 export function ScaleInspectionProvider({ children }: { children: ReactNode }) {
-  const [posts, setPosts] = useState<ScaleInspectionPost[]>(initialScaleInspectionPosts);
-  const [scales, setScales] = useState<ScaleInspectionScale[]>(initialScaleInspectionScales);
+  const [posts, setPosts] = useFactoryList<ScaleInspectionPost>("scale-inspection", initialScaleInspectionPosts, "registry");
+  const [scales, setScales] = useFactoryList<ScaleInspectionScale>("scale-inspection", initialScaleInspectionScales, "registry");
 
   const value = useMemo<ScaleInspectionContextValue>(
     () => ({

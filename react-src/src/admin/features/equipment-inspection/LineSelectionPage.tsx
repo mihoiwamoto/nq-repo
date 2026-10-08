@@ -31,7 +31,7 @@ export function LineSelectionPage() {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
 
-  // 確認項目の設定で保存して戻ってきたときは「保存しました。」のトーストを出す（Toast が自分で消える）
+  // 確認項目の設定で保存して戻ってきたときは「更新されました。」のトーストを出す（Toast が自分で消える）
   useEffect(() => {
     const state = location.state as { checklistSaved?: boolean } | null;
     if (state?.checklistSaved) {
@@ -51,7 +51,7 @@ export function LineSelectionPage() {
 
   return (
     <div>
-      {showToast && <Toast message="保存しました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="機械器具点検"
         showBack
@@ -146,7 +146,7 @@ export function LineSelectionPage() {
             {/* 画面説明（コーチマーク）の「持ち場/ラインのカード」はこの並びを囲む */}
             {filteredLines.length === 0 ? (
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               <div className="flex flex-col gap-6 w-full" data-nq-part="line-cards">

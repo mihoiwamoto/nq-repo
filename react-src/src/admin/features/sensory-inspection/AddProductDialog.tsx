@@ -53,7 +53,7 @@ export function AddProductDialog({
           <div className="bg-white flex flex-col h-[308px] overflow-y-auto px-4 rounded-lg w-full">
             {filteredProducts.length === 0 ? (
               <p className="py-4 text-sm text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               filteredProducts.map((product) => (

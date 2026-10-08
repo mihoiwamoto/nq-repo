@@ -154,7 +154,8 @@ export function SchedulePage() {
             </button>
           </div>
 
-          <div className="bg-white border border-[#d0d0d0] flex flex-col items-start overflow-hidden rounded-lg w-full">
+          {/* 外枠は高さに数えない（確定デザイン 7139:221439 はカレンダー 512px。border だと 2px 高くなり、下のカードが 2px 下がっていた） */}
+          <div className="bg-white outline outline-1 -outline-offset-1 outline-[#d0d0d0] flex flex-col items-start overflow-hidden rounded-lg w-full">
             <div className="flex items-center w-full">
               {WEEKDAY_LABELS.map((label, i) => (
                 <div
@@ -234,8 +235,13 @@ export function SchedulePage() {
           </div>
         </div>
 
-        <div className="bg-white flex flex-col flex-1 min-h-0 items-center overflow-hidden rounded-lg w-full">
-          <div className="bg-white drop-shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex items-center justify-between px-4 py-3 rounded-t-lg shrink-0 w-full">
+        {/* 確定デザイン（7139:283640・7139:283750）：予定の無い日・休業日は見出しの帯だけ（下まで伸ばさない）。2026-10-07 */}
+        <div
+          className={`bg-white flex flex-col min-h-0 items-center overflow-hidden rounded-lg w-full ${
+            !selectedClosed && registeredLedgers.length > 0 ? "flex-1" : "shrink-0"
+          }`}
+        >
+          <div className="bg-white drop-shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex items-center justify-between min-h-16 px-4 py-3 rounded-t-lg shrink-0 w-full">
             <p className="text-xl text-[var(--semantic-text-primary)] flex items-center gap-2">
               {formatDateLabel(selectedDateKey)}
               {selectedClosed && (
@@ -265,13 +271,15 @@ export function SchedulePage() {
               </button>
             )}
           </div>
+          {!selectedClosed && registeredLedgers.length > 0 && (
           <div className="flex flex-col flex-1 min-h-0 items-center overflow-y-auto px-4 pb-10 w-full">
-            {!selectedClosed &&
+            {
               registeredLedgers.map((ledger) => (
                 <div key={ledger.slug} className="w-full">
                   <Link
                     to={ledger.targetPath}
-                    className="flex flex-col items-start justify-center px-2 py-4 w-full"
+                    // 確定デザイン：行の間隔 56（区切り線込み）
+                    className="flex flex-col items-start justify-center px-2 h-[55px] w-full"
                   >
                     <span className="flex items-center gap-2 w-full">
                       {ledger.icon && <img src={ledger.icon} alt="" className="size-6 shrink-0" />}
@@ -284,6 +292,7 @@ export function SchedulePage() {
                 </div>
               ))}
           </div>
+          )}
         </div>
       </div>
 

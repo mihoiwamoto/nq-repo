@@ -17,6 +17,7 @@ import {
   type MachineRecord,
 } from "./mockData";
 import { useDemoList } from "../../../components/demo/demoStore";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 const COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -50,7 +51,7 @@ export function MachineDetailPage() {
   const fromProgress = state?.fromProgress ?? false;
   // 確認待ち（差し戻し）の「点検内容を修正する」から来た編集モード。保存で元の画面へ戻る
   const editReturn = state?.editReturn;
-  const machine = MACHINES.find((m) => m.id === machineId);
+  const machine = findFactoryItem(MACHINES, machineId);
   // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
   const progressFill = useProgressRecordFill();
   const machineFill: RecordFill = machine?.status === "inspected" ? "full" : "none";

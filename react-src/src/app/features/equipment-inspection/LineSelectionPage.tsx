@@ -5,8 +5,9 @@ import { LineProgressPanel } from "./LineProgressPanel";
 import { LINE_STATUS_COLORS, LINE_STATUS_LABELS, type Frequency, type Line } from "./mockData";
 import { useInspection } from "./InspectionContext";
 import { formatMonthDay } from "../../utils/date";
-import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import { StatusChip } from "../../components/StatusChip";
+import { LineProgressButton } from "../../components/LineProgressButton";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 const FREQUENCY_TABS: { key: Frequency; label: string }[] = [
   { key: "daily", label: "毎日" },
@@ -55,9 +56,10 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
         key={line.id}
         to={`/app/ledger-list/equipment-inspection/lines/${line.id}`}
         state={nextDay ? { nextDay: true } : undefined}
-        className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg w-full"
+        className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg w-full"
       >
-        <p className="flex-1 text-lg text-[var(--semantic-text-primary)]">{line.name}</p>
+        {/* 確定デザイン（7139:282586）：ライン名は黒 #000・18px・行の高さ 1 */}
+        <p className="flex-1 text-lg leading-none text-black">{line.name}</p>
         <StatusChip color={LINE_STATUS_COLORS[line.status]}>{LINE_STATUS_LABELS[line.status]}</StatusChip>
       </Link>
     );
@@ -68,31 +70,12 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
       <AppHeader
         title="機械器具点検"
         action={
-          <button
-            type="button"
+          // 確定デザイン（7139:282586）：右端に寄せた 80×46 のつまみ（清掃記録と共通）
+          <LineProgressButton
+            inspectedCount={inspectedCount}
+            total={visibleLines.length}
             onClick={() => setProgressOpen(true)}
-            className="bg-[var(--semantic-brand-primary)] flex items-center rounded-lg overflow-hidden shrink-0 hover:opacity-90 transition-opacity"
-          >
-            <span
-              aria-hidden
-              className="inline-block size-5 shrink-0 mx-2 text-white"
-              style={{
-                WebkitMaskImage: `url("${iconArrowLeft}")`,
-                maskImage: `url("${iconArrowLeft}")`,
-                WebkitMaskSize: "contain",
-                maskSize: "contain",
-                WebkitMaskRepeat: "no-repeat",
-                maskRepeat: "no-repeat",
-                backgroundColor: "currentColor",
-              }}
-            />
-            <span className="bg-white flex flex-col items-center justify-center gap-0 px-2 py-1">
-              <span className="text-xs text-[var(--semantic-brand-primary)] font-semibold">点検済み</span>
-              <span className="text-lg text-[var(--semantic-brand-primary)] leading-none font-bold">
-                {inspectedCount}/{visibleLines.length}
-              </span>
-            </span>
-          </button>
+          />
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-6 items-center">
@@ -113,19 +96,26 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
                   active ? "bg-[var(--semantic-brand-primary)] text-white" : "text-[var(--semantic-text-secondary)]"
                 }`}
               >
-                {tab.label}
-                {!active && (
-                  <span className="absolute -top-1.5 right-4 bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums rounded-full size-4 flex items-center justify-center">
-                    {String(count).padStart(2, "0")}
-                  </span>
-                )}
+                <span className="relative inline-block leading-[1.4]">
+                  {tab.label}
+                  {/* 確定デザイン：未点検・点検中が 1 件以上あるタブに出す（選んでいるタブにも出す。0 件なら出さない）。
+                      24px の赤丸に白い 1px の縁・10px の数字で、タブの文字の右上（文字の右端から 10px・タブの上端に重ねる）に出す（7139:282586） */}
+                  {count > 0 && (
+                    <span className="absolute -top-[18px] left-[calc(100%+10px)] bg-[var(--semantic-brand-danger)] border border-white text-white text-[10px] leading-none tabular-nums rounded-full size-6 flex items-center justify-center">
+                      {String(count).padStart(2, "0")}
+                    </span>
+                  )}
+                </span>
               </button>
             );
           })}
         </div>
 
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {visibleLines.length === 0 ? (
+          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中）。タブの絞り込みで 0 件のときは今までの文言 */}
+          {allLines.length === 0 ? (
+            <AppEmptyState />
+          ) : visibleLines.length === 0 ? (
             <div className="bg-white flex h-[200px] items-center justify-center py-10 rounded-lg w-full">
               <p className="text-xl leading-none text-center text-[var(--semantic-text-primary)]">
                 点検予定が登録されていません
@@ -151,12 +141,12 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
           )}
         </div>
 
-        {/* 上の余白は親の gap(24px) + mt-4 = 40px */}
+        {/* 上の余白は親の gap(24px) + mt-4 = 40px。確定デザイン（7139:282626）どおり 360×64 */}
         <Link
           to="/app/ledger-list"
-          className="bg-white border border-[var(--semantic-text-primary)] flex items-center justify-center mt-4 px-4 py-6 rounded-lg w-90 max-w-full"
+          className="bg-white border border-[var(--semantic-text-primary)] flex items-center justify-center mt-4 px-4 h-16 shrink-0 rounded-lg w-90 max-w-full"
         >
-          <span className="text-xl text-[var(--semantic-text-primary)]">帳票一覧に戻る</span>
+          <span className="text-xl leading-none text-[var(--semantic-text-primary)]">帳票一覧に戻る</span>
         </Link>
       </div>
 

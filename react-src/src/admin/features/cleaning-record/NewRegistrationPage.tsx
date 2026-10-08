@@ -102,10 +102,11 @@ export function NewRegistrationPage() {
               </button>
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
-            <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
+            {/* 確定デザイン：何も選んでいないときの箱は高さ 72px（2026-10-07） */}
+            <div className={`bg-white flex flex-col gap-4 items-center p-4 w-full ${selectedLines.length === 0 ? "min-h-[72px] justify-center" : ""}`}>
               {selectedLines.length === 0 ? (
                 <p className="text-sm text-[var(--semantic-text-primary)] w-full">
-                  データがありません
+                  データがありません。
                 </p>
               ) : (
                 selectedLines.map((line, i) => (
@@ -174,7 +175,7 @@ export function NewRegistrationPage() {
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 持ち場/ライン設定の削除
               </h2>
-              <p className="text-base text-[var(--semantic-text-primary)]">
+              <p className="text-base font-normal text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。本当に削除しますか？
               </p>
             </div>

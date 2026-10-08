@@ -9,6 +9,7 @@ import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import type { ResultIcon } from "./types";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -55,6 +56,7 @@ const COLS =
   "minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,104fr) minmax(max-content,280fr) minmax(max-content,80fr) minmax(0,272fr) minmax(max-content,104fr) minmax(max-content,104fr)";
 
 export function ApprovalRecordsListPage() {
+  const demoFactoryName = useDemoFactoryName();
   const navigate = useNavigate();
   const { records: allRecords, setApprovalStatus } = useRecords();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
@@ -87,7 +89,7 @@ export function ApprovalRecordsListPage() {
       <div className="flex flex-col items-center gap-6 p-6">
         <div className="flex flex-col gap-6 items-start w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
-            <p className="text-xl text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{demoFactoryName}</p>
           </div>
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">25年4月1日点検分</p>
@@ -107,7 +109,7 @@ export function ApprovalRecordsListPage() {
                 </div>
                 {records.length === 0 && (
                   <p className="col-span-full text-sm text-[var(--semantic-text-secondary)] text-center py-6">
-                    データがありません
+                    データがありません。
                   </p>
                 )}
                 {records.map((record, index) => (

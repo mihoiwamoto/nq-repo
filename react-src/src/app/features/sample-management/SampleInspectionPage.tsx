@@ -17,6 +17,7 @@ import {
   SAMPLE_UNITS,
   type SampleType,
 } from "./mockData";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 export function SampleInspectionPage() {
   const { sampleId } = useParams<{ sampleId: string }>();
@@ -25,7 +26,7 @@ export function SampleInspectionPage() {
   const stateData = location.state as { inspectorName?: string; fromProgress?: boolean } | null;
   const inspectorName = stateData?.inspectorName ?? ACTORS[0].name;
   const fromProgress = stateData?.fromProgress ?? false;
-  const entry = SAMPLE_ENTRIES.find((e) => e.id === sampleId);
+  const entry = findFactoryItem(SAMPLE_ENTRIES, sampleId);
   // 進捗一覧から来たときはそちらのステータスを優先する（未点検=記録なし / 点検中=記録途中 / 点検済み・確認完了=記録あり）
   const progressFill = useProgressRecordFill();
   const entryFill: RecordFill = entry?.status === "inspected" ? "full" : "none";

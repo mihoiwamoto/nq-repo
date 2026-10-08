@@ -245,7 +245,7 @@ export function CalendarPage() {
             <div className="flex flex-col px-4 py-2">
               {!selectedLines || selectedLines.length === 0 ? (
                 <p className="py-4 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません
+                  データがありません。
                 </p>
               ) : (
                 selectedLines.map((line, i) => (

@@ -197,6 +197,13 @@ export function FrameBridge() {
       // 画面設計の右下 › フィードバック。枠の中のいまの画面を対象にパネルを開く
       if (m && m.nvideo === "feedback") return openFeedbackPanel();
       if (!m || m.nvideo !== "go" || typeof m.hash !== "string") return;
+      // 承認申請管理で最後に開いた工場（admin/data/factoryDemo.ts）は、画面設計が画面を選び直したら忘れる。
+      // hash で開く画面は f1 の見本が前提のため
+      try {
+        sessionStorage.removeItem("nq_demo_factory");
+      } catch {
+        /* 保存できなくても動く */
+      }
       applyFlags(m.flags || {});
       const to = "/" + m.hash.replace(/^\//, "");
       if (to !== location.pathname) navigate(to, { replace: true });

@@ -110,7 +110,7 @@ export function XrayDetectorDetailPage() {
             </div>
             {unit.settings.length === 0 ? (
               <div className="bg-white flex items-center justify-center w-full py-6">
-                <p className="text-base text-[var(--semantic-text-secondary)]">データがありません</p>
+                <p className="text-base text-[var(--semantic-text-secondary)]">データがありません。</p>
               </div>
             ) : (
               unit.settings.map((row, index) => (

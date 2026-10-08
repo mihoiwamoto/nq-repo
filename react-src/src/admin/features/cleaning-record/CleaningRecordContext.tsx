@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { initialEntries, initialLines } from "./mockData";
 import type { Line, ScheduleEntry } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type CleaningRecordContextValue = {
   lines: Line[];
@@ -16,7 +17,7 @@ type CleaningRecordContextValue = {
 const CleaningRecordContext = createContext<CleaningRecordContextValue | null>(null);
 
 export function CleaningRecordProvider({ children }: { children: ReactNode }) {
-  const [lines, setLines] = useState<Line[]>(initialLines);
+  const [lines, setLines] = useFactoryList<Line>("cleaning-record", initialLines, "registry");
   const [entries, setEntries] = useState<Record<string, ScheduleEntry>>(initialEntries);
 
   const value = useMemo<CleaningRecordContextValue>(

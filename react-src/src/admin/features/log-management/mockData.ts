@@ -109,7 +109,7 @@ export const LOG_ENTRIES: LogEntry[] = [
     staffName: "中村悠人",
     role: "実施者",
     ledgerSlug: "metal-xray-detection",
-    action: "金属探知機・X線探知機の記録を記録",
+    action: "金属/X線探知機記録の記録を記録",
   },
   {
     id: "l12",
@@ -176,7 +176,7 @@ export const LOG_ENTRIES: LogEntry[] = [
     staffName: "伊藤真由",
     role: "実施者",
     ledgerSlug: "sample-management",
-    action: "検体の管理を記録",
+    action: "検体管理を記録",
   },
   {
     id: "l19",
@@ -205,7 +205,7 @@ export const LOG_ENTRIES: LogEntry[] = [
     staffName: "中村悠人",
     role: "確認者",
     ledgerSlug: "metal-xray-detection",
-    action: "金属探知機・X線探知機の記録を確認",
+    action: "金属/X線探知機記録の記録を確認",
   },
   {
     id: "l22",

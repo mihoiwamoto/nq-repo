@@ -1,7 +1,8 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { MACHINES, type Machine } from "./mockData";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type MetalXrayManagementContextValue = {
   machines: Machine[];
@@ -13,7 +14,7 @@ type MetalXrayManagementContextValue = {
 const MetalXrayManagementContext = createContext<MetalXrayManagementContextValue | null>(null);
 
 export function MetalXrayManagementProvider({ children }: { children: ReactNode }) {
-  const [machines, setMachines] = useState<Machine[]>(MACHINES);
+  const [machines, setMachines] = useFactoryList<Machine>("metal-xray-detection", MACHINES, "registry");
 
   function addMachine(machine: Omit<Machine, "id">) {
     setMachines((prev) => [...prev, { id: `m${Date.now()}`, ...machine }]);

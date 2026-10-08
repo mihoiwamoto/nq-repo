@@ -20,7 +20,9 @@ export function CommentInputBox({
   const isDisabled = disabled ?? !value.trim();
 
   return (
-    <>
+    // 確定デザイン（2026-10-07）：入力欄は高さ 80px、入力欄 → 「コメントを残す」は 16px。
+    // 上（これまでのコメント）との間は置く側の gap で決める（確定デザインは 8px＝gap-2）
+    <div className="flex flex-col gap-4 items-start w-full">
       <div className="bg-white rounded-lg w-full p-2">
         <textarea
           value={value}
@@ -28,8 +30,7 @@ export function CommentInputBox({
             onChange(maxLength ? e.target.value.slice(0, maxLength) : e.target.value)
           }
           placeholder={placeholder}
-          rows={3}
-          className="w-full text-base font-light text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] resize-none outline-none"
+          className="block h-16 w-full text-base font-light text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] resize-none outline-none"
         />
       </div>
       {/* 未入力のときは押せない（グレー）、入力すると緑で押せる（2026-10-07 ユーザー指定）。
@@ -42,6 +43,6 @@ export function CommentInputBox({
       >
         {buttonLabel}
       </button>
-    </>
+    </div>
   );
 }

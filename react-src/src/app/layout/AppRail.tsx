@@ -11,7 +11,7 @@ export function AppRail() {
 
   return (
     // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「メニュー」を見つけるための印。見た目には影響しない
-    <nav data-nq-part="app-rail" className="w-16 shrink-0 bg-[var(--semantic-brand-primary)] flex flex-col items-center gap-4 py-4">
+    <nav data-nq-part="app-rail" className="w-14 shrink-0 bg-[var(--semantic-brand-primary)] flex flex-col items-center gap-4 py-4">
       {/* ロゴは装飾のみ。押しても遷移しない */}
       <div className="size-10 rounded-[6.4px] bg-white overflow-hidden shrink-0">
         <img src={logo} alt="NQlipo" className="size-full object-cover" />
@@ -34,11 +34,11 @@ export function AppRail() {
                   >
                     <img src={item.icon} alt="" className="size-6" />
                   </span>
-                  <span className="text-xs text-white leading-none">{item.label}</span>
+                  <span className="text-xs text-white leading-none whitespace-nowrap">{item.label}</span>
                   {item.badge !== undefined && (
                     <span
                       data-nq-part="badge"
-                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums flex items-center justify-center"
+                      className="absolute -top-1.5 left-[38px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums flex items-center justify-center"
                     >
                       {String(item.badge).padStart(2, "0")}
                     </span>
@@ -58,7 +58,7 @@ export function AppRail() {
               >
                 <img src={iconFontSize} alt="" className="size-6" />
               </span>
-              <span className="text-xs text-white leading-none">サイズ</span>
+              <span className="text-xs text-white leading-none whitespace-nowrap">サイズ</span>
             </>
           )}
         </NavLink>
@@ -79,11 +79,11 @@ export function AppRail() {
                   >
                     <img src={item.icon} alt="" className="size-6" />
                   </span>
-                  <span className="text-xs text-white leading-none">{item.label}</span>
+                  <span className="text-xs text-white leading-none whitespace-nowrap">{item.label}</span>
                   {item.badge !== undefined && (
                     <span
                       data-nq-part="badge"
-                      className="absolute -top-1.5 left-[42px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums flex items-center justify-center"
+                      className="absolute -top-1.5 left-[38px] size-4 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[8px] leading-none tabular-nums flex items-center justify-center"
                     >
                       {String(item.badge).padStart(2, "0")}
                     </span>

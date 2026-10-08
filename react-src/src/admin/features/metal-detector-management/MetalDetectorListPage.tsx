@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
+import { getFactoryName } from "../../../data/factories";
 import { Toast } from "../../components/Toast";
 import { useMetalDetector } from "./MetalDetectorContext";
 import { useDemoList } from "../../../components/demo/demoStore";
@@ -57,6 +58,10 @@ export function MetalDetectorListPage() {
         ]}
       />
       <div className="flex flex-col gap-6 p-6">
+        {/* 金属/X線探知機記録の画面から移っても工場名の札を出し続ける（stg と同じ。2026-10-07） */}
+        <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
+          <p className="text-xl text-[var(--semantic-text-primary)]">{getFactoryName(factoryId)}</p>
+        </div>
         <div className="flex flex-col gap-2 items-start">
           <p className="text-sm text-[var(--semantic-text-primary)]">動作確認項目の編集はこちら</p>
           <Link
@@ -82,7 +87,7 @@ export function MetalDetectorListPage() {
           {units.length === 0 ? (
             <div className="bg-white flex items-center justify-center w-full py-6">
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             </div>
           ) : (

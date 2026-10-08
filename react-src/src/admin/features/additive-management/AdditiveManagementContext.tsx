@@ -1,7 +1,8 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { ADDITIVES, type Additive } from "../../../data/additives";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type NewAdditiveInput = {
   name: string;
@@ -20,7 +21,7 @@ type AdditiveManagementContextValue = {
 const AdditiveManagementContext = createContext<AdditiveManagementContextValue | null>(null);
 
 export function AdditiveManagementProvider({ children }: { children: ReactNode }) {
-  const [additives, setAdditives] = useState<Additive[]>(ADDITIVES);
+  const [additives, setAdditives] = useFactoryList<Additive>("additive-management", ADDITIVES, "registry");
 
   const value = useMemo<AdditiveManagementContextValue>(
     () => ({

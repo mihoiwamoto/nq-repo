@@ -7,7 +7,7 @@ function grow(n){if(n.type!=='FRAME')return;for(const c of n.children)if(c.type=
  if(n.layoutMode==='NONE'){const mb=Math.max(...n.children.filter(c=>c.visible).map(c=>c.y+c.height));if(mb>old+0.5)n.resize(n.width,Math.ceil(mb+24));return;}
  if(n.layoutMode==='VERTICAL')n.primaryAxisSizingMode='AUTO';else n.counterAxisSizingMode='AUTO';
  if(n.height<old-0.5){if(n.layoutMode==='VERTICAL')n.primaryAxisSizingMode='FIXED';else n.counterAxisSizingMode='FIXED';n.resize(n.width,old);}}
-function expand(f){const h0=f.height;const vp=Math.round(f.width)===768?1024:760;
+function expand(f){const h0=f.height;const vp=Math.round(f.width)===768?1024:960; // 管理画面は 1440×960（2026-10-08）
  const ovs=f.children.filter(c=>c.type==='FRAME'&&c.layoutPositioning==='ABSOLUTE'&&Math.round(c.width)===Math.round(f.width)&&Math.round(c.height)===Math.round(h0));
  grow(f);
  for(const h of f.findAll(n=>n.type==='FRAME'&&n.layoutMode==='HORIZONTAL'))for(const c of h.children)if(c.type==='FRAME'&&c.layoutPositioning!=='ABSOLUTE'&&(c.layoutSizingVertical==='FIXED'||c.name==='nav')&&(Math.round(c.height)===Math.round(h0)||Math.round(c.height)===vp)&&h.height>c.height+0.5)c.layoutSizingVertical='FILL';

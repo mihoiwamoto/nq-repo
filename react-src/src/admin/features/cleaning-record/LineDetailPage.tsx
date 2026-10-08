@@ -19,7 +19,7 @@ function formatPeriod(displayFrom?: string, displayTo?: string) {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-4 items-center w-full">
-      <div className="w-40 shrink-0 text-xl text-[var(--semantic-brand-primary)]">{label}</div>
+      <div className="w-[152px] shrink-0 text-xl text-[var(--semantic-brand-primary)]">{label}</div>
       <div className="flex-1 text-xl text-[var(--semantic-text-primary)]">{children}</div>
     </div>
   );
@@ -98,7 +98,7 @@ export function LineDetailPage() {
 
           {line.cleaningPoints.length === 0 ? (
             <p className="text-base text-[var(--semantic-text-secondary)]">
-              データがありません
+              データがありません。
             </p>
           ) : (
             line.cleaningPoints.map((point, index) => (

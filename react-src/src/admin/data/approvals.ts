@@ -136,3 +136,40 @@ export const approvalRequests: ApprovalRequest[] = [
     description: "25年3月29日点検分_点検場所A",
   },
 ];
+
+/**
+ * f1・西通りプリン以外の工場の申請も並べる（2026-10-07。工場ごとに違う見本）。
+ * 工場ごとに 1〜4 帳票ぶん、承認待ち・承認済み・差し戻しを混ぜる。f5 は申請の無い工場
+ */
+const DEMO_FACTORIES = [
+  "㈱西原食品 第二工場", "㈱西原食品 伊佐工場", "㈱ヒコシマリン 本社工場", "㈱ゆば将 本社工場",
+  "㈱匠フーズ 本社工場", "㈱薩摩家 本社工場", "㈱西通りプリン 安曇野工場", "㈱桜寿食品 本社工場",
+  "㈱亜味撰 本社工場", "㈱ゆう屋 本社工場", "㈱五島製麺 本社工場", "㈱有明農産 本社工場",
+  "龍屋物産㈱ 本社工場", "松山製菓㈱ 本社工場", "松山製菓㈱ 知多かなん堂工場", "はやしハム㈱ 本社工場",
+  "あったか市場㈱ キットファクトリー", "㈱鈴木商会 製造部門",
+];
+const DEMO_LEDGERS = [
+  "equipment-inspection", "cleaning-record", "water-inspection", "scale-inspection", "sensory-inspection",
+  "glass-plastic", "metal-xray-detection", "sample-management", "chemical-management", "additive-management",
+];
+const DEMO_SUFFIX: Record<string, string> = {
+  "water-inspection": "_給湯室",
+  "chemical-management": "_次亜塩素酸ナトリウム",
+  "additive-management": "_ソルビン酸",
+  "sample-management": "_冷凍ぎょうざ 12個入",
+};
+const DEMO_STATUS: ApprovalStatus[] = ["pending", "pending", "approved", "rejected"];
+DEMO_FACTORIES.forEach((companyName, fi) => {
+  const n = (fi % 4) + 1;
+  for (let k = 0; k < n; k++) {
+    const ledgerSlug = DEMO_LEDGERS[(fi * 3 + k * 7) % DEMO_LEDGERS.length];
+    const day = ((fi * 5 + k * 3) % 27) + 1;
+    approvalRequests.push({
+      id: `d${fi + 1}-${k + 1}`,
+      status: DEMO_STATUS[(fi + k) % DEMO_STATUS.length],
+      companyName,
+      ledgerSlug,
+      description: `25年4月${day}日点検分${DEMO_SUFFIX[ledgerSlug] ?? ""}`,
+    });
+  }
+});

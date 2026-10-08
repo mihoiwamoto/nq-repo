@@ -30,6 +30,7 @@ import {
   type TestPieceRow,
 } from "./mockData";
 import iconCancelDark from "@images/Icon/cancel.svg";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 function currentTimeString(inspectorName?: string) {
   const name = inspectorName || "山田太郎";
@@ -460,7 +461,7 @@ export function MachineRecordFormPage() {
     | null;
   const content = state?.content ?? "動作確認";
   const inspectorName = state?.inspectorName ?? "";
-  const machine = MACHINES.find((m) => m.id === machineId);
+  const machine = findFactoryItem(MACHINES, machineId);
 
   const [metalUnit, setMetalUnit] = useState(METAL_DETECTOR_UNITS[0]);
   const [xrayUnit, setXrayUnit] = useState(XRAY_DETECTOR_UNITS[0]);

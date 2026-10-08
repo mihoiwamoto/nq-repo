@@ -93,6 +93,8 @@ export function LineRegistrationPage() {
         ]}
       />
       <div className="flex flex-col gap-10 items-start p-6">
+        {/* 確定デザイン（7139:258473）：入力の間は 24px、下の「キャンセル」「登録」だけ 40px 離す（2026-10-07） */}
+        <div className="flex flex-col gap-6 items-start w-full">
         <div className="flex flex-col gap-1 items-start">
           <div className="flex gap-2 items-center">
             <p className="text-xl text-[var(--semantic-text-primary)]">アプリ表示期間</p>
@@ -150,7 +152,7 @@ export function LineRegistrationPage() {
 
         <div className="flex flex-col gap-6 items-start w-full">
           {points.map((point, pointIndex) => (
-            <div key={point.id} className="flex flex-col gap-2 items-start w-[480px]">
+            <div key={point.id} className="flex flex-col gap-1 items-start w-[480px]">
               <div className="flex gap-2 items-center">
                 <p className="text-xl text-[var(--semantic-text-primary)]">点検箇所</p>
                 <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
@@ -161,7 +163,7 @@ export function LineRegistrationPage() {
                   value={point.location}
                   onChange={(e) => updateLocation(point.id, e.target.value)}
                   placeholder="例）エコスター"
-                  className="bg-white h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[480px] placeholder:text-[var(--semantic-text-secondary)]"
+                  className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[480px] placeholder:text-[var(--semantic-text-secondary)]"
                 />
                 {pointIndex > 0 && (
                   <button
@@ -205,6 +207,7 @@ export function LineRegistrationPage() {
         </div>
 
         {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        </div>
 
         <div className="flex gap-4 items-center">
           <button

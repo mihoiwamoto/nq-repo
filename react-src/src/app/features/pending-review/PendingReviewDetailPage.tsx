@@ -33,6 +33,8 @@ import {
   lines as cleaningLines,
   pendingReviewRecords,
   initialRemarks as cleaningInitialRemarks,
+  skippedRemarks as cleaningSkippedRemarks,
+  skippedReviewRemarks as cleaningSkippedReviewRemarks,
   CLEANING_REJECTION_COMMENTS,
 } from "../cleaning-record/mockData";
 import floorMapImage from "../../../assets/figma/floorplans/floor-a.png";
@@ -89,48 +91,9 @@ import {
   type OkNg,
 } from "../metal-xray-detection/mockData";
 import { ACTORS } from "../progress/mockData";
-
-const EQUIPMENT_CONFIRMERS = [
-  { id: "1689923", name: "鈴木翔人" },
-  { id: "1958473", name: "辻原由貴" },
-  { id: "1846289", name: "伊藤裕太" },
-];
-
-const CLEANING_CONFIRMERS = [
-  { id: "1035921", name: "加藤由美" },
-  { id: "1058473", name: "鈴木雅人" },
-  { id: "1046289", name: "伊藤裕太" },
-];
-
-const GLASS_PLASTIC_CONFIRMERS = [
-  { id: "1078462", name: "中村彩香" },
-  { id: "1092837", name: "藤田健太" },
-  { id: "1064523", name: "小川美穂" },
-];
-
-const ADDITIVE_CONFIRMERS = [
-  { id: "3041587", name: "山本真理" },
-  { id: "2758463", name: "渡辺誠一" },
-  { id: "3192706", name: "小林幸恵" },
-];
-
-const SCALE_CONFIRMERS = [
-  { id: "2214587", name: "岡本さゆり" },
-  { id: "2298431", name: "村上健二" },
-  { id: "2276104", name: "石井美穂" },
-];
-
-const SENSORY_CONFIRMERS = [
-  { id: "2531478", name: "小野寺薫" },
-  { id: "2547903", name: "堤幸雄" },
-  { id: "2569012", name: "森田千夏" },
-];
-
-const METAL_XRAY_CONFIRMERS = [
-  { id: "2103458", name: "西村千夏" },
-  { id: "2117623", name: "橋本大輔" },
-  { id: "2129804", name: "松井理沙" },
-];
+import { findFactoryItem } from "../../data/factoryAppData";
+import { loadAppFactory } from "../../../data/appFactoryStore";
+import { ConfirmerPickerDialog, confirmersFor, stepAfterConfirmer } from "./ConfirmerPicker";
 
 const METAL_XRAY_REVIEW_COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -588,6 +551,16 @@ type PendingReviewStep =
   | "machineRecordDetail"
   | "confirmation";
 
+/** 清掃記録の見送った記録の備考のカード（確定デザイン 7139:229031）。1 行目「点検見送り」、続けて見送り理由 */
+function CleaningSkipRemarksCard({ remarks }: { remarks: string }) {
+  return (
+    <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full max-w-full">
+      <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+      <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)] whitespace-pre-wrap">{remarks}</p>
+    </div>
+  );
+}
+
 export function PendingReviewDetailPage() {
   // recordId は薬品管理の差し戻しの詳細（2 枚目）の URL（/app/pending-review/:id/records/:recordId。2026-10-06）
   const { id, recordId } = useParams<{ id: string; recordId?: string }>();
@@ -597,7 +570,8 @@ export function PendingReviewDetailPage() {
   const returnState = location.state as
     | { step?: PendingReviewStep; confirmerId?: string; actorId?: string }
     | null;
-  const review = PENDING_REVIEWS.find((r) => r.id === id);
+  // 工場ごとの見本（プロトタイプの「ログイン中」）。一覧と同じ付け替え後の行・点検対象を引く
+  const review = findFactoryItem(PENDING_REVIEWS, id);
   const isCleaningLedger = review?.ledgerSlug === "cleaning-record";
   const isGlassPlasticLedger = review?.ledgerSlug === "glass-plastic";
   const isAdditiveLedger = review?.ledgerSlug === "additive-management";
@@ -605,19 +579,7 @@ export function PendingReviewDetailPage() {
   const isSensoryLedger = review?.ledgerSlug === "sensory-inspection";
   const isMetalXrayLedger = review?.ledgerSlug === "metal-xray-detection";
   const isChemicalLedger = review?.ledgerSlug === "chemical-management";
-  const CONFIRMERS = isCleaningLedger
-    ? CLEANING_CONFIRMERS
-    : isGlassPlasticLedger
-      ? GLASS_PLASTIC_CONFIRMERS
-      : isAdditiveLedger
-        ? ADDITIVE_CONFIRMERS
-        : isScaleInspectionLedger
-          ? SCALE_CONFIRMERS
-          : isSensoryLedger
-            ? SENSORY_CONFIRMERS
-            : isMetalXrayLedger
-              ? METAL_XRAY_CONFIRMERS
-              : EQUIPMENT_CONFIRMERS;
+  const CONFIRMERS = confirmersFor(review?.ledgerSlug);
   const commentMaxLength =
     // 機械器具点検も確定デザイン（7139:283080）どおり 255
     isCleaningLedger || isAdditiveLedger || isScaleInspectionLedger || isSensoryLedger || isMetalXrayLedger || review?.ledgerSlug === "equipment-inspection"
@@ -703,20 +665,23 @@ export function PendingReviewDetailPage() {
   }
 
   const line = review.lineId
-    ? (isCleaningLedger ? cleaningLines : lines).find((l) => l.id === review.lineId)
+    ? findFactoryItem(isCleaningLedger ? cleaningLines : lines, review.lineId)
     : undefined;
-  const waterRecord =
+  const waterRecordRaw =
     review.pointId && review.recordId
       ? recordsByPoint[review.pointId]?.find((r) => r.id === review.recordId)
       : undefined;
-  const floor = review.floorId ? glassPlasticFloors.find((f) => f.id === review.floorId) : undefined;
+  // f1 以外の工場は、点検場所の名前を付け替えた行の名前に合わせる
+  const waterRecord =
+    waterRecordRaw && loadAppFactory() !== "f1" ? { ...waterRecordRaw, location: review.name } : waterRecordRaw;
+  const floor = review.floorId ? findFactoryItem(glassPlasticFloors, review.floorId) : undefined;
   const additive = review.additiveId
-    ? additives.find((a) => a.id === review.additiveId)
+    ? findFactoryItem(additives, review.additiveId)
     : undefined;
   const sampleDetail = review.sampleId ? SAMPLE_REVIEW_DETAILS[review.sampleId] : undefined;
-  const machine = review.machineId ? MACHINES.find((m) => m.id === review.machineId) : undefined;
+  const machine = review.machineId ? findFactoryItem(MACHINES, review.machineId) : undefined;
   const chemical = review.chemicalId
-    ? chemicals.find((c) => c.id === review.chemicalId)
+    ? findFactoryItem(chemicals, review.chemicalId)
     : undefined;
 
   const isEquipment = review.ledgerSlug === "equipment-inspection" && !!line;
@@ -727,6 +692,12 @@ export function PendingReviewDetailPage() {
   const eqSkipped = isEquipment && (review.status === "見送り" || !!review.skipped);
   const eqSkipReason = skippedRemarks.replace(/^見送り\n/, "");
   const isCleaning = isCleaningLedger && !!line;
+  // 清掃記録の見送った記録（確認待ちの「見送り」と、見送った記録の差し戻し）。清掃項目は出さず、備考に「点検見送り」と見送り理由だけを出す
+  // （確定デザイン 7139:229031。機械器具点検の eqSkipped と同じ考え。2026-10-07）
+  const clSkipped = isCleaning && (review.status === "見送り" || !!review.skipped);
+  const clSkipRemarks = review.skipped
+    ? cleaningSkippedReviewRemarks
+    : `点検見送り\n${cleaningSkippedRemarks.replace(/^見送り\n/, "")}`;
   // 清掃記録の差し戻しも機械器具点検と同じく、実施者が対応する（2026-10-02）
   const isCleaningRejected = isCleaning && review.status === "差し戻し";
   const isWater = review.ledgerSlug === "water-inspection" && !!waterRecord;
@@ -791,20 +762,20 @@ export function PendingReviewDetailPage() {
       <div className="absolute inset-0 bg-black/50" onClick={() => setRejectEditTarget(null)} />
       {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
       <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-        <h2 className="text-2xl text-[var(--semantic-text-primary)]">実施者を選んでください</h2>
+        <h2 className="text-2xl text-black">実施者を選んでください</h2>
         <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
           {ACTORS.map((a) => (
             <button
               key={a.id}
               type="button"
               onClick={() => setEquipmentActorId(a.id)}
-              className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
+              className={`h-[78px] rounded-lg flex flex-col items-center justify-center gap-1 px-4 shadow-[0px_2px_6px_rgba(51,51,51,0.24)] ${
                 equipmentActorId === a.id
                   ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
                   : "bg-white border-2 border-transparent"
               }`}
             >
-              <span className="text-base text-[var(--semantic-text-primary)]">{a.name}</span>
+              <span className="text-lg leading-[1.4] text-[var(--semantic-text-primary)]">{a.name}</span>
               <span className="text-sm text-[var(--semantic-text-secondary)]">{a.id}</span>
             </button>
           ))}
@@ -813,7 +784,7 @@ export function PendingReviewDetailPage() {
           <button
             type="button"
             onClick={() => setRejectEditTarget(null)}
-            className="bg-white border-2 border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
+            className="bg-white border border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
           >
             閉じる
           </button>
@@ -960,50 +931,13 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title="確認待ち" />
         <div className="flex-1 flex items-center justify-center">
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={() => navigate("/app/pending-review")} />
-            <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-              <h2 className="text-2xl text-[var(--semantic-text-primary)]">
-                確認者を選んでください
-              </h2>
-              <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
-                {pickerPeople.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => selectPickerPerson(c.id)}
-                    className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
-                      pickerSelectedId === c.id
-                        ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
-                        : "bg-white border-2 border-transparent"
-                    }`}
-                  >
-                    <span className="text-base text-[var(--semantic-text-primary)]">{c.name}</span>
-                    <span className="text-sm text-[var(--semantic-text-secondary)]">{c.id}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex gap-10 items-center justify-center w-full">
-                <button
-                  type="button"
-                  onClick={() => navigate("/app/pending-review")}
-                  className="bg-white border-2 border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-lg text-[var(--semantic-text-primary)] font-semibold"
-                >
-                  閉じる
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const nextStep = review?.ledgerSlug === "sample-management" ? "confirmation" : "detail";
-                    setStep(nextStep);
-                  }}
-                  className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-lg text-white font-semibold"
-                >
-                  次へ
-                </button>
-              </div>
-            </div>
-          </div>
+          <ConfirmerPickerDialog
+            people={pickerPeople}
+            selectedId={pickerSelectedId}
+            onSelect={selectPickerPerson}
+            onClose={() => navigate("/app/pending-review")}
+            onNext={() => setStep(stepAfterConfirmer(review?.ledgerSlug))}
+          />
         </div>
       </>
     );
@@ -2555,20 +2489,20 @@ export function PendingReviewDetailPage() {
               <div className="absolute inset-0 bg-black/50" onClick={() => setMetalXrayActorPickerOpen(false)} />
               {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
               <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-                <h2 className="text-2xl text-[var(--semantic-text-primary)]">実施者を選んでください</h2>
+                <h2 className="text-2xl text-black">実施者を選んでください</h2>
                 <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
                   {ACTORS.map((a) => (
                     <button
                       key={a.id}
                       type="button"
                       onClick={() => setSelectedMetalXrayActorId(a.id)}
-                      className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
+                      className={`h-[78px] rounded-lg flex flex-col items-center justify-center gap-1 px-4 shadow-[0px_2px_6px_rgba(51,51,51,0.24)] ${
                         selectedMetalXrayActorId === a.id
                           ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
                           : "bg-white border-2 border-transparent"
                       }`}
                     >
-                      <span className="text-base text-[var(--semantic-text-primary)]">{a.name}</span>
+                      <span className="text-lg leading-[1.4] text-[var(--semantic-text-primary)]">{a.name}</span>
                       <span className="text-sm text-[var(--semantic-text-secondary)]">{a.id}</span>
                     </button>
                   ))}
@@ -2577,7 +2511,7 @@ export function PendingReviewDetailPage() {
                   <button
                     type="button"
                     onClick={() => setMetalXrayActorPickerOpen(false)}
-                    className="bg-white border-2 border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
+                    className="bg-white border border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
                   >
                     閉じる
                   </button>
@@ -2866,7 +2800,7 @@ export function PendingReviewDetailPage() {
               <div className="flex flex-col gap-2 items-start px-2 w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
                 <p className="text-base text-[var(--semantic-text-secondary)]">
-                  {tab === "start" ? (eqSkipped ? eqSkipReason : initialRemarks) : ""}
+                  {(tab === "start" ? (eqSkipped ? eqSkipReason : initialRemarks) : "") || "補足事項や連絡事項があればご記入ください。"}
                 </p>
               </div>
             </div>
@@ -2932,7 +2866,8 @@ export function PendingReviewDetailPage() {
   // 清掃記録の差し戻し（機械器具点検の差し戻しと同じ流れ。2026-10-02）。
   // 実施者が差し戻し理由を読み、必要なら清掃内容を直してから「差し戻し対応完了」を押す。
   if (isCleaningRejected && line) {
-    const rejectionComments = CLEANING_REJECTION_COMMENTS[line.id] ?? [];
+    // 見送った記録の差し戻しは、見送りへの差し戻しコメント（キーは「ライン ID:skipped」）
+    const rejectionComments = CLEANING_REJECTION_COMMENTS[clSkipped ? `${line.id}:skipped` : line.id] ?? [];
     const allCleaningComments = [...rejectionComments, ...equipmentExtraComments];
 
     const handleSendCleaningComment = () => {
@@ -2955,6 +2890,8 @@ export function PendingReviewDetailPage() {
         state: {
           inspectorName: actorName,
           editReturn: { to: location.pathname, state: { step, confirmerId } },
+          // 見送った記録の差し戻しは、清掃していない状態（全項目未選択・備考に見送り理由）で編集を開く（確定デザイン 7139:228907）
+          skipped: clSkipped,
         },
       });
     };
@@ -2967,7 +2904,14 @@ export function PendingReviewDetailPage() {
           className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
           onReachEnd={() => setEquipmentScrolledToEnd(true)}
         >
-          {/* 清掃記録の確定デザイン（7139:229163）には黄色の注意の帯・「持ち場/ライン」の行は無く、実施者を出す */}
+          {/* 差し戻しは他の帳票と同じく黄色の注意の帯を出す（確定デザイン 7139:229031。2026-10-07）。「持ち場/ライン」の行は無く、実施者を出す */}
+          <div className="bg-[#f7f292] flex gap-2 items-center h-14 px-4 rounded-lg w-full max-w-full shrink-0">
+            <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
+            <p className="text-sm text-[var(--semantic-text-primary)]">
+              承認者から差し戻し理由のコメントがあります。
+            </p>
+          </div>
+
           <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
             <div className="flex items-center justify-between w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
@@ -2981,14 +2925,18 @@ export function PendingReviewDetailPage() {
             </div>
           </div>
 
-          {/* 清掃箇所と備考は 1 枚のカードにまとめる */}
+          {clSkipped ? (
+            /* 見送った記録の差し戻し（確定デザイン 7139:229031）：清掃項目は出さず、備考のカードに「点検見送り」と見送り理由 */
+            <CleaningSkipRemarksCard remarks={clSkipRemarks} />
+          ) : (
+          /* 清掃箇所と備考は 1 枚のカードにまとめる */
           <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
           {cleaningPoints.map((point) => (
             <div
               key={point.id}
               className="flex flex-col gap-3 items-start w-full"
             >
-              <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-2 rounded-lg w-full">
+              <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-1 rounded-lg w-full">
                 <p className="text-base text-white">清掃箇所</p>
                 <p className="text-base text-white">{point.location}</p>
               </div>
@@ -3005,7 +2953,7 @@ export function PendingReviewDetailPage() {
                         </span>
                       </div>
                       {record?.timestamp && (
-                        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                        <p className="text-sm leading-none text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                           {record.inspector} {record.timestamp}
                         </p>
                       )}
@@ -3021,6 +2969,7 @@ export function PendingReviewDetailPage() {
               <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)]">{cleaningInitialRemarks}</p>
             </div>
           </div>
+          )}
 
           <div className="flex flex-col gap-2 items-start w-full max-w-full">
             <div className="flex h-11 items-center justify-between w-full">
@@ -3094,7 +3043,9 @@ export function PendingReviewDetailPage() {
             </p>
             <p className="text-base text-[var(--semantic-text-primary)]">
               {isCleaning
-                ? pendingReviewRecords["つまみ上げパック機|シール部"]?.inspector
+                ? clSkipped
+                  ? line?.inspectorName ?? pendingReviewRecords["つまみ上げパック機|シール部"]?.inspector
+                  : pendingReviewRecords["つまみ上げパック機|シール部"]?.inspector
                 : confirmer.name}
             </p>
           </div>
@@ -3107,7 +3058,10 @@ export function PendingReviewDetailPage() {
           )}
         </div>
 
-        {isCleaning
+        {isCleaning && clSkipped ? (
+          // 見送りの記録：清掃項目は出さず、備考のカードに「点検見送り」と見送り理由（差し戻しの 7139:229031 と同じ形）
+          <CleaningSkipRemarksCard remarks={clSkipRemarks} />
+        ) : isCleaning
           ? (
             // 清掃記録は清掃箇所と備考を 1 枚のカードにまとめる（確定デザイン 7139:221291）
             <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
@@ -3116,7 +3070,7 @@ export function PendingReviewDetailPage() {
                 key={point.id}
                 className="flex flex-col gap-3 items-start w-full"
               >
-                <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-2 rounded-lg w-full">
+                <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-1 rounded-lg w-full">
                   <p className="text-base text-white">清掃箇所</p>
                   <p className="text-base text-white">{point.location}</p>
                 </div>
@@ -3133,7 +3087,7 @@ export function PendingReviewDetailPage() {
                           </span>
                         </div>
                         {record?.timestamp && (
-                          <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                          <p className="text-sm leading-none text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                             {record.inspector} {record.timestamp}
                           </p>
                         )}
@@ -3215,7 +3169,7 @@ export function PendingReviewDetailPage() {
                 <div className="flex flex-col gap-2 items-start px-2 w-full">
                   <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
                   <p className="text-base text-[var(--semantic-text-secondary)]">
-                    {tab === "start" ? (eqSkipped ? eqSkipReason : initialRemarks) : ""}
+                    {(tab === "start" ? (eqSkipped ? eqSkipReason : initialRemarks) : "") || "補足事項や連絡事項があればご記入ください。"}
                   </p>
                 </div>
               </div>

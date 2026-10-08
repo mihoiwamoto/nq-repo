@@ -28,7 +28,7 @@ export function ChemicalRecordingPage() {
   const { chemicalId } = useParams<{ chemicalId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { chemicals, addRecord, updateChemicalStatus } = useChemicalManagement();
+  const { chemicals, records, addRecord, updateRecord, updateChemicalStatus } = useChemicalManagement();
 
   const chemical = chemicals.find((c) => c.id === chemicalId);
   const state = location.state as
@@ -36,6 +36,8 @@ export function ChemicalRecordingPage() {
         date?: string;
         inspectorName?: string;
         editRecord?: EditRecord;
+        /** 進捗一覧（点検中）の一覧の「詳細」から開いたときの、直す記録の id。保存で記録を足さずに書き換える */
+        editRecordId?: string;
         editReturn?: { to: string; state?: unknown };
         fromProgress?: boolean;
         progressStatus?: string;
@@ -50,6 +52,8 @@ export function ChemicalRecordingPage() {
   // このときは記録を足さず、「編集を保存」で元の詳細画面に戻すだけにする
   const editReturn = state?.editReturn;
   const editRecord = state?.editRecord;
+  const progressEditTarget =
+    !editReturn && state?.editRecordId ? records.find((record) => record.id === state.editRecordId) : undefined;
   const inspectorName = state?.inspectorName ?? ACTORS[0].name;
   const date = state?.date ?? todayString();
 
@@ -63,7 +67,7 @@ export function ChemicalRecordingPage() {
   const basePath = `/app/ledger-list/chemical-management/${chemicalId}`;
   /** 数量・現在庫数は数値だけ入力してもらい、単位は品目の規格（例 1,000ml）から補う */
   const unit = unitOf(chemical?.spec ?? "") || unitOf(chemical?.currentQuantity ?? "");
-  const previousStock = chemical?.currentQuantity ?? "";
+  const previousStock = progressEditTarget?.previousStock || (chemical?.currentQuantity ?? "");
   const canSave = category !== null && quantity.trim() !== "" && currentStock.trim() !== "";
 
   /** 現在庫数を手で直していないうちは、区分・数量に追従して自動で埋める */
@@ -93,6 +97,17 @@ export function ChemicalRecordingPage() {
   /** 保存すると記録一覧に戻る。提出は一覧の「確認画面へ」から行う */
   function handleSave() {
     if (!canSave) return;
+    if (progressEditTarget) {
+      updateRecord(progressEditTarget.id, {
+        ...progressEditTarget,
+        category,
+        usedQuantity: withUnit(quantity, unit),
+        currentStock: withUnit(currentStock, unit),
+        remarks,
+      });
+      navigate(basePath, { state: { ...progressCarry, date, inspectorName } });
+      return;
+    }
     addRecord({
       chemicalId: chemicalId ?? "",
       date: date.replaceAll("-", "/"),

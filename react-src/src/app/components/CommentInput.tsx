@@ -115,7 +115,7 @@ export function CommentInput({
             <img src={iconSend} alt="" className="size-5" />
           </button>
         </div>
-        <span className="text-sm leading-6 text-[var(--semantic-text-primary)] text-right w-full">
+        <span className="text-sm font-normal leading-6 text-[var(--semantic-text-primary)] text-right w-full">
           {value.length}/{maxLength}
         </span>
       </div>

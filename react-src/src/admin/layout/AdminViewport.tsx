@@ -8,6 +8,8 @@
  * 枠の中では h-screen / min-h-screen を枠の高さに読み替える（index.css の .admin-viewport-frame）。
  *
  * それ以外（キットの外・画面設計の枠の中）は何もせず、窓（枠）いっぱいに広げる。
+ *
+ * 2026-10-07：プロトタイプでも枠に入れず窓いっぱいに出すことにした（adminFramed() が常に false）。
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { FRAME, isKit } from "../../frameBridge";
@@ -20,8 +22,11 @@ export const ADMIN_VIEWPORT_HEIGHT = 960;
 const GAP = 24;
 
 /** 管理画面を 1440×960 の枠に入れて出すか。?kit=1 の印は main.tsx の installFrameBridge() が読み込みのあとで
- * sessionStorage へ写すので、モジュールを読んだ時点ではなく描くときに見る */
-export const adminFramed = () => !FRAME && isKit();
+ * sessionStorage へ写すので、モジュールを読んだ時点ではなく描くときに見る。
+ * 2026-10-07：プロトタイプの管理画面は窓の横幅いっぱいに出すことになったので、枠には入れない。
+ * 戻すときは `!FRAME && isKit()` に戻す */
+const ADMIN_FRAMED = false;
+export const adminFramed = () => ADMIN_FRAMED && !FRAME && isKit();
 
 export function AdminViewport({ children }: { children: ReactNode }) {
   const outerRef = useRef<HTMLDivElement>(null);

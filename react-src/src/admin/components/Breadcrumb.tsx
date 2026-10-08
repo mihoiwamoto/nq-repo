@@ -9,19 +9,20 @@ export type BreadcrumbItem = {
 export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   return (
     // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「パンくず」を見つけるための印。見た目には影響しない
-    <div data-nq-part="breadcrumb" className="flex items-center gap-2 px-6 py-4">
+    // 確定デザイン：帯の高さ 48px（文字の行の高さ 14px）、文字 → 矢印 → 文字 は 32px（2026-10-07）
+    <div data-nq-part="breadcrumb" className="flex items-center gap-2.5 px-6 py-[17px] leading-[14px]">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
         return (
-          <div key={`${item.label}-${index}`} className="flex items-center gap-2">
+          <div key={`${item.label}-${index}`} className="flex items-center gap-2.5">
             {isLast ? (
-              <span className="text-sm text-[var(--semantic-text-primary)]">{item.label}</span>
+              <span className="text-sm leading-[14px] text-[var(--semantic-text-primary)]">{item.label}</span>
             ) : item.to ? (
-              <Link to={item.to} className="text-sm text-[var(--semantic-brand-primary)]">
+              <Link to={item.to} className="text-sm leading-[14px] text-[var(--semantic-brand-primary)]">
                 {item.label}
               </Link>
             ) : (
-              <span className="text-sm text-[var(--semantic-brand-primary)]">{item.label}</span>
+              <span className="text-sm leading-[14px] text-[var(--semantic-brand-primary)]">{item.label}</span>
             )}
             {!isLast && (
               <span

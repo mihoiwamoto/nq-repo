@@ -150,7 +150,7 @@ export function NewRegistrationPage() {
                   </div>
                   {settings.length === 0 ? (
                     <div className="bg-white flex items-center justify-center rounded-b-lg w-full py-6">
-                      <p className="text-base text-[var(--semantic-text-secondary)]">データがありません</p>
+                      <p className="text-base text-[var(--semantic-text-secondary)]">データがありません。</p>
                     </div>
                   ) : (
                     settings.map((row, index) => (

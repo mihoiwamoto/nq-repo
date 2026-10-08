@@ -3,6 +3,7 @@ import { AppHeader } from "../../layout/AppHeader";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { MACHINES, RESULT_COLORS, RESULT_LABELS, recordsForMachine, type MachineRecord } from "./mockData";
 import type { EditReturn } from "./MachineDetailPage";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 const COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -30,7 +31,7 @@ export function MachineConfirmPage() {
   } | null;
   const inspectionDate = state?.inspectionDate ?? "";
   const hideAddButton = state?.hideAddButton ?? false;
-  const machine = MACHINES.find((m) => m.id === machineId);
+  const machine = findFactoryItem(MACHINES, machineId);
   // 点検画面から渡された記録をそのまま確認する。直接URLを開いたときだけモックを読む
   const records = state?.records ?? recordsForMachine(machineId);
 

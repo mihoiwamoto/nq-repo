@@ -148,9 +148,9 @@ export function ConfirmPage() {
 
             <div className="flex flex-col gap-2 items-start px-2 w-full">
               <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-              {/* 備考が空のときは確定デザインどおり薄い文字の案内を出す */}
+              {/* 備考が空のときは薄い文字の案内を出す（文言は全画面で統一。2026-10-07） */}
               <p className={`text-base ${remarks[tab] ? "text-[var(--semantic-text-primary)]" : "text-[var(--semantic-text-secondary)]"}`}>
-                {remarks[tab] || "点検内容に関する補足を入力できます（任意）"}
+                {remarks[tab] || "補足事項や連絡事項があればご記入ください。"}
               </p>
             </div>
           </div>

@@ -11,6 +11,7 @@ import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import { downloadElementAsPdf } from "../../utils/pdf";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 function HyphenIcon() {
   return (
@@ -58,6 +59,7 @@ const COLUMNS: { label: string; width: string }[] = [
 ];
 
 export function ApprovalRecordsListPage() {
+  const demoFactoryName = useDemoFactoryName();
   const navigate = useNavigate();
   const { records: allRecords } = useRecords();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
@@ -154,7 +156,7 @@ export function ApprovalRecordsListPage() {
       <div className="flex flex-col items-center gap-6 p-6">
         <div className="flex flex-col gap-6 items-start w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
-            <p className="text-xl text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{demoFactoryName}</p>
           </div>
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">25年4月点検分</p>
@@ -172,7 +174,7 @@ export function ApprovalRecordsListPage() {
                 </div>
                 {records.length === 0 ? (
                   <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                    データがありません
+                    データがありません。
                   </p>
                 ) : (
                   records.map((record, index) => (

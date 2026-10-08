@@ -1,8 +1,9 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { floors as initialFloors } from "./mockData";
 import type { Floor, RepairStatus } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type GlassPlasticContextValue = {
   floors: Floor[];
@@ -15,7 +16,7 @@ type GlassPlasticContextValue = {
 const GlassPlasticContext = createContext<GlassPlasticContextValue | null>(null);
 
 export function GlassPlasticProvider({ children }: { children: ReactNode }) {
-  const [floors, setFloors] = useState<Floor[]>(initialFloors);
+  const [floors, setFloors] = useFactoryList<Floor>("glass-plastic", initialFloors, "registry");
 
   const value = useMemo<GlassPlasticContextValue>(
     () => ({

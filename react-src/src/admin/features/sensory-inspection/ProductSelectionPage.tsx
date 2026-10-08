@@ -78,7 +78,7 @@ export function ProductSelectionPage() {
           <div className="flex flex-col gap-6 items-start w-full">
             {products.length === 0 ? (
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               products.map((product) => (

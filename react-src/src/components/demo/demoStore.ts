@@ -17,6 +17,8 @@
  * ブラウザによって同一タブの iframe に届かないことがあるため）。
  */
 import { withoutHiddenLedgers } from "../../data/ledgerVisibility";
+import { useAppFactory } from "../../data/appFactoryStore";
+import { factoryItems } from "../../app/data/factoryAppData";
 import {
   useEffect,
   useMemo,
@@ -122,10 +124,10 @@ const TRIAL_GUIDES: Record<DemoTrial, Record<TrialArea, TrialGuide>> = {
     },
     admin: {
       effect:
-        "管理画面の一覧（承認・データ検索・帳票管理・職員などの管理）が空になり、「データがありません」と出る。サイドメニューの承認待ちの件数バッジも消える。",
+        "管理画面の一覧（承認・データ検索・帳票管理・職員などの管理）が空になり、「データがありません。」と出る。サイドメニューの承認待ちの件数バッジも消える。",
       steps: [
         "承認申請管理・データ検索の一覧を開く",
-        "表の見出しの下に「データがありません」と出ていることを確かめる",
+        "表の見出しの下に「データがありません。」と出ていることを確かめる",
         "サイドメニューの赤い件数バッジが消えていることを確かめる",
       ],
     },
@@ -346,8 +348,20 @@ export function useDemoTrial(): DemoTrial | null {
  */
 export function useDemoList<T>(items: T[]): T[] {
   const t = useDemoTrial();
-  // 画面設計の Ver の切替で隠している帳票の行（ledgerSlug）も外す
-  return t === "empty" ? EMPTY : withoutHiddenLedgers(items);
+  // プロトタイプの「ログイン中」の工場ごとの見本（アプリだけ。appFactoryStore.ts）
+  const factory = useAppFactory();
+  const app = !isAdminPath();
+  // 工場の一覧に差し替えてから（登録したひな形かを配列そのもので見分けるので、先に）、
+  // 画面設計の Ver の切替で隠している帳票の行（ledgerSlug）を外す。確認待ち・進捗一覧は工場の点検対象に付け替える
+  const byFactory = useMemo(
+    () => (app ? factoryItems(items, factory, { full: false, status: false }) : items),
+    [items, factory, app],
+  );
+  return t === "empty" ? EMPTY : withoutHiddenLedgers(byFactory);
+}
+/** いま管理画面にいるか。useDemoList は管理画面とアプリの両方で使うので、工場ごとの見本はアプリだけに当てる */
+function isAdminPath() {
+  return typeof window !== "undefined" && window.location.pathname.includes("/admin");
 }
 const EMPTY: never[] = [];
 
@@ -382,7 +396,12 @@ function asUninspected<T extends { status: string }>(items: T[], empty: boolean)
  */
 export function useDemoUninspected<T extends { status: string }>(items: T[]): T[] {
   const empty = useDemoEmpty();
-  return useMemo(() => asUninspected(items, empty), [items, empty]);
+  // プロトタイプの「ログイン中」の工場ごとの見本。詳細画面は findFactoryItem()（appFactoryStore.ts）で同じ一覧から引く
+  const factory = useAppFactory();
+  return useMemo(
+    () => asUninspected(factoryItems(items, factory, { full: true, status: true }), empty),
+    [items, empty, factory],
+  );
 }
 
 /**
@@ -397,14 +416,19 @@ export function useDemoInspectionState<T extends { status: string }>(
   initial: T[],
 ): [T[], Dispatch<SetStateAction<T[]>>] {
   const empty = useDemoEmpty();
-  const [items, setItems] = useState<T[]>(() => asUninspected(initial, empty));
-  const applied = useRef(empty);
+  // プロトタイプの「ログイン中」の工場ごとの見本（appFactoryStore.ts）。工場を切り替えたら最初から
+  const factory = useAppFactory();
+  const make = () => asUninspected(factoryItems(initial, factory, { full: true, status: true }), empty);
+  const [items, setItems] = useState<T[]>(make);
+  const applied = useRef(`${empty}|${factory}`);
 
   useEffect(() => {
-    if (applied.current === empty) return;
-    applied.current = empty;
-    setItems(asUninspected(initial, empty));
-  }, [empty, initial]);
+    const key = `${empty}|${factory}`;
+    if (applied.current === key) return;
+    applied.current = key;
+    setItems(make());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [empty, factory, initial]);
 
   return [items, setItems];
 }

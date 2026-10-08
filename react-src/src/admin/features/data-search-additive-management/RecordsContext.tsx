@@ -1,9 +1,10 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import type { AdditiveRecord } from "./types";
 import type { ApprovalStatus } from "../../data/approvals";
 import { additiveRecords } from "./mockRecords";
 import { CURRENT_ACCOUNT } from "../account/mockData";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type RecordsContextValue = {
   records: AdditiveRecord[];
@@ -14,7 +15,7 @@ type RecordsContextValue = {
 const RecordsContext = createContext<RecordsContextValue | null>(null);
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
-  const [records, setRecords] = useState<AdditiveRecord[]>(additiveRecords);
+  const [records, setRecords] = useFactoryList<AdditiveRecord>("additive-management", additiveRecords, "records");
 
   const value = useMemo<RecordsContextValue>(
     () => ({

@@ -14,6 +14,7 @@ import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { CleaningApprovalRecord } from "./mockData";
 import { getFactoryName } from "../../../data/factories";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -26,6 +27,7 @@ function formatDate(date: string) {
 }
 
 export function RecordDetailPage() {
+  const demoFactoryName = useDemoFactoryName();
   const { factoryId, recordId } = useParams<{ factoryId?: string; recordId: string }>();
   const { records, addComment } = useRecords();
   // 承認申請管理の見本は承認ステータスを持たないので画面の中だけで持つ
@@ -33,7 +35,7 @@ export function RecordDetailPage() {
   return (
     <RecordDetailView
       record={records.find((r) => r.id === recordId)}
-      factoryName={getFactoryName(factoryId ?? "f1")}
+      factoryName={factoryId ? getFactoryName(factoryId) : demoFactoryName}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },
         { label: "データ一覧", to: "/admin/approvals/cleaning-record" },
@@ -122,6 +124,8 @@ export function RecordDetailView({
           />
         </div>
 
+        {/* 確定デザイン（7139:161756・7139:162131）：実施日のカード・コメントの間は 40px、備考の見出し → 本文は 8px（2026-10-07） */}
+        <div className="flex flex-col gap-10 w-full">
         <div className="bg-white flex flex-col gap-4 items-start px-4 py-6 rounded-lg w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">実施日</p>
@@ -178,7 +182,7 @@ export function RecordDetailView({
               </div>
             ))}
             {record.remarks && (
-              <div className="flex flex-col gap-3 items-start w-full mt-3">
+              <div className="flex flex-col gap-2 items-start w-full mt-3">
                 <p className="text-xl text-[var(--semantic-text-primary)]">備考</p>
                 <p className="text-base text-[var(--semantic-text-primary)] font-normal text-left">
                   {record.remarks}
@@ -191,7 +195,7 @@ export function RecordDetailView({
 
         {/* 点検見送りの記録（清掃箇所が無い）は備考を別のカードで出す（確定デザイン 7139:162009 / 7139:162447） */}
         {locations.length === 0 && record.remarks && (
-          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
+          <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">備考</p>
             <div className="text-base leading-[1.6] text-[var(--semantic-text-primary)] font-normal text-left">
               {!record.cleaned && <p>点検見送り</p>}
@@ -200,7 +204,7 @@ export function RecordDetailView({
           </div>
         )}
 
-        <div className="flex flex-col gap-4 items-start w-full">
+        <div className="flex flex-col gap-2 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
           {/* 確定デザイン：承認申請管理（7139:161756）・データ検索（7139:259043 と同じ配置）とも
@@ -215,6 +219,7 @@ export function RecordDetailView({
             maxLength={255}
             placeholder="コメントを入力"
           />
+        </div>
         </div>
       </div>
     </div>

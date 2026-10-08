@@ -99,7 +99,7 @@ export function LineDetailPage() {
 
           {line.inspectionPoints.length === 0 ? (
             <p className="text-base text-[var(--semantic-text-secondary)]">
-              データがありません
+              データがありません。
             </p>
           ) : (
             line.inspectionPoints.map((point, index) => (

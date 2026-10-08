@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { useCleaningRecord } from "./CleaningRecordContext";
 import { getFactoryName } from "../../../data/factories";
 import type { LineFrequency } from "./types";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 
 const FREQUENCY_TABS: { key: LineFrequency; label: string }[] = [
   { key: "daily", label: "毎日" },
@@ -46,7 +47,22 @@ export function LineSelectionPage() {
             to={`/admin/ledger-management/cleaning-record/factories/${factoryId}/lines/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            {/* 確定デザイン（7139:161309）：「＋」は文字ではなく 20px の白い plus アイコン、文字との間は 4px */}
+            <span
+              aria-hidden
+              className="inline-block size-5 shrink-0 bg-white"
+              style={{
+                WebkitMaskImage: `url("${iconPlus}")`,
+                maskImage: `url("${iconPlus}")`,
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+              }}
+            />
+            新規登録
           </Link>
         }
       />
@@ -79,14 +95,15 @@ export function LineSelectionPage() {
 
         <div className="flex flex-col gap-2 w-full">
           <p className="text-2xl text-[var(--semantic-text-primary)]">持ち場/ライン一覧</p>
-          <div className="flex flex-col gap-6 w-full">
+          {/* 確定デザイン：タブの段は 48px（下線は灰色の線に重ねる）、タブ → 毎日〜毎年 の切替は 8px（2026-10-07） */}
+          <div className="flex flex-col gap-2 w-full">
           <div className="flex items-center border-b-2 border-[#d0d0d0] w-full">
             {(["visible", "hidden"] as const).map((key) => (
               <button
                 key={key}
                 type="button"
                 onClick={() => setVisibility(key)}
-                className={`h-12 w-[156px] flex items-center justify-center border-b-2 text-xl ${
+                className={`h-12 -mb-0.5 w-[156px] flex items-center justify-center border-b-2 text-xl ${
                   visibility === key
                     ? "border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
                     : "border-transparent text-[var(--semantic-text-secondary)]"
@@ -117,7 +134,7 @@ export function LineSelectionPage() {
 
             {filteredLines.length === 0 ? (
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               filteredLines.map((line) => (

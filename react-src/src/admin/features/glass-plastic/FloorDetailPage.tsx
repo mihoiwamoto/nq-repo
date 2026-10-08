@@ -169,7 +169,7 @@ export function FloorDetailPage() {
           <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
             {floor.repairItems.length === 0 ? (
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               groupByRoom(floor.repairItems).map((group) => (

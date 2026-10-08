@@ -20,7 +20,7 @@ try {
   ws.onmessage = e => { const m = JSON.parse(e.data); if (m.id && pend.has(m.id)) { const p = pend.get(m.id); pend.delete(m.id); m.error ? p.rej(new Error(m.error.message)) : p.res(m.result); } };
   await send('Emulation.setDeviceMetricsOverride', { width: spec.w, height: spec.h, deviceScaleFactor: 1, mobile: false });
   await send('Page.enable'); await send('Runtime.enable');
-  await send('Page.navigate', { url: `http://127.0.0.1:8791/react/?frame=1${spec.q || ''}#${spec.hash}` });
+  await send('Page.navigate', { url: `http://127.0.0.1:${process.env.KITPORT || 8791}/react/?frame=1${spec.q || ''}#${spec.hash}` });
   await sleep(3000);
   let log = [];
   if (spec.steps.length) {

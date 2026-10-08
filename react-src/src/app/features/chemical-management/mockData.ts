@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 
 export type ChemicalStatus = "not_inspected" | "in_progress" | "inspected";
 
@@ -195,7 +197,7 @@ export const ACTORS = [
 export const CHEMICAL_REJECTION_COMMENTS: Record<
   string,
   { recordId: string; comments: { id: string; authorName: string; timestamp: string; body: string }[] }
-> = {
+> = withTplFallback({
   c1: {
     recordId: "r2",
     comments: [
@@ -207,4 +209,4 @@ export const CHEMICAL_REJECTION_COMMENTS: Record<
       },
     ],
   },
-};
+});

@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 export type MachineStatus = "not_inspected" | "inspected";
 
 export type Machine = {
@@ -88,10 +90,10 @@ export const MACHINES: Machine[] = [
   },
 ];
 
-export const MACHINE_INSPECTED_AT: Record<string, string> = {
+export const MACHINE_INSPECTED_AT: Record<string, string> = withTplFallback({
   m1: "4.23 10:32",
   m2: "4.23 11:15",
-};
+});
 
 export type InspectionContent = "動作確認" | "テストピース" | "製品通過" | "異常反応";
 export type InspectionResult = "OK" | "NG";
@@ -179,7 +181,7 @@ export type MachineRecord = {
   machineAnomalyNotes?: MachineAnomalyNote[];
 };
 
-export const MACHINE_RECORDS: Record<string, MachineRecord[]> = {
+export const MACHINE_RECORDS: Record<string, MachineRecord[]> = withTplFallback({
   m1: [
     {
       id: "r1",
@@ -345,7 +347,7 @@ export const MACHINE_RECORDS: Record<string, MachineRecord[]> = {
       inspectorName: "佐藤太郎",
     },
   ],
-};
+});
 
 /**
  * その探知機の記録。m3 / m4 には専用のモックが無いので m2 の記録を流用する
@@ -355,10 +357,10 @@ export function recordsForMachine(machineId: string | undefined): MachineRecord[
   return MACHINE_RECORDS[machineId ?? ""] ?? MACHINE_RECORDS.m2 ?? [];
 }
 
-export const MACHINE_INSPECTION_DATES: Record<string, string> = {
+export const MACHINE_INSPECTION_DATES: Record<string, string> = withTplFallback({
   m1: "2025-03-24",
   m2: "2025-03-24",
-};
+});
 
 /** 記録と同じく、m3 / m4 は m2 の実施日を流用する */
 export function inspectionDateForMachine(machineId: string | undefined): string | undefined {
@@ -372,7 +374,7 @@ export type MachineRejectionComment = {
   body: string;
 };
 
-export const MACHINE_REJECTION_COMMENTS: Record<string, MachineRejectionComment[]> = {
+export const MACHINE_REJECTION_COMMENTS: Record<string, MachineRejectionComment[]> = withTplFallback({
   m1: [
     {
       id: "c1",
@@ -381,7 +383,7 @@ export const MACHINE_REJECTION_COMMENTS: Record<string, MachineRejectionComment[
       body: "動作確認の記録に不足があります。金属探知機・X線探知機の点検結果を確認のうえ、再度ご記入をお願いします。",
     },
   ],
-};
+});
 
 export type OkNg = "ok" | "ng";
 

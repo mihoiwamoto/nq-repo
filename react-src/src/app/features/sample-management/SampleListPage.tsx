@@ -21,6 +21,7 @@ import burnIcon from "@images/Icon/burn.svg";
 import iconCheckWhite from "../../../assets/figma/icons/common/checkmark-custom.svg";
 import { StatusChip } from "../../components/StatusChip";
 import { useDemoList, useDemoUninspected } from "../../../components/demo/demoStore";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 function DestructionLabel() {
   return (
@@ -255,7 +256,9 @@ export function SampleListPage() {
               </div>
 
               <div className="flex flex-col gap-6 items-start w-full">
-                {entries.length === 0 ? (
+                {sampleEntries.length === 0 ? (
+                  <AppEmptyState />
+                ) : entries.length === 0 ? (
                   <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6 w-full">
                     {sampleEntries.length === 0
                       ? "本日の検体はまだありません"
@@ -349,7 +352,9 @@ export function SampleListPage() {
               </button>
 
               <div className="flex flex-col gap-6 items-start w-full">
-                {filteredStoredSamples.length === 0 ? (
+                {storedSamples.length === 0 ? (
+                  <AppEmptyState />
+                ) : filteredStoredSamples.length === 0 ? (
                   <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6 w-full">
                     {storedSamples.length === 0
                       ? "保管中の検体はまだありません"
@@ -546,7 +551,7 @@ export function SampleListPage() {
               </p>
 
               <div className="bg-white flex flex-col items-center max-h-56 overflow-y-auto overflow-x-hidden px-4 rounded-lg w-full">
-                {STORED_SAMPLES.filter((sample) => selectedForDiscard.has(sample.id)).map(
+                {storedSamples.filter((sample) => selectedForDiscard.has(sample.id)).map(
                   (sample, index) => (
                     <div
                       key={sample.id}

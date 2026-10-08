@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
@@ -7,6 +7,7 @@ import {
   type Product,
   type SensoryRecord,
 } from "./mockData";
+import { useFactoryKeyed } from "../../data/factoryAppData";
 
 type SensoryInspectionContextValue = {
   products: Product[];
@@ -19,9 +20,8 @@ const SensoryInspectionContext = createContext<SensoryInspectionContextValue | n
 export function SensoryInspectionProvider({ children }: { children: ReactNode }) {
   // 動作デモ「データが無い」のときは、まだ 1 件も検査していない状態から始める
   const [products, setProducts] = useDemoInspectionState<Product>(initialProducts);
-  const [recordsByProduct, setRecordsByProduct] = useState<Record<string, SensoryRecord | null>>(
-    initialRecordsByProduct
-  );
+  // 工場ごとの見本（プロトタイプの「ログイン中」）
+  const [recordsByProduct, setRecordsByProduct] = useFactoryKeyed<SensoryRecord | null, Product>(initialRecordsByProduct, initialProducts);
 
   const value = useMemo<SensoryInspectionContextValue>(
     () => ({

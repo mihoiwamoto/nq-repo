@@ -30,7 +30,7 @@ export function PointSelectionPage() {
         <div className="flex flex-wrap gap-6">
           {locations.length === 0 ? (
             <p className="text-base text-[var(--semantic-text-secondary)]">
-              データがありません
+              データがありません。
             </p>
           ) : (
             locations.map((location) => (

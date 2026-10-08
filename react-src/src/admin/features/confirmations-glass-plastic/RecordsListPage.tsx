@@ -321,7 +321,7 @@ export function RecordsListPage() {
               </div>
               {filtered.length === 0 ? (
                 <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません
+                  データがありません。
                 </p>
               ) : (
                 filtered.map((record, index) => {

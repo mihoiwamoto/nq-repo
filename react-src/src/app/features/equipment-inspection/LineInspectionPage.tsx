@@ -332,11 +332,8 @@ export function LineInspectionPage() {
                       type="button"
                       onClick={() => toggleAllOk(point.location, point.items)}
                       aria-pressed={allOk}
-                      className={`bg-white h-[48px] w-[160px] rounded-lg flex items-center justify-center gap-[4px] text-[16px] text-[var(--semantic-text-primary)] font-[600] border transition-all duration-200 ${
-                        allOk
-                          ? "all-ok-glow"
-                          : "border-[#d0d0d0]"
-                      }`}
+                      className={`bg-white h-[48px] w-[160px] rounded-lg flex items-center justify-center gap-[4px] text-[16px] text-[var(--semantic-text-primary)] font-[600] border border-[#d0d0d0]`}
+                      // 確定デザイン（7139:282860）：押したあともチェックが付くだけで、枠は灰色のまま光らせない（2026-10-07）
                     >
                       <img
                         src={allOk ? iconCheckboxOn : iconCheckbox}
@@ -425,6 +422,7 @@ export function LineInspectionPage() {
               <textarea
                 value={remarks[tab]}
                 onChange={(e) => setRemarks((prev) => ({ ...prev, [tab]: e.target.value }))}
+                placeholder="補足事項や連絡事項があればご記入ください。"
                 className="bg-transparent text-[14px] text-[var(--semantic-text-secondary)] font-[300] w-full resize-none outline-none"
               />
             </div>
@@ -549,7 +547,9 @@ export function LineInspectionPage() {
                       {isOtherCause && (
                         <textarea
                           value={ngCauseDetail}
-                          onChange={(e) => setNgCauseDetail(e.target.value)}
+                          // 「その他」の記入は 255 文字まで（2026-10-07）
+                          maxLength={255}
+                          onChange={(e) => setNgCauseDetail(e.target.value.slice(0, 255))}
                           placeholder="原因を記入してください。"
                           className="bg-[var(--semantic-background-surface)] h-[82px] p-[8px] rounded-[8px] text-[14px] leading-[1.6] text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
                         />
@@ -581,7 +581,9 @@ export function LineInspectionPage() {
                       {isOtherAction && (
                         <textarea
                           value={ngActionDetail}
-                          onChange={(e) => setNgActionDetail(e.target.value)}
+                          // 「その他」の記入は 255 文字まで（2026-10-07）
+                          maxLength={255}
+                          onChange={(e) => setNgActionDetail(e.target.value.slice(0, 255))}
                           placeholder="対応を記入してください。"
                           className="bg-[var(--semantic-background-surface)] h-[82px] p-[8px] rounded-[8px] text-[14px] leading-[1.6] text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
                         />
@@ -693,11 +695,11 @@ export function LineInspectionPage() {
                 />
               </div>
             </div>
-            <div className="flex gap-6 items-center justify-center w-full">
+            <div className="flex gap-10 items-center justify-center w-full">
               <button
                 type="button"
                 onClick={closeSkipDialog}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
+                className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
               >
                 キャンセル
               </button>

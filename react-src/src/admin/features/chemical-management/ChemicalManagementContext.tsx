@@ -1,7 +1,8 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { CHEMICALS, type Chemical } from "../../../data/chemicals";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type ChemicalInput = {
   name: string;
@@ -20,7 +21,7 @@ type ChemicalManagementContextValue = {
 const ChemicalManagementContext = createContext<ChemicalManagementContextValue | null>(null);
 
 export function ChemicalManagementProvider({ children }: { children: ReactNode }) {
-  const [chemicals, setChemicals] = useState<Chemical[]>(CHEMICALS);
+  const [chemicals, setChemicals] = useFactoryList<Chemical>("chemical-management", CHEMICALS, "registry");
 
   const value = useMemo<ChemicalManagementContextValue>(
     () => ({

@@ -1,3 +1,4 @@
+import { PageTitleBar } from "../components/PageTitleBar";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { approvalRequests, type ApprovalStatus } from "../data/approvals";
@@ -5,6 +6,7 @@ import { ledgerCategories } from "../../data/ledgers";
 import { ApprovalStatusBadge } from "../components/ApprovalStatusBadge";
 import { Toast } from "../components/Toast";
 import { useDemoList } from "../../components/demo/demoStore";
+import { factoryIdOfName } from "../data/factoryDemo";
 
 const TABS: { status: ApprovalStatus; label: string }[] = [
   { status: "pending", label: "承認待ち" },
@@ -34,11 +36,8 @@ export function ApprovalManagementPage() {
       {toastMessage && (
         <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
       )}
-      <div className="bg-[var(--semantic-background-page)] shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex items-center p-6">
-        <h1 className="text-[28px] leading-[1.4] font-semibold text-[var(--semantic-text-primary)]">
-          承認申請管理
-        </h1>
-      </div>
+      {/* 確定デザイン：タイトルの帯は 88px（ほかの画面と同じ PageTitleBar。2026-10-07） */}
+      <PageTitleBar title="承認申請管理" />
       <div className="p-6 flex flex-col gap-6">
         <div className="flex items-center border-b-2 border-[#d0d0d0] w-full">
           {TABS.map((tab) => {
@@ -48,7 +47,7 @@ export function ApprovalManagementPage() {
                 key={tab.status}
                 type="button"
                 onClick={() => setActiveTab(tab.status)}
-                className={`relative h-12 w-[156px] flex items-center justify-center gap-2 border-b-2 ${
+                className={`relative h-12 -mb-0.5 w-[156px] flex items-center justify-center gap-2 border-b-2 ${
                   isActive
                     ? "border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
                     : "border-transparent text-[var(--semantic-text-secondary)]"
@@ -66,7 +65,7 @@ export function ApprovalManagementPage() {
         </div>
 
         {items.length === 0 ? (
-          <p className="text-[var(--semantic-text-secondary)]">データがありません</p>
+          <p className="text-[var(--semantic-text-secondary)]">データがありません。</p>
         ) : (
           <div className="flex flex-col gap-6 w-full">
             {items.map((item) => {
@@ -76,7 +75,7 @@ export function ApprovalManagementPage() {
               const cardContent = (
                 <>
                   <ApprovalStatusBadge status={item.status} />
-                  <p className="text-base text-[var(--semantic-text-primary)]">{item.companyName}</p>
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{item.companyName}</p>
                   <div className="flex items-center gap-2 w-full">
                     {category && (
                       <img src={category.adminIcon} alt="" className="size-6 shrink-0" />
@@ -85,8 +84,8 @@ export function ApprovalManagementPage() {
                       {category?.adminLabel}
                     </span>
                   </div>
-                  <div className="border-t border-[#d0d0d0] w-full" />
-                  <p className="text-base text-[var(--semantic-text-primary)]">{item.description}</p>
+                  <div className="border-t border-[#f1efea] w-full" />
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{item.description}</p>
                 </>
               );
 
@@ -102,7 +101,7 @@ export function ApprovalManagementPage() {
                 item.ledgerSlug === "glass-plastic"
               ) {
                 return (
-                  <Link key={item.id} to={`/admin/approvals/${item.ledgerSlug}`} className={cardClassName}>
+                  <Link key={item.id} to={`/admin/approvals/${item.ledgerSlug}?factory=${factoryIdOfName(item.companyName) ?? "f1"}`} className={cardClassName}>
                     {cardContent}
                   </Link>
                 );
@@ -112,7 +111,7 @@ export function ApprovalManagementPage() {
                 return (
                   <Link
                     key={item.id}
-                    to={`/admin/approvals/scale-inspection/${item.id}`}
+                    to={`/admin/approvals/scale-inspection/${item.id}?factory=${factoryIdOfName(item.companyName) ?? "f1"}`}
                     className={cardClassName}
                   >
                     {cardContent}

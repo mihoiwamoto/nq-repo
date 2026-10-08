@@ -8,6 +8,7 @@ import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -31,6 +32,7 @@ const COLUMNS = [
 const COLS = COLUMNS.map((c) => c.track).join(" ");
 
 export function ApprovalRecordsListPage() {
+  const demoFactoryName = useDemoFactoryName();
   const navigate = useNavigate();
   const { records: allRecords } = useRecords();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
@@ -64,7 +66,7 @@ export function ApprovalRecordsListPage() {
       <div className="flex flex-col items-center gap-6 p-6">
         <div className="flex flex-col gap-6 items-start w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
-            <p className="text-xl text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">{demoFactoryName}</p>
           </div>
 
           <div className="flex flex-col gap-2 items-start w-full">
@@ -85,7 +87,7 @@ export function ApprovalRecordsListPage() {
                 </div>
                 {filtered.length === 0 ? (
                   <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                    データがありません
+                    データがありません。
                   </p>
                 ) : (
                   filtered.map((record, index) => (

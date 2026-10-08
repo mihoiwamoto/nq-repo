@@ -4,6 +4,7 @@ import { DateFilterInput } from "../../components/DateFilterInput";
 import { todayString } from "../../utils/date";
 import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
 import { AppHeader } from "../../layout/AppHeader";
+import { useFromProgress } from "../../layout/ProgressFlowContext";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import { useChemicalManagement } from "./ChemicalManagementContext";
@@ -67,6 +68,11 @@ export function ChemicalRecordsListPage() {
   const progressCarry = state?.fromProgress
     ? { fromProgress: true, progressStatus: state.progressStatus, editing: state.editing }
     : {};
+  // 進捗一覧で点検中（・未点検）の薬品を開いた一覧（確定デザイン「進捗一覧_薬品管理表_点検中選択_一覧」7139:250098）。
+  // 実施日の段の下に区切り線は無く、備考は 1 行で「…」に切る。行の「詳細」は見るだけの詳細ではなく、
+  // その記録の値が入った記録画面（7139:250074。「一覧へ戻る」「保存」）を開き、保存で一覧へ戻る（2026-10-07）
+  const fromProgressFlow = useFromProgress();
+  const progressEditable = fromProgressFlow && !!state?.fromProgress && !readOnlyStatus && !state?.editing;
 
   return (
     <>
@@ -97,10 +103,10 @@ export function ChemicalRecordsListPage() {
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                 実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
               </p>
-              <DateFilterInput value={date} onChange={setDate} />
+              <DateFilterInput value={date} onChange={setDate} variant={progressEditable ? "borderless" : "default"} />
             </div>
 
-            <div className="border-t border-[#d0d0d0] w-full" />
+            {!progressEditable && <div className="border-t border-[#d0d0d0] w-full" />}
           </>
         )}
 
@@ -134,28 +140,46 @@ export function ChemicalRecordsListPage() {
                   >
                     <td className="px-2 py-2 text-center">
                       <Link
-                        to={`${basePath}/records/${record.id}`}
+                        to={progressEditable ? `${basePath}/new` : `${basePath}/records/${record.id}`}
+                        state={
+                          progressEditable
+                            ? {
+                                ...progressCarry,
+                                date,
+                                inspectorName,
+                                editRecordId: record.id,
+                                editRecord: {
+                                  category: record.category,
+                                  quantity: record.usedQuantity,
+                                  currentStock: record.currentStock,
+                                  remarks: record.remarks,
+                                },
+                              }
+                            : undefined
+                        }
                         className="bg-[var(--semantic-brand-primary)] h-8 w-14 rounded-lg text-xs text-white inline-flex items-center justify-center"
                       >
                         詳細
                       </Link>
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.storageLocation}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.category}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.usedQuantity}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.currentStock}
                     </td>
-                    <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">
+                    <td
+                      className={`px-2 py-2 text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] ${progressEditable ? "truncate" : ""}`}
+                    >
                       {record.remarks}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] whitespace-nowrap`}>
                       {record.actor}
                     </td>
                   </tr>

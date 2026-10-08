@@ -1,7 +1,7 @@
 import { AppHeader } from "../../layout/AppHeader";
 import { useTextSize, type TextSize } from "../../layout/TextSizeContext";
+import { appFactoryName, useAppFactory } from "../../../data/appFactoryStore";
 
-const FACTORY_NAME = "㈱西原食品 本社工場";
 
 const SIZE_OPTIONS: { key: TextSize; label: string }[] = [
   { key: "small", label: "小" },
@@ -10,6 +10,8 @@ const SIZE_OPTIONS: { key: TextSize; label: string }[] = [
 ];
 
 export function TextSizePage() {
+  // プロトタイプの「ログイン中」で選んだ工場（既定は f1 ＝ ㈱西原食品 本社工場）
+  const factoryName = appFactoryName(useAppFactory());
   const { size, setSize } = useTextSize();
 
   return (
@@ -17,7 +19,7 @@ export function TextSizePage() {
       <AppHeader
         title="テキストサイズ変更"
         action={
-          <p className="text-xl text-[var(--semantic-brand-primary)]">{FACTORY_NAME}</p>
+          <p className="text-xl text-[var(--semantic-brand-primary)]">{factoryName}</p>
         }
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col items-center gap-20">

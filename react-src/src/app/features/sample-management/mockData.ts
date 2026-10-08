@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 export type SampleStatus = "not_inspected" | "inspected";
 
 export type SampleTab = "today" | "storage";
@@ -209,7 +211,7 @@ export type SampleReviewDetail = {
   comments: SampleReviewComment[];
 };
 
-export const SAMPLE_REVIEW_DETAILS: Record<string, SampleReviewDetail> = {
+export const SAMPLE_REVIEW_DETAILS: Record<string, SampleReviewDetail> = withTplFallback({
   s1: {
     productName: "仕出しだし巻き玉子 冷凍",
     expiryDate: "2026-08-15",
@@ -255,4 +257,4 @@ export const SAMPLE_REVIEW_DETAILS: Record<string, SampleReviewDetail> = {
     timestamp: "2026/08/24 14:30",
     comments: [],
   },
-};
+});

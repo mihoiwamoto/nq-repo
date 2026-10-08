@@ -13,6 +13,7 @@ import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus, EquipmentApprovalRecord } from "./types";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -41,12 +42,12 @@ function ActionLines({ action }: { action?: string }) {
   );
 }
 
-/** 備考。空のときは確定デザインどおり薄い文字の案内を出す */
+/** 備考。空のときは薄い文字の案内を出す（文言は「補足事項や連絡事項があればご記入ください。」に統一。2026-10-07） */
 function RemarksText({ remarks }: { remarks?: string }) {
   if (!remarks) {
     return (
       <p className="text-sm text-[var(--semantic-text-secondary)] font-normal text-left">
-        点検内容に関する補足を入力できます（任意）
+        補足事項や連絡事項があればご記入ください。
       </p>
     );
   }
@@ -63,12 +64,13 @@ function RemarksText({ remarks }: { remarks?: string }) {
 }
 
 export function RecordDetailPage() {
+  const demoFactoryName = useDemoFactoryName();
   const { factoryId, recordId } = useParams<{ factoryId?: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
   return (
     <RecordDetailView
       record={records.find((r) => r.id === recordId)}
-      factoryName={getFactoryName(factoryId ?? "f1")}
+      factoryName={factoryId ? getFactoryName(factoryId) : demoFactoryName}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },
         { label: "データ一覧", to: "/admin/approvals/equipment-inspection" },
@@ -153,6 +155,8 @@ export function RecordDetailView({
           />
         </div>
 
+        {/* 確定デザイン（7139:258764・7139:259098）：実施日のカード・始業/終業のカード・コメントの間は 40px（2026-10-07） */}
+        <div className="flex flex-col gap-10 w-full">
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">実施日</p>
@@ -246,6 +250,7 @@ export function RecordDetailView({
             }}
             placeholder="コメントを入力"
           />
+        </div>
         </div>
       </div>
     </div>

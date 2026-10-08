@@ -31,3 +31,8 @@ dist-kit
 
 # Vercel のビルド出力（.claude/build-vercel.sh）
 .vercel-out/
+
+# React の控えを作る途中のもの（.claude/react_snapshot.py）
+snapshots/react/.building-*/
+snapshots/react/.daily
+snapshots/react/.build.log

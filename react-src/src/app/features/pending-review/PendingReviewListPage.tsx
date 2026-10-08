@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import iconXMarkGreen from "../../../assets/figma/icons/common/cancel-green.svg";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
@@ -9,6 +9,7 @@ import { ledgerCategories } from "../../../data/ledgers";
 import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { StatusChip } from "../../components/StatusChip";
 import { useDemoList } from "../../../components/demo/demoStore";
+import { ConfirmerPickerDialog, confirmersFor, stepAfterConfirmer } from "./ConfirmerPicker";
 
 // 絞り込み条件は確定デザインどおり 10 帳票すべて（薬品管理・添加物管理も含む。進捗一覧と同じ。2026-10-07）
 const FILTER_LEDGERS = ledgerCategories;
@@ -34,6 +35,10 @@ export function PendingReviewListPage() {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [pickerSelected, setPickerSelected] = useState<Set<string>>(new Set());
   const [appliedFilters, setAppliedFilters] = useState<Set<string>>(new Set());
+  // 確定デザイン（7139:221059・差し戻し 7139:229072）：行を押すと、一覧の上に「確認者を選んでください」を重ねる。
+  // 「次へ」で詳細へ進み、選んだ確認者と最初の表示を location.state で渡す（詳細はポップアップを出さずに開く。2026-10-07）
+  const navigate = useNavigate();
+  const [picking, setPicking] = useState<{ id: string; ledgerSlug: string; confirmerId: string } | null>(null);
 
   // 動作デモの「データが無い」を試している間は、確認待ちが 1 件も無い状態にする
   const reviews = useDemoList(PENDING_REVIEWS);
@@ -73,9 +78,10 @@ export function PendingReviewListPage() {
   return (
     <div className="flex flex-col h-full min-w-0">
       <AppHeader title="確認待ち" />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4">
+      {/* 確定デザイン（7139:221059）：ヘッダーの下 24px から、注意の帯 56px・絞り込み検索 48px・日付の見出し 52px・カード 78px */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-4 flex flex-col gap-4">
         <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg shrink-0">
-          <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
+          <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             こちらは確認者専用の画面になります。実施者の方は操作不要です。
           </p>
@@ -84,7 +90,7 @@ export function PendingReviewListPage() {
         <button
           type="button"
           onClick={openFilterDialog}
-          className="bg-white flex gap-2 items-center justify-center p-4 rounded-lg shrink-0 text-base text-[var(--semantic-brand-primary)]"
+          className="bg-white flex gap-2 items-center justify-center h-12 px-4 rounded-lg shrink-0 text-base leading-none text-[var(--semantic-brand-primary)]"
         >
           絞り込み検索
           <span
@@ -104,14 +110,14 @@ export function PendingReviewListPage() {
 
         {appliedFilters.size > 0 && (
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm text-[var(--semantic-text-secondary)] shrink-0">絞り込み条件</span>
+            <span className="text-sm text-black shrink-0">絞り込み条件</span>
             {Array.from(appliedFilters).map((slug) => {
               const ledger = ledgerFor(slug);
               if (!ledger) return null;
               return (
                 <span
                   key={slug}
-                  className="bg-white border border-[#d0d0d0] h-10 rounded-lg flex items-center gap-2 px-3"
+                  className="bg-white h-10 rounded-lg flex items-center gap-1 px-2"
                 >
                   <img src={ledger.appIcon} alt="" className="size-5 shrink-0" />
                   <span className="text-sm text-[var(--semantic-text-primary)]">{ledger.appLabel}</span>
@@ -139,18 +145,25 @@ export function PendingReviewListPage() {
             {groups.map((group) => (
               <div key={group.date} className="flex flex-col gap-4">
                 <div className="border-b border-[#d0d0d0] py-4">
-                  <p className="text-xl text-[var(--semantic-text-primary)]">{group.date}</p>
+                  <p className="text-xl leading-none text-[var(--semantic-text-primary)]">{group.date}</p>
                 </div>
                 {group.items.map((review) => {
                   const ledger = ledgerCategories.find((c) => c.slug === review.ledgerSlug);
                   return (
-                    <Link
+                    <button
                       key={review.id}
-                      to={`/app/pending-review/${review.id}`}
-                      className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 p-4"
+                      type="button"
+                      onClick={() =>
+                        setPicking({
+                          id: review.id,
+                          ledgerSlug: review.ledgerSlug,
+                          confirmerId: confirmersFor(review.ledgerSlug)[0].id,
+                        })
+                      }
+                      className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 p-4 w-full text-left"
                     >
                       <div className="flex-1 flex flex-col gap-2 min-w-0">
-                        <p className="text-lg text-[var(--semantic-text-primary)]">{review.name}</p>
+                        <p className="text-lg leading-none text-[var(--semantic-text-primary)]">{review.name}</p>
                         <div className="flex gap-1 items-center">
                           {ledger && (
                             <img src={ledger.appIcon} alt="" className="size-5 shrink-0" />
@@ -169,7 +182,7 @@ export function PendingReviewListPage() {
                       >
                         {review.status}
                       </StatusChip>
-                    </Link>
+                    </button>
                   );
                 })}
               </div>
@@ -178,12 +191,27 @@ export function PendingReviewListPage() {
         )}
       </div>
 
+      {picking && (
+        <ConfirmerPickerDialog
+          people={confirmersFor(picking.ledgerSlug)}
+          selectedId={picking.confirmerId}
+          onSelect={(confirmerId) => setPicking({ ...picking, confirmerId })}
+          onClose={() => setPicking(null)}
+          onNext={() =>
+            navigate(`/app/pending-review/${picking.id}`, {
+              state: { step: stepAfterConfirmer(picking.ledgerSlug), confirmerId: picking.confirmerId },
+            })
+          }
+        />
+      )}
+
       {filterDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFilterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[90vw] h-[754px] max-h-[90vh]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[90vw] max-h-[90vh]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">絞り込み条件</h2>
-            <div className="grid grid-cols-3 gap-6 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
+            {/* 高さは中身に合わせる（以前の h-[754px] では 10 個目のタイルが切れた） */}
+            <div className="grid grid-cols-3 gap-6 w-full content-start overflow-y-auto overflow-x-hidden min-h-0 shrink">
               {visibleLedgerCategories(FILTER_LEDGERS).map((ledger) => {
                 const selected = pickerSelected.has(ledger.slug);
                 return (
@@ -191,7 +219,7 @@ export function PendingReviewListPage() {
                     key={ledger.slug}
                     type="button"
                     onClick={() => toggleFilterLedger(ledger.slug)}
-                    className={`flex flex-col items-center justify-center gap-2 h-28 rounded-lg shadow-[0px_2px_3px_rgba(51,51,51,0.24)] border-2 ${
+                    className={`flex flex-col items-center justify-center gap-2 h-28 rounded-lg shadow-[0px_2px_6px_rgba(51,51,51,0.24)] border-2 ${
                       selected ? "bg-white border-[var(--semantic-brand-primary)]" : "bg-white border-transparent"
                     }`}
                   >
@@ -207,14 +235,14 @@ export function PendingReviewListPage() {
               <button
                 type="button"
                 onClick={() => setFilterDialogOpen(false)}
-                className="bg-white border-2 border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-lg text-[var(--semantic-text-primary)] font-semibold"
+                className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)] font-semibold"
               >
                 閉じる
               </button>
               <button
                 type="button"
                 onClick={applyFilters}
-                className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-lg text-white font-semibold"
+                className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-white font-semibold"
               >
                 絞り込み
               </button>

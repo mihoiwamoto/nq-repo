@@ -10,6 +10,7 @@ import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconKebabMenu from "../../../assets/figma/icons/common/kebab-menu.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 
 const FREQUENCY_LABEL = { daily: "毎日", weekly: "毎週", monthly: "毎月", yearly: "毎年" } as const;
 
@@ -94,7 +95,22 @@ export function CalendarPage() {
             to={`${basePath}/schedule/register`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            {/* 確定デザイン（7139:161309）：「＋」は文字ではなく 20px の白い plus アイコン、文字との間は 4px */}
+            <span
+              aria-hidden
+              className="inline-block size-5 shrink-0 bg-white"
+              style={{
+                WebkitMaskImage: `url("${iconPlus}")`,
+                maskImage: `url("${iconPlus}")`,
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+              }}
+            />
+            新規登録
           </Link>
         }
       />
@@ -110,7 +126,8 @@ export function CalendarPage() {
         <div className="bg-white flex items-center px-4 py-2 rounded-lg w-[270px]">
           <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
         </div>
-        <div className="flex gap-6 items-start">
+        {/* 確定デザイン：カレンダーと右の箱の間は 16px（2026-10-07） */}
+        <div className="flex gap-4 items-start">
           <div className="flex flex-col gap-2 items-start">
             <div className="flex items-center justify-between w-56">
               <button
@@ -160,7 +177,7 @@ export function CalendarPage() {
                 {WEEKDAY_LABELS.map((label, i) => (
                   <div
                     key={label}
-                    className={`bg-white border border-[#d0d0d0] flex items-center justify-center p-2 size-8 text-sm ${
+                    className={`bg-white border-[#d0d0d0] border-b ${i < 6 ? "border-r" : ""} flex items-center justify-center size-8 text-sm ${
                       i === 0 ? "text-[var(--semantic-brand-danger)]" : i === 6 ? "text-[#1057f0]" : "text-[var(--semantic-text-primary)]"
                     }`}
                   >
@@ -169,24 +186,30 @@ export function CalendarPage() {
                 ))}
               </div>
               <div className="flex flex-wrap w-56">
-                {grid.map((cell) => {
+                {/* 中の線は 1px（外枠は箱の枠。右端の列・最後の行は線を引かない）。選んだ日は 28px のまんまる、
+                    今日は 1px の緑の輪と緑の数字（確定デザイン。2026-10-07） */}
+                {grid.map((cell, idx) => {
                   const isSelected = cell.dateKey === selectedDateKey;
                   const isToday = cell.dateKey === todayKey;
+                  const lastCol = idx % 7 === 6;
+                  const lastRow = idx >= grid.length - 7;
                   return (
                     <button
                       key={cell.dateKey}
                       type="button"
                       onClick={() => setSelectedDateKey(cell.dateKey)}
-                      className="bg-white border border-[#d0d0d0] flex flex-col items-center justify-center p-1 size-8"
+                      className={`bg-white border-[#d0d0d0] ${lastCol ? "" : "border-r"} ${lastRow ? "" : "border-b"} flex items-center justify-center size-8`}
                     >
                       <span
-                        className={`flex flex-col items-center justify-center rounded-full size-7 text-sm ${
+                        className={`flex shrink-0 items-center justify-center rounded-full size-7 text-sm ${
                           isSelected
                             ? "bg-[#fdb045] text-white"
-                            : cell.monthOffset !== 0
-                              ? "text-[#d0d0d0]"
-                              : "text-[var(--semantic-text-primary)]"
-                        } ${isToday ? "border-2 border-[var(--semantic-brand-primary)]" : ""}`}
+                            : isToday
+                              ? "text-[var(--semantic-brand-primary)]"
+                              : cell.monthOffset !== 0
+                                ? "text-[#d0d0d0]"
+                                : "text-[var(--semantic-text-primary)]"
+                        } ${isToday ? "border border-[var(--semantic-brand-primary)]" : ""}`}
                       >
                         {cell.day}
                       </span>
@@ -241,7 +264,7 @@ export function CalendarPage() {
             <div className="flex flex-col px-4 py-2">
               {!selectedLines || selectedLines.length === 0 ? (
                 <p className="py-4 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません
+                  データがありません。
                 </p>
               ) : (
                 selectedLines.map((line, i) => (

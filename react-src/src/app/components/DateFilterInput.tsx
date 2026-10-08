@@ -102,12 +102,16 @@ export function DateFilterInput({
   onChange,
   placeholder = "日付を選択",
   className = "w-[200px]",
+  variant = "default",
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  /** "borderless" … 枠線なし・24px のカレンダーアイコン（確定デザインの InputDate。進捗一覧の点検中の薬品・添加物の一覧で使う） */
+  variant?: "default" | "borderless";
 }) {
+  const borderless = variant === "borderless";
   const [isOpen, setIsOpen] = useState(false);
 
   const displayValue = value ? value.replaceAll("-", "/") : "";
@@ -124,12 +128,12 @@ export function DateFilterInput({
           type="text"
           value={displayValue}
           readOnly
-          className="bg-white border border-[#d0d0d0] h-12 px-4 pr-12 rounded-lg text-base text-[var(--semantic-text-primary)] w-full cursor-pointer"
+          className={`bg-white ${borderless ? "" : "border border-[#d0d0d0]"} h-12 px-4 pr-12 rounded-lg text-base text-[var(--semantic-text-primary)] w-full cursor-pointer`}
         />
         <img
           src={iconCalendar}
           alt=""
-          className="absolute right-4 w-5 h-5 cursor-pointer"
+          className={`absolute right-4 cursor-pointer ${borderless ? "size-6" : "w-5 h-5"}`}
           onClick={() => setIsOpen(true)}
         />
       </label>

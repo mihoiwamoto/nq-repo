@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
@@ -8,6 +8,7 @@ import {
   type ChemicalRecord,
   type ChemicalStatus,
 } from "./mockData";
+import { useFactoryRecords } from "../../data/factoryAppData";
 
 type NewChemicalRecordInput = Omit<ChemicalRecord, "id">;
 
@@ -24,7 +25,8 @@ const ChemicalManagementContext = createContext<ChemicalManagementContextValue |
 export function ChemicalManagementProvider({ children }: { children: ReactNode }) {
   // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
   const [chemicals, setChemicals] = useDemoInspectionState<Chemical>(initialChemicals);
-  const [records, setRecords] = useState<ChemicalRecord[]>(initialRecords);
+  // 工場ごとの見本（プロトタイプの「ログイン中」）。増やした薬品には元の薬品の記録を写す
+  const [records, setRecords] = useFactoryRecords<ChemicalRecord, Chemical>(initialRecords, initialChemicals, "chemicalId");
 
   const value = useMemo<ChemicalManagementContextValue>(
     () => ({

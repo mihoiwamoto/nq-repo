@@ -6,6 +6,7 @@ import { useRecords } from "./RecordsContext";
 import { METAL_DETECTOR_CHECKLIST, XRAY_DETECTOR_CHECKLIST } from "./mockData";
 import { AnomalyDialog, type AnomalyData } from "./AnomalyDialog";
 import type { ChecklistGroup, InspectionRecord, InspectionResult, MachineApprovalRecord } from "./types";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 function ResultTag({ result, onClick }: { result: InspectionResult; onClick?: () => void }) {
   const label = result === "OK" ? "正常" : "異常あり";
@@ -38,9 +39,10 @@ const StatusTag = ({ status = "正常" }: { status?: string }) => (
 );
 
 function FactoryBadge() {
+  const demoFactoryName = useDemoFactoryName();
   return (
     <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
-      <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">㈱西原食品 本社工場</p>
+      <p className="text-xl font-semibold text-[var(--semantic-text-primary)]">{demoFactoryName}</p>
     </div>
   );
 }

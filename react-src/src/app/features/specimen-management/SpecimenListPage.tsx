@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { useDemoList } from "../../../components/demo/demoStore";
+import { AppEmptyState } from "../../components/AppEmptyState";
+import { registerFactoryTemplate } from "../../data/factoryAppData";
 
 interface SpecimenItem {
   id: string;
@@ -25,6 +27,9 @@ const SPECIMEN_ENTRIES: SpecimenItem[] = [
     expiryDate: "2024/10/15",
   },
 ];
+
+// 工場ごとの見本（プロトタイプの「ログイン中」）。検体の名前を工場の製品に替える
+registerFactoryTemplate(SPECIMEN_ENTRIES, { theme: "samples", nameKey: "productName" });
 
 export function SpecimenListPage() {
   const navigate = useNavigate();
@@ -56,11 +61,8 @@ export function SpecimenListPage() {
         <div className="w-full max-w-[480px]">
           <h2 className="text-lg font-semibold text-[#333] mb-4">検体一覧</h2>
           <div className="flex flex-col gap-3">
-            {specimens.length === 0 && (
-              <p className="text-base text-[#808080] text-center py-6">
-                保管中の検体はまだありません
-              </p>
-            )}
+            {/* 見せ方は AppEmptyState で 3 パターン試し中 */}
+            {specimens.length === 0 && <AppEmptyState />}
             {specimens.map((item) => (
               <div
                 key={item.id}

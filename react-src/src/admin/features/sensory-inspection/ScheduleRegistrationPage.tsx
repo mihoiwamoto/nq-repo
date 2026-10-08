@@ -133,7 +133,7 @@ export function ScheduleRegistrationPage() {
             <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
               {selectedProducts.length === 0 ? (
                 <p className="text-sm text-[var(--semantic-text-primary)] w-full">
-                  データがありません
+                  データがありません。
                 </p>
               ) : (
                 selectedProducts.map((product) => (

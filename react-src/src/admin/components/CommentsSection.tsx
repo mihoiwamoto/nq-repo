@@ -16,7 +16,7 @@ export function CommentsSection({ comments, title = "コメント" }: CommentsSe
   return (
     <div className="flex flex-col gap-4 items-start w-full">
       <div className="w-full">
-        <p className="text-xl text-[var(--semantic-text-primary)] mb-4">{title}</p>
+        <p className="text-xl text-[var(--semantic-text-primary)] mb-2">{title}</p>
         <Comments comments={comments} />
       </div>
     </div>

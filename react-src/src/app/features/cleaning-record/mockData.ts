@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 export type Frequency = "daily" | "weekly" | "monthly" | "yearly";
 export type LineStatus = "not_inspected" | "in_progress" | "inspected" | "confirmed" | "skipped";
 
@@ -114,6 +116,13 @@ export const initialRemarks =
 export const skippedRemarks =
   "見送り\n設備メンテナンスのためライン停止中。業者による定期整備作業が終日実施されており、清掃対象の機器にアクセスできないため、本日の清掃を見送りとする。整備完了後の翌営業日に清掃を実施予定。";
 
+/**
+ * 確認待ち：見送った記録が差し戻されたもの（p21）の備考。1 行目「点検見送り」の下に見送り理由
+ * （確定デザイン 7139:229031「確認待ち_清掃記録_点検見送り後_差し戻し_再度点検見送りする場合」）
+ */
+export const skippedReviewRemarks =
+  "点検見送り\n排水管清掃業者による作業が終日実施されており、清掃エリアへの立ち入りが制限されているため。作業完了後の翌営業日に清掃を実施予定。";
+
 export const pendingReviewRecords: Record<string, CleaningItemRecord> = {
   "つまみ上げパック機|シール部": {
     status: "done",
@@ -155,7 +164,7 @@ export const ACTORS = [
 ];
 
 /** 確認待ち（差し戻し）で表示する、承認者からの差し戻し理由コメント。ライン ID ごとに持つ（機械器具点検の LINE_REJECTION_COMMENTS と同じ形） */
-export const CLEANING_REJECTION_COMMENTS: Record<string, { id: string; authorName: string; timestamp: string; body: string }[]> = {
+export const CLEANING_REJECTION_COMMENTS: Record<string, { id: string; authorName: string; timestamp: string; body: string }[]> = withTplFallback({
   c1: [
     {
       id: "cc1",
@@ -164,4 +173,13 @@ export const CLEANING_REJECTION_COMMENTS: Record<string, { id: string; authorNam
       body: "つまみ上げパック機 シール部の清掃後の状態が確認できません。清掃内容を追記のうえ、再度ご提出をお願いします。",
     },
   ],
-};
+  // 見送った記録の差し戻し（確認待ち p21。確定デザイン 7139:229031）。キーは「ライン ID:skipped」
+  "c1:skipped": [
+    {
+      id: "cc2",
+      authorName: "佐藤健一",
+      timestamp: "25.04.02 10:16",
+      body: "排水管清掃業者の作業完了予定日と、翌営業日の清掃実施予定について確認しました。立ち入り制限中の代替対応の有無も記載をお願いします。",
+    },
+  ],
+});

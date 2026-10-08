@@ -15,6 +15,7 @@ import {
 import { formatDateLabel } from "../equipment-inspection/calendarUtils";
 import iconCheckbox from "@images/Icon/ckeckbox.svg";
 import iconCheckboxOn from "@images/Icon/ckeckbox_on.svg";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 type ResultKind = "registered" | "saved" | "deleted" | null;
 
@@ -58,7 +59,7 @@ export function ScheduleRegisterPage() {
   const scheduleDateKey: string = dateKey;
 
   function productName(productId: string) {
-    return products.find((p) => p.id === productId)?.name ?? productId;
+    return findFactoryItem(products, productId)?.name ?? productId;
   }
 
   function openPicker() {

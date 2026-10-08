@@ -6,6 +6,7 @@ import { ProductProgressPanel } from "./ProductProgressPanel";
 import { ACTORS, CRITERIA, CRITERION_TAG_COLORS, PRODUCT_STATUS_COLORS, PRODUCT_STATUS_LABELS } from "./mockData";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import { StatusChip } from "../../components/StatusChip";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 export function ProductSelectionPage() {
   const navigate = useNavigate();
@@ -76,6 +77,8 @@ export function ProductSelectionPage() {
           </div>
 
           <div className="flex flex-col gap-6 items-start w-full">
+            {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中） */}
+            {products.length === 0 && <AppEmptyState />}
             {filtered.map((product) => (
               <button
                 key={product.id}

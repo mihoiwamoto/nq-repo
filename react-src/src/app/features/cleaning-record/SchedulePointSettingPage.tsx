@@ -22,12 +22,12 @@ function formatDateSlash(dateKey: string) {
   return `${y}/${m}/${d}`;
 }
 
-type ResultKind = "registered" | "saved" | "deleted" | null;
+type ResultKind = "registered" | "saved" | null;
 
 export function SchedulePointSettingPage() {
   const { dateKey } = useParams<{ dateKey: string }>();
   const navigate = useNavigate();
-  const { lines, entries, upsertEntry, removeEntry } = useCleaningSchedule();
+  const { lines, entries, upsertEntry } = useCleaningSchedule();
 
   const existing = dateKey ? entries[dateKey] : undefined;
   const [viewMode, setViewMode] = useState<"view" | "edit">(existing ? "view" : "edit");
@@ -76,30 +76,20 @@ export function SchedulePointSettingPage() {
   }
 
   function handleSave() {
-    if (lineIds.length === 0) {
-      if (existing) {
-        removeEntry(scheduleDateKey);
-        setResult("deleted");
-      }
-      return;
-    }
+    // 持ち場/ラインが 0 件のときは「保存」を押せない（機械器具点検と同じ。2026-10-07）
+    if (lineIds.length === 0) return;
     upsertEntry(scheduleDateKey, lineIds);
     setResult(existing ? "saved" : "registered");
   }
 
   if (result) {
-    const message =
-      result === "deleted"
-        ? "清掃記録の削除が完了しました！"
-        : result === "saved"
-          ? "保存が完了しました！"
-          : "登録が完了しました！";
+    const message = result === "saved" ? "保存が完了しました！" : "登録が完了しました！";
     // 確定デザイン（7139:283879・7139:283906）：進捗一覧の提出完了と同じ上寄せの完了画面（ボタン 360×64）
     return (
       <ProgressSubmitComplete
         ledgerTitle="清掃記録 持ち場/ライン設定"
         title={message}
-        message={result === "deleted" ? "" : "ご登録ありがとうございます。"}
+        message="ご登録ありがとうございます。"
         backLabel="点検予定に戻る"
         onBack={() => navigate("/app/schedule")}
       />
@@ -116,13 +106,14 @@ export function SchedulePointSettingPage() {
       <AppHeader title="清掃記録 持ち場/ライン設定" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
         {viewMode === "view" ? (
-          <>
+          <div className="flex flex-col gap-2 items-center w-full">
             {/* 詳細（確定デザイン 7139:220875）：右上に「編集」、カードに「日時」と「持ち場/ライン名（左）／値（右寄せ）」の行 */}
             <div className="flex items-center justify-end w-full">
               <button
                 type="button"
                 onClick={() => setViewMode("edit")}
-                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-1 h-12 items-center justify-center rounded-lg text-lg text-[var(--semantic-brand-primary)] px-4 shrink-0"
+                // 確定デザイン（7139:220875）：96×44、下のカードまで 8px
+                className="bg-white border border-[var(--semantic-brand-primary)] flex gap-1 h-11 w-24 items-center justify-center rounded-lg text-lg text-[var(--semantic-brand-primary)] shrink-0"
               >
                 <span
                   aria-hidden
@@ -143,14 +134,15 @@ export function SchedulePointSettingPage() {
             <div className="bg-white flex flex-col items-start overflow-hidden rounded-lg w-full">
               <div className="flex h-16 items-center justify-between px-4 w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">日時</p>
-                <p className="text-lg text-[var(--semantic-text-primary)]">{formatDateSlash(dateKey)}</p>
+                <p className="text-base text-[var(--semantic-text-primary)]">{formatDateSlash(dateKey)}</p>
               </div>
               <div className="h-px w-full bg-[#d0d0d0]" />
-              <div className="flex flex-col items-center px-4 w-full">
+              {/* 行は高さ 40・区切り線の上下 16px（間隔 72） */}
+              <div className="flex flex-col items-center px-4 py-4 w-full">
                 {lineIds.map((lineId, index) => (
                   <Fragment key={lineId}>
-                    {index > 0 && <div className="h-px w-full bg-[#d0d0d0]" />}
-                    <div className="flex gap-4 h-16 items-center w-full">
+                    {index > 0 && <div className="h-px w-full bg-[#d0d0d0] my-4" />}
+                    <div className="flex gap-4 h-10 items-center w-full">
                       <p className="shrink-0 text-base text-[var(--semantic-text-primary)]">持ち場/ライン名</p>
                       <p className="flex-1 min-w-0 text-base text-right text-[var(--semantic-text-primary)]">
                         {lineLabel(lineId)}
@@ -160,7 +152,7 @@ export function SchedulePointSettingPage() {
                 ))}
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <>
             {/* 日付（点検予定日。ルートで決まるため変更不可） */}
@@ -208,9 +200,10 @@ export function SchedulePointSettingPage() {
                 </button>
               </div>
               <div className="h-px w-full bg-[#d0d0d0]" />
-              <div className="bg-white flex flex-col items-center px-4 w-full">
+              {/* 行は高さ 40・区切り線の上下 16px（間隔 72）。空のときも高さ 72 */}
+              <div className="bg-white flex flex-col items-center px-4 py-4 w-full">
                 {lineIds.length === 0 ? (
-                  <div className="flex h-16 items-center w-full">
+                  <div className="flex h-10 items-center w-full">
                     <p className="text-sm text-[var(--semantic-text-primary)]">
                       登録された持ち場/ライン名がありません
                     </p>
@@ -218,8 +211,8 @@ export function SchedulePointSettingPage() {
                 ) : (
                   lineIds.map((lineId, index) => (
                     <Fragment key={lineId}>
-                      {index > 0 && <div className="h-px w-full bg-[#d0d0d0]" />}
-                      <div className="flex gap-4 h-16 items-center w-full">
+                      {index > 0 && <div className="h-px w-full bg-[#d0d0d0] my-4" />}
+                      <div className="flex gap-4 h-10 items-center w-full">
                         <p className="shrink-0 text-base text-[var(--semantic-text-primary)]">持ち場/ライン名</p>
                         <p className="flex-1 min-w-0 text-base text-right text-[var(--semantic-text-primary)]">
                           {lineLabel(lineId)}
@@ -252,11 +245,10 @@ export function SchedulePointSettingPage() {
         {viewMode === "edit" && (
           <button
             type="button"
-            // 編集で持ち場/ラインを全部外して「保存」すると、その日の予定を消して削除完了を出す（確定デザイン 7139:220444）
-            disabled={lineIds.length === 0 && !existing}
+            disabled={lineIds.length === 0}
             onClick={handleSave}
             className={`h-16 w-60 max-w-full rounded-lg px-4 text-xl text-white shrink-0 ${
-              lineIds.length === 0 && !existing
+              lineIds.length === 0
                 ? "bg-[var(--semantic-text-secondary)] opacity-50"
                 : "bg-[var(--semantic-brand-primary)]"
             }`}
@@ -374,7 +366,7 @@ export function SchedulePointSettingPage() {
                 削除した情報は元に戻せません。本当に削除しますか？
               </p>
             </div>
-            <div className="flex gap-6 items-center justify-center w-full">
+            <div className="flex gap-10 items-center justify-center w-full">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}

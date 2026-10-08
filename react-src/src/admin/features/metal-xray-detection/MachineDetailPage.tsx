@@ -112,7 +112,7 @@ export function MachineDetailPage() {
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-start w-full gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">金属探知機No.</p>
+            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">金属探知機名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
               {machine.metalDetectorName || "ー"}
             </p>
@@ -126,7 +126,7 @@ export function MachineDetailPage() {
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-start w-full gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">X線探知機No.</p>
+            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">X線探知機名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
               {machine.xrayDetectorName || "ー"}
             </p>
@@ -140,7 +140,7 @@ export function MachineDetailPage() {
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-start w-full gap-4">
-            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">ウェイトチェッカーNo.</p>
+            <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">ウェイトチェッカー名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
               {machine.weightCheckerName || "ー"}
             </p>

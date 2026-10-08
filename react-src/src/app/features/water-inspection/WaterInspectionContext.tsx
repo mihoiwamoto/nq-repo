@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { useDemoInspectionState } from "../../../components/demo/demoStore";
 import { Outlet } from "react-router-dom";
 import {
@@ -8,6 +8,7 @@ import {
   type WaterInspectionRecord,
   type WaterPoint,
 } from "./mockData";
+import { useFactoryKeyed } from "../../data/factoryAppData";
 
 type WaterInspectionContextValue = {
   points: WaterPoint[];
@@ -22,7 +23,10 @@ const WaterInspectionContext = createContext<WaterInspectionContextValue | null>
 export function WaterInspectionProvider({ children }: { children: ReactNode }) {
   // 動作デモ「データが無い」のときは、まだ 1 件も点検していない状態から始める
   const [points, setPoints] = useDemoInspectionState<WaterPoint>(initialPoints);
-  const [recordsByPoint, setRecordsByPoint] = useState(initialRecordsByPoint);
+  // 工場ごとの見本（プロトタイプの「ログイン中」）。記録の場所はその工場の点検場所の名前にする
+  const [recordsByPoint, setRecordsByPoint] = useFactoryKeyed(initialRecordsByPoint, initialPoints, (recs, point, factory) =>
+    factory === "f1" && !point.id.includes("~") ? recs : recs.map((r) => ({ ...r, location: point.name }))
+  );
 
   const value = useMemo<WaterInspectionContextValue>(
     () => ({

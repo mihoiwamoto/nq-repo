@@ -1,9 +1,10 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { GlassPlasticRecord } from "./types";
 import { glassPlasticRecords } from "./mockRecords";
 import { CURRENT_ACCOUNT } from "../account/mockData";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type RecordsContextValue = {
   records: GlassPlasticRecord[];
@@ -14,7 +15,7 @@ type RecordsContextValue = {
 const RecordsContext = createContext<RecordsContextValue | null>(null);
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
-  const [records, setRecords] = useState<GlassPlasticRecord[]>(glassPlasticRecords);
+  const [records, setRecords] = useFactoryList<GlassPlasticRecord>("glass-plastic", glassPlasticRecords, "records");
 
   const value = useMemo<RecordsContextValue>(
     () => ({

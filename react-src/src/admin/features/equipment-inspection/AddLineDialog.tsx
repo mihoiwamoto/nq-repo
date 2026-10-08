@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { LineFrequency } from "./types";
 import { useSchedule } from "./ScheduleContext";
 import { useDesignScale } from "../../hooks/useDesignScale";
+import iconCheckbox from "../../../assets/figma/icons/common/checkbox.svg";
+import iconCheckboxOn from "../../../assets/figma/icons/common/checkbox-on.svg";
 
 const FREQUENCY_LABEL: Record<LineFrequency, string> = {
   daily: "毎日",
@@ -85,7 +87,7 @@ export function AddLineDialog({
           <div className="bg-white flex flex-col h-[308px] overflow-y-auto px-4 rounded-lg w-full">
             {filteredLines.length === 0 ? (
               <p className="py-4 text-sm text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               filteredLines.map((line) => (
@@ -93,13 +95,16 @@ export function AddLineDialog({
                   key={line.id}
                   type="button"
                   onClick={() => toggleLine(line.id)}
-                  className="border-b border-[#d0d0d0] flex gap-2 items-center min-h-12 py-2 w-full text-left"
+                  role="checkbox"
+                  aria-checked={draft.includes(line.id)}
+                  className="border-b border-[#d0d0d0] flex gap-1 items-center min-h-12 py-2 w-full text-left"
                 >
-                  <input
-                    type="checkbox"
-                    checked={draft.includes(line.id)}
-                    readOnly
-                    className="size-4 accent-[var(--semantic-brand-primary)]"
+                  {/* 確定デザイン（7139:161452）：16px の枠に 11px の四角のアイコン、文字はアイコンの 4px 右（2026-10-07） */}
+                  <img
+                    src={draft.includes(line.id) ? iconCheckboxOn : iconCheckbox}
+                    alt=""
+                    aria-hidden
+                    className="size-4 shrink-0"
                   />
                   <span
                     className={`text-sm ${

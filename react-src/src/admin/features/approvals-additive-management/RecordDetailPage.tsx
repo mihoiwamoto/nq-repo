@@ -14,6 +14,7 @@ import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { AdditiveApprovalRecord } from "./types";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -26,12 +27,13 @@ function formatDate(date: string) {
 }
 
 export function RecordDetailPage() {
+  const demoFactoryName = useDemoFactoryName();
   const { factoryId, recordId } = useParams<{ factoryId?: string; recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
   return (
     <RecordDetailView
       record={records.find((r) => r.id === recordId)}
-      factoryName={getFactoryName(factoryId ?? "f1")}
+      factoryName={factoryId ? getFactoryName(factoryId) : demoFactoryName}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },
         { label: "データ一覧", to: "/admin/approvals/additive-management" },

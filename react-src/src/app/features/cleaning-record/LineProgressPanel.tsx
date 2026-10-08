@@ -1,44 +1,7 @@
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
-import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 
-/** ヘッダー右の「点検済み n/m」のつまみ（ラインの一覧・提出内容の確認で使う。確定デザイン 7139:221858 / 7139:221957） */
-export function LineProgressButton({
-  inspectedCount,
-  total,
-  onClick,
-}: {
-  inspectedCount: number;
-  total: number;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="bg-[var(--semantic-brand-primary)] flex items-center rounded-lg overflow-hidden shrink-0 hover:opacity-90 transition-opacity"
-    >
-      <span
-        aria-hidden
-        className="inline-block size-5 shrink-0 mx-2 text-white"
-        style={{
-          WebkitMaskImage: `url("${iconArrowLeft}")`,
-          maskImage: `url("${iconArrowLeft}")`,
-          WebkitMaskSize: "contain",
-          maskSize: "contain",
-          WebkitMaskRepeat: "no-repeat",
-          maskRepeat: "no-repeat",
-          backgroundColor: "currentColor",
-        }}
-      />
-      <span className="bg-white flex flex-col items-center justify-center gap-0 px-2 py-1">
-        <span className="text-xs text-[var(--semantic-brand-primary)] font-semibold">点検済み</span>
-        <span className="text-lg text-[var(--semantic-brand-primary)] leading-none font-bold">
-          {inspectedCount}/{total}
-        </span>
-      </span>
-    </button>
-  );
-}
+/** ヘッダー右の「点検済み n/m」のつまみは共通部品（確定デザインどおり右端に寄せた 80×46）。機械器具点検と同じものを使う */
+export { LineProgressButton } from "../../components/LineProgressButton";
 
 export function LineProgressPanel({
   lines,

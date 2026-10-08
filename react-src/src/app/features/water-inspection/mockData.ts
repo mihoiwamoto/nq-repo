@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 export type PointStatus = "not_inspected" | "inspected" | "confirmed";
 
 export type WaterPoint = {
@@ -76,7 +78,7 @@ function okChecks(): CheckItem[] {
   ];
 }
 
-export const recordsByPoint: Record<string, WaterInspectionRecord[]> = {
+export const recordsByPoint: Record<string, WaterInspectionRecord[]> = withTplFallback({
   wp1: [
     {
       id: "wp1-r3",
@@ -201,4 +203,4 @@ export const recordsByPoint: Record<string, WaterInspectionRecord[]> = {
       errorIndicatorLight: "消灯",
     },
   ],
-};
+});

@@ -4,6 +4,7 @@ import { AppHeader } from "../../layout/AppHeader";
 import { SampleProductInfo } from "./SampleProductInfo";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { SAMPLE_ENTRIES, SAMPLE_TYPE_LABELS, type SampleConfirmState } from "./mockData";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 function ConfirmRow({
   label,
@@ -33,7 +34,7 @@ export function SampleConfirmPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as (SampleConfirmState & { fromProgress?: boolean }) | null;
-  const entry = SAMPLE_ENTRIES.find((e) => e.id === sampleId);
+  const entry = findFactoryItem(SAMPLE_ENTRIES, sampleId);
   const basePath = "/app/ledger-list/sample-management";
   const fromProgress = state?.fromProgress ?? false;
 

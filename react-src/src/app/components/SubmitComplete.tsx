@@ -19,6 +19,11 @@ type SubmitCompleteProps = {
   primary?: CompleteAction;
   /** 下の白いボタン。オフライン・送信エラーのときの戻り先にもなる */
   secondary: CompleteAction;
+  /**
+   * 進捗一覧から入ったときの完了画面。確定デザイン（進捗一覧_〇〇_提出完了 7139:229246・7139:293858・7139:237958・7139:249605）は
+   * 帳票一覧の提出完了（7139:221581 など）より中身が 52px 下にある（ヘッダーの下 76px からチェック印。2026-10-07）
+   */
+  fromProgress?: boolean;
 };
 
 /**
@@ -82,20 +87,22 @@ export function SubmitComplete({
   message = "ご記入ありがとうございます。",
   primary,
   secondary,
+  fromProgress = false,
 }: SubmitCompleteProps): ReactNode {
   return (
     <SubmitOutcome ledgerTitle={ledgerTitle} backLabel={secondary.label} onBack={secondary.onClick}>
       <AppHeader title={ledgerTitle} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="flex flex-col gap-10 items-center px-8 py-6 w-full">
+        <div className={`flex flex-col gap-10 items-center px-8 pb-6 w-full ${fromProgress ? "pt-[76px]" : "pt-6"}`}>
           <div className="flex flex-col gap-6 items-center w-full">
             <div className="flex flex-col gap-4 items-center w-full">
               <CircleCheck />
-              <h2 className="text-2xl text-[var(--semantic-brand-primary)] text-center w-full font-semibold">
+              {/* 確定デザインの行の高さは 140%（見出し 33.6px・説明 22.4px）。2026-10-07 */}
+              <h2 className="text-2xl leading-[1.4] text-[var(--semantic-brand-primary)] text-center w-full font-semibold">
                 {title}
               </h2>
             </div>
-            <p className="text-base text-[var(--semantic-text-primary)] text-center w-full font-semibold">
+            <p className="text-base leading-[1.4] text-[var(--semantic-text-primary)] text-center w-full font-semibold">
               {message}
             </p>
           </div>

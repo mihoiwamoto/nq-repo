@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { SENSORY_TARGET_PRODUCTS } from "./mockData";
 import type { ScheduleEntry, SensoryTargetProduct } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type SensoryInspectionContextValue = {
   products: SensoryTargetProduct[];
@@ -17,7 +18,7 @@ type SensoryInspectionContextValue = {
 const SensoryInspectionContext = createContext<SensoryInspectionContextValue | null>(null);
 
 export function SensoryInspectionProvider({ children }: { children: ReactNode }) {
-  const [products, setProducts] = useState<SensoryTargetProduct[]>(SENSORY_TARGET_PRODUCTS);
+  const [products, setProducts] = useFactoryList<SensoryTargetProduct>("sensory-inspection", SENSORY_TARGET_PRODUCTS, "registry");
   const [scheduleEntries, setScheduleEntries] = useState<Record<string, ScheduleEntry>>({});
 
   function addProduct(product: Omit<SensoryTargetProduct, "id">) {

@@ -76,9 +76,10 @@ export function ConfirmPage() {
           />
         }
       />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
-          <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
+      {/* 確定デザイン（7139:221957）：ヘッダーの下 24px に高さ 56 の注意の帯 */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-4 flex flex-col gap-4 items-center">
+        <div className="bg-[#f7f292] flex gap-2 items-center h-14 px-4 rounded-lg w-full max-w-full shrink-0">
+          <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
@@ -99,7 +100,8 @@ export function ConfirmPage() {
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
           {cleaningPoints.map((point) => (
             <div key={point.id} className="flex flex-col gap-3 items-start w-full">
-              <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between p-2 rounded-lg w-full">
+              {/* 確定デザイン（7139:221957）：清掃箇所の帯は高さ 32、項目は 58 間隔 */}
+              <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-between px-2 py-1 rounded-lg w-full">
                 <p className="text-base text-white">清掃箇所</p>
                 <p className="text-base text-white">{point.location}</p>
               </div>
@@ -116,7 +118,7 @@ export function ConfirmPage() {
                         </span>
                       </div>
                       {record?.timestamp && (
-                        <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">
+                        <p className="text-sm leading-none text-[var(--semantic-text-secondary)] text-right w-full font-normal">
                           {record.inspector} {record.timestamp}
                         </p>
                       )}

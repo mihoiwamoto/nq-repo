@@ -103,7 +103,7 @@ export function MachineSelectionPage() {
           <div className="flex flex-col gap-6 w-full">
             {filteredMachines.length === 0 ? (
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               filteredMachines.map((machine) => (

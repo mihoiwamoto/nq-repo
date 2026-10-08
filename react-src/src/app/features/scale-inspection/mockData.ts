@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 export type PostStatus = "not_inspected" | "inspected";
 
 export type Post = {
@@ -68,7 +70,7 @@ export const CIRCLED_NUMBERS = ["①", "②", "③", "④", "⑤", "⑥", "⑦",
 
 export const CRITERIA_TOLERANCE = 2;
 
-export const scalesByPost: Record<string, Scale[]> = {
+export const scalesByPost: Record<string, Scale[]> = withTplFallback({
   additive: [
     { id: "s1", label: "添加物①", serialNumber: "ABC-223456", referenceWeight: 100, record: null, skipped: false, skipReason: "" },
     { id: "s2", label: "添加物②", serialNumber: "ABC-223457", referenceWeight: 100, record: null, skipped: false, skipReason: "" },
@@ -93,7 +95,7 @@ export const scalesByPost: Record<string, Scale[]> = {
     { id: "s1", label: "カタラーナ①", serialNumber: "ABC-523456", referenceWeight: 100, record: null, skipped: false, skipReason: "" },
     { id: "s2", label: "カタラーナ②", serialNumber: "ABC-523457", referenceWeight: 100, record: null, skipped: false, skipReason: "" },
   ],
-};
+});
 
 export type SpareScale = {
   id: string;

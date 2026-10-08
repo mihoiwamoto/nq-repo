@@ -46,14 +46,15 @@ export const ledgerCategories: LedgerCategory[] = [
   },
   {
     slug: "metal-xray-detection",
-    adminLabel: "金属探知機記録", // 確定デザイン Ver.3.0（U7BHhdczTV8L2SR9zko0UA の帳票管理・データ検索のタイル）に合わせた 2026-10-07
-    appLabel: "金属探知機・X線探知機",
+    // 管理画面・アプリとも「金属/X線探知機記録」に統一（2026-10-07 にユーザーが決定。確定デザインどうしで揺れていたため）
+    adminLabel: "金属/X線探知機記録",
+    appLabel: "金属/X線探知機記録",
     adminIcon: metalXrayDetectionAdmin,
     appIcon: appIconUrl("metal-xray-detection"),
   },
   {
     slug: "sample-management",
-    adminLabel: "検体の管理",
+    adminLabel: "検体管理",
     appLabel: "検体管理",
     adminIcon: sampleManagementAdmin,
     appIcon: appIconUrl("sample-management"),

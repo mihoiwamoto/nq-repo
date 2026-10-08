@@ -6,6 +6,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { useCleaningRecord } from "./CleaningRecordContext";
 import type { LineFrequency, CleaningPoint } from "./types";
 import cancelIcon from "@images/Icon/cancel.svg";
+import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 
 const FREQUENCY_OPTIONS: { key: LineFrequency; label: string }[] = [
   { key: "daily", label: "毎日" },
@@ -93,6 +94,8 @@ export function LineRegistrationPage() {
         ]}
       />
       <div className="flex flex-col gap-10 items-start p-6">
+        {/* 確定デザイン：入力の間は 24px、下の「キャンセル」「登録」だけ 40px 離す（機械器具点検と同じ。2026-10-07） */}
+        <div className="flex flex-col gap-6 items-start w-full">
         <div className="flex flex-col gap-1 items-start">
           <div className="flex gap-2 items-center">
             <p className="text-xl text-[var(--semantic-text-primary)]">アプリ表示期間</p>
@@ -150,47 +153,56 @@ export function LineRegistrationPage() {
 
         <div className="flex flex-col gap-6 items-start w-full">
           {points.map((point, pointIndex) => (
-            <div key={point.id} className="flex flex-col gap-2 items-start w-[480px]">
-              <div className="flex gap-2 items-center">
-                <p className="text-xl text-[var(--semantic-text-primary)]">清掃箇所</p>
-                <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  value={point.location}
-                  onChange={(e) => updateLocation(point.id, e.target.value)}
-                  placeholder="例）つまみ上げパック機"
-                  className="bg-white h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[480px] placeholder:text-[var(--semantic-text-secondary)]"
-                />
-                {pointIndex > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => deletePoint(point.id)}
-                    className="h-10 w-10 rounded-full bg-white flex items-center justify-center hover:opacity-60"
-                  >
-                    <img src={cancelIcon} alt="削除" className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-col gap-2 items-start pl-6 w-full border-l border-[#d0d0d0]">
-                <p className="text-xl text-[var(--semantic-text-primary)]">清掃項目</p>
-                {point.items.map((item, index) => (
+            <div key={point.id} className="flex flex-col items-start">
+              <div className="flex flex-col gap-1 items-start w-[480px]">
+                <div className="flex gap-2 items-center">
+                  <p className="text-xl text-[var(--semantic-text-primary)]">清掃箇所</p>
+                  <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+                </div>
+                <div className="flex gap-2 items-center">
                   <input
-                    key={index}
                     type="text"
-                    value={item}
-                    onChange={(e) => updateItem(point.id, index, e.target.value)}
-                    placeholder="例）シール部・カッター刃"
-                    className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
+                    value={point.location}
+                    onChange={(e) => updateLocation(point.id, e.target.value)}
+                    placeholder="例）つまみ上げパック機"
+                    className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[480px] placeholder:text-[var(--semantic-text-secondary)]"
                   />
-                ))}
+                  {pointIndex > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => deletePoint(point.id)}
+                      className="h-10 w-10 rounded-full bg-white flex items-center justify-center hover:opacity-60"
+                    >
+                      <img src={cancelIcon} alt="削除" className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+              {/* 確定デザイン：清掃箇所の入力欄のすぐ下から 2px の灰色（#808080）の縦線（入力欄の左から 24px）、
+                  中身は線の 16px 右・幅 480px、「清掃項目」は入力欄の 16px 下（2026-10-07） */}
+              <div className="ml-6 flex flex-col gap-4 items-start pl-4 pt-4 border-l-2 border-[#808080]">
+                <div className="flex flex-col gap-1 items-start w-[480px]">
+                  <p className="text-xl text-[var(--semantic-text-primary)]">清掃項目</p>
+                  <div className="flex flex-col gap-2 items-start w-full">
+                    {point.items.map((item, index) => (
+                      <input
+                        key={index}
+                        type="text"
+                        value={item}
+                        onChange={(e) => updateItem(point.id, index, e.target.value)}
+                        placeholder="例）シール部・カッター刃"
+                        className="bg-white h-12 px-4 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
+                      />
+                    ))}
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => addItem(point.id)}
-                  className="border border-[var(--semantic-brand-primary)] bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-sm text-[var(--semantic-brand-primary)]"
+                  className="border border-[var(--semantic-brand-primary)] bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
                 >
-                  + 追加
+                  <img src={iconPlus} alt="" aria-hidden className="size-5" />
+                  追加
                 </button>
               </div>
             </div>
@@ -198,13 +210,15 @@ export function LineRegistrationPage() {
           <button
             type="button"
             onClick={addPoint}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-brand-primary)]"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
           >
-            + 記録の追加
+            <img src={iconPlus} alt="" aria-hidden className="size-5" />
+            記録の追加
           </button>
         </div>
 
         {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        </div>
 
         <div className="flex gap-4 items-center">
           <button

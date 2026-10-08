@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { scaleApprovalRecords } from "./mockData";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { RepairStatus, ScaleApprovalRecord } from "./types";
 import { CURRENT_ACCOUNT } from "../account/mockData";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type RecordsContextValue = {
   records: ScaleApprovalRecord[];
@@ -15,7 +16,7 @@ type RecordsContextValue = {
 const RecordsContext = createContext<RecordsContextValue | null>(null);
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
-  const [records, setRecords] = useState<ScaleApprovalRecord[]>(scaleApprovalRecords);
+  const [records, setRecords] = useFactoryList<ScaleApprovalRecord>("scale-inspection", scaleApprovalRecords, "approval");
 
   function setApprovalStatus(id: string, status: ApprovalStatus) {
     setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, approvalStatus: status } : r)));

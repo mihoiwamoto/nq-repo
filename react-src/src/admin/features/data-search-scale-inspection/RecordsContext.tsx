@@ -1,9 +1,10 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { RepairStatus, ScaleRecord } from "./types";
 import { scaleRecords } from "./mockRecords";
 import { CURRENT_ACCOUNT } from "../account/mockData";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type RecordsContextValue = {
   records: ScaleRecord[];
@@ -15,7 +16,7 @@ type RecordsContextValue = {
 const RecordsContext = createContext<RecordsContextValue | null>(null);
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
-  const [records, setRecords] = useState<ScaleRecord[]>(scaleRecords);
+  const [records, setRecords] = useFactoryList<ScaleRecord>("scale-inspection", scaleRecords, "records");
 
   const value = useMemo<RecordsContextValue>(
     () => ({

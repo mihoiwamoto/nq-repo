@@ -53,9 +53,10 @@ export function SkipConfirmPage() {
   return (
     <>
       <AppHeader title={`清掃記録_${lineTitle}`} />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
-          <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
+      {/* 確定デザイン：ヘッダーの下 24px に高さ 56 の注意の帯（提出内容の確認と同じ） */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-4 flex flex-col gap-4 items-center">
+        <div className="bg-[#f7f292] flex gap-2 items-center h-14 px-4 rounded-lg w-full max-w-full shrink-0">
+          <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>

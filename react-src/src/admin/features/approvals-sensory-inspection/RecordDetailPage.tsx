@@ -13,6 +13,7 @@ import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import { CRITERIA, isAbnormalScore, type SensoryApprovalRecord } from "./types";
 import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -27,12 +28,13 @@ function formatDate(date: string) {
 const approvalsPath = "/admin/approvals/sensory-inspection";
 
 export function RecordDetailPage() {
+  const demoFactoryName = useDemoFactoryName();
   const { recordId } = useParams<{ recordId: string }>();
   const { records, setApprovalStatus, addComment } = useRecords();
   return (
     <RecordDetailView
       record={records.find((r) => r.id === recordId)}
-      factoryName="㈱西原食品 本社工場"
+      factoryName={demoFactoryName}
       basePath={approvalsPath}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },

@@ -5,7 +5,7 @@ export type PendingReview = {
   ledgerSlug: string;
   /** 見送り = 実施者が点検を見送った記録（確定デザイン 7139:346491）。確認者が見て提出する流れは点検済みと同じ */
   status: "点検済み" | "見送り" | "差し戻し";
-  /** 差し戻しのうち、見送った記録が差し戻されたもの（確定デザイン 7139:345916）。全項目「ー」と見送り理由を出す */
+  /** 差し戻しのうち、見送った記録が差し戻されたもの（機械器具点検 7139:345916・清掃記録 7139:229031）。点検項目は出さず（機械器具点検は「ー」）見送り理由を出す */
   skipped?: boolean;
   lineId?: string;
   pointId?: string;
@@ -82,6 +82,15 @@ export const PENDING_REVIEWS: PendingReview[] = [
     status: "点検済み",
     lineId: "c1",
   },
+  // 清掃記録の見送りの記録（機械器具点検の p20 と同じ。ラインの一覧で「見送り」の【毎週】充填・包装ライン）
+  {
+    id: "p22",
+    date: "04/01",
+    name: "【毎週】充填・包装ライン",
+    ledgerSlug: "cleaning-record",
+    status: "見送り",
+    lineId: "c18",
+  },
   {
     id: "p9",
     date: "04/01",
@@ -149,6 +158,17 @@ export const PENDING_REVIEWS: PendingReview[] = [
     name: "【毎日】ゆばライン",
     ledgerSlug: "cleaning-record",
     status: "差し戻し",
+    lineId: "c1",
+  },
+  // 清掃記録の見送った記録が差し戻された場合（機械器具点検の p19 と同じ流れ。
+  // 確定デザイン 7139:229031「確認待ち_清掃記録_点検見送り後_差し戻し_再度点検見送りする場合」）
+  {
+    id: "p21",
+    date: "04/01",
+    name: "【毎日】ゆばライン",
+    ledgerSlug: "cleaning-record",
+    status: "差し戻し",
+    skipped: true,
     lineId: "c1",
   },
   // 薬品管理の点検済み（確認者が見て提出する。添加物管理の p1 と同じ流れ。2026-10-05）

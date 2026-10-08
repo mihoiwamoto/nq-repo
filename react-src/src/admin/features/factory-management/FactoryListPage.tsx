@@ -105,7 +105,7 @@ export function FactoryListPage() {
           {pageItems.length === 0 ? (
             <div className="bg-white flex h-14 items-center w-full px-2">
               <p className="text-sm text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             </div>
           ) : (

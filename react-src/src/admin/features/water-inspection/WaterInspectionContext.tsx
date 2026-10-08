@@ -1,8 +1,9 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { initialWaterInspectionPoints } from "./mockData";
 import type { WaterInspectionPoint } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type WaterInspectionPointInput = Omit<WaterInspectionPoint, "id">;
 
@@ -16,7 +17,7 @@ type WaterInspectionContextValue = {
 const WaterInspectionContext = createContext<WaterInspectionContextValue | null>(null);
 
 export function WaterInspectionProvider({ children }: { children: ReactNode }) {
-  const [points, setPoints] = useState<WaterInspectionPoint[]>(initialWaterInspectionPoints);
+  const [points, setPoints] = useFactoryList<WaterInspectionPoint>("water-inspection", initialWaterInspectionPoints, "registry");
 
   const value = useMemo<WaterInspectionContextValue>(
     () => ({

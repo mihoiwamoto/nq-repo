@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PulldownSelect } from "../../components/PulldownSelect";
 import { AppHeader } from "../../layout/AppHeader";
+import { useFromProgress } from "../../layout/ProgressFlowContext";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
 import { ACTORS, type StockCategory } from "./mockData";
 import { formatAmount, parseAmount, unitOf, withUnit } from "../../utils/amount";
@@ -26,7 +27,7 @@ export function RecordingPage() {
   const { productId, recordId } = useParams<{ productId: string; recordId?: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { additives, records } = useAdditiveManagement();
+  const { additives, records, addRecord, updateRecord, updateAdditiveStatus } = useAdditiveManagement();
 
   const additive = additives.find((a) => a.id === productId);
   const existingRecord = recordId ? records.find((r) => r.id === recordId) : undefined;
@@ -38,6 +39,10 @@ export function RecordingPage() {
         editRecord?: EditRecord;
         editReturn?: { to: string; state?: unknown };
         addReturn?: { to: string; state?: unknown };
+        fromProgress?: boolean;
+        progressStatus?: string;
+        /** 進捗一覧（点検中）の一覧の「詳細」から開いたときの、直す記録の id。保存で記録を足さずに書き換える */
+        editRecordId?: string;
       }
     | null;
   // 確認待ちの差し戻しから「点検内容を修正する」で来たときの戻り先と、直す記録（2026-10-02）
@@ -45,6 +50,16 @@ export function RecordingPage() {
   const editRecord = state?.editRecord;
   // 確認待ちの一覧から「＋記録を追加」で来たときの戻り先（確定デザイン 7139:233626。2026-10-06）。「一覧へ戻る」「保存」で確認待ちへ戻る
   const addReturn = state?.addReturn;
+  // 進捗一覧から開いた一覧（点検中）から来たとき（確定デザイン「進捗一覧_添加物管理表_記録画面」7139:238432）。
+  // 「保存」は確認画面へ進まず、記録を一覧に足して（「詳細」から来たときはその記録を書き換えて）一覧へ戻る（7139:238230）。
+  // 「一覧へ戻る」も進捗のステータスを持ったまま一覧へ戻す（2026-10-07）
+  const fromProgressFlow = useFromProgress();
+  const progressList = fromProgressFlow && !!state?.fromProgress && !editReturn && !addReturn;
+  const progressListState = progressList
+    ? { fromProgress: true, progressStatus: state?.progressStatus, date: state?.date, inspectorName: state?.inspectorName }
+    : undefined;
+  const progressEditTarget =
+    progressList && state?.editRecordId ? records.find((r) => r.id === state.editRecordId) : undefined;
   const date = existingRecord?.date ?? state?.date ?? "2025/04/01";
   const actor = existingRecord?.actor ?? state?.inspectorName ?? ACTORS[0].name;
 
@@ -90,6 +105,23 @@ export function RecordingPage() {
 
   function handleSave() {
     if (!canSave) return;
+    if (progressList && category) {
+      const input = {
+        additiveId: productId ?? "",
+        date: progressEditTarget?.date ?? date.replaceAll("-", "/"),
+        storageLocation: progressEditTarget?.storageLocation ?? additive?.storageLocation ?? "",
+        category,
+        quantity: withUnit(quantity, unit),
+        currentStock: withUnit(currentStock, unit),
+        remarks,
+        actor: progressEditTarget?.actor ?? actor,
+      };
+      if (progressEditTarget) updateRecord(progressEditTarget.id, input);
+      else addRecord(input);
+      if (additive?.status === "not_inspected" && productId) updateAdditiveStatus(productId, "in_progress");
+      navigate(basePath, { state: progressListState });
+      return;
+    }
     navigate(`${basePath}/confirm`, {
       state: {
         productId,
@@ -233,7 +265,9 @@ export function RecordingPage() {
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-10 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => (addReturn ? navigate(addReturn.to, { state: addReturn.state }) : navigate(basePath))}
+            onClick={() =>
+              addReturn ? navigate(addReturn.to, { state: addReturn.state }) : navigate(basePath, { state: progressListState })
+            }
             className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
             一覧へ戻る

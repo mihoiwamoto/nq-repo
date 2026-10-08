@@ -15,6 +15,7 @@ import {
   type OkNg,
   type TestPieceRow,
 } from "./mockData";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 function Divider() {
   return <div className="border-t border-[#d0d0d0]" style={{ width: "calc(100% - 1px)" }} />;
@@ -243,7 +244,7 @@ export function MachineRecordDetailPage() {
     | { inspectionDate?: string; inspectorName?: string; editReturn?: unknown }
     | null;
   const inspectionDate = state?.inspectionDate ?? "";
-  const machine = MACHINES.find((m) => m.id === machineId);
+  const machine = findFactoryItem(MACHINES, machineId);
   const record = recordsForMachine(machineId).find((r) => r.id === recordId);
 
   if (!machine || !record) return null;

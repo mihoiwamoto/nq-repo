@@ -5,6 +5,7 @@ import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { useSensoryInspection } from "./SensoryInspectionContext";
 import { CRITERIA, products, type SensoryRecord } from "./mockData";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 function ConfirmRow({
   label,
@@ -47,7 +48,7 @@ export function ConfirmPage() {
   const location = useLocation();
   const { submitRecord } = useSensoryInspection();
 
-  const product = products.find((p) => p.id === productId);
+  const product = findFactoryItem(products, productId);
   const state = location.state as { inspectorName?: string; record?: SensoryRecord } | null;
   const record = state?.record;
   const inspectorName = state?.inspectorName ?? "";

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { SAMPLE_TARGET_PRODUCTS, type SampleTargetProduct } from "./mockData";
 import type { ScheduleEntry } from "./types";
+import { useFactoryList } from "../../data/factoryDemo";
 
 type SampleManagementContextValue = {
   products: SampleTargetProduct[];
@@ -16,7 +17,7 @@ type SampleManagementContextValue = {
 const SampleManagementContext = createContext<SampleManagementContextValue | null>(null);
 
 export function SampleManagementProvider({ children }: { children: ReactNode }) {
-  const [products, setProducts] = useState<SampleTargetProduct[]>(SAMPLE_TARGET_PRODUCTS);
+  const [products, setProducts] = useFactoryList<SampleTargetProduct>("sample-management", SAMPLE_TARGET_PRODUCTS, "registry");
   const [scheduleEntries, setScheduleEntries] = useState<Record<string, ScheduleEntry>>({});
 
   function addProduct(name: string) {

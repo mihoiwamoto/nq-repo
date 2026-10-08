@@ -8,7 +8,7 @@ export function LineRegistrationCompletePage() {
   return (
     <div>
       <PageTitleBar title="清掃記録" />
-      <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
+      <div className="flex flex-col gap-10 items-center justify-center p-6">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
             width="80"

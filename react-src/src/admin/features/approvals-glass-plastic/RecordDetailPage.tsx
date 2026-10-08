@@ -19,6 +19,7 @@ import {
   type GlassPlasticApprovalRecord,
   type GlassPlasticItemStatus,
 } from "./types";
+import { useDemoFactoryName } from "../../data/factoryDemo";
 
 const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
   { value: "pending", label: "承認待ち" },
@@ -34,13 +35,14 @@ function formatDate(date: string) {
 }
 
 export function RecordDetailPage() {
+  const demoFactoryName = useDemoFactoryName();
   const navigate = useNavigate();
   const { records, setApprovalStatus, addComment } = useRecords();
   const request = approvalRequests.find((r) => r.ledgerSlug === "glass-plastic");
   return (
     <RecordDetailView
       record={records.find((r) => r.approvalStatus === "pending") ?? records[0]}
-      factoryName="㈱西原食品 本社工場"
+      factoryName={demoFactoryName}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },
         { label: "詳細" },
@@ -244,7 +246,7 @@ export function RecordDetailView({
 
         <div className="bg-white rounded-lg p-6 shadow-sm">
           {visibleRooms.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)]">データがありません</p>
+            <p className="text-base text-[var(--semantic-text-secondary)]">データがありません。</p>
           ) : (
             visibleRooms.map((room, roomIndex) => (
               <div key={room.id} className="flex flex-col gap-4 items-start w-full">

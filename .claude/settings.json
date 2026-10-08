@@ -8,6 +8,11 @@
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/snapshot.py\" hook nqrepo-demo.html 2>/dev/null || true",
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/react_snapshot.py\" hook 2>/dev/null || true",
+            "timeout": 15
           }
         ]
       }

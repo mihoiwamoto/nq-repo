@@ -7,6 +7,7 @@ import { DISCARD_REASON_LABELS, SAMPLE_TYPE_LABELS, STORED_SAMPLES, type Discard
 import trashIcon from "@images/Icon/trash.svg";
 import burnIcon from "@images/Icon/burn.svg";
 import iconCheckWhite from "../../../assets/figma/icons/common/checkmark-custom.svg";
+import { findFactoryItem } from "../../data/factoryAppData";
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -31,7 +32,7 @@ function DestructionLabel() {
 export function StoredSampleDetailPage() {
   const { storedId } = useParams<{ storedId: string }>();
   const navigate = useNavigate();
-  const sample = STORED_SAMPLES.find((s) => s.id === storedId);
+  const sample = findFactoryItem(STORED_SAMPLES, storedId);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [discardDate, setDiscardDate] = useState("");
   const [discardReason, setDiscardReason] = useState<DiscardReason | null>(null);

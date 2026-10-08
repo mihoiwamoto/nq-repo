@@ -2,7 +2,9 @@
  * 画面設計キットの「プロトタイプで開く」から開いたとき（?kit=1）に、右下の「動作デモ」ピルの代わりに出す切替。
  * 中身は画面設計（Documents/NQrepo の nqrepo-screen-design.html）の右下のフローティングと同じ：
  *   資料 … 画面設計（押すといまの画面・状態・ロールのまま画面設計へ戻る）／ React 実装（いま見ているもの）
- *   ログイン中（管理画面のロール） … 画面設計の PROJECT.roles と同じ並び。カードを押すと下に一覧が開く（2026-10-06）
+ *   ログイン中 … 管理画面のときは権限（画面設計の PROJECT.roles と同じ 管理者／承認者）、
+ *              アプリのときはログインしている工場。カードを押すと下に一覧が開く。工場を選ぶと
+ *              アプリの見本データがその工場のもの（data/appFactoryStore.ts）に変わる（2026-10-07）
  *   状態を試す … 画面設計の PROJECT.screenStates と同じ。通常以外を 1 行ずつスイッチで出す。見出しの ? で出す説明は画面設計の STATE_HELP の写し
  *   バージョン … 画面設計のヘッダー右上の Ver の切替と同じ（2026-10-06）。選んだ Ver より後で足す帳票を隠す。
  *              選んだものは画面設計と同じ localStorage に覚えるので、画面設計へ戻っても同じ Ver（data/ledgerVisibility.ts）
@@ -11,12 +13,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDemoTrial } from "./demoStore";
-import {
-  loadCurrentRole,
-  saveCurrentRole,
-  type PrototypeRoleId,
-} from "../../data/roleStore";
+import { loadCurrentRole, saveCurrentRole, type PrototypeRoleId } from "../../data/roleStore";
 import { useCurrentRole } from "../../data/useCurrentRole";
+import {
+  APP_FACTORIES,
+  DEFAULT_APP_FACTORY,
+  saveAppFactory,
+  useAppFactory,
+} from "../../data/appFactoryStore";
 import {
   KIT_FLAGS_EVENT,
   KIT_INFO_KEY,
@@ -24,6 +28,7 @@ import {
   setKitState,
 } from "../../frameBridge";
 import { openFeedbackPanel } from "../feedback/feedbackStore";
+import { EMPTY_PATTERNS, saveEmptyPattern, useEmptyPattern } from "../../app/components/AppEmptyState";
 import { KIT_VERSIONS, chooseKitVer, getKitVer } from "../../data/ledgerVisibility";
 import { ScreenCoachMarks } from "../screen-description/ScreenCoachMarks";
 import { isKitDescPath, setKitDescClosed, useKitDescClosed } from "./KitScreenDescription";
@@ -42,7 +47,7 @@ const hasCoach = (path: string) => COACH_PATHS.some((re) => re.test(path));
 
 type Pf = "admin" | "app";
 
-/** 画面設計の PROJECT.roles と同じ */
+/** 画面設計の PROJECT.roles と同じ。管理画面のときのログイン中 */
 const ROLES: { key: PrototypeRoleId; name: string; desc: string }[] = [
   { key: "administrator", name: "管理者", desc: "全画面にアクセスできる" },
   {
@@ -51,6 +56,9 @@ const ROLES: { key: PrototypeRoleId; name: string; desc: string }[] = [
     desc: "確認者が確認した確認済みの帳票を承認する",
   },
 ];
+
+/** 工場名のアバターの 1 文字（㈱・株式会社は飛ばす） */
+const factoryInitial = (name: string) => name.replace(/㈱|株式会社/g, "").trim().slice(0, 1);
 /** 状態。画面設計の PROJECT.screenStates と同じキー・名前・並び・端末 */
 const STATES: { key: string; name: string; pf: ("admin" | "app")[] }[] = [
   { key: "", name: "通常", pf: ["app", "admin"] },
@@ -120,8 +128,8 @@ const STATE_HELP: Record<
     empty: {
       when: "対象の記録が 1 件も無いとき",
       texts: [
-        ["確認・承認・データ検索・帳票管理などの一覧", "表の見出しの下に「データがありません」と出す"],
-        ["承認申請管理", "帳票のタブの下に「データがありません」と出す"],
+        ["確認・承認・データ検索・帳票管理などの一覧", "表の見出しの下に「データがありません。」と出す"],
+        ["承認申請管理", "帳票のタブの下に「データがありません。」と出す"],
       ],
     },
   },
@@ -170,6 +178,8 @@ const CSS = `
 .nvcard[aria-expanded="true"] .cr{transform:rotate(180deg)}
 .nvmenu{margin-top:5px;border:1px solid var(--nl);border-radius:12px;padding:4px;background:var(--nb)}
 .nvmenu[hidden]{display:none}
+.nvfmenu{max-height:280px;overflow-y:auto}
+.nvcard .nvname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nvmenu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;border-radius:9px;padding:7px 9px;font:inherit;color:var(--nt);cursor:pointer}
 .nvmenu button:hover{background:var(--ns)}
 .nvmenu button[aria-current="true"]{background:var(--nal)}
@@ -243,6 +253,12 @@ const CSS = `
 .nvdesc{color:#2f7fd4}
 .nvdesc:hover{border-color:#2f7fd4}
 .nvdesc[aria-pressed="true"]{background:#2f7fd4;border-color:#2f7fd4;color:#fff}
+/* 一時的：データが無いときの見せ方の切替（フローティングボタンの左） */
+.nvempty{display:flex;align-items:center;gap:2px;height:40px;padding:4px;border-radius:999px;background:var(--nb);border:1px solid var(--nl);box-shadow:var(--nsh)}
+.nvempty-h{font-size:11px;color:var(--nm);padding:0 8px 0 10px;white-space:nowrap}
+.nvempty button{height:30px;padding:0 12px;border:0;border-radius:999px;background:transparent;color:var(--nt);font-size:12px;white-space:nowrap;cursor:pointer}
+.nvempty button:hover{background:var(--nal)}
+.nvempty button[aria-checked="true"]{background:var(--na);color:#fff;font-weight:700}
 @media (max-width:700px){ .nvpanel{width:min(300px,calc(100vw - 40px))} }
 @media (prefers-reduced-motion:reduce){.nvfab,.nvpanel,.nvfab .cr,.nvtip{transition:none!important;animation:none!important}}
 `;
@@ -290,9 +306,11 @@ function lastPath(pf: Pf): string {
 export function KitSwitch() {
   const [open, setOpen] = useState(false);
   const [tip, setTip] = useState(false); // 「状態」の ? の吹き出し
-  const [roleOpen, setRoleOpen] = useState(false); // ログイン中のカードの下の権限の一覧
+  const [roleOpen, setRoleOpen] = useState(false); // ログイン中のカードの下の一覧（管理画面は権限、アプリは工場）
   const [coach, setCoach] = useState(false); // 画面説明（? ボタン）
   const role = useCurrentRole(loadCurrentRole("administrator"));
+  const factory = useAppFactory();
+  const emptyPattern = useEmptyPattern(); // データが無いときの見せ方（一時的な切替。AppEmptyState.tsx）
   const location = useLocation();
   const navigate = useNavigate();
   const box = useRef<HTMLDivElement>(null);
@@ -311,6 +329,8 @@ export function KitSwitch() {
   }, [tip]);
   const info = kitInfo();
   const pf: Pf = location.pathname.startsWith("/app") ? "app" : "admin";
+  // ログイン中の一覧は管理画面（権限）とアプリ（工場）で中身が違うので、画面を切り替えたら閉じる
+  useEffect(() => setRoleOpen(false), [pf]);
   useDemoTrial(); // 状態が変わったら描き直す
   const [, repaint] = useState(0);
   useEffect(() => {
@@ -408,7 +428,15 @@ export function KitSwitch() {
           <div className="nvsec">
             <p className="nvh">ログイン中</p>
             {(() => {
-              const cur = ROLES.find((r) => r.key === role) ?? ROLES[0];
+              // 管理画面は権限、アプリは工場
+              const items =
+                pf === "admin"
+                  ? ROLES.map((r) => ({ key: r.key as string, name: r.name, desc: r.desc, av: r.name.slice(0, 1) }))
+                  : APP_FACTORIES.map((f) => ({ key: f.id, name: f.name, desc: f.desc, av: factoryInitial(f.name) }));
+              const curKey = pf === "admin" ? role : factory;
+              const cur = items.find((it) => it.key === curKey) ?? items[0];
+              const choose = (key: string) =>
+                pf === "admin" ? saveCurrentRole(key as PrototypeRoleId) : saveAppFactory(key);
               return (
                 <>
                   <button
@@ -420,11 +448,11 @@ export function KitSwitch() {
                       setRoleOpen((v) => !v);
                     }}
                   >
-                    <span className="nvav" aria-hidden="true">{cur.name.slice(0, 1)}</span>
+                    <span className="nvav" aria-hidden="true">{cur.av}</span>
                     <span className="tx">
                       <b className="t1">
-                        {cur.name}
-                        <span className="nvbadge">権限</span>
+                        <span className="nvname">{cur.name}</span>
+                        <span className="nvbadge">{pf === "admin" ? "権限" : "工場"}</span>
                       </b>
                       <span className="t2">{cur.desc}</span>
                     </span>
@@ -432,24 +460,24 @@ export function KitSwitch() {
                       <path d="M6 9l6 6 6-6" />
                     </svg>
                   </button>
-                  <div className="nvmenu" role="menu" hidden={!roleOpen}>
-                    {ROLES.map((r) => (
+                  <div className={`nvmenu${pf === "app" ? " nvfmenu" : ""}`} role="menu" hidden={!roleOpen}>
+                    {items.map((it) => (
                       <button
-                        key={r.key}
+                        key={it.key}
                         type="button"
                         role="menuitemradio"
-                        aria-checked={r.key === role}
-                        aria-current={r.key === role}
+                        aria-checked={it.key === curKey}
+                        aria-current={it.key === curKey}
                         onClick={(e) => {
                           e.stopPropagation();
                           setRoleOpen(false);
-                          saveCurrentRole(r.key);
+                          choose(it.key);
                         }}
                       >
-                        <span className="nvav" aria-hidden="true">{r.name.slice(0, 1)}</span>
+                        <span className="nvav" aria-hidden="true">{it.av}</span>
                         <span className="tx">
-                          <b className="t1">{r.name}</b>
-                          <span className="t2">{r.desc}</span>
+                          <b className="t1">{it.name}</b>
+                          <span className="t2">{it.desc}</span>
                         </span>
                       </button>
                     ))}
@@ -547,12 +575,13 @@ export function KitSwitch() {
           <button
             type="button"
             className="nvbtn"
-            title="状態を通常に、ログイン中を最初の権限に戻す"
+            title="状態を通常に、ログイン中を最初の権限・最初の工場に戻す"
             onClick={(e) => {
               e.stopPropagation();
               setRoleOpen(false);
               setKitState("");
               saveCurrentRole(ROLES[0].key);
+              saveAppFactory(DEFAULT_APP_FACTORY);
             }}
           >
             リセット
@@ -571,6 +600,23 @@ export function KitSwitch() {
       </div>
       {coach && <ScreenCoachMarks onClose={() => setCoach(false)} cardBottom={130} skipKinds={COACH_SKIP} options={COACH_OPTIONS} />}
       <div className="nvrow">
+      {/* 一時的：アプリの一覧が空のときの見せ方を 3 パターンから選ぶ（決まったら外す。AppEmptyState.tsx） */}
+      {pf === "app" && (
+        <div className="nvempty" role="radiogroup" aria-label="データが無いときの表示" onClick={(e) => e.stopPropagation()}>
+          <span className="nvempty-h">データ無し</span>
+          {EMPTY_PATTERNS.map((p) => (
+            <button
+              key={p.key}
+              type="button"
+              role="radio"
+              aria-checked={p.key === emptyPattern}
+              onClick={() => saveEmptyPattern(p.key)}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      )}
       {descHere && (
         <button
           className="nvhelp nvdesc"

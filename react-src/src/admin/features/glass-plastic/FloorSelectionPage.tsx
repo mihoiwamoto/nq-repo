@@ -72,7 +72,7 @@ export function FloorSelectionPage() {
 
           {filteredFloors.length === 0 ? (
             <p className="text-base text-[var(--semantic-text-secondary)]">
-              データがありません
+              データがありません。
             </p>
           ) : (
             <div className="flex flex-wrap gap-6">

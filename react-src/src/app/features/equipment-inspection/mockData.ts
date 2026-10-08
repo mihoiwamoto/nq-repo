@@ -1,3 +1,5 @@
+/* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
+import { withTplFallback } from "../../data/targetId";
 export type Frequency = "daily" | "weekly" | "monthly" | "yearly";
 export type LineStatus = "not_inspected" | "in_progress" | "inspected" | "confirmed" | "skipped";
 
@@ -170,7 +172,7 @@ export type LineRejectionComment = {
   body: string;
 };
 
-export const LINE_REJECTION_COMMENTS: Record<string, LineRejectionComment[]> = {
+export const LINE_REJECTION_COMMENTS: Record<string, LineRejectionComment[]> = withTplFallback({
   // 見送った記録の差し戻し（確定デザイン 7139:345916）
   l11: [
     {
@@ -188,4 +190,4 @@ export const LINE_REJECTION_COMMENTS: Record<string, LineRejectionComment[]> = {
       body: "エコスター タンク部の対応内容が不足しています。分解洗浄後の確認結果を追記のうえ、再度ご提出をお願いします。",
     },
   ],
-};
+});

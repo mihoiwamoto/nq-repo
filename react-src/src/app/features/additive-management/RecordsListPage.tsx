@@ -4,9 +4,12 @@ import { DateFilterInput } from "../../components/DateFilterInput";
 import { todayString } from "../../utils/date";
 import { fillSlice, useProgressRecordFill, type RecordFill } from "../../utils/progressRecordFill";
 import { AppHeader } from "../../layout/AppHeader";
+import { useFromProgress } from "../../layout/ProgressFlowContext";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
 import { useDemoList } from "../../../components/demo/demoStore";
-import { ACTORS } from "./mockData";
+import { ACTORS, initialRecords } from "./mockData";
+
+const SEED_RECORD_IDS = new Set(initialRecords.map((record) => record.id));
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
@@ -35,12 +38,15 @@ export function RecordsListPage() {
   const additiveFill: RecordFill =
     additive?.status === "not_inspected" ? "none" : additive?.status === "in_progress" ? "partial" : "full";
   const fill = progressFill ?? additiveFill;
-  const productRecords = fillSlice(
-    records.filter((record) => record.additiveId === productId),
-    fill,
-  );
+  // 見本の記録だけを進捗のステータスで間引き、この画面から足した記録は必ず出す（薬品管理の一覧と同じ）
+  const ownRecords = records.filter((record) => record.additiveId === productId);
+  const productRecords = [
+    ...fillSlice(ownRecords.filter((record) => SEED_RECORD_IDS.has(record.id)), fill),
+    ...ownRecords.filter((record) => !SEED_RECORD_IDS.has(record.id)),
+  ];
+  const stateDate = (location.state as { date?: string } | null)?.date;
   const [date, setDate] = useState(
-    () => productRecords[0]?.date.replaceAll("/", "-") ?? todayString(),
+    () => stateDate?.replaceAll("/", "-") ?? productRecords[0]?.date.replaceAll("/", "-") ?? todayString(),
   );
   const hasRecords = productRecords.length > 0;
   const basePath = `/app/ledger-list/additive-management/products/${productId}`;
@@ -53,6 +59,15 @@ export function RecordsListPage() {
     (progressState.progressStatus === "inspected" || progressState.progressStatus === "confirmed")
       ? progressState.progressStatus
       : null;
+  // 進捗一覧で点検中（・未点検）の添加物を開いた一覧（確定デザイン「進捗一覧_添加物管理表_点検中選択_一覧」7139:238456）。
+  // 実施日の段の下に区切り線は無く、表は見出し 56px・行 48px・備考は 1 行で「…」。行の「詳細」は見るだけの詳細ではなく、
+  // その記録の値が入った記録画面（7139:238432。「一覧へ戻る」「保存」）を開き、保存で一覧へ戻る（7139:238230。2026-10-07）
+  const fromProgressFlow = useFromProgress();
+  const progressEditable = fromProgressFlow && !!progressState?.fromProgress && !readOnlyStatus;
+  // 記録画面から一覧へ戻ったときも進捗一覧のステータスで出し分けられるよう、記録画面へ持っていく
+  const progressCarry = progressEditable
+    ? { fromProgress: true, progressStatus: (progressState as { progressStatus?: string }).progressStatus }
+    : {};
 
   return (
     <>
@@ -83,22 +98,26 @@ export function RecordsListPage() {
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                 実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
               </p>
-              <DateFilterInput value={date} onChange={setDate} />
+              <DateFilterInput value={date} onChange={setDate} variant={progressEditable ? "borderless" : "default"} />
             </div>
-            {/* 確定デザイン 7139:233987・7139:234120：実施日の段と表のあいだに区切り線 */}
-            <div className="border-t border-[#d0d0d0] w-full" />
+            {/* 確定デザイン 7139:233987・7139:234120：実施日の段と表のあいだに区切り線（進捗一覧の点検中 7139:238456 には無い） */}
+            {!progressEditable && <div className="border-t border-[#d0d0d0] w-full" />}
           </>
         )}
 
         <div className="bg-white rounded-lg overflow-x-auto">
-          <table className="border-collapse w-full">
+          <table className={`border-collapse w-full ${progressEditable ? "table-fixed" : ""}`}>
             <thead>
-              <tr className="bg-[var(--semantic-brand-primary)]">
+              <tr className={`bg-[var(--semantic-brand-primary)] ${progressEditable ? "h-14" : ""}`}>
                 {COLUMNS.map((col) => (
                   <th
                     key={col.key}
-                    style={{ minWidth: col.width }}
-                    className="text-white text-sm font-semibold px-2 py-2 whitespace-nowrap"
+                    style={
+                      progressEditable
+                        ? { width: col.key === "remarks" ? "auto" : col.width }
+                        : { minWidth: col.width }
+                    }
+                    className={`text-white text-sm font-semibold px-2 whitespace-nowrap ${progressEditable ? "" : "py-2"}`}
                   >
                     {col.label}
                   </th>
@@ -114,29 +133,54 @@ export function RecordsListPage() {
                 </tr>
               ) : (
                 productRecords.map((record, index) => (
-                  <tr key={record.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
+                  <tr
+                    key={record.id}
+                    className={`${progressEditable ? "h-12" : ""} ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                  >
                     <td className="px-2 py-2 text-center">
                       <Link
-                        to={`${basePath}/records/${record.id}`}
-                        className="bg-[var(--semantic-brand-primary)] h-8 px-3 rounded-lg text-sm text-white inline-flex items-center justify-center"
+                        to={progressEditable ? `${basePath}/new` : `${basePath}/records/${record.id}`}
+                        state={
+                          progressEditable
+                            ? {
+                                ...progressCarry,
+                                date,
+                                inspectorName,
+                                editRecordId: record.id,
+                                editRecord: {
+                                  category: record.category,
+                                  quantity: record.quantity,
+                                  currentStock: record.currentStock,
+                                  remarks: record.remarks,
+                                },
+                              }
+                            : undefined
+                        }
+                        className={`bg-[var(--semantic-brand-primary)] h-8 rounded-lg text-white inline-flex items-center justify-center ${
+                          progressEditable ? "w-14 text-xs" : "px-3 text-sm"
+                        }`}
                       >
                         詳細
                       </Link>
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.storageLocation}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.category}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.quantity}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
                       {record.currentStock}
                     </td>
-                    <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">{record.remarks}</td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
+                    <td
+                      className={`px-2 py-2 text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] ${progressEditable ? "truncate" : ""}`}
+                    >
+                      {record.remarks}
+                    </td>
+                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] whitespace-nowrap`}>
                       {record.actor}
                     </td>
                   </tr>
@@ -149,7 +193,7 @@ export function RecordsListPage() {
         {!readOnlyStatus && (
         <Link
           to={`${basePath}/new`}
-          state={{ date, inspectorName }}
+          state={{ ...progressCarry, date, inspectorName }}
           className="bg-white border border-[var(--semantic-brand-primary)] h-12 w-full rounded-lg flex items-center justify-center gap-1 text-lg text-[var(--semantic-brand-primary)]"
         >
           {/* 確定デザイン 7139:233987：高さ 48px・18px の文字・20px の＋アイコン */}

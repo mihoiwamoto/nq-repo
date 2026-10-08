@@ -54,7 +54,7 @@ export function AdditiveSelectionPage() {
           <div className="flex flex-col gap-6 items-start w-full">
             {additives.length === 0 && (
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             )}
             {additives.map((additive) => (

@@ -209,7 +209,7 @@ export function FactoryDetailPage() {
           <Row label="点検項目">
             {enabledCategories.length === 0 ? (
               <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません
+                データがありません。
               </p>
             ) : (
               <div className="flex flex-wrap gap-6 items-start">

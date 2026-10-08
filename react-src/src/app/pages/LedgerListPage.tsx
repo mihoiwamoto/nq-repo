@@ -87,7 +87,7 @@ export function LedgerListPage() {
                 key={category.slug}
                 type="button"
                 onClick={() => openActorPicker(category.slug)}
-                className="size-36 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
+                className="size-36 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
               >
                 <img src={category.appIcon} alt={category.appLabel} className="size-16" />
                 <TileLabel slug={category.slug} label={category.appLabel} />
@@ -96,7 +96,7 @@ export function LedgerListPage() {
               <Link
                 key={category.slug}
                 to={`/app/ledger-list/${category.slug}`}
-                className="size-36 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
+                className="size-36 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
               >
                 <img src={category.appIcon} alt="" className="size-16" />
                 <TileLabel slug={category.slug} label={category.appLabel} />
@@ -110,20 +110,20 @@ export function LedgerListPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-[rgba(51,51,51,0.5)]" onClick={() => setActorPickerSlug(null)} />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-            <h2 className="text-2xl text-[var(--semantic-text-primary)]">実施者を選んでください</h2>
+            <h2 className="text-2xl text-black">実施者を選んでください</h2>
             <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
               {ACTORS.map((actor) => (
                 <button
                   key={actor.id}
                   type="button"
                   onClick={() => setSelectedActorId(actor.id)}
-                  className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
+                  className={`h-[78px] rounded-lg flex flex-col items-center justify-center gap-1 px-4 shadow-[0px_2px_6px_rgba(51,51,51,0.24)] ${
                     selectedActorId === actor.id
                       ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
                       : "bg-white border-2 border-transparent"
                   }`}
                 >
-                  <span className="text-base text-[var(--semantic-text-primary)]">{actor.name}</span>
+                  <span className="text-lg leading-[1.4] text-[var(--semantic-text-primary)]">{actor.name}</span>
                   <span className="text-sm text-[var(--semantic-text-secondary)]">{actor.id}</span>
                 </button>
               ))}
@@ -132,7 +132,7 @@ export function LedgerListPage() {
               <button
                 type="button"
                 onClick={() => setActorPickerSlug(null)}
-                className="bg-white border-2 border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
+                className="bg-white border border-[#333] h-16 w-60 rounded-lg text-xl text-[#333] font-semibold hover:bg-gray-50"
               >
                 閉じる
               </button>

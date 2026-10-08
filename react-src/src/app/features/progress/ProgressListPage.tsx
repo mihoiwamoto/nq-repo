@@ -252,25 +252,27 @@ export function ProgressListPage() {
         <button
           type="button"
           onClick={openFilterDialog}
-          className="bg-white flex gap-2 items-center justify-center p-4 rounded-lg shrink-0 text-lg text-[var(--semantic-brand-primary)]"
+          className="bg-white flex gap-2 items-center justify-center h-12 px-4 rounded-lg shrink-0 text-base leading-none text-[var(--semantic-brand-primary)]"
         >
+          {/* 確定デザイン（7139:293597）：高さ 48・16px */}
           絞り込み検索
-          <img src={iconSearch} alt="検索" className="size-5" style={{ filter: "invert(24%) sepia(78%) saturate(2186%) hue-rotate(86deg)" }} />
+          <img src={iconSearch} alt="検索" className="size-4" style={{ filter: "invert(24%) sepia(78%) saturate(2186%) hue-rotate(86deg)" }} />
         </button>
 
         {appliedFilters.size > 0 && (
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-base text-[var(--semantic-text-secondary)] shrink-0">絞り込み条件</span>
+          <div className="flex flex-wrap gap-4 items-center">
+            {/* 確定デザイン（7139:293597）：「絞り込み条件」は 14px の黒、条件は枠線なしの白いチップ（高さ 40・14px） */}
+            <span className="text-sm text-black shrink-0">絞り込み条件</span>
             {Array.from(appliedFilters).map((slug) => {
               const ledger = ledgerFor(slug);
               if (!ledger) return null;
               return (
                 <span
                   key={slug}
-                  className="bg-white border border-[#d0d0d0] h-10 rounded-lg flex items-center gap-2 px-3"
+                  className="bg-white h-10 rounded-lg flex items-center gap-1 px-2"
                 >
                   <img src={ledger.appIcon} alt="" className="size-5 shrink-0" />
-                  <span className="text-base text-[var(--semantic-text-primary)]">{ledger.appLabel}</span>
+                  <span className="text-sm text-[var(--semantic-text-primary)]">{ledger.appLabel}</span>
                   <button
                     type="button"
                     onClick={() => removeFilter(slug)}
@@ -291,7 +293,8 @@ export function ProgressListPage() {
         ) : (
           grouped.map(([date, entries]) => (
             <div key={date} className="flex flex-col gap-4 items-start w-full">
-              <p className="text-2xl text-[var(--semantic-text-primary)] border-b border-[#d0d0d0] w-full py-4">
+              {/* 確定デザイン（7139:293597）：日付 20px・確認完了 14px・行 14px、帳票のカードに影 0 2 6（2026-10-07） */}
+              <p className="text-xl leading-none text-[var(--semantic-text-primary)] border-b border-[#d0d0d0] w-full py-4">
                 {date}
               </p>
 
@@ -305,21 +308,24 @@ export function ProgressListPage() {
                     return (
                       <div key={slug} className="flex flex-col gap-0 items-start w-full">
                         <div className="flex w-full justify-end">
-                          <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-end gap-2 pl-6 pr-3 py-2 rounded-t-lg w-fit max-w-full">
-                            <span className="text-white text-lg shrink-0">確認完了</span>
+                          {/* 確定デザイン（7139:293647）：215×36・左右 12px・間 4px */}
+                          <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-end gap-1 h-9 px-3 rounded-t-lg w-fit max-w-full">
+                            <span className="text-white text-sm shrink-0">確認完了</span>
                             <div className="bg-white h-3 rounded-full overflow-hidden w-[88px] shrink-0">
                               <div
                                 className="bg-[var(--semantic-brand-primary)] h-full border border-white rounded-lg"
                                 style={{ width: `${Math.min(pct, 100)}%` }}
                               />
                             </div>
-                            <span className="text-white text-xl font-semibold shrink-0">
+                            <span className="text-white text-xl leading-none font-semibold shrink-0 min-w-[39px] text-right">
                               {confirmedCount}/{groupEntries.length}
                             </span>
                           </div>
                         </div>
-                        <div className={`flex items-center justify-between w-full gap-2 bg-white px-4 py-3 ${collapsed ? "rounded-tl-lg rounded-bl-lg rounded-br-lg" : "rounded-tl-lg"}`}>
-                          <span className="flex items-center gap-2 text-xl text-[var(--semantic-brand-primary)] font-semibold">
+                        <div className="w-full rounded-tl-lg rounded-b-lg shadow-[0px_2px_6px_rgba(51,51,51,0.24)]">
+                        {/* 確定デザイン（7139:293647）：見出しは上から 16px・高さ 28、行は 32 の高さで線の上下 12px（間隔 56）、最後の行の下にも線 */}
+                        <div className={`flex items-center justify-between w-full gap-2 bg-white px-4 pt-4 ${collapsed ? "pb-4 rounded-tl-lg rounded-bl-lg rounded-br-lg" : "pb-3 rounded-tl-lg"}`}>
+                          <span className="flex items-center gap-2 h-7 text-xl leading-[1.4] text-[var(--semantic-brand-primary)] font-semibold">
                             {ledger && <img src={ledger.appIcon} alt="" className="size-6 shrink-0" />}
                             {ledger?.appLabel ?? slug}
                             {slug === "metal-xray-detection" && (
@@ -335,26 +341,25 @@ export function ProgressListPage() {
                           </button>
                         </div>
                         {!collapsed && (
-                          <div className="flex flex-col gap-0 items-start w-full bg-white rounded-b-lg overflow-hidden">
+                          <div className="flex flex-col gap-0 items-start w-full bg-white rounded-b-lg overflow-hidden px-4 pb-4">
                             {groupEntries.map((entry, idx) => (
                               <div key={entry.id} className="w-full">
                                 <button
                                   type="button"
                                   onClick={() => handleEntryClick(entry)}
-                                  className="flex items-center justify-between p-4 w-full text-left hover:bg-gray-50"
+                                  className="flex items-center justify-between h-8 w-full text-left hover:bg-gray-50"
                                 >
-                                  <span className="text-lg text-[var(--semantic-text-primary)]">
+                                  <span className="text-sm text-[var(--semantic-text-primary)]">
                                     {entry.name}
                                   </span>
                                   <StatusBadge entry={entry} unsent={isUnsent(entry)} />
                                 </button>
-                                {idx !== groupEntries.length - 1 && (
-                                  <div className="border-b border-[#d0d0d0] mx-4" />
-                                )}
+                                <div className={`border-b border-[#d0d0d0] mt-3 ${idx !== groupEntries.length - 1 ? "mb-3" : ""}`} />
                               </div>
                             ))}
                           </div>
                         )}
+                        </div>
                       </div>
                     );
                   })
@@ -365,13 +370,14 @@ export function ProgressListPage() {
                         key={entry.id}
                         type="button"
                         onClick={() => handleEntryClick(entry)}
-                        className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center justify-between p-4 w-full text-left"
+                        className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex items-center justify-between p-4 w-full text-left"
                       >
+                        {/* 確定デザイン：カード 78（名前 18px・帳票名 14px） */}
                         <span className="flex flex-col gap-2 min-w-0">
-                          <span className="text-xl text-[var(--semantic-text-primary)]">{entry.name}</span>
+                          <span className="text-lg leading-none text-[var(--semantic-text-primary)]">{entry.name}</span>
                           <span className="flex gap-1 items-center">
                             {ledger && <img src={ledger.appIcon} alt="" className="size-5 shrink-0" />}
-                            <span className="text-base text-[var(--semantic-brand-primary)]">
+                            <span className="text-sm text-[var(--semantic-brand-primary)]">
                               {ledger?.appLabel ?? entry.ledgerSlug}
                             </span>
                           </span>
@@ -399,7 +405,7 @@ export function ProgressListPage() {
                     key={ledger.slug}
                     type="button"
                     onClick={() => toggleFilterLedger(ledger.slug)}
-                    className={`flex flex-col items-center justify-center gap-2 h-28 rounded-lg shadow-[0px_2px_3px_rgba(51,51,51,0.24)] border-2 ${
+                    className={`flex flex-col items-center justify-center gap-2 h-28 rounded-lg shadow-[0px_2px_6px_rgba(51,51,51,0.24)] border-2 ${
                       selected
                         ? "bg-white border-[var(--semantic-brand-primary)]"
                         : "bg-white border-transparent"
@@ -417,14 +423,14 @@ export function ProgressListPage() {
               <button
                 type="button"
                 onClick={() => setFilterDialogOpen(false)}
-                className="bg-white border-2 border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-lg text-[var(--semantic-text-primary)] font-semibold"
+                className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)] font-semibold"
               >
                 閉じる
               </button>
               <button
                 type="button"
                 onClick={applyFilters}
-                className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-lg text-white font-semibold"
+                className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-white font-semibold"
               >
                 絞り込み
               </button>
@@ -437,20 +443,20 @@ export function ProgressListPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeActorPicker} />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-            <h2 className="text-2xl text-[var(--semantic-text-primary)]">実施者を選んでください</h2>
+            <h2 className="text-2xl text-black">実施者を選んでください</h2>
             <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
               {ACTORS.map((actor) => (
                 <button
                   key={actor.id}
                   type="button"
                   onClick={() => setSelectedActorId(actor.id)}
-                  className={`h-[78px] rounded-lg flex flex-col items-center justify-start pt-2 gap-0 p-4 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
+                  className={`h-[78px] rounded-lg flex flex-col items-center justify-center gap-1 px-4 shadow-[0px_2px_6px_rgba(51,51,51,0.24)] ${
                     selectedActorId === actor.id
                       ? "bg-white border-2 border-[var(--semantic-brand-primary)]"
                       : "bg-white border-2 border-transparent"
                   }`}
                 >
-                  <span className="text-base text-[var(--semantic-text-primary)]">{actor.name}</span>
+                  <span className="text-lg leading-[1.4] text-[var(--semantic-text-primary)]">{actor.name}</span>
                   <span className="text-sm text-[var(--semantic-text-secondary)]">{actor.id}</span>
                 </button>
               ))}
@@ -459,7 +465,7 @@ export function ProgressListPage() {
               <button
                 type="button"
                 onClick={closeActorPicker}
-                className="bg-white border-2 border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-lg text-[var(--semantic-text-primary)] font-semibold"
+                className="bg-white border border-[var(--semantic-text-primary)] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)] font-semibold"
               >
                 閉じる
               </button>
@@ -467,7 +473,7 @@ export function ProgressListPage() {
                 type="button"
                 onClick={confirmActorPicker}
                 disabled={!selectedActorId}
-                className={`h-16 w-60 rounded-lg text-lg text-white font-semibold ${
+                className={`h-16 w-60 rounded-lg text-xl text-white font-semibold ${
                   selectedActorId ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
                 }`}
               >
