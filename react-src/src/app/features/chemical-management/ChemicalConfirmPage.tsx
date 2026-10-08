@@ -57,15 +57,16 @@ export function ChemicalConfirmPage() {
   return (
     <>
       <AppHeader title={`薬品管理_${chemical?.name ?? ""}`} />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
+        {/* 確定デザイン 7139:233919・7139:245095：注意の帯 56px、実施日のカード 70px（2026-10-08） */}
+        <div className="bg-[#f7f292] flex gap-2 items-center h-14 px-4 rounded-lg w-full max-w-full shrink-0">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
         </div>
 
-        <div className="bg-white flex flex-col items-start px-4 py-6 rounded-lg w-full max-w-full">
+        <div className="bg-white flex flex-col items-start px-4 py-[23px] rounded-lg w-full max-w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{displayDate}</p>
@@ -101,22 +102,22 @@ export function ChemicalConfirmPage() {
                       詳細
                     </Link>
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {record.storageLocation}
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {record.category}
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {record.usedQuantity}
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {record.currentStock}
                   </td>
-                  <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-sm font-normal text-[var(--semantic-text-primary)] truncate">
                     {record.remarks}
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)] whitespace-nowrap">
                     {record.actor}
                   </td>
                 </tr>

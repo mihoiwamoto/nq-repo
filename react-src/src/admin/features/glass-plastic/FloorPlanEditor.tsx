@@ -113,7 +113,7 @@ export function FloorPlanEditor({
               />
             ))}
           </div>
-          <div className="absolute right-4 top-[55%] -translate-y-1/2 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_3px_rgba(51,51,51,0.24)]">
+          <div className="absolute right-4 top-[55%] -translate-y-1/2 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_6px_rgba(51,51,51,0.24)]">
             <button
               type="button"
               onClick={() => setZoom((z) => Math.min(z + 0.2, 3))}
@@ -160,7 +160,7 @@ export function FloorPlanEditor({
       {pendingPosition && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={cancelAdd} />
-          <div className="relative bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-4 p-6 w-[360px]">
+          <div className="relative bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-4 p-6 w-[360px]">
             <p className="text-lg text-[var(--semantic-text-primary)]">
               {armedCategory && MAP_ITEM_CATEGORY_LABELS[armedCategory]}を配置
             </p>
@@ -194,7 +194,7 @@ export function FloorPlanEditor({
               <button
                 type="button"
                 onClick={cancelAdd}
-                className="h-10 px-4 rounded-lg text-sm text-[var(--semantic-text-primary)] bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
+                className="h-10 px-4 rounded-lg text-sm text-[var(--semantic-text-primary)] bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
               >
                 キャンセル
               </button>

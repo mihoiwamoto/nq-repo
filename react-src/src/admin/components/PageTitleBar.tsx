@@ -17,8 +17,8 @@ export function PageTitleBar({
     <div
       // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「画面タイトル」を見つけるための印。見た目には影響しない
       data-nq-part="page-title"
-      className="bg-[var(--semantic-background-page)] shadow-[0px_2px_2px_rgba(51,51,51,0.16)] flex items-center justify-between px-6 py-6"
-      // 確定デザインの TitleContainer：上下 24px・中身の高さ 40px で帯は 88px（2026-10-07。以前は py-8 で 104px）
+      className="bg-[var(--semantic-background-page)] shadow-[0px_2px_4px_rgba(51,51,51,0.16)] flex items-center justify-between px-6 py-6"
+      // 確定デザインの TitleContainer：上下 24px・中身の高さ 40px で帯は 88px（2026-10-07。以前は py-8 で 104px）。影は 0 2 4（2026-10-08）
     >
       <div className="flex items-center gap-2 min-h-10">
         {showBack && (

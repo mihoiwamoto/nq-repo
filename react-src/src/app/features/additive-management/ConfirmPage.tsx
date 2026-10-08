@@ -113,30 +113,31 @@ export function ConfirmPage() {
   return (
     <>
       <AppHeader title={`添加物管理_${additive?.name ?? ""}`} />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
+        {/* 確定デザイン 7139:233919・7139:245095：注意の帯 56px、実施日のカード 70px（2026-10-08） */}
+        <div className="bg-[#f7f292] flex gap-2 items-center h-14 px-4 rounded-lg w-full max-w-full shrink-0">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
         </div>
 
-        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
+        <div className="bg-white flex flex-col gap-3 items-start px-4 py-[23px] rounded-lg w-full max-w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{date}</p>
+            <p className="text-base text-[var(--semantic-text-primary)]">{date.replaceAll("-", "/")}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full">
-          <table className="border-collapse w-full">
+          <table className="border-collapse table-fixed w-full">
             <thead>
-              <tr className="bg-[var(--semantic-brand-primary)]">
+              <tr className="bg-[var(--semantic-brand-primary)] h-14">
                 {COLUMNS.map((col) => (
                   <th
                     key={col.key}
-                    style={{ minWidth: col.width }}
-                    className="text-white text-sm font-semibold px-2 py-2 whitespace-nowrap"
+                    style={{ width: col.key === "remarks" ? "auto" : col.width }}
+                    className="text-white text-sm font-semibold px-2 whitespace-nowrap"
                   >
                     {col.label}
                   </th>
@@ -145,7 +146,7 @@ export function ConfirmPage() {
             </thead>
             <tbody>
               {displayRows.map((row, index) => (
-                <tr key={row.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
+                <tr key={row.id} className={`h-12 ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}>
                   <td className="px-2 py-2 text-center">
                     <Link
                       to={`${basePath}/records/${row.id}`}
@@ -155,20 +156,20 @@ export function ConfirmPage() {
                       詳細
                     </Link>
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {row.storageLocation}
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {row.category}
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {row.quantity}
                   </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                     {row.currentStock}
                   </td>
-                  <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">{row.remarks}</td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
+                  <td className="px-2 py-2 text-sm font-normal text-[var(--semantic-text-primary)] truncate">{row.remarks}</td>
+                  <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)] whitespace-nowrap">
                     {row.actor}
                   </td>
                 </tr>

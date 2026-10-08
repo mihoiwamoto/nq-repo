@@ -62,7 +62,7 @@ export function HelpPage() {
             <button
               type="button"
               onClick={handleSearch}
-              className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-base text-white"
+              className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-base text-white"
             >
               検索
             </button>
@@ -78,7 +78,7 @@ export function HelpPage() {
                   key={category.id}
                   type="button"
                   onClick={() => handleSelectCategory(category.id)}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+                  className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
                 >
                   {category.label}
                 </button>

@@ -71,7 +71,7 @@ export function ProductDetailPage() {
         <div className="flex items-center justify-end w-full gap-2">
           <Link
             to={`${basePath}/products/${product.id}/edit`}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
             <img src={iconEdit} alt="編集" className="size-5" />
             編集
@@ -79,7 +79,7 @@ export function ProductDetailPage() {
           <button
             type="button"
             onClick={() => setDeleteDialogOpen(true)}
-            className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-10 rounded-lg flex items-center justify-center"
+            className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-10 rounded-lg flex items-center justify-center"
           >
             <img src={iconTrash} alt="削除" className="size-6" />
           </button>
@@ -109,7 +109,7 @@ export function ProductDetailPage() {
       {deleteDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 {product.name}の削除
@@ -122,14 +122,14 @@ export function ProductDetailPage() {
               <button
                 type="button"
                 onClick={() => setDeleteDialogOpen(false)}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+                className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
               >
                 キャンセル
               </button>
               <button
                 type="button"
                 onClick={handleDelete}
-                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
               >
                 削除
               </button>

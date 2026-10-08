@@ -230,13 +230,13 @@ export function RecordsListPage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
+                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
                 >
                   リセット
                 </button>
                 <button
                   type="button"
-                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
+                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
                 >
                   <img src={iconSearch} alt="" className="size-5" />
                   検索
@@ -250,7 +250,7 @@ export function RecordsListPage() {
           <button
             type="button"
             onClick={() => goToMonth(-1)}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
           >
             <span
               aria-hidden
@@ -289,7 +289,7 @@ export function RecordsListPage() {
           <button
             type="button"
             onClick={() => goToMonth(1)}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
           >
             <span
               aria-hidden
@@ -398,7 +398,7 @@ export function RecordsListPage() {
                   <div className="flex items-center justify-center p-2 h-full shrink-0" style={{ width: 96 }}>
                     <Link
                       to={`${basePath}/records/${record.id}`}
-                      className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                      className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
                     >
                       詳細
                     </Link>

@@ -40,7 +40,7 @@ export function ProductSelectionPage() {
         action={
           <Link
             to={`${basePath}/products/new`}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -67,7 +67,7 @@ export function ProductSelectionPage() {
           </div>
           <Link
             to={`${basePath}/schedule`}
-            className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
           >
             点検予定
           </Link>
@@ -85,7 +85,7 @@ export function ProductSelectionPage() {
                 <Link
                   key={product.id}
                   to={`${basePath}/products/${product.id}`}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 rounded-lg flex gap-10 items-center px-6 w-full"
+                  className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 rounded-lg flex gap-10 items-center px-6 w-full"
                 >
                   <p className="flex-1 text-lg text-[var(--semantic-text-primary)]">{product.name}</p>
                   <CriteriaLabelList />

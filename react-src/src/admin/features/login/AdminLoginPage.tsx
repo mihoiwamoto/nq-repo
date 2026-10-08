@@ -24,7 +24,7 @@ export function AdminLoginPage() {
 
   return (
     <div className="min-h-screen bg-[#f1efea]">
-      <header className="h-16 flex items-center bg-[#009944] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] w-screen">
+      <header className="h-16 flex items-center bg-[#009944] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] w-screen">
         <div className="px-6">
           <div className="size-10 rounded-[6.4px] bg-white overflow-hidden">
             <img src={logo} alt="NQlipo" className="size-full object-cover" />
@@ -86,7 +86,7 @@ export function AdminLoginPage() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="bg-[#009944] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-full max-w-[400px] rounded-lg text-base text-white font-['Hiragino_Kaku_Gothic_ProN']"
+                className="bg-[#009944] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-full max-w-[400px] rounded-lg text-base text-white font-['Hiragino_Kaku_Gothic_ProN']"
               >
                 ログイン
               </button>

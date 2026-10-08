@@ -103,7 +103,7 @@ export function ChemicalRecordsListPage() {
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                 実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
               </p>
-              <DateFilterInput value={date} onChange={setDate} variant={progressEditable ? "borderless" : "default"} />
+              <DateFilterInput value={date} onChange={setDate} variant="borderless" />
             </div>
 
             {!progressEditable && <div className="border-t border-[#d0d0d0] w-full" />}
@@ -162,24 +162,24 @@ export function ChemicalRecordsListPage() {
                         詳細
                       </Link>
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.storageLocation}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.category}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.usedQuantity}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.currentStock}
                     </td>
                     <td
-                      className={`px-2 py-2 text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] ${progressEditable ? "truncate" : ""}`}
+                      className={`px-2 py-2 text-sm font-normal text-[var(--semantic-text-primary)] truncate`}
                     >
                       {record.remarks}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] whitespace-nowrap`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)] whitespace-nowrap`}>
                       {record.actor}
                     </td>
                   </tr>

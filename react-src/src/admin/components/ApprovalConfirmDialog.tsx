@@ -8,7 +8,7 @@ export function ApprovalConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
-      <div className="relative bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-8 py-8 w-fit max-w-[calc(100vw-32px)]">
+      <div className="relative bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-8 py-8 w-fit max-w-[calc(100vw-32px)]">
         <p className="text-xl font-bold text-[var(--semantic-text-primary)] text-center whitespace-nowrap">
           承認しますか？
         </p>

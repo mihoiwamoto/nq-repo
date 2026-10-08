@@ -15,7 +15,7 @@ export function LedgerCategoryGrid({
         <Link
           key={category.slug}
           to={`${basePath}/${category.slug}`}
-          className="relative min-w-0 h-20 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-2"
+          className="relative min-w-0 h-20 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex items-center gap-2 px-2"
         >
           {badgeSlugs?.includes(category.slug) && (
             <span className="absolute -top-1.5 -right-1.5 size-3 rounded-full bg-[var(--semantic-brand-danger)]" />

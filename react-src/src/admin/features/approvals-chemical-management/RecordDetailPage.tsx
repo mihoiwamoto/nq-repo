@@ -135,7 +135,7 @@ export function RecordDetailView({
           />
         </div>
 
-        <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
+        <div className="bg-white flex flex-col gap-[11.5px] items-start px-4 py-6 rounded-lg w-full">
           <div className="flex items-center justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.date)}</p>
@@ -191,12 +191,13 @@ export function RecordDetailView({
           </div>
         </div>
 
-        {/* 確定デザイン：承認申請管理（7139:162823）は これまでのコメント → 見出し「コメント」 → 入力欄、
+        {/* 行の間は 52px（区切り線を挟んで上下 11.5px）、見出し「コメント」の下は 8px（2026-10-08）。
+            確定デザイン：承認申請管理（7139:162823）は これまでのコメント → 見出し「コメント」 → 入力欄、
             データ検索（7139:259043 と同じ配置）は 見出し「コメント」 → これまでのコメント → 入力欄 */}
         <div className="flex flex-col gap-4 items-start w-full">
-          {isSearch && <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>}
+          {isSearch && <p className="-mb-2 text-xl text-[var(--semantic-text-primary)]">コメント</p>}
           <Comments comments={comments} />
-          {!isSearch && <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>}
+          {!isSearch && <p className="-mb-2 text-xl text-[var(--semantic-text-primary)]">コメント</p>}
           <CommentInputBox
             value={comment}
             onChange={setComment}

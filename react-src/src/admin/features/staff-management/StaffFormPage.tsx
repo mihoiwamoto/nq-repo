@@ -168,7 +168,7 @@ export function StaffFormPage() {
               />
               <Link
                 to="/admin/company/new"
-                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
               >
                 + 新規登録
               </Link>
@@ -195,7 +195,7 @@ export function StaffFormPage() {
                       {index === 0 && (
                         <Link
                           to="/admin/factory/new"
-                          className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+                          className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
                         >
                           + 新規登録
                         </Link>
@@ -231,7 +231,7 @@ export function StaffFormPage() {
             <button
               type="button"
               onClick={addAssignmentRow}
-              className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
+              className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
             >
               + 工場追加
             </button>
@@ -281,14 +281,14 @@ export function StaffFormPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
           >
             キャンセル
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             {isEditing ? "保存" : "登録"}
           </button>

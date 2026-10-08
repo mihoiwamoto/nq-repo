@@ -214,7 +214,7 @@ export function ProgressListPage() {
   return (
     <>
       <AppHeader title="進捗一覧" />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-6">
         <div className="bg-white flex items-center rounded-lg w-full">
           {(["all", "not_inspected"] as const).map((key) => (
             <button
@@ -292,7 +292,7 @@ export function ProgressListPage() {
           </p>
         ) : (
           grouped.map(([date, entries]) => (
-            <div key={date} className="flex flex-col gap-4 items-start w-full">
+            <div key={date} className="flex flex-col gap-6 items-start w-full">
               {/* 確定デザイン（7139:293597）：日付 20px・確認完了 14px・行 14px、帳票のカードに影 0 2 6（2026-10-07） */}
               <p className="text-xl leading-none text-[var(--semantic-text-primary)] border-b border-[#d0d0d0] w-full py-4">
                 {date}
@@ -354,7 +354,7 @@ export function ProgressListPage() {
                                   </span>
                                   <StatusBadge entry={entry} unsent={isUnsent(entry)} />
                                 </button>
-                                <div className={`border-b border-[#d0d0d0] mt-3 ${idx !== groupEntries.length - 1 ? "mb-3" : ""}`} />
+                                <div className={`border-b border-[#f1efea] mt-3 ${idx !== groupEntries.length - 1 ? "mb-3" : ""}`} />
                               </div>
                             ))}
                           </div>
@@ -419,7 +419,7 @@ export function ProgressListPage() {
                 );
               })}
             </div>
-            <div className="flex gap-10 items-center justify-center w-full">
+            <div className="-mt-6 flex gap-10 items-center justify-center w-full">
               <button
                 type="button"
                 onClick={() => setFilterDialogOpen(false)}
@@ -443,7 +443,7 @@ export function ProgressListPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeActorPicker} />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-            <h2 className="text-2xl text-black">実施者を選んでください</h2>
+            <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
             <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
               {ACTORS.map((actor) => (
                 <button

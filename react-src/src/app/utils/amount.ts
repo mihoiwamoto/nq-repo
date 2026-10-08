@@ -32,3 +32,15 @@ export function withUnit(value: string, unit: string) {
   if (Number.isNaN(parsed.amount)) return trimmed;
   return formatAmount(parsed.amount, parsed.unit || unit);
 }
+
+/**
+ * 数量の表記から単位を外す（"1,000ml" → "1,000"）。
+ * 確定デザインでは、薬品管理・添加物管理の記録の詳細と差し戻しの一覧は数値だけで出す
+ * （記録の表は単位付き。7139:233879・7139:239010 など。2026-10-08）
+ */
+export function withoutUnit(value: string | number | undefined) {
+  if (value === undefined || value === null) return "";
+  const s = String(value).trim();
+  const m = s.match(/^([\d,]+(?:\.\d+)?)/);
+  return m ? m[1] : s;
+}

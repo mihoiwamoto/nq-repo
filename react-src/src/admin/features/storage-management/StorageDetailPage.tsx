@@ -34,25 +34,28 @@ export function StorageDetailPage() {
       />
       <div className="flex flex-col gap-4 items-start p-6">
         {/* 確定デザイン 7139:162525：工場は項目の行ではなく、上の札で出す */}
-        <div className="bg-white inline-flex items-center px-4 py-2 rounded-lg self-start">
+        <div className="bg-white inline-flex items-center min-w-[270px] px-4 py-2 rounded-lg self-start">
           <p className="text-xl text-[var(--semantic-text-primary)]">
             {getFactoryName(location?.factoryId)}
           </p>
         </div>
+        {/* 確定デザイン 7139:162525：「編集」の段からカードまで 8px、カードの内側の左右 16px（2026-10-08） */}
+        <div className="flex flex-col gap-2 w-full">
         <div className="flex items-center justify-end w-full gap-2">
           <Link
             to={`/admin/storage/${locationId}/edit`}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
             <img src={iconEdit} alt="編集" className="size-5" />
             編集
           </Link>
         </div>
         <div className="bg-white rounded-lg w-full">
-          <div className="flex items-center px-6 py-6 gap-4">
+          <div className="flex items-center px-4 py-6 gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">保管場所</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">{location?.name}</p>
           </div>
+        </div>
         </div>
       </div>
 

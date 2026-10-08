@@ -79,7 +79,8 @@ export function LedgerListPage() {
   return (
     <>
       <AppHeader title="帳票一覧" />
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* 確定デザイン（7139:282835・7139:245397）：ヘッダーの下 24px、タイルの中身は上から 17px（名前の位置を合わせる。2026-10-08） */}
+      <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="grid grid-cols-4 justify-items-start content-start items-start gap-x-8 gap-y-6">
           {[...visibleLedgerCategories()].sort((a, b) => tileRank(a.slug) - tileRank(b.slug)).map((category) =>
             ACTOR_PICKER_SLUGS.includes(category.slug) ? (
@@ -87,7 +88,7 @@ export function LedgerListPage() {
                 key={category.slug}
                 type="button"
                 onClick={() => openActorPicker(category.slug)}
-                className="size-36 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
+                className="size-36 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-start gap-2 px-2 pt-[17px]"
               >
                 <img src={category.appIcon} alt={category.appLabel} className="size-16" />
                 <TileLabel slug={category.slug} label={category.appLabel} />
@@ -96,7 +97,7 @@ export function LedgerListPage() {
               <Link
                 key={category.slug}
                 to={`/app/ledger-list/${category.slug}`}
-                className="size-36 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-center gap-2 px-2"
+                className="size-36 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-center justify-start gap-2 px-2 pt-[17px]"
               >
                 <img src={category.appIcon} alt="" className="size-16" />
                 <TileLabel slug={category.slug} label={category.appLabel} />
@@ -110,7 +111,7 @@ export function LedgerListPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-[rgba(51,51,51,0.5)]" onClick={() => setActorPickerSlug(null)} />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-            <h2 className="text-2xl text-black">実施者を選んでください</h2>
+            <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
             <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
               {ACTORS.map((actor) => (
                 <button

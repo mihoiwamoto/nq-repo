@@ -205,7 +205,7 @@ export function NewRegistrationPage() {
             <button
               type="button"
               onClick={addRow}
-              className="bg-[var(--semantic-background-surface)] border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
+              className="bg-[var(--semantic-background-surface)] border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
             >
               <img src={iconPlus} alt="" aria-hidden className="size-5" />
               行追加
@@ -221,14 +221,14 @@ export function NewRegistrationPage() {
             onClick={() =>
               navigate(isEditing ? `${basePath}/xray-detectors/${unitId}` : `${basePath}/xray-detectors`)
             }
-            className="bg-[var(--semantic-background-surface)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+            className="bg-[var(--semantic-background-surface)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
           >
             キャンセル
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             {isEditing ? "保存" : "登録"}
           </button>

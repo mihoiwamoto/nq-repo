@@ -520,7 +520,7 @@ export function SampleListPage() {
                 破棄対象のみ
               </button>
             </div>
-            <div className="flex gap-10 items-center justify-center w-full">
+            <div className="-mt-6 flex gap-10 items-center justify-center w-full">
               <button
                 type="button"
                 onClick={() => setFilterDialogOpen(false)}

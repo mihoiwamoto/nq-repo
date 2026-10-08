@@ -104,7 +104,7 @@ export function LineEditPage() {
                 <div
                   key={option.key}
                   aria-disabled="true"
-                  className={`bg-[#d0d0d0] border h-10 w-[120px] rounded-lg shadow-[0px_2px_2px_rgba(51,51,51,0.24)] flex items-center justify-center text-base ${
+                  className={`bg-[#d0d0d0] border h-10 w-[120px] rounded-lg shadow-[0px_2px_4px_rgba(51,51,51,0.24)] flex items-center justify-center text-base ${
                     line.frequency === option.key
                       ? "border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
                       : "border-[#808080] text-[var(--semantic-text-secondary)]"
@@ -141,14 +141,14 @@ export function LineEditPage() {
           <button
             type="button"
             onClick={() => navigate(detailPath)}
-            className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
           >
             キャンセル
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             保存
           </button>

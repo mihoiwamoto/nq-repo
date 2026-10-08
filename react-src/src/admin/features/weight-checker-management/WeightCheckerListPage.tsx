@@ -44,7 +44,7 @@ export function WeightCheckerListPage() {
         action={
           <Link
             to={`${basePath}/weight-checkers/new`}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -67,7 +67,7 @@ export function WeightCheckerListPage() {
           <p className="text-sm text-[var(--semantic-text-primary)]">動作確認項目の編集はこちら</p>
           <Link
             to={`${basePath}/weight-checkers/check-items`}
-            className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
           >
             動作確認項目設定
           </Link>
@@ -121,7 +121,7 @@ export function WeightCheckerListPage() {
                 <div className="w-20 flex items-center justify-center p-2">
                   <Link
                     to={`${basePath}/weight-checkers/${unit.id}`}
-                    className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                    className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
                   >
                     詳細
                   </Link>

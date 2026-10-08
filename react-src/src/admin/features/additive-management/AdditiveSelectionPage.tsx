@@ -18,7 +18,7 @@ export function AdditiveSelectionPage() {
         action={
           <Link
             to={`${basePath}/additives/new`}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -43,7 +43,7 @@ export function AdditiveSelectionPage() {
           <Link
             to="/admin/storage"
             state={{ storageFrom: { ledger: "additive-management", factoryId } }}
-            className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
           >
             保管場所管理
           </Link>
@@ -61,7 +61,7 @@ export function AdditiveSelectionPage() {
               <Link
                 key={additive.id}
                 to={`${basePath}/additives/${additive.id}`}
-                className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 rounded-lg flex items-center px-4 text-lg text-black w-full"
+                className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 rounded-lg flex items-center px-4 text-lg text-black w-full"
               >
                 {additive.name}
               </Link>

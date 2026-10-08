@@ -39,7 +39,7 @@ export function CommentInputBox({
         type="button"
         onClick={onSubmit}
         disabled={isDisabled}
-        className="bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+        className="bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
       >
         {buttonLabel}
       </button>

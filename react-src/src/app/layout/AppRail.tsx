@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import logo from "../../assets/figma/logo-app.png";
 import iconFontSize from "../../assets/figma/icons/rail/font-size.svg";
 import { railNav } from "../navigation";
@@ -8,6 +8,12 @@ export function AppRail() {
   // 進捗一覧から入った記録・確認・提出完了の各画面では、
   // URL が /app/ledger-list 配下でもタブは「進捗」のままにする
   const forceProgressActive = useFromProgress();
+  // 確認待ちの差し戻しで「点検内容を修正する」から開いた記録入力は、URL が /app/ledger-list 配下でも
+  // タブは「確認待ち」にする（確定デザイン 7139:249101。2026-10-08 に全帳票で統一）。
+  // 差し戻しの画面はどの帳票も、戻り先（editReturn.to）に確認待ちの URL を持たせて開く
+  const location = useLocation();
+  const editReturnTo = (location.state as { editReturn?: { to?: string } } | null)?.editReturn?.to;
+  const forcePendingActive = !forceProgressActive && typeof editReturnTo === "string" && editReturnTo.startsWith("/app/pending-review");
 
   return (
     // data-nq-part は画面説明のコーチマーク（coachMarks.ts）が「メニュー」を見つけるための印。見た目には影響しない
@@ -24,7 +30,11 @@ export function AppRail() {
             className="relative flex flex-col items-center gap-1 w-full"
           >
             {({ isActive }) => {
-              const shouldBeActive = forceProgressActive ? item.path === "/app/progress" : isActive;
+              const shouldBeActive = forceProgressActive
+                ? item.path === "/app/progress"
+                : forcePendingActive
+                  ? item.path === "/app/pending-review"
+                  : isActive;
               return (
                 <>
                   <span
@@ -69,7 +79,11 @@ export function AppRail() {
             className="relative flex flex-col items-center gap-1 w-full"
           >
             {({ isActive }) => {
-              const shouldBeActive = forceProgressActive ? item.path === "/app/progress" : isActive;
+              const shouldBeActive = forceProgressActive
+                ? item.path === "/app/progress"
+                : forcePendingActive
+                  ? item.path === "/app/pending-review"
+                  : isActive;
               return (
                 <>
                   <span

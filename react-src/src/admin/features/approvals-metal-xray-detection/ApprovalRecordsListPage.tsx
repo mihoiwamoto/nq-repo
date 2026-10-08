@@ -103,7 +103,7 @@ export function ApprovalRecordsListPage() {
                     <div className="w-[104px] flex items-center justify-center p-2 h-full">
                       <Link
                         to={`/admin/approvals/metal-xray-detection/records/${record.id}`}
-                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
                       >
                         詳細
                       </Link>
@@ -132,7 +132,7 @@ export function ApprovalRecordsListPage() {
         <button
           type="button"
           onClick={handleApprove}
-          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
+          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する
         </button>

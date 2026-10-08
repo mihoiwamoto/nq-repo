@@ -147,18 +147,18 @@ export function RecordingPage() {
           <div className="flex flex-col gap-5 items-start w-full max-w-full">
             <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">保管場所</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">保管場所</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
                   {additive?.storageLocation ?? ""}
                 </p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">規格</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">{additive?.spec ?? ""}</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">規格</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{additive?.spec ?? ""}</p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">元在庫数</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">元在庫数</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
                   {additive?.initialStock ?? ""}
                 </p>
               </div>
@@ -204,7 +204,7 @@ export function RecordingPage() {
                   <button
                     type="button"
                     onClick={handleAutoCalculate}
-                    className="bg-white border border-[var(--semantic-brand-primary)] flex h-12 w-20 items-center justify-center p-2 rounded-lg text-base font-bold text-[var(--semantic-brand-primary)] shrink-0"
+                    className="bg-white border border-[var(--semantic-brand-primary)] flex h-12 w-20 items-center justify-center px-0 whitespace-nowrap rounded-lg text-base font-bold text-[var(--semantic-brand-primary)] shrink-0"
                   >
                     自動計算
                   </button>
@@ -233,7 +233,7 @@ export function RecordingPage() {
               <textarea
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
-                placeholder="例）月次定期発注による補充入庫"
+                placeholder="月次定期発注による補充入庫"
                 className="bg-white min-h-20 p-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
               />
             </div>

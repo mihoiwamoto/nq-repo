@@ -135,18 +135,18 @@ export function ChemicalRecordingPage() {
           <div className="flex flex-col gap-5 items-start w-full max-w-full">
             <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">保管場所</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">保管場所</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
                   {chemical?.storageLocation ?? ""}
                 </p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">規格</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">{chemical?.spec ?? ""}</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">規格</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{chemical?.spec ?? ""}</p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">元在庫数</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">{previousStock}</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">元在庫数</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{previousStock}</p>
               </div>
             </div>
 
@@ -214,7 +214,7 @@ export function ChemicalRecordingPage() {
               <textarea
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
-                placeholder="例）月次定期発注による補充入庫"
+                placeholder="月次定期発注による補充入庫"
                 className="bg-white min-h-20 p-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
               />
             </div>

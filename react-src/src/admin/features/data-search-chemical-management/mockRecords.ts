@@ -13,7 +13,8 @@ export const chemicalRecords: ChemicalRecord[] = [
     remarks: "月次定期発注による補充入庫",
     implementer: "田中裕子",
     confirmer: "山本真理",
-    approvalStatus: "approved",
+    // 確定デザイン 7139:163038・7139:163226 は 1 件目が承認待ち（右上が「承認待ち ▼」のプルダウン）。2026-10-08
+    approvalStatus: "pending",
     comments: [
       {
         id: "c1",

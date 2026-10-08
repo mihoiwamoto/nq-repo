@@ -58,7 +58,7 @@ export function LineSelectionPage() {
         action={
           <Link
             to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/lines/new`}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -86,7 +86,7 @@ export function LineSelectionPage() {
               <div className="relative">
                 <Link
                   to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/schedule`}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+                  className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
                 >
                   点検予定
                 </Link>
@@ -97,7 +97,7 @@ export function LineSelectionPage() {
               <div className="relative">
                 <Link
                   to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/checklist-settings`}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+                  className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
                 >
                   確認項目の設定
                 </Link>
@@ -154,7 +154,7 @@ export function LineSelectionPage() {
                 <Link
                   key={line.id}
                   to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/lines/${line.id}`}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 rounded-lg flex items-center px-6 text-lg text-[var(--semantic-text-primary)] w-full"
+                  className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 rounded-lg flex items-center px-6 text-lg text-[var(--semantic-text-primary)] w-full"
                 >
                   {line.name}
                 </Link>

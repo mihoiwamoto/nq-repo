@@ -94,7 +94,7 @@ export function NewRegistrationPage() {
               <button
                 type="button"
                 onClick={() => setDialogOpen(true)}
-                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
+                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
               >
                 <span
                   aria-hidden
@@ -151,14 +151,14 @@ export function NewRegistrationPage() {
           <button
             type="button"
             onClick={() => navigate(`${basePath}/schedule`)}
-            className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
           >
             キャンセル
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             {isEditing ? "保存" : "登録"}
           </button>
@@ -179,7 +179,7 @@ export function NewRegistrationPage() {
       {lineToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setLineToDelete(null)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 持ち場/ライン設定の削除
@@ -192,14 +192,14 @@ export function NewRegistrationPage() {
               <button
                 type="button"
                 onClick={() => setLineToDelete(null)}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+                className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
               >
                 キャンセル
               </button>
               <button
                 type="button"
                 onClick={confirmDeleteLine}
-                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
               >
                 削除
               </button>

@@ -11,6 +11,7 @@ import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconReload from "../../../assets/figma/icons/common/reload.svg";
+import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 
 const PAGE_SIZE = 10;
 
@@ -148,7 +149,7 @@ export function DeviceListPage() {
           <button
             type="button"
             onClick={handleRefresh}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             <span
               aria-hidden
@@ -172,9 +173,9 @@ export function DeviceListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex gap-2 items-center text-base text-[var(--semantic-brand-primary)]"
+            className="flex gap-2 items-center h-5 text-base text-[var(--semantic-brand-primary)]"
           >
-            絞り込み検索 {filterOpen ? "−" : "+"}
+            <FilterToggleLabel open={filterOpen} />
           </button>
           {filterOpen && (
             <div className="flex gap-4 items-center w-full flex-wrap">
@@ -197,14 +198,14 @@ export function DeviceListPage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="bg-white border border-[#808080] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg text-sm text-[#808080]"
+                  className="bg-white border border-[#808080] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg text-sm text-[#808080]"
                 >
                   リセット
                 </button>
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-base text-white"
+                  className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-base text-white"
                 >
                   検索
                 </button>
@@ -271,7 +272,7 @@ export function DeviceListPage() {
                   <button
                     type="button"
                     onClick={() => setDeleteTargetId(device.id)}
-                    className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-10 rounded-lg flex items-center justify-center"
+                    className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-10 rounded-lg flex items-center justify-center"
                   >
                     <img src={iconTrash} alt="削除" className="size-6" />
                   </button>
@@ -344,7 +345,7 @@ export function DeviceListPage() {
       {deleteTargetId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteTargetId(null)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 ログイン端末情報を削除
@@ -357,14 +358,14 @@ export function DeviceListPage() {
               <button
                 type="button"
                 onClick={() => setDeleteTargetId(null)}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+                className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
               >
                 キャンセル
               </button>
               <button
                 type="button"
                 onClick={handleDelete}
-                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+                className="bg-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
               >
                 削除
               </button>
@@ -376,7 +377,7 @@ export function DeviceListPage() {
       {notifiedDevice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => closeNotification()} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 ログイン端末認証
@@ -407,14 +408,14 @@ export function DeviceListPage() {
               <button
                 type="button"
                 onClick={() => closeNotification()}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+                className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
               >
                 保留
               </button>
               <button
                 type="button"
                 onClick={() => approveFromNotification(notifiedDevice.id)}
-                className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+                className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
               >
                 認証する
               </button>

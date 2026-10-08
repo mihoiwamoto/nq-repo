@@ -38,7 +38,7 @@ export function MachineSelectionPage() {
         action={
           <Link
             to={`${basePath}/machines/new`}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -63,19 +63,19 @@ export function MachineSelectionPage() {
           <div className="flex gap-6 items-center">
             <Link
               to={`${basePath}/metal-detectors`}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
             >
               金属探知機管理
             </Link>
             <Link
               to={`${basePath}/xray-detectors`}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
             >
               X線探知機管理
             </Link>
             <Link
               to={`${basePath}/weight-checkers`}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] h-20 w-[270px] rounded-lg flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
             >
               ウェイトチェッカー管理
             </Link>
@@ -110,7 +110,7 @@ export function MachineSelectionPage() {
                 <Link
                   key={machine.id}
                   to={`${basePath}/machines/${machine.id}`}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 flex flex-col gap-1 items-start justify-center px-4 w-full text-left"
+                  className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-20 flex flex-col gap-1 items-start justify-center px-4 w-full text-left"
                 >
                   <p className="text-xl text-[var(--semantic-text-primary)]">{machine.name}</p>
                   <div className="flex gap-6 items-start text-base text-[var(--semantic-text-secondary)]">

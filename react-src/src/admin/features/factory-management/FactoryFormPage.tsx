@@ -122,7 +122,7 @@ export function FactoryFormPage() {
               />
               <Link
                 to="/admin/company/new"
-                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
               >
                 + 新規登録
               </Link>
@@ -184,7 +184,7 @@ export function FactoryFormPage() {
                 <button
                   type="button"
                   onClick={() => goToMonth(-1)}
-                  className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+                  className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
                 >
                   <span
                     aria-hidden
@@ -206,7 +206,7 @@ export function FactoryFormPage() {
                 <button
                   type="button"
                   onClick={() => goToMonth(1)}
-                  className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+                  className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
                 >
                   <span
                     aria-hidden
@@ -293,7 +293,7 @@ export function FactoryFormPage() {
                     key={category.slug}
                     type="button"
                     onClick={() => toggleLedgerSlug(category.slug)}
-                    className={`bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-16 w-[270px] flex items-center gap-2 px-2 border ${
+                    className={`bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-16 w-[270px] flex items-center gap-2 px-2 border ${
                       checked ? "border-[var(--semantic-brand-primary)]" : "border-transparent"
                     }`}
                   >
@@ -314,14 +314,14 @@ export function FactoryFormPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
           >
             キャンセル
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             {isEditing ? "保存" : "登録"}
           </button>

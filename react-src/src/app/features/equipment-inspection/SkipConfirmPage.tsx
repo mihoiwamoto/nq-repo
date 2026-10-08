@@ -15,6 +15,8 @@ type SkipConfirmState = {
   fromProgress?: boolean;
   /** 実施者の選択で選んだ人（点検画面から受け取る） */
   inspectorName?: string;
+  /** 確認待ちの差し戻しの編集から来たときの戻り先。このときは「提出」ではなく「編集を保存」で詳細へ戻る */
+  editReturn?: { to: string; state?: unknown };
 };
 
 export function SkipConfirmPage() {
@@ -25,6 +27,7 @@ export function SkipConfirmPage() {
   const state = location.state as SkipConfirmState | null;
   const basePath = `/app/ledger-list/equipment-inspection/lines/${lineId}`;
   const fromProgress = state?.fromProgress ?? false;
+  const editReturn = state?.editReturn;
   const line = lines.find((l) => l.id === lineId);
 
   if (!state) {
@@ -50,15 +53,19 @@ export function SkipConfirmPage() {
   const { lineName, date, skipReason } = state;
 
   function handleSubmit() {
-    if (lineId) updateLineStatus(lineId, "skipped", { deferToTomorrow: state.deferToTomorrow });
+    if (editReturn) {
+      navigate(editReturn.to, { state: editReturn.state });
+      return;
+    }
+    if (lineId) updateLineStatus(lineId, "skipped", { deferToTomorrow: state?.deferToTomorrow });
     navigate(`${basePath}/complete`, { state: fromProgress ? { fromProgress: true } : undefined });
   }
 
   return (
     <>
-      <AppHeader title={`機械器具点検_${fromProgress && line ? `【${FREQUENCY_LABELS[line.frequency]}】` : ""}${lineName}`} />
+      <AppHeader title={`機械器具点検_${(fromProgress || editReturn) && line ? `【${FREQUENCY_LABELS[line.frequency]}】` : ""}${lineName}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
@@ -95,7 +102,7 @@ export function SkipConfirmPage() {
           onClick={handleSubmit}
           className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-white"
         >
-          提出
+          {editReturn ? "編集を保存" : "提出"}
         </button>
       </div>
     </>

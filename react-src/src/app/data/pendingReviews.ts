@@ -175,7 +175,7 @@ export const PENDING_REVIEWS: PendingReview[] = [
   {
     id: "p18",
     date: "04/01",
-    name: "ソルビン酸",
+    name: "次亜塩素酸ナトリウム",
     ledgerSlug: "chemical-management",
     status: "点検済み",
     chemicalId: "c1",
@@ -184,7 +184,7 @@ export const PENDING_REVIEWS: PendingReview[] = [
   {
     id: "p16",
     date: "04/02",
-    name: "ソルビン酸",
+    name: "次亜塩素酸ナトリウム",
     ledgerSlug: "chemical-management",
     status: "差し戻し",
     chemicalId: "c1",

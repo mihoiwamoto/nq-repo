@@ -13,6 +13,8 @@ type SkipConfirmState = {
   /** 毎日以外の見送りで選んだ「明日に見送る」。翌日分のラインの一覧の出方が変わる */
   deferToTomorrow?: boolean;
   inspectorName?: string;
+  /** 確認待ちの差し戻しの編集から来たときの戻り先。このときは「提出」ではなく「編集を保存」で詳細へ戻る */
+  editReturn?: { to: string; state?: unknown };
 };
 
 export function SkipConfirmPage() {
@@ -43,9 +45,13 @@ export function SkipConfirmPage() {
     );
   }
 
-  const { lineName, lineTitle = lineName, date, skipReason, inspectorName = ACTORS[0].name } = state;
+  const { lineName, lineTitle = lineName, date, skipReason, inspectorName = ACTORS[0].name, editReturn } = state;
 
   function handleSubmit() {
+    if (editReturn) {
+      navigate(editReturn.to, { state: editReturn.state });
+      return;
+    }
     if (lineId) updateLineStatus(lineId, "skipped", { deferToTomorrow: state?.deferToTomorrow });
     navigate(`${basePath}/complete`);
   }
@@ -92,7 +98,7 @@ export function SkipConfirmPage() {
           onClick={handleSubmit}
           className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-white"
         >
-          提出
+          {editReturn ? "編集を保存" : "提出"}
         </button>
       </div>
     </>

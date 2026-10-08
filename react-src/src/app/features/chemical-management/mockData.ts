@@ -13,6 +13,7 @@ export type Chemical = {
   status: ChemicalStatus;
 };
 
+// 薬品の名前は 2026-10-08 に添加物と同じだった見本（ソルビン酸・にがり など）から薬品らしい名前に変えた
 export const CHEMICAL_STATUS_LABELS: Record<ChemicalStatus, string> = {
   not_inspected: "未点検",
   in_progress: "点検中",
@@ -28,7 +29,7 @@ export const CHEMICAL_STATUS_COLORS: Record<ChemicalStatus, string> = {
 export const chemicals: Chemical[] = [
   {
     id: "c1",
-    name: "ソルビン酸",
+    name: "次亜塩素酸ナトリウム",
     managementNumber: "CHM-001",
     storageLocation: "薬品庫A",
     spec: "1,000ml",
@@ -37,7 +38,7 @@ export const chemicals: Chemical[] = [
   },
   {
     id: "c2",
-    name: "にがり（塩化マグネシウム）",
+    name: "アルカリ洗浄剤",
     managementNumber: "CHM-002",
     storageLocation: "薬品庫B",
     spec: "500ml",
@@ -46,7 +47,7 @@ export const chemicals: Chemical[] = [
   },
   {
     id: "c3",
-    name: "グルコノデルタラクトン",
+    name: "過炭酸ナトリウム",
     managementNumber: "CHM-003",
     storageLocation: "薬品庫A",
     spec: "1,000g",
@@ -55,7 +56,7 @@ export const chemicals: Chemical[] = [
   },
   {
     id: "c4",
-    name: "消泡剤（シリコーン樹脂）",
+    name: "酸性洗浄剤",
     managementNumber: "CHM-004",
     storageLocation: "薬品庫C",
     spec: "500ml",
@@ -64,7 +65,7 @@ export const chemicals: Chemical[] = [
   },
   {
     id: "c5",
-    name: "次亜塩素酸",
+    name: "塩素系漂白剤",
     managementNumber: "CHM-005",
     storageLocation: "薬品庫B",
     spec: "10,000ml",

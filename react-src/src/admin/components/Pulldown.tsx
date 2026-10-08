@@ -14,7 +14,8 @@ function getArrowFilterColor(className?: string, backgroundColor?: string | CSSP
   const darkColors = ['#f85c5c', '#ff6b6b', '#ff4444', '#d32f2f', 'rgb(248, 92, 92)', 'rgb(255, 107, 107)'];
   const isDarkBg = darkColors.some(color => bgColor.includes(color.replace('#', '')) || bgColor.includes(color));
 
-  return isDarkBg ? 'brightness(0) invert(1)' : 'invert(0.7) brightness(1.2)';
+  // 明るい地の ▼ は確定デザインどおり #808080（2026-10-08。以前は invert(0.7) brightness(1.2) で薄い灰色だった）
+  return isDarkBg ? 'brightness(0) invert(1)' : 'brightness(0) invert(0.5)';
 }
 
 export function Pulldown({

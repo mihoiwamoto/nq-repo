@@ -78,6 +78,7 @@ import {
   pendingReviewScoreRows,
   type ScoreRow,
 } from "../sensory-inspection/mockData";
+import { withoutUnit } from "../../utils/amount";
 import {
   MACHINES,
   MACHINE_INSPECTION_DATES,
@@ -581,8 +582,8 @@ export function PendingReviewDetailPage() {
   const isChemicalLedger = review?.ledgerSlug === "chemical-management";
   const CONFIRMERS = confirmersFor(review?.ledgerSlug);
   const commentMaxLength =
-    // 機械器具点検も確定デザイン（7139:283080）どおり 255
-    isCleaningLedger || isAdditiveLedger || isScaleInspectionLedger || isSensoryLedger || isMetalXrayLedger || review?.ledgerSlug === "equipment-inspection"
+    // 機械器具点検も確定デザイン（7139:283080）どおり 255。薬品管理も 7139:244794 どおり 255（2026-10-08）
+    isCleaningLedger || isAdditiveLedger || isChemicalLedger || isScaleInspectionLedger || isSensoryLedger || isMetalXrayLedger || review?.ledgerSlug === "equipment-inspection"
       ? 255
       : 200;
 
@@ -762,7 +763,7 @@ export function PendingReviewDetailPage() {
       <div className="absolute inset-0 bg-black/50" onClick={() => setRejectEditTarget(null)} />
       {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
       <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-        <h2 className="text-2xl text-black">実施者を選んでください</h2>
+        <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
         <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
           {ACTORS.map((a) => (
             <button
@@ -1396,7 +1397,7 @@ export function PendingReviewDetailPage() {
           className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
           onReachEnd={() => setEquipmentScrolledToEnd(true)}
         >
-          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
             <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
             <p className="text-sm text-[var(--semantic-text-primary)]">
               承認者から差し戻し理由のコメントがあります。
@@ -1451,10 +1452,10 @@ export function PendingReviewDetailPage() {
                       {record.category}
                     </td>
                     <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
-                      {record.quantity}
+                      {withoutUnit(record.quantity)}
                     </td>
                     <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
-                      {record.currentStock}
+                      {withoutUnit(record.currentStock)}
                     </td>
                     <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">
                       {record.remarks}
@@ -1556,24 +1557,24 @@ export function PendingReviewDetailPage() {
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
             <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">実施日</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
                   {selectedAdditiveRecord.date}
                 </p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">保管場所</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">保管場所</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
                   {selectedAdditiveRecord.storageLocation}
                 </p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">規格</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">{stockItem.spec}</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">規格</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{stockItem.spec}</p>
               </div>
               <div className="flex items-center justify-between w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">元在庫数</p>
-                <p className="text-base text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">元在庫数</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
                   {selectedAdditiveRecord.previousStock ?? additive?.initialStock}
                 </p>
               </div>
@@ -1583,8 +1584,8 @@ export function PendingReviewDetailPage() {
               {/* 記録画面で項目ごとに付いた「実施者 + 入力時刻」をそのまま出す */}
               <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center justify-between w-full">
-                  <p className="text-base text-[var(--semantic-text-primary)]">区分</p>
-                  <p className="text-base text-[var(--semantic-text-primary)]">
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">区分</p>
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
                     {selectedAdditiveRecord.category}
                   </p>
                 </div>
@@ -1593,12 +1594,12 @@ export function PendingReviewDetailPage() {
                   timestamp={selectedAdditiveRecord.timestamps?.category}
                 />
               </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
+              <div className="border-t border-[#d0d0d0] w-full -mb-px" />
               <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center justify-between w-full">
-                  <p className="text-base text-[var(--semantic-text-primary)]">数量</p>
-                  <p className="text-base text-[var(--semantic-text-primary)]">
-                    {selectedAdditiveRecord.quantity}
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">数量</p>
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
+                    {withoutUnit(selectedAdditiveRecord.quantity)}
                   </p>
                 </div>
                 <RecordTimestamp
@@ -1606,12 +1607,12 @@ export function PendingReviewDetailPage() {
                   timestamp={selectedAdditiveRecord.timestamps?.quantity}
                 />
               </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
+              <div className="border-t border-[#d0d0d0] w-full -mb-px" />
               <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center justify-between w-full">
-                  <p className="text-base text-[var(--semantic-text-primary)]">現在庫数</p>
-                  <p className="text-base text-[var(--semantic-text-primary)]">
-                    {selectedAdditiveRecord.currentStock}
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">現在庫数</p>
+                  <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">
+                    {withoutUnit(selectedAdditiveRecord.currentStock)}
                   </p>
                 </div>
                 <RecordTimestamp
@@ -1619,10 +1620,10 @@ export function PendingReviewDetailPage() {
                   timestamp={selectedAdditiveRecord.timestamps?.currentStock}
                 />
               </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
+              <div className="border-t border-[#d0d0d0] w-full -mb-px" />
               <div className="flex flex-col gap-2 items-start w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
-                <p className="text-base font-normal leading-[1.6] text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
+                <p className="text-base leading-[22px] font-normal text-[var(--semantic-text-primary)]">
                   {selectedAdditiveRecord.remarks}
                 </p>
               </div>
@@ -1652,25 +1653,26 @@ export function PendingReviewDetailPage() {
     return (
       <>
         <AppHeader title={`${stockLabel}_${stockItem.name}`} />
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
           <div className="flex items-center justify-between w-full max-w-full">
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
             {/* 薬品管理（7139:244874）・添加物管理（7139:233626）の確定デザインは日付の欄（カレンダーのアイコンつき）と下の区切り線 */}
-            <DateFilterInput value="2025-04-01" onChange={() => {}} />
+            <DateFilterInput value="2025-04-01" onChange={() => {}} variant="borderless" />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
           <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full">
-            <table className="border-collapse w-full">
+            {/* 確定デザイン 7139:233626：見出し 56・行 48・備考 1 行・「詳細」56×32 の 12px・文字は標準の太さ・数量と現在庫数は単位付き（2026-10-08） */}
+            <table className="border-collapse table-fixed w-full">
               <thead>
-                <tr className="bg-[var(--semantic-brand-primary)]">
+                <tr className="bg-[var(--semantic-brand-primary)] h-14">
                   {ADDITIVE_RECORD_COLUMNS.map((col) => (
                     <th
                       key={col.key}
-                      style={{ minWidth: col.width }}
-                      className="text-white text-sm font-semibold px-2 py-2 whitespace-nowrap"
+                      style={{ width: col.key === "remarks" ? "auto" : col.width }}
+                      className="text-white text-sm font-semibold px-2 whitespace-nowrap"
                     >
                       {col.label}
                     </th>
@@ -1679,7 +1681,7 @@ export function PendingReviewDetailPage() {
               </thead>
               <tbody>
                 {additiveRecords.map((record, index) => (
-                  <tr key={record.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
+                  <tr key={record.id} className={`h-12 ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}>
                     <td className="px-2 py-2 text-center">
                       <button
                         type="button"
@@ -1687,27 +1689,27 @@ export function PendingReviewDetailPage() {
                           setSelectedAdditiveRecordId(record.id);
                           setStep("record");
                         }}
-                        className="bg-[var(--semantic-brand-primary)] h-8 px-3 rounded-lg text-sm text-white"
+                        className="bg-[var(--semantic-brand-primary)] h-8 w-14 rounded-lg text-xs text-white inline-flex items-center justify-center"
                       >
                         詳細
                       </button>
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                       {record.storageLocation}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                       {record.category}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                       {record.quantity}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                    <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]">
                       {record.currentStock}
                     </td>
-                    <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">
+                    <td className="px-2 py-2 text-sm font-normal text-[var(--semantic-text-primary)] truncate">
                       {record.remarks}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
+                    <td className="px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)] whitespace-nowrap">
                       {record.actor}
                     </td>
                   </tr>
@@ -2059,7 +2061,7 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title="官能検査記録" />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
             <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
             <p className="text-sm text-[var(--semantic-text-primary)]">
               実施予定者に足りていない時はコメント欄に記載してください。
@@ -2357,7 +2359,7 @@ export function PendingReviewDetailPage() {
             className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
             onReachEnd={() => setEquipmentScrolledToEnd(true)}
           >
-            <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+            <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
               <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
               <p className="text-sm text-[var(--semantic-text-primary)]">
                 承認者から差し戻し理由のコメントがあります。
@@ -2489,7 +2491,7 @@ export function PendingReviewDetailPage() {
               <div className="absolute inset-0 bg-black/50" onClick={() => setMetalXrayActorPickerOpen(false)} />
               {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
               <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
-                <h2 className="text-2xl text-black">実施者を選んでください</h2>
+                <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
                 <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
                   {ACTORS.map((a) => (
                     <button
@@ -2715,7 +2717,7 @@ export function PendingReviewDetailPage() {
           className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
           onReachEnd={() => setEquipmentScrolledToEnd(true)}
         >
-          <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg w-full max-w-full">
+          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
             <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
             <p className="text-sm text-[var(--semantic-text-primary)]">
               承認者から差し戻し理由のコメントがあります。

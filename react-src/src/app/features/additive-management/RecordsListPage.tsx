@@ -72,7 +72,7 @@ export function RecordsListPage() {
   return (
     <>
       <AppHeader title={`添加物管理_${additive?.name ?? ""}`} />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4">
         {readOnlyStatus ? (
           <>
             {readOnlyStatus === "inspected" && (
@@ -98,7 +98,7 @@ export function RecordsListPage() {
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                 実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
               </p>
-              <DateFilterInput value={date} onChange={setDate} variant={progressEditable ? "borderless" : "default"} />
+              <DateFilterInput value={date} onChange={setDate} variant="borderless" />
             </div>
             {/* 確定デザイン 7139:233987・7139:234120：実施日の段と表のあいだに区切り線（進捗一覧の点検中 7139:238456 には無い） */}
             {!progressEditable && <div className="border-t border-[#d0d0d0] w-full" />}
@@ -106,18 +106,15 @@ export function RecordsListPage() {
         )}
 
         <div className="bg-white rounded-lg overflow-x-auto">
-          <table className={`border-collapse w-full ${progressEditable ? "table-fixed" : ""}`}>
+          {/* 確定デザイン 7139:233987：見出し 56px・行 48px・備考は 1 行で「…」・「詳細」12px（薬品管理と同じ。2026-10-08） */}
+          <table className="border-collapse table-fixed w-full">
             <thead>
-              <tr className={`bg-[var(--semantic-brand-primary)] ${progressEditable ? "h-14" : ""}`}>
+              <tr className="bg-[var(--semantic-brand-primary)] h-14">
                 {COLUMNS.map((col) => (
                   <th
                     key={col.key}
-                    style={
-                      progressEditable
-                        ? { width: col.key === "remarks" ? "auto" : col.width }
-                        : { minWidth: col.width }
-                    }
-                    className={`text-white text-sm font-semibold px-2 whitespace-nowrap ${progressEditable ? "" : "py-2"}`}
+                    style={{ width: col.key === "remarks" ? "auto" : col.width }}
+                    className="text-white text-sm font-semibold px-2 whitespace-nowrap"
                   >
                     {col.label}
                   </th>
@@ -126,16 +123,16 @@ export function RecordsListPage() {
             </thead>
             <tbody>
               {!hasRecords ? (
-                <tr>
+                <tr className="h-12">
                   {COLUMNS.map((col) => (
-                    <td key={col.key} className="bg-white px-2 py-4" />
+                    <td key={col.key} className="bg-white px-2" />
                   ))}
                 </tr>
               ) : (
                 productRecords.map((record, index) => (
                   <tr
                     key={record.id}
-                    className={`${progressEditable ? "h-12" : ""} ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                    className={`h-12 ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
                   >
                     <td className="px-2 py-2 text-center">
                       <Link
@@ -157,30 +154,30 @@ export function RecordsListPage() {
                             : undefined
                         }
                         className={`bg-[var(--semantic-brand-primary)] h-8 rounded-lg text-white inline-flex items-center justify-center ${
-                          progressEditable ? "w-14 text-xs" : "px-3 text-sm"
+                          "w-14 text-xs"
                         }`}
                       >
                         詳細
                       </Link>
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.storageLocation}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.category}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.quantity}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)]`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
                       {record.currentStock}
                     </td>
                     <td
-                      className={`px-2 py-2 text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] ${progressEditable ? "truncate" : ""}`}
+                      className={`px-2 py-2 text-sm font-normal text-[var(--semantic-text-primary)] truncate`}
                     >
                       {record.remarks}
                     </td>
-                    <td className={`px-2 py-2 text-center text-sm ${progressEditable ? "font-normal" : ""} text-[var(--semantic-text-primary)] whitespace-nowrap`}>
+                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)] whitespace-nowrap`}>
                       {record.actor}
                     </td>
                   </tr>

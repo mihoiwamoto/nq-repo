@@ -80,7 +80,7 @@ export function PendingReviewListPage() {
       <AppHeader title="確認待ち" />
       {/* 確定デザイン（7139:221059）：ヘッダーの下 24px から、注意の帯 56px・絞り込み検索 48px・日付の見出し 52px・カード 78px */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-4 flex flex-col gap-4">
-        <div className="bg-[#f7f292] flex gap-2 items-center p-4 rounded-lg shrink-0">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg shrink-0">
           <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             こちらは確認者専用の画面になります。実施者の方は操作不要です。
@@ -175,8 +175,9 @@ export function PendingReviewListPage() {
                       </div>
                       <StatusChip
                         color={
+                          // 確定デザイン（7139:293969・7139:249312）の「差し戻し」の札は #f85c5c（brand-danger の #f34949 より明るい。2026-10-08）
                           review.status === "差し戻し"
-                            ? "var(--semantic-brand-danger)"
+                            ? "#f85c5c"
                             : "var(--semantic-status-caution)"
                         }
                       >
@@ -231,7 +232,7 @@ export function PendingReviewListPage() {
                 );
               })}
             </div>
-            <div className="flex gap-10 items-center justify-center w-full">
+            <div className="-mt-6 flex gap-10 items-center justify-center w-full">
               <button
                 type="button"
                 onClick={() => setFilterDialogOpen(false)}

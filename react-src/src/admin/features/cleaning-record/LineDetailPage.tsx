@@ -79,7 +79,7 @@ export function LineDetailPage() {
           <button
             type="button"
             onClick={() => navigate(`${basePath}/lines/${line.id}/edit`)}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
           >
             <img src={iconEdit} alt="" aria-hidden className="size-5" />
             編集

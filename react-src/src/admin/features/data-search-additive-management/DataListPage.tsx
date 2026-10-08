@@ -7,7 +7,7 @@ import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import { useDemoList } from "../../../components/demo/demoStore";
-import { getDateStripeClasses } from "../../utils/tableStripe";
+import { getRowStripeClasses } from "../../utils/tableStripe";
 import type { AdditiveTransactionType } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
@@ -91,7 +91,7 @@ export function DataListPage() {
     if (storageLocationFilter && r.storageLocation !== storageLocationFilter) return false;
     return true;
   });
-  const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
+  const rowStripeClasses = getRowStripeClasses(filtered);
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
@@ -130,7 +130,7 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setDownloadDialogOpen(true)}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)]"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)]"
             title="CSVダウンロード"
           >
             <span
@@ -198,12 +198,14 @@ export function DataListPage() {
                     onChange={setAdditiveFilter}
                     options={additiveOptions.map((label) => ({ value: label, label }))}
                     placeholder="添加物名"
+                    className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
                   />
                   <Pulldown
                     value={storageLocationFilter}
                     onChange={setStorageLocationFilter}
                     options={storageLocationOptions.map((label) => ({ value: label, label }))}
                     placeholder="保管場所名"
+                    className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
                   />
                 </div>
               </div>
@@ -211,13 +213,13 @@ export function DataListPage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
+                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
                 >
                   リセット
                 </button>
                 <button
                   type="button"
-                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_2px_rgba(51,51,51,0.24)]"
+                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
                 >
                   <img src={iconSearch} alt="" className="size-5" />
                   検索
@@ -232,7 +234,7 @@ export function DataListPage() {
             <button
               type="button"
               onClick={() => goToMonth(-1)}
-              className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+              className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
             >
               <span
                 aria-hidden
@@ -271,7 +273,7 @@ export function DataListPage() {
             <button
               type="button"
               onClick={() => goToMonth(1)}
-              className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+              className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
             >
               <span
                 aria-hidden
@@ -383,7 +385,7 @@ export function DataListPage() {
                     <div className="flex items-center justify-center p-2 h-full">
                       <Link
                         to={`${basePath}/records/${record.id}`}
-                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center text-sm font-semibold text-[var(--semantic-brand-primary)]"
                       >
                         詳細
                       </Link>
@@ -403,7 +405,7 @@ export function DataListPage() {
                     <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {record.currentStock}
                     </div>
-                    <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.storageLocation}>
+                    <div className="min-w-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.storageLocation}>
                       <span className="block w-full truncate">{record.storageLocation}</span>
                     </div>
                     <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.remarks}>
@@ -426,7 +428,7 @@ export function DataListPage() {
       {downloadDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDownloadDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[640px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[640px]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
               ダウンロード形式選択
             </h2>
@@ -466,7 +468,7 @@ export function DataListPage() {
               <button
                 type="button"
                 onClick={() => setDownloadDialogOpen(false)}
-                className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+                className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
               >
                 キャンセル
               </button>
@@ -480,7 +482,7 @@ export function DataListPage() {
                   }
                   setDownloadDialogOpen(false);
                 }}
-                className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+                className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
               >
                 ダウンロード
               </button>

@@ -146,14 +146,19 @@ export function RecordingPage() {
 
   function handleSkip() {
     if (!skipReason.trim()) return;
-    // 差し戻しの編集で見送ったときは、提出の流れに入らず「編集を保存」と同じく確認待ちの詳細へ戻る（機械器具点検と同じ）
-    if (editReturn) {
-      navigate(editReturn.to, { state: editReturn.state });
-      return;
-    }
-    if (!isDaily && deferToTomorrow === null) return;
+    // 差し戻しの編集で見送ったときも見送りの確認画面へ進み、そこで「編集を保存」を押すと確認待ちの詳細へ戻る
+    // （確定デザイン 7139:229587。2026-10-08 ユーザー指定。機械器具点検と同じ）
+    if (!editReturn && !isDaily && deferToTomorrow === null) return;
     navigate(`/app/ledger-list/cleaning-record/lines/${lineId}/skip-confirm`, {
-      state: { lineName, lineTitle, date, skipReason, inspectorName, deferToTomorrow: isDaily ? undefined : deferToTomorrow ?? undefined },
+      state: {
+        lineName,
+        lineTitle,
+        date,
+        skipReason,
+        inspectorName,
+        deferToTomorrow: isDaily || editReturn ? undefined : deferToTomorrow ?? undefined,
+        editReturn,
+      },
     });
   }
 

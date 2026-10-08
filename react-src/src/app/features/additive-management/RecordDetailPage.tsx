@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
 import type { AdditiveRecord } from "./mockData";
+import { withoutUnit } from "../../utils/amount";
 
 export function RecordDetailPage() {
   const { productId, recordId } = useParams<{ productId: string; recordId: string }>();
@@ -36,46 +37,46 @@ export function RecordDetailPage() {
   return (
     <>
       <AppHeader title={`添加物管理_${additive.name}`} />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
           <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{record.date}</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">実施日</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{record.date}</p>
           </div>
           <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">保管場所</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{record.storageLocation}</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">保管場所</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{record.storageLocation}</p>
           </div>
           <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">規格</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{additive.spec}</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">規格</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{additive.spec}</p>
           </div>
           <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">元在庫数</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{additive.initialStock}</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">元在庫数</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{additive.initialStock}</p>
           </div>
         </div>
 
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
           <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">区分</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{record.category}</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">区分</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{record.category}</p>
           </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
+          <div className="border-t border-[#d0d0d0] w-full -mb-px" />
           <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">数量</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{record.quantity}</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">数量</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{withoutUnit(record.quantity)}</p>
           </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
+          <div className="border-t border-[#d0d0d0] w-full -mb-px" />
           <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">現在庫数</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{record.currentStock}</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">現在庫数</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{withoutUnit(record.currentStock)}</p>
           </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
+          <div className="border-t border-[#d0d0d0] w-full -mb-px" />
           <div className="flex flex-col gap-2 items-start w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
             {/* 確定デザイン 7139:233879：備考の本文は通常の文字色 */}
-            <p className="text-base font-normal text-[var(--semantic-text-primary)]">{record.remarks}</p>
+            <p className="text-base leading-[22px] font-normal text-[var(--semantic-text-primary)]">{record.remarks}</p>
           </div>
         </div>
       </div>

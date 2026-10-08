@@ -9,6 +9,7 @@ import { useDemoList } from "../../../components/demo/demoStore";
 import { SCREEN_TYPE_LABELS, SCREEN_TYPE_OPTIONS, type LogScreenType } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 
 const PAGE_SIZE = 10;
 
@@ -79,9 +80,9 @@ export function LogListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex gap-2 items-center text-base text-[var(--semantic-brand-primary)]"
+            className="flex gap-2 items-center h-5 text-base text-[var(--semantic-brand-primary)]"
           >
-            絞り込み検索 {filterOpen ? "−" : "+"}
+            <FilterToggleLabel open={filterOpen} />
           </button>
           {filterOpen && (
             <div className="flex gap-4 items-center justify-start w-full flex-wrap">
@@ -122,14 +123,14 @@ export function LogListPage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="bg-white border border-[#808080] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg text-sm text-[#808080]"
+                  className="bg-white border border-[#808080] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg text-sm text-[#808080]"
                 >
                   リセット
                 </button>
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-base text-white"
+                  className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg text-base text-white"
                 >
                   検索
                 </button>

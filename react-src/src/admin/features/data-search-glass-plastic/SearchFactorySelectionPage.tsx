@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { FACTORIES } from "../../../data/factories";
+import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 
 export function SearchFactorySelectionPage() {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -24,9 +25,9 @@ export function SearchFactorySelectionPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex gap-2 items-center text-base text-[var(--semantic-brand-primary)]"
+            className="flex gap-2 items-center h-5 text-base text-[var(--semantic-brand-primary)]"
           >
-            絞り込み検索 {filterOpen ? "−" : "+"}
+            <FilterToggleLabel open={filterOpen} />
           </button>
           {filterOpen && (
             <input
@@ -44,7 +45,7 @@ export function SearchFactorySelectionPage() {
             <Link
               key={factory.id}
               to={`factories/${factory.id}`}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full min-w-0 flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full min-w-0 flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
             >
               {factory.name}
             </Link>

@@ -13,6 +13,7 @@ interface PulldownSelectProps<T extends string> {
   widthClassName?: string;
 }
 
+/** 選択肢の箱は確定デザイン（7139:234054・7139:245228）どおり、選択欄に 4px 重ね、項目の高さ 38px（2026-10-08） */
 export function PulldownSelect<T extends string>({
   value,
   onChange,
@@ -46,7 +47,7 @@ export function PulldownSelect<T extends string>({
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
-            className={`absolute left-0 top-full bg-white rounded-lg shadow-[0px_0px_3px_rgba(51,51,51,0.24)] p-2 z-50 ${widthClassName}`}
+            className={`absolute left-0 top-full -mt-1 bg-white rounded-lg shadow-[0px_0px_3px_rgba(51,51,51,0.24)] p-2 z-50 ${widthClassName}`}
           >
             {items.map((item) => (
               <button
@@ -56,7 +57,7 @@ export function PulldownSelect<T extends string>({
                   onChange(item.value);
                   setOpen(false);
                 }}
-                className={`w-full text-left px-2 h-[42px] rounded-lg text-base ${
+                className={`w-full text-left px-2 h-[38px] rounded-lg text-base ${
                   item.value === value
                     ? "bg-[var(--semantic-brand-primary)] text-white"
                     : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"

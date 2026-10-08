@@ -139,7 +139,7 @@ export function LineRegistrationPage() {
                 key={option.key}
                 type="button"
                 onClick={() => setFrequency(option.key)}
-                className={`h-10 w-[120px] rounded-lg border bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] text-base ${
+                className={`h-10 w-[120px] rounded-lg border bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] text-base ${
                   frequency === option.key
                     ? "border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
                     : "border-[#808080] text-[var(--semantic-text-secondary)]"
@@ -199,7 +199,7 @@ export function LineRegistrationPage() {
                 <button
                   type="button"
                   onClick={() => addItem(point.id)}
-                  className="border border-[var(--semantic-brand-primary)] bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
+                  className="border border-[var(--semantic-brand-primary)] bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
                 >
                   <img src={iconPlus} alt="" aria-hidden className="size-5" />
                   追加
@@ -210,7 +210,7 @@ export function LineRegistrationPage() {
           <button
             type="button"
             onClick={addPoint}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
           >
             <img src={iconPlus} alt="" aria-hidden className="size-5" />
             記録の追加
@@ -224,14 +224,14 @@ export function LineRegistrationPage() {
           <button
             type="button"
             onClick={() => navigate(basePath)}
-            className="bg-white shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+            className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
           >
             キャンセル
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             登録
           </button>

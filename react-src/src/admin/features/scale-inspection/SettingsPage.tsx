@@ -40,7 +40,7 @@ export function SettingsPage() {
         action={
           <Link
             to={`${basePath}/scales/new`}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -63,13 +63,13 @@ export function SettingsPage() {
           <div className="flex gap-6 items-center">
             <Link
               to={`${basePath}/scale-management`}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 w-[270px] flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-20 w-[270px] flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
             >
               秤管理
             </Link>
             <Link
               to={`${basePath}/post-management`}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 w-[270px] flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-20 w-[270px] flex items-center px-4 text-xl text-[var(--semantic-text-primary)]"
             >
               持ち場管理
             </Link>
@@ -102,7 +102,7 @@ export function SettingsPage() {
                 <Link
                   key={scale.id}
                   to={`${basePath}/scales/${scale.id}`}
-                  className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full flex flex-col gap-1 justify-center px-4"
+                  className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full flex flex-col gap-1 justify-center px-4"
                 >
                   <p className="text-xl text-[var(--semantic-text-primary)]">{scale.label}</p>
                   <p className="text-base text-[var(--semantic-text-secondary)]">

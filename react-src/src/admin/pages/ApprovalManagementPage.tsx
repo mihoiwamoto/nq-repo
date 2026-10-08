@@ -71,7 +71,7 @@ export function ApprovalManagementPage() {
             {items.map((item) => {
               const category = ledgerCategories.find((c) => c.slug === item.ledgerSlug);
               const cardClassName =
-                "bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-2 items-start px-4 py-3 w-full text-left";
+                "bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-2 items-start px-4 py-3 w-full text-left";
               const cardContent = (
                 <>
                   <ApprovalStatusBadge status={item.status} />

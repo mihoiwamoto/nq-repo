@@ -7,6 +7,7 @@ import { storageOriginCrumbs, useStorageManagement } from "./StorageManagementCo
 import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 
 const PAGE_SIZE = 10;
 
@@ -56,7 +57,7 @@ function StoragePagination({
           type="button"
           onClick={() => typeof num === "number" && onChange(num)}
           disabled={typeof num === "string"}
-          className={`size-8 rounded-lg flex items-center justify-center text-sm ${
+          className={`size-8 rounded-lg flex items-center justify-center text-sm font-normal ${
             num === currentPage
               ? "bg-[var(--semantic-brand-primary)] text-white"
               : "bg-white text-[var(--semantic-text-primary)]"
@@ -111,7 +112,7 @@ export function StorageListPage() {
         action={
           <Link
             to="new"
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -127,9 +128,9 @@ export function StorageListPage() {
             <button
               type="button"
               onClick={() => setFilterOpen((v) => !v)}
-              className="flex gap-2 items-center text-base text-[var(--semantic-brand-primary)]"
+              className="flex gap-2 items-center h-5 text-base text-[var(--semantic-brand-primary)]"
             >
-              絞り込み検索 {filterOpen ? "−" : "+"}
+              <FilterToggleLabel open={filterOpen} />
             </button>
             {filterOpen && (
               <div className="flex gap-4 items-center w-full">
@@ -216,7 +217,7 @@ export function StorageListPage() {
                 <div className="w-[120px] h-full flex items-center px-2">
                   <Link
                     to={location.id}
-                    className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                    className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
                   >
                     詳細
                   </Link>
@@ -225,7 +226,10 @@ export function StorageListPage() {
             ))}
           </div>
         </div>
-        <StoragePagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} />
+        {/* 確定デザイン 7139:163434：表からページ送りまで 16px（外の並びは 24px なので 8px 詰める。2026-10-08） */}
+        <div className="-mt-2">
+          <StoragePagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} />
+        </div>
       </div>
     </div>
   );

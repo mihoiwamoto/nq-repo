@@ -93,7 +93,7 @@ export function CalendarPage() {
         action={
           <Link
             to={`${basePath}/schedule/register`}
-            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
+            className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
             + 新規登録
           </Link>
@@ -117,7 +117,7 @@ export function CalendarPage() {
               <button
                 type="button"
                 onClick={() => goToMonth(-1)}
-                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
               >
                 <span
                   aria-hidden
@@ -139,7 +139,7 @@ export function CalendarPage() {
               <button
                 type="button"
                 onClick={() => goToMonth(1)}
-                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
+                className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center"
               >
                 <span
                   aria-hidden
@@ -208,7 +208,7 @@ export function CalendarPage() {
               <div className="flex items-center gap-2">
                 <Link
                   to={`${basePath}/schedule/register?date=${selectedDateKey}`}
-                  className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_2px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
+                  className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
                 >
                   <img src={iconEdit} alt="編集" className="size-5" />
                   編集
@@ -222,7 +222,7 @@ export function CalendarPage() {
                     <img src={iconKebabMenu} alt="メニュー" className="size-6" />
                   </button>
                   {menuOpen && (
-                    <div className="absolute right-0 top-full mt-1 bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 w-60 z-50">
+                    <div className="absolute right-0 top-full mt-1 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg p-2 w-60 z-50">
                       <button
                         type="button"
                         onClick={handleDuplicate}
