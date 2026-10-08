@@ -220,89 +220,91 @@ export function ApprovalRecordsListPage() {
                 />
               </button>
             </div>
-            <div className="w-full rounded-lg overflow-x-auto">
-              <div className="flex flex-col min-w-[1300px]">
-                <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-                  {COLUMNS.map((c) => (
-                    <div
-                      key={c.key}
-                      className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] text-center shrink-0"
-                      style={{ width: c.width }}
-                    >
-                      {c.label}
-                    </div>
-                  ))}
-                </div>
-                {filtered.length === 0 ? (
-                  <AdminEmptyState className="mt-2" />
-                ) : (
-                  filtered.map((record, index) => (
-                    <div
-                      key={record.id}
-                      className={`flex h-14 items-center ${rowStripeClasses[index]}`}
-                    >
-                      <div className="flex items-center justify-center p-2 h-full shrink-0" style={{ width: 96 }}>
-                        <Link
-                          to={`/admin/approvals/water-inspection/records/${record.id}`}
-                          className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+            {/* 0 件のときの帯は横スクロールの箱の外に出し、見える幅いっぱいに置く（見出しだけ横に動く） */}
+            <div className="w-full min-w-0">
+              <div className="w-full rounded-lg overflow-x-auto">
+                <div className="flex flex-col min-w-[1300px]">
+                  <div className="bg-[#f6f6f6] flex h-[50px] items-center">
+                    {COLUMNS.map((c) => (
+                      <div
+                        key={c.key}
+                        className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] text-center shrink-0"
+                        style={{ width: c.width }}
+                      >
+                        {c.label}
+                      </div>
+                    ))}
+                  </div>
+                  {filtered.length === 0 ? null : (
+                    filtered.map((record, index) => (
+                      <div
+                        key={record.id}
+                        className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                      >
+                        <div className="flex items-center justify-center p-2 h-full shrink-0" style={{ width: 96 }}>
+                          <Link
+                            to={`/admin/approvals/water-inspection/records/${record.id}`}
+                            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                          >
+                            詳細
+                          </Link>
+                        </div>
+                        <div className="flex items-center justify-center p-2 h-full shrink-0" style={{ width: 104 }}>
+                          <ApprovalStatusBadge status={record.approvalStatus} />
+                        </div>
+                        <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 80 }}>
+                          {formatDateShort(record.date)}
+                        </div>
+                        <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 72 }}>
+                          {record.time}
+                        </div>
+                        <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
+                          {record.location}
+                        </div>
+                        <CheckCell result={record.taste} width={48} />
+                        <CheckCell result={record.smell} width={48} />
+                        <CheckCell result={record.color} width={48} />
+                        <CheckCell result={record.turbidity} width={48} />
+                        <CheckCell result={record.foreignMatter} width={48} />
+                        <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0 whitespace-nowrap" style={{ width: 48 }}>
+                          {record.ph}
+                        </div>
+                        <ChlorineCell record={record} width={100} />
+                        <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
+                          {record.uvOperatingHours}
+                        </div>
+                        <div
+                          className={`flex items-center justify-center p-2 h-full text-sm shrink-0 ${
+                            record.uvIndicatorLight === "off"
+                              ? "text-[var(--semantic-brand-danger)]"
+                              : "text-[var(--semantic-text-primary)]"
+                          }`}
+                          style={{ width: 100 }}
                         >
-                          詳細
-                        </Link>
+                          {record.uvIndicatorLight === "on" ? "点灯" : "異常"}
+                        </div>
+                        <div
+                          className={`flex items-center justify-center p-2 h-full text-sm shrink-0 ${
+                            record.abnormalDetectionLight === "on"
+                              ? "text-[var(--semantic-brand-danger)]"
+                              : "text-[var(--semantic-text-primary)]"
+                          }`}
+                          style={{ width: 100 }}
+                        >
+                          {record.abnormalDetectionLight === "on" ? "異常" : "消灯"}
+                        </div>
+                        <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
+                          {record.implementer}
+                        </div>
+                        <div className="flex items-center justify-center p-2 pr-6 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
+                          {record.confirmer}
+                        </div>
                       </div>
-                      <div className="flex items-center justify-center p-2 h-full shrink-0" style={{ width: 104 }}>
-                        <ApprovalStatusBadge status={record.approvalStatus} />
-                      </div>
-                      <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 80 }}>
-                        {formatDateShort(record.date)}
-                      </div>
-                      <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 72 }}>
-                        {record.time}
-                      </div>
-                      <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
-                        {record.location}
-                      </div>
-                      <CheckCell result={record.taste} width={48} />
-                      <CheckCell result={record.smell} width={48} />
-                      <CheckCell result={record.color} width={48} />
-                      <CheckCell result={record.turbidity} width={48} />
-                      <CheckCell result={record.foreignMatter} width={48} />
-                      <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0 whitespace-nowrap" style={{ width: 48 }}>
-                        {record.ph}
-                      </div>
-                      <ChlorineCell record={record} width={100} />
-                      <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
-                        {record.uvOperatingHours}
-                      </div>
-                      <div
-                        className={`flex items-center justify-center p-2 h-full text-sm shrink-0 ${
-                          record.uvIndicatorLight === "off"
-                            ? "text-[var(--semantic-brand-danger)]"
-                            : "text-[var(--semantic-text-primary)]"
-                        }`}
-                        style={{ width: 100 }}
-                      >
-                        {record.uvIndicatorLight === "on" ? "点灯" : "異常"}
-                      </div>
-                      <div
-                        className={`flex items-center justify-center p-2 h-full text-sm shrink-0 ${
-                          record.abnormalDetectionLight === "on"
-                            ? "text-[var(--semantic-brand-danger)]"
-                            : "text-[var(--semantic-text-primary)]"
-                        }`}
-                        style={{ width: 100 }}
-                      >
-                        {record.abnormalDetectionLight === "on" ? "異常" : "消灯"}
-                      </div>
-                      <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
-                        {record.implementer}
-                      </div>
-                      <div className="flex items-center justify-center p-2 pr-6 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
-                        {record.confirmer}
-                      </div>
-                    </div>
-                  ))
-                )}
+                    ))
+                  )}
+                </div>
               </div>
+              {filtered.length === 0 && <AdminEmptyState className="mt-2" />}
             </div>
           </div>
         </div>

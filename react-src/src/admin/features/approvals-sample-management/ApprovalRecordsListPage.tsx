@@ -83,72 +83,74 @@ export function ApprovalRecordsListPage() {
           </div>
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">25年4月点検分</p>
-            <div className="w-full rounded-lg overflow-x-auto">
-              <div className="flex flex-col min-w-[1384px]">
-                <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-                  {COLUMNS.map((col) => (
-                    <div
-                      key={col.label}
-                      className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width} ${col.width.startsWith("flex-1") ? "" : "shrink-0"}`}
-                    >
-                      {col.label}
-                    </div>
-                  ))}
+            {/* 0 件のときの帯は横スクロールの箱の外に出し、見える幅いっぱいに置く（見出しだけ横に動く） */}
+            <div className="w-full min-w-0">
+              <div className="w-full rounded-lg overflow-x-auto">
+                <div className="flex flex-col min-w-[1384px]">
+                  <div className="bg-[#f6f6f6] flex h-[50px] items-center">
+                    {COLUMNS.map((col) => (
+                      <div
+                        key={col.label}
+                        className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width} ${col.width.startsWith("flex-1") ? "" : "shrink-0"}`}
+                      >
+                        {col.label}
+                      </div>
+                    ))}
+                  </div>
+                  {records.length === 0 ? null : (
+                    records.map((record, index) => (
+                      <div
+                        key={record.id}
+                        className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                      >
+                        <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
+                          <Link
+                            to={`/admin/approvals/sample-management/records/${record.id}`}
+                            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                          >
+                            詳細
+                          </Link>
+                        </div>
+                        <div className="w-[96px] shrink-0 flex items-center justify-center p-2 h-full">
+                          <ApprovalStatusBadge status={record.approvalStatus} />
+                        </div>
+                        <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          {shortDate(record.date)}
+                        </div>
+                        <div className="flex-1 min-w-[280px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left whitespace-nowrap overflow-hidden text-ellipsis" title={record.productName}>
+                          {record.productName}
+                        </div>
+                        {/* ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目 */}
+                        <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          {record.lotNumber ?? ""}
+                        </div>
+                        <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          <DateDisplay date={record.expirationDate} />
+                        </div>
+                        <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          <DateDisplay date={record.manufactureDate} />
+                        </div>
+                        <div className="w-[80px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          {record.sampleType}
+                        </div>
+                        <div className="w-[80px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          {record.sampleQuantity}
+                        </div>
+                        <div className="w-[80px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          {record.unit}
+                        </div>
+                        <div className="w-[120px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                          {record.storageLocation}
+                        </div>
+                        <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                          {record.confirmer}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
-                {records.length === 0 ? (
-                  <AdminEmptyState className="mt-2" />
-                ) : (
-                  records.map((record, index) => (
-                    <div
-                      key={record.id}
-                      className={`flex h-14 items-center ${rowStripeClasses[index]}`}
-                    >
-                      <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
-                        <Link
-                          to={`/admin/approvals/sample-management/records/${record.id}`}
-                          className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
-                        >
-                          詳細
-                        </Link>
-                      </div>
-                      <div className="w-[96px] shrink-0 flex items-center justify-center p-2 h-full">
-                        <ApprovalStatusBadge status={record.approvalStatus} />
-                      </div>
-                      <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {shortDate(record.date)}
-                      </div>
-                      <div className="flex-1 min-w-[280px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left whitespace-nowrap overflow-hidden text-ellipsis" title={record.productName}>
-                        {record.productName}
-                      </div>
-                      {/* ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目 */}
-                      <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {record.lotNumber ?? ""}
-                      </div>
-                      <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        <DateDisplay date={record.expirationDate} />
-                      </div>
-                      <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        <DateDisplay date={record.manufactureDate} />
-                      </div>
-                      <div className="w-[80px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {record.sampleType}
-                      </div>
-                      <div className="w-[80px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {record.sampleQuantity}
-                      </div>
-                      <div className="w-[80px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {record.unit}
-                      </div>
-                      <div className="w-[120px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
-                        {record.storageLocation}
-                      </div>
-                      <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
-                        {record.confirmer}
-                      </div>
-                    </div>
-                  ))
-                )}
               </div>
+              {records.length === 0 && <AdminEmptyState className="mt-2" />}
             </div>
           </div>
         </div>

@@ -312,50 +312,52 @@ export function RecordsListPage() {
           )}
         </div>
 
-        <div className="w-full rounded-lg overflow-x-auto">
-          <div className="flex flex-col min-w-[900px]">
-            <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-              {COLUMNS.map((col) => (
-                <div
-                  key={col.label}
-                  className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
-                >
-                  {col.label}
-                </div>
-              ))}
+        {/* 0 件のときの帯は横スクロールの箱の外に出し、見える幅いっぱいに置く（見出しだけ横に動く） */}
+        <div className="w-full min-w-0">
+          <div className="w-full rounded-lg overflow-x-auto">
+            <div className="flex flex-col min-w-[900px]">
+              <div className="bg-[#f6f6f6] flex h-[50px] items-center">
+                {COLUMNS.map((col) => (
+                  <div
+                    key={col.label}
+                    className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
+                  >
+                    {col.label}
+                  </div>
+                ))}
+              </div>
+              {filtered.length === 0 ? null : (
+                filtered.map((record, index) => (
+                  <div key={record.id} className={`flex h-14 items-center ${rowStripeClasses[index]}`}>
+                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                      <Link
+                        to={`${basePath}/records/${record.id}`}
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                      >
+                        詳細
+                      </Link>
+                    </div>
+                    <div className="w-[96px] flex items-center justify-center p-2 h-full">
+                      <ConfirmStatusBadge status={record.confirmStatus} />
+                    </div>
+                    <div className="w-[111px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                      {formatDate(record.date)}
+                    </div>
+                    <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
+                      {record.machineName}
+                    </div>
+                    <div className="w-[80px] flex items-center justify-center p-2 h-full">
+                      <ResultIcon result={record.result} />
+                    </div>
+                    <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                      {record.confirmer}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-            {filtered.length === 0 ? (
-              <AdminEmptyState className="mt-2" />
-            ) : (
-              filtered.map((record, index) => (
-                <div key={record.id} className={`flex h-14 items-center ${rowStripeClasses[index]}`}>
-                  <div className="w-[104px] flex items-center justify-center p-2 h-full">
-                    <Link
-                      to={`${basePath}/records/${record.id}`}
-                      className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
-                    >
-                      詳細
-                    </Link>
-                  </div>
-                  <div className="w-[96px] flex items-center justify-center p-2 h-full">
-                    <ConfirmStatusBadge status={record.confirmStatus} />
-                  </div>
-                  <div className="w-[111px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                    {formatDate(record.date)}
-                  </div>
-                  <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
-                    {record.machineName}
-                  </div>
-                  <div className="w-[80px] flex items-center justify-center p-2 h-full">
-                    <ResultIcon result={record.result} />
-                  </div>
-                  <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
-                    {record.confirmer}
-                  </div>
-                </div>
-              ))
-            )}
           </div>
+          {filtered.length === 0 && <AdminEmptyState className="mt-2" />}
         </div>
       </div>
     </div>

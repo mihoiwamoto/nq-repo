@@ -338,85 +338,87 @@ export function DataListPage() {
             )}
           </div>
 
-          <div className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1204px]">
-              <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-                {COLUMNS.map((col) => (
-                  <div
-                    key={col.label}
-                    className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
-                  >
-                    {col.label}
-                  </div>
-                ))}
-              </div>
-              {filtered.length === 0 ? (
-                <AdminEmptyState className="mt-2" />
-              ) : (
-                filtered.map((record, index) => {
-                  const abnormal = isRecordAbnormal(record);
-                  return (
+          {/* 0 件のときの帯は横スクロールの箱の外に出し、見える幅いっぱいに置く（見出しだけ横に動く） */}
+          <div className="w-full min-w-0">
+            <div className="w-full rounded-lg overflow-x-auto">
+              <div className="flex flex-col min-w-[1204px]">
+                <div className="bg-[#f6f6f6] flex h-[50px] items-center">
+                  {COLUMNS.map((col) => (
                     <div
-                      key={record.id}
-                      className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                      key={col.label}
+                      className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
                     >
-                      <div className="w-[104px] flex items-center justify-center p-2 h-full">
-                        <Link
-                          to={`${basePath}/records/${record.id}`}
-                          className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
-                        >
-                          詳細
-                        </Link>
-                      </div>
-                      <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
-                        <ApprovalStatusBadge status={record.approvalStatus} />
-                      </div>
-                      <div className="w-[80px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {formatDateShort(record.date)}
-                      </div>
-                      <div className="w-[240px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
-                        {record.productName}
-                      </div>
-                      {CRITERIA.map((c) => (
-                        <div
-                          key={c}
-                          className="w-[64px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]"
-                        >
-                          {averageScore(record, c).toFixed(1)}
-                        </div>
-                      ))}
-                      <div
-                        className={`w-[80px] flex items-center justify-center p-2 h-full ${abnormal ? "bg-[#f85c5c]" : ""}`}
-                      >
-                        {abnormal ? (
-                          <span className="size-6 flex items-center justify-center">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <g clipPath="url(#clip0_97_469484)">
-                                <path d="M9.97969 12L4.92893 6.94928C4.37104 6.39139 4.37104 5.48687 4.92893 4.92898C5.48682 4.37109 6.39135 4.37109 6.94924 4.92898L12 9.97974L17.0508 4.92898C17.6087 4.37109 18.5132 4.37109 19.0711 4.92898C19.629 5.48687 19.629 6.39139 19.0711 6.94928L14.0203 12L19.0711 17.0508C19.629 17.6087 19.629 18.5132 19.0711 19.0711C18.5132 19.629 17.6087 19.629 17.0508 19.0711L12 14.0204L6.94924 19.0711C6.39134 19.629 5.48682 19.629 4.92893 19.0711C4.37104 18.5132 4.37104 17.6087 4.92893 17.0508L9.97969 12Z" fill="white"/>
-                              </g>
-                              <defs>
-                                <clipPath id="clip0_97_469484">
-                                  <rect width="24" height="24" fill="white"/>
-                                </clipPath>
-                              </defs>
-                            </svg>
-                          </span>
-                        ) : (
-                          <span className="size-6 flex items-center justify-center text-[var(--semantic-brand-primary)]">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M4 12.402L8.47059 16.5L19.0882 7" stroke="currentColor" strokeWidth="2.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-[100px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {record.confirmer}
-                      </div>
+                      {col.label}
                     </div>
-                  );
-                })
-              )}
+                  ))}
+                </div>
+                {filtered.length === 0 ? null : (
+                  filtered.map((record, index) => {
+                    const abnormal = isRecordAbnormal(record);
+                    return (
+                      <div
+                        key={record.id}
+                        className={`flex h-14 items-center ${rowStripeClasses[index]}`}
+                      >
+                        <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                          <Link
+                            to={`${basePath}/records/${record.id}`}
+                            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-16 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                          >
+                            詳細
+                          </Link>
+                        </div>
+                        <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
+                          <ApprovalStatusBadge status={record.approvalStatus} />
+                        </div>
+                        <div className="w-[80px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          {formatDateShort(record.date)}
+                        </div>
+                        <div className="w-[240px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
+                          {record.productName}
+                        </div>
+                        {CRITERIA.map((c) => (
+                          <div
+                            key={c}
+                            className="w-[64px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]"
+                          >
+                            {averageScore(record, c).toFixed(1)}
+                          </div>
+                        ))}
+                        <div
+                          className={`w-[80px] flex items-center justify-center p-2 h-full ${abnormal ? "bg-[#f85c5c]" : ""}`}
+                        >
+                          {abnormal ? (
+                            <span className="size-6 flex items-center justify-center">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clipPath="url(#clip0_97_469484)">
+                                  <path d="M9.97969 12L4.92893 6.94928C4.37104 6.39139 4.37104 5.48687 4.92893 4.92898C5.48682 4.37109 6.39135 4.37109 6.94924 4.92898L12 9.97974L17.0508 4.92898C17.6087 4.37109 18.5132 4.37109 19.0711 4.92898C19.629 5.48687 19.629 6.39139 19.0711 6.94928L14.0203 12L19.0711 17.0508C19.629 17.6087 19.629 18.5132 19.0711 19.0711C18.5132 19.629 17.6087 19.629 17.0508 19.0711L12 14.0204L6.94924 19.0711C6.39134 19.629 5.48682 19.629 4.92893 19.0711C4.37104 18.5132 4.37104 17.6087 4.92893 17.0508L9.97969 12Z" fill="white"/>
+                                </g>
+                                <defs>
+                                  <clipPath id="clip0_97_469484">
+                                    <rect width="24" height="24" fill="white"/>
+                                  </clipPath>
+                                </defs>
+                              </svg>
+                            </span>
+                          ) : (
+                            <span className="size-6 flex items-center justify-center text-[var(--semantic-brand-primary)]">
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 12.402L8.47059 16.5L19.0882 7" stroke="currentColor" strokeWidth="2.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-[100px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                          {record.confirmer}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
+            {filtered.length === 0 && <AdminEmptyState className="mt-2" />}
           </div>
         </div>
       </div>

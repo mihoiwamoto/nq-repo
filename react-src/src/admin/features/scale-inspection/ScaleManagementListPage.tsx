@@ -116,77 +116,79 @@ export function ScaleManagementListPage() {
           )}
         </div>
 
-        <div className="w-full rounded-lg overflow-x-auto">
-          <div className="flex flex-col min-w-[760px]">
-            <div className="bg-[#f6f6f6] flex h-[50px] items-center">
-              {[
-                { label: "表示順", width: "w-[80px]" },
-                { label: "秤No.（ラベル名）", width: "w-[148px]" },
-                { label: "シリアルナンバー", width: "w-[148px]" },
-                { label: "秤量(kg)", width: "w-[100px]" },
-                { label: "持ち場", width: "w-[148px]" },
-                { label: "操作", width: "w-[104px]" },
-              ].map((col) => (
-                <div
-                  key={col.label}
-                  className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
-                >
-                  {col.label}
-                </div>
-              ))}
+        {/* 0 件のときの帯は横スクロールの箱の外に出し、見える幅いっぱいに置く（見出しだけ横に動く） */}
+        <div className="w-full min-w-0">
+          <div className="w-full rounded-lg overflow-x-auto">
+            <div className="flex flex-col min-w-[760px]">
+              <div className="bg-[#f6f6f6] flex h-[50px] items-center">
+                {[
+                  { label: "表示順", width: "w-[80px]" },
+                  { label: "秤No.（ラベル名）", width: "w-[148px]" },
+                  { label: "シリアルナンバー", width: "w-[148px]" },
+                  { label: "秤量(kg)", width: "w-[100px]" },
+                  { label: "持ち場", width: "w-[148px]" },
+                  { label: "操作", width: "w-[104px]" },
+                ].map((col) => (
+                  <div
+                    key={col.label}
+                    className={`flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-brand-primary)] ${col.width}`}
+                  >
+                    {col.label}
+                  </div>
+                ))}
+              </div>
+              {filtered.length === 0 ? null : (
+                filtered.map((scale, index) => (
+                  <div
+                    key={scale.id}
+                    className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                  >
+                    <div className="w-[80px] flex items-center justify-center gap-1 p-2 h-full">
+                      <button
+                        type="button"
+                        onClick={() => moveScale(scale.id, "up")}
+                        disabled={index === 0}
+                        className="text-[var(--semantic-brand-primary)] disabled:text-[#d0d0d0]"
+                        aria-label="上へ"
+                      >
+                        ▲
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveScale(scale.id, "down")}
+                        disabled={index === filtered.length - 1}
+                        className="text-[var(--semantic-brand-primary)] disabled:text-[#d0d0d0]"
+                        aria-label="下へ"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    <div className="w-[148px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] text-center">
+                      {scale.label}
+                    </div>
+                    <div className="w-[148px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] text-center">
+                      {scale.serialNumber}
+                    </div>
+                    <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
+                      {scale.weightCapacity}
+                    </div>
+                    <div className="w-[148px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] text-center">
+                      {getPostName(scale.postId)}
+                    </div>
+                    <div className="w-[104px] flex items-center justify-center p-2 h-full">
+                      <Link
+                        to={`${basePath}/scale-management/${scale.id}`}
+                        className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
+                      >
+                        詳細
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-            {filtered.length === 0 ? (
-              <AdminEmptyState className="mt-2" />
-            ) : (
-              filtered.map((scale, index) => (
-                <div
-                  key={scale.id}
-                  className={`flex h-14 items-center ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
-                >
-                  <div className="w-[80px] flex items-center justify-center gap-1 p-2 h-full">
-                    <button
-                      type="button"
-                      onClick={() => moveScale(scale.id, "up")}
-                      disabled={index === 0}
-                      className="text-[var(--semantic-brand-primary)] disabled:text-[#d0d0d0]"
-                      aria-label="上へ"
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveScale(scale.id, "down")}
-                      disabled={index === filtered.length - 1}
-                      className="text-[var(--semantic-brand-primary)] disabled:text-[#d0d0d0]"
-                      aria-label="下へ"
-                    >
-                      ▼
-                    </button>
-                  </div>
-                  <div className="w-[148px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] text-center">
-                    {scale.label}
-                  </div>
-                  <div className="w-[148px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] text-center">
-                    {scale.serialNumber}
-                  </div>
-                  <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                    {scale.weightCapacity}
-                  </div>
-                  <div className="w-[148px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] text-center">
-                    {getPostName(scale.postId)}
-                  </div>
-                  <div className="w-[104px] flex items-center justify-center p-2 h-full">
-                    <Link
-                      to={`${basePath}/scale-management/${scale.id}`}
-                      className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-20 rounded-lg flex items-center justify-center text-sm text-[var(--semantic-brand-primary)]"
-                    >
-                      詳細
-                    </Link>
-                  </div>
-                </div>
-              ))
-            )}
           </div>
+          {filtered.length === 0 && <AdminEmptyState className="mt-2" />}
         </div>
       </div>
     </div>

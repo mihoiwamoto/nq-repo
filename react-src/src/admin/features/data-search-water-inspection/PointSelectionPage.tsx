@@ -5,10 +5,13 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import { AdminEmptyState } from "../../components/AdminEmptyState";
+import { useDemoList } from "../../../components/demo/demoStore";
 
 export function PointSelectionPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
-  const { records } = useRecords();
+  const { records: allRecords } = useRecords();
+  // 点検場所は記録から集めるので、「データが無い」では 0 件にして「データがありません。」を出す
+  const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/data-search/water-inspection/factories/${factoryId}`;
 
