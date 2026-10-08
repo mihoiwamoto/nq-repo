@@ -38,7 +38,8 @@ const COLUMNS: ExportColumn<MachineSearchRecord>[] = [
 ];
 
 function fileName(factoryName: string, year: number, month: number) {
-  return `金属探知機記録データ一覧_${factoryName}_${year}${String(month + 1).padStart(2, "0")}`;
+  // 本番（DetectorDocumentService）は「<工場名>_<YYYYMM>_金属/X線探知機記録」
+  return `${factoryName}_${year}${String(month + 1).padStart(2, "0")}_金属/X線探知機記録`;
 }
 
 export function downloadMetalCsv(records: MachineSearchRecord[], factoryName: string, year: number, month: number) {
@@ -47,7 +48,7 @@ export function downloadMetalCsv(records: MachineSearchRecord[], factoryName: st
 
 export function downloadMetalPdf(records: MachineSearchRecord[], factoryName: string, year: number, month: number) {
   return downloadTablePdf(COLUMNS, records, {
-    title: `金属探知機記録データ一覧：${factoryName}`,
+    title: `金属/X線探知機記録データ一覧：${factoryName}`,
     year,
     month,
     fileName: fileName(factoryName, year, month),

@@ -1,0 +1,1530 @@
+[
+{
+"id": "K001",
+"name": "帳票管理 › 帳票選択",
+"pf": "admin",
+"hash": "admin/ledger-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録",
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "I001"
+},
+{
+"id": "K002",
+"name": "帳票管理 › 清掃記録 › 工場選択",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H019"
+},
+{
+"id": "K003",
+"name": "帳票管理 › 清掃記録 › ラインの一覧",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H020"
+},
+{
+"id": "K004",
+"name": "帳票管理 › 清掃記録 › ラインの新規登録",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/lines/new",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H021"
+},
+{
+"id": "K005",
+"name": "帳票管理 › 清掃記録 › 登録完了",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/lines/registered",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H022"
+},
+{
+"id": "K006",
+"name": "帳票管理 › 清掃記録 › ラインの詳細",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/lines/c1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H023"
+},
+{
+"id": "K007",
+"name": "帳票管理 › 清掃記録 › 点検予定",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H024"
+},
+{
+"id": "K008",
+"name": "帳票管理 › 清掃記録 › 予定の新規登録",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule/register",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H025"
+},
+{
+"id": "K009",
+"name": "帳票管理 › 清掃記録 › 予定の新規登録（ポップアップ：持ち場/ライン名の追加）",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule/register",
+"steps": [
+{
+"click": "追加"
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H026"
+},
+{
+"id": "K010",
+"name": "帳票管理 › 清掃記録 › 予定の登録完了",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule/registered",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H027"
+},
+{
+"id": "K011",
+"name": "帳票管理 › 清掃記録 › 点検予定（メニュー：⋮）",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"sel": "img[alt=\"メニュー\"]"
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H028"
+},
+{
+"id": "K012",
+"name": "帳票管理 › 清掃記録 › 点検予定（トースト：削除されました）",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"sel": "img[alt=\"メニュー\"]"
+},
+{
+"click": "削除",
+"exact": 1,
+"after": 500
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H029"
+},
+{
+"id": "K013",
+"name": "帳票管理 › 清掃記録 › 予定の編集",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H030"
+},
+{
+"id": "K014",
+"name": "帳票管理 › 清掃記録 › 予定の新規登録（ライン追加後）",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule/register",
+"steps": [
+{
+"click": "追加"
+},
+{
+"click": "【毎週】豆乳ライン",
+"in": 1
+},
+{
+"click": "【毎週】殺菌ライン",
+"in": 1
+},
+{
+"click": "追加",
+"exact": 1,
+"in": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H031"
+},
+{
+"id": "K015",
+"name": "帳票管理 › 清掃記録 › 点検予定（トースト：更新されました）",
+"pf": "admin",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"click": "保存",
+"exact": 1,
+"after": 400
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "H032"
+},
+{
+"id": "K016",
+"name": "承認申請管理",
+"pf": "admin",
+"hash": "admin/approvals",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_清掃記録",
+"（Admin）承認申請管理_薬品管理",
+"（Admin）承認申請管理_添加物管理"
+],
+"src": "I098"
+},
+{
+"id": "K017",
+"name": "承認申請管理 › 清掃記録 › データ一覧",
+"pf": "admin",
+"hash": "admin/approvals/cleaning-record",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_清掃記録"
+],
+"src": "F105"
+},
+{
+"id": "K018",
+"name": "承認申請管理 › 清掃記録 › データ一覧（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/cleaning-record",
+"steps": [
+{
+"click": "承認する",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_清掃記録"
+],
+"src": "F106"
+},
+{
+"id": "K019",
+"name": "承認申請管理 › 清掃記録 › 詳細",
+"pf": "admin",
+"hash": "admin/approvals/cleaning-record/records/a1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_清掃記録"
+],
+"src": "F107"
+},
+{
+"id": "K020",
+"name": "承認申請管理 › 清掃記録 › 詳細（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/cleaning-record/records/a1",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "承認済み",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_清掃記録"
+],
+"src": "F108"
+},
+{
+"id": "K021",
+"name": "承認申請管理 › 清掃記録 › 詳細（ダイアログ：差し戻し理由）",
+"pf": "admin",
+"hash": "admin/approvals/cleaning-record/records/a1",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "差し戻し",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_清掃記録"
+],
+"src": "F109"
+},
+{
+"id": "K022",
+"name": "承認申請管理 › 清掃記録 › 詳細（点検見送り）",
+"pf": "admin",
+"hash": "admin/approvals/cleaning-record/records/a2",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_清掃記録"
+],
+"src": "F110"
+},
+{
+"id": "K023",
+"name": "データ検索 › 帳票選択",
+"pf": "admin",
+"hash": "admin/data-search",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_清掃記録",
+"（Admin）データ検索_薬品管理",
+"（Admin）データ検索_添加物管理"
+],
+"src": "I138"
+},
+{
+"id": "K024",
+"name": "データ検索 › 清掃記録 › 工場選択",
+"pf": "admin",
+"hash": "admin/data-search/cleaning-record",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_清掃記録"
+],
+"src": "F145"
+},
+{
+"id": "K025",
+"name": "データ検索 › 清掃記録 › データ一覧",
+"pf": "admin",
+"hash": "admin/data-search/cleaning-record/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7759:2302",
+"sections": [
+"（Admin）データ検索_清掃記録"
+],
+"src": "R04"
+},
+{
+"id": "K026",
+"name": "データ検索 › 清掃記録 › データ一覧（ポップアップ：年月の選択）",
+"pf": "admin",
+"hash": "admin/data-search/cleaning-record/factories/f1",
+"steps": [
+{
+"click": "2025年4月",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7759:2302",
+"sections": [
+"（Admin）データ検索_清掃記録"
+],
+"src": "R05"
+},
+{
+"id": "K027",
+"name": "データ検索 › 清掃記録 › データ一覧（ダイアログ：ダウンロード形式選択）",
+"pf": "admin",
+"hash": "admin/data-search/cleaning-record/factories/f1",
+"steps": [
+{
+"wait": 800
+},
+{
+"click": "CSVダウンロード",
+"after": 900
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7759:2302",
+"sections": [
+"（Admin）データ検索_清掃記録"
+],
+"src": "R06"
+},
+{
+"id": "K028",
+"name": "データ検索 › 清掃記録 › 詳細",
+"pf": "admin",
+"hash": "admin/data-search/cleaning-record/factories/f1/records/r1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_清掃記録"
+],
+"src": "F149"
+},
+{
+"id": "K029",
+"name": "データ検索 › 清掃記録 › 詳細（点検見送り）",
+"pf": "admin",
+"hash": "admin/data-search/cleaning-record/factories/f1/records/r2",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_清掃記録"
+],
+"src": "F150"
+},
+{
+"id": "K030",
+"name": "帳票管理 › 薬品管理 › 工場選択",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F151"
+},
+{
+"id": "K031",
+"name": "帳票管理 › 薬品管理 › 薬品の一覧",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F152"
+},
+{
+"id": "K032",
+"name": "帳票管理 › 薬品管理 › 薬品の新規登録",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/new",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F153"
+},
+{
+"id": "K033",
+"name": "帳票管理 › 薬品管理 › 登録完了",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/registered",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F154"
+},
+{
+"id": "K034",
+"name": "帳票管理 › 薬品管理 › 薬品の詳細",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/c1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F155"
+},
+{
+"id": "K035",
+"name": "帳票管理 › 薬品管理 › 薬品の詳細（ダイアログ：削除）",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/c1",
+"steps": [
+{
+"wait": 800
+},
+{
+"eval": "(()=>{const b=[...document.querySelectorAll('button')].filter(b=>!b.innerText.trim()&&b.getBoundingClientRect().x>900&&b.getBoundingClientRect().y>120);b[b.length-1].click();})()",
+"after": 900
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F156"
+},
+{
+"id": "K036",
+"name": "帳票管理 › 薬品管理 › 薬品の編集",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/c1/edit",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F157"
+},
+{
+"id": "K037",
+"name": "帳票管理 › 薬品管理 › 削除完了",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/deleted",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F158"
+},
+{
+"id": "K038",
+"name": "保管場所管理",
+"pf": "admin",
+"hash": "admin/storage",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F159"
+},
+{
+"id": "K039",
+"name": "保管場所管理 › 新規登録",
+"pf": "admin",
+"hash": "admin/storage/new",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F160"
+},
+{
+"id": "K040",
+"name": "保管場所管理 › 登録完了",
+"pf": "admin",
+"hash": "admin/storage/new/complete",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F161"
+},
+{
+"id": "K041",
+"name": "保管場所管理 › 詳細",
+"pf": "admin",
+"hash": "admin/storage/s1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F162"
+},
+{
+"id": "K042",
+"name": "保管場所管理 › 編集",
+"pf": "admin",
+"hash": "admin/storage/s1/edit",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F163"
+},
+{
+"id": "K043",
+"name": "保管場所管理 › 削除完了",
+"pf": "admin",
+"hash": "admin/storage/deleted",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F164"
+},
+{
+"id": "K044",
+"name": "保管場所管理 › 詳細（トースト：更新されました。）",
+"pf": "admin",
+"hash": "admin/storage/s1/edit",
+"steps": [
+{
+"click": "保存",
+"exact": 1,
+"after": 500
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理",
+"（Admin）帳票管理_添加物管理"
+],
+"src": "H165"
+},
+{
+"id": "K045",
+"name": "帳票管理 › 薬品管理 › 薬品の詳細（トースト：更新されました。）",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/c1/edit",
+"steps": [
+{
+"click": "保存",
+"exact": 1,
+"after": 500
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "H166"
+},
+{
+"id": "K046",
+"name": "帳票管理 › 薬品管理 › 薬品の新規登録（プルダウン：単位）",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/new",
+"steps": [
+{
+"click": "例）g",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F167"
+},
+{
+"id": "K047",
+"name": "帳票管理 › 薬品管理 › 薬品の新規登録（プルダウン：保管場所）",
+"pf": "admin",
+"hash": "admin/ledger-management/chemical-management/factories/f1/chemicals/new",
+"steps": [
+{
+"click": "例）小型物置",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_薬品管理"
+],
+"src": "F168"
+},
+{
+"id": "K048",
+"name": "帳票管理 › 添加物管理 › 工場選択",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F169"
+},
+{
+"id": "K049",
+"name": "帳票管理 › 添加物管理 › 添加物の一覧",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F170"
+},
+{
+"id": "K050",
+"name": "帳票管理 › 添加物管理 › 添加物の新規登録",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/new",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F171"
+},
+{
+"id": "K051",
+"name": "帳票管理 › 添加物管理 › 登録完了",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/registered",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F172"
+},
+{
+"id": "K052",
+"name": "帳票管理 › 添加物管理 › 添加物の詳細",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/a1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F173"
+},
+{
+"id": "K053",
+"name": "帳票管理 › 添加物管理 › 添加物の詳細（ダイアログ：削除）",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/a1",
+"steps": [
+{
+"wait": 800
+},
+{
+"eval": "(()=>{const b=[...document.querySelectorAll('button')].filter(b=>!b.innerText.trim()&&b.getBoundingClientRect().x>900&&b.getBoundingClientRect().y>120);b[b.length-1].click();})()",
+"after": 900
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F174"
+},
+{
+"id": "K054",
+"name": "帳票管理 › 添加物管理 › 添加物の編集",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/a1/edit",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F175"
+},
+{
+"id": "K055",
+"name": "帳票管理 › 添加物管理 › 削除完了",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/deleted",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F176"
+},
+{
+"id": "K056",
+"name": "帳票管理 › 添加物管理 › 添加物の詳細（トースト：更新されました。）",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/a1/edit",
+"steps": [
+{
+"click": "保存",
+"exact": 1,
+"after": 500
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "H177"
+},
+{
+"id": "K057",
+"name": "帳票管理 › 添加物管理 › 添加物の新規登録（プルダウン：単位）",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/new",
+"steps": [
+{
+"click": "例）ml",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F178"
+},
+{
+"id": "K058",
+"name": "帳票管理 › 添加物管理 › 添加物の新規登録（プルダウン：保管場所）",
+"pf": "admin",
+"hash": "admin/ledger-management/additive-management/factories/f1/additives/new",
+"steps": [
+{
+"click": "例）小型物置",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_添加物管理"
+],
+"src": "F179"
+},
+{
+"id": "K059",
+"name": "承認申請管理 › 薬品管理 › データ一覧",
+"pf": "admin",
+"hash": "admin/approvals/chemical-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:398",
+"sections": [
+"（Admin）承認申請管理_薬品管理"
+],
+"src": "R07"
+},
+{
+"id": "K060",
+"name": "承認申請管理 › 薬品管理 › データ一覧（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/chemical-management",
+"steps": [
+{
+"click": "承認する",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:398",
+"sections": [
+"（Admin）承認申請管理_薬品管理"
+],
+"src": "R08"
+},
+{
+"id": "K061",
+"name": "承認申請管理 › 薬品管理 › 詳細",
+"pf": "admin",
+"hash": "admin/approvals/chemical-management/records/ch2",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_薬品管理"
+],
+"src": "F206"
+},
+{
+"id": "K062",
+"name": "承認申請管理 › 薬品管理 › 詳細（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/chemical-management/records/ch2",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "承認済み",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_薬品管理"
+],
+"src": "F207"
+},
+{
+"id": "K063",
+"name": "承認申請管理 › 薬品管理 › 詳細（ダイアログ：差し戻し理由）",
+"pf": "admin",
+"hash": "admin/approvals/chemical-management/records/ch2",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "差し戻し",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_薬品管理"
+],
+"src": "F208"
+},
+{
+"id": "K064",
+"name": "承認申請管理 › 添加物管理 › データ一覧",
+"pf": "admin",
+"hash": "admin/approvals/additive-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:404",
+"sections": [
+"（Admin）承認申請管理_添加物管理"
+],
+"src": "R09"
+},
+{
+"id": "K065",
+"name": "承認申請管理 › 添加物管理 › データ一覧（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/additive-management",
+"steps": [
+{
+"click": "承認する",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:404",
+"sections": [
+"（Admin）承認申請管理_添加物管理"
+],
+"src": "R10"
+},
+{
+"id": "K066",
+"name": "承認申請管理 › 添加物管理 › 詳細",
+"pf": "admin",
+"hash": "admin/approvals/additive-management/records/a1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_添加物管理"
+],
+"src": "F211"
+},
+{
+"id": "K067",
+"name": "承認申請管理 › 添加物管理 › 詳細（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/additive-management/records/a1",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "承認済み",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_添加物管理"
+],
+"src": "F212"
+},
+{
+"id": "K068",
+"name": "承認申請管理 › 添加物管理 › 詳細（ダイアログ：差し戻し理由）",
+"pf": "admin",
+"hash": "admin/approvals/additive-management/records/a1",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "差し戻し",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_添加物管理"
+],
+"src": "F213"
+},
+{
+"id": "K069",
+"name": "データ検索 › 薬品管理 › 工場選択",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "F242"
+},
+{
+"id": "K070",
+"name": "データ検索 › 薬品管理 › データ一覧",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:434",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "R11"
+},
+{
+"id": "K071",
+"name": "データ検索 › 薬品管理 › データ一覧（ポップアップ：年月の選択）",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management/factories/f1",
+"steps": [
+{
+"click": "2025年4月",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:434",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "R12"
+},
+{
+"id": "K072",
+"name": "データ検索 › 薬品管理 › データ一覧（ダイアログ：ダウンロード形式選択）",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management/factories/f1",
+"steps": [
+{
+"wait": 800
+},
+{
+"click": "CSVダウンロード",
+"after": 900
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:434",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "R13"
+},
+{
+"id": "K073",
+"name": "データ検索 › 薬品管理 › 詳細",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management/factories/f1/records/dch1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "F246"
+},
+{
+"id": "K074",
+"name": "データ検索 › 薬品管理 › データ一覧（プルダウン：薬品名）",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management/factories/f1",
+"steps": [
+{
+"click": "薬品名",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:434",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "R14"
+},
+{
+"id": "K075",
+"name": "データ検索 › 薬品管理 › データ一覧（プルダウン：保管場所）",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management/factories/f1",
+"steps": [
+{
+"click": "保管場所名",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:434",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "R15"
+},
+{
+"id": "K076",
+"name": "データ検索 › 薬品管理 › データ一覧（絞り込み後）",
+"pf": "admin",
+"hash": "admin/data-search/chemical-management/factories/f1",
+"steps": [
+{
+"click": "薬品名",
+"exact": 1
+},
+{
+"click": "次亜塩素酸ナトリウム",
+"exact": 1
+},
+{
+"click": "検索",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:434",
+"sections": [
+"（Admin）データ検索_薬品管理"
+],
+"src": "R16"
+},
+{
+"id": "K077",
+"name": "データ検索 › 添加物管理 › 工場選択",
+"pf": "admin",
+"hash": "admin/data-search/additive-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "F250"
+},
+{
+"id": "K078",
+"name": "データ検索 › 添加物管理 › データ一覧",
+"pf": "admin",
+"hash": "admin/data-search/additive-management/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:440",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "R17"
+},
+{
+"id": "K079",
+"name": "データ検索 › 添加物管理 › データ一覧（ポップアップ：年月の選択）",
+"pf": "admin",
+"hash": "admin/data-search/additive-management/factories/f1",
+"steps": [
+{
+"click": "2025年4月",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:440",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "R18"
+},
+{
+"id": "K080",
+"name": "データ検索 › 添加物管理 › データ一覧（ダイアログ：ダウンロード形式選択）",
+"pf": "admin",
+"hash": "admin/data-search/additive-management/factories/f1",
+"steps": [
+{
+"wait": 800
+},
+{
+"click": "CSVダウンロード",
+"after": 900
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:440",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "R19"
+},
+{
+"id": "K081",
+"name": "データ検索 › 添加物管理 › 詳細",
+"pf": "admin",
+"hash": "admin/data-search/additive-management/factories/f1/records/add1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "F254"
+},
+{
+"id": "K082",
+"name": "データ検索 › 添加物管理 › データ一覧（プルダウン：添加物名）",
+"pf": "admin",
+"hash": "admin/data-search/additive-management/factories/f1",
+"steps": [
+{
+"click": "添加物名",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:440",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "R20"
+},
+{
+"id": "K083",
+"name": "データ検索 › 添加物管理 › データ一覧（プルダウン：保管場所）",
+"pf": "admin",
+"hash": "admin/data-search/additive-management/factories/f1",
+"steps": [
+{
+"click": "保管場所名",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:440",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "R21"
+},
+{
+"id": "K084",
+"name": "データ検索 › 添加物管理 › データ一覧（絞り込み後）",
+"pf": "admin",
+"hash": "admin/data-search/additive-management/factories/f1",
+"steps": [
+{
+"click": "添加物名",
+"exact": 1
+},
+{
+"click": "ソルビン酸カリウム",
+"exact": 1
+},
+{
+"click": "検索",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7797:440",
+"sections": [
+"（Admin）データ検索_添加物管理"
+],
+"src": "R22"
+},
+{
+"pf": "admin",
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"id": "K085",
+"name": "帳票管理 › 清掃記録 › 予定の編集（ダイアログ：持ち場/ライン設定の削除）",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "HN036"
+},
+{
+"pf": "admin",
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"id": "K086",
+"name": "帳票管理 › 清掃記録 › 予定の削除完了",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+},
+{
+"click": "削除",
+"exact": 1,
+"in": 1
+}
+],
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "HN037"
+},
+{
+"pf": "admin",
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"id": "K087",
+"name": "帳票管理 › 清掃記録 › ラインの編集",
+"hash": "admin/ledger-management/cleaning-record/factories/f1/lines/c1/edit",
+"steps": [],
+"sections": [
+"（Admin）帳票管理_清掃記録"
+],
+"src": "HN038"
+}
+]

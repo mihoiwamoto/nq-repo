@@ -45,6 +45,9 @@ function bringFront(f){// floating picker (年月/カレンダー) hidden behind
  const pb=pop.absoluteBoundingBox;let px=pb.x-fb.x,py=pb.y-fb.y;const over=Math.max(0,Math.round(py+pb.height-(fb.height-24)));
  if(over>0&&main){const c=main.children[0];c.layoutPositioning='ABSOLUTE';c.x=0;c.y=-over;py-=over;}
  f.appendChild(pop);pop.layoutPositioning='ABSOLUTE';pop.x=Math.round(px);pop.y=Math.round(py);}
+function pulldownFront(f){// プルダウン・⋮のメニューの選択肢の一覧は、後ろの表（後の兄弟）に隠れることがあるので、フレームの一番手前へ移す（2026-10-08 夕）
+ const fb=f.absoluteBoundingBox;const isMenu=n=>n.type==='FRAME'&&n.layoutPositioning==='ABSOLUTE'&&n.parent!==f&&n.width>=100&&n.width<=600&&n.height>=60&&Array.isArray(n.effects)&&n.effects.some(e=>e.type==='DROP_SHADOW')&&Array.isArray(n.fills)&&n.fills.some(p=>p.type==='SOLID'&&p.color.r>0.98&&p.color.g>0.98&&p.color.b>0.98)&&n.findAll(b=>b.type==='FRAME'&&/^button/.test(b.name)).length>=2;
+ for(const m of f.findAll(isMenu)){const mb=m.absoluteBoundingBox;f.appendChild(m);if(f.layoutMode!=='NONE')m.layoutPositioning='ABSOLUTE';m.x=Math.round(mb.x-fb.x);m.y=Math.round(mb.y-fb.y);}}
 function headerShadow(f){const h=f.findOne(n=>n.type==='FRAME'&&n.name==='header'&&n.height<=90&&n.width>=600);if(!h)return;let p=h.parent,bg=null;while(p&&p!==f){if(Array.isArray(p.fills)&&p.fills.length&&p.fills[0].type==='SOLID'){bg=p.fills[0];break;}p=p.parent;}
  h.fills=[bg?{type:'SOLID',color:bg.color,opacity:bg.opacity??1}:{type:'SOLID',color:{r:0xf1/255,g:0xef/255,b:0xea/255}}];if(!h.effects.length)h.effects=[{type:'DROP_SHADOW',color:{r:0.2,g:0.2,b:0.2,a:0.16},offset:{x:0,y:2},radius:2,spread:0,visible:true,blendMode:'NORMAL'}];const par=h.parent;if(par.children[0]===h&&par.children.length===2)par.itemReverseZIndex=true;}
 function titleBar(f){const fb=f.absoluteBoundingBox;const inOv=n=>{let p=n.parent;while(p&&p!==f){if(p.layoutPositioning==='ABSOLUTE'&&Math.round(p.width)===Math.round(f.width))return true;p=p.parent;}return false;};
@@ -64,5 +67,6 @@ for(const [h,name,X,Y,tmp,sec,pf] of S){D=await load(h);IH=D.IM.map(b=>figma.cre
  const r=build(D.root,se);r.name=name;r.x=X;r.y=Y;
  if(pf==='app')headerShadow(r);else{titleBar(r);greenComment(r);}
  if(/年月の選択|実施日の選択/.test(name))bringFront(r);else if(/ポップアップ|ダイアログ/.test(name))centerPopup(r);
+  if(/プルダウン|メニュー/.test(name))pulldownFront(r);
  const t=await figma.getNodeByIdAsync(tmp);if(t)t.remove();out.push(r.id);}
 return out;

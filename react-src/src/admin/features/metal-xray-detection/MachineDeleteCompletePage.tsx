@@ -34,7 +34,7 @@ export function MachineDeleteCompletePage() {
           to={`/admin/ledger-management/metal-xray-detection/factories/${factoryId}`}
           className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
         >
-          金属/X線探知機記録に戻る
+          金属/X線探知機記録一覧に戻る
         </Link>
       </div>
     </div>

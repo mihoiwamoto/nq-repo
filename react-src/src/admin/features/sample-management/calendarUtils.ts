@@ -42,9 +42,10 @@ export function formatMonthLabel(year: number, month: number) {
   return `${year}年${month + 1}月`;
 }
 
+/** 本番（calendars/specimen/index.blade.php）は Carbon の format('Y年m月d日')。月日はゼロ埋め */
 export function formatDateLabel(dateKey: string) {
-  const [y, m, d] = dateKey.split("-").map(Number);
-  return `${y}年${m}月${d}日`;
+  const [y, m, d] = dateKey.split("-");
+  return `${y}年${m.padStart(2, "0")}月${d.padStart(2, "0")}日`;
 }
 
 export const WEEKDAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"];

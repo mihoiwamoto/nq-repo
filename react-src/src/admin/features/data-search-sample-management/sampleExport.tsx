@@ -36,7 +36,8 @@ const COLUMNS: ExportColumn<SampleRecord>[] = [
 ];
 
 function fileName(factoryName: string, year: number, month: number) {
-  return `検体管理データ一覧_${factoryName}_${year}${String(month + 1).padStart(2, "0")}`;
+  // 本番（SpecimenDocumentService）は「<工場名>_<YYYYMM>_検体」
+  return `${factoryName}_${year}${String(month + 1).padStart(2, "0")}_検体`;
 }
 
 export function downloadSampleCsv(records: SampleRecord[], factoryName: string, year: number, month: number) {
@@ -45,7 +46,7 @@ export function downloadSampleCsv(records: SampleRecord[], factoryName: string, 
 
 export function downloadSamplePdf(records: SampleRecord[], factoryName: string, year: number, month: number) {
   return downloadTablePdf(COLUMNS, records, {
-    title: `検体管理データ一覧：${factoryName}`,
+    title: `検体データ一覧：${factoryName}`,
     year,
     month,
     fileName: fileName(factoryName, year, month),

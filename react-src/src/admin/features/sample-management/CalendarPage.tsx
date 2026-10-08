@@ -22,7 +22,6 @@ export function CalendarPage() {
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
-  const [showDeletedToast, setShowDeletedToast] = useState(false);
   const [showUpdateToast, setShowUpdateToast] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -56,7 +55,8 @@ export function CalendarPage() {
   function confirmDeleteEntry() {
     removeScheduleEntry(selectedDateKey);
     setDeleteDialogOpen(false);
-    setShowDeletedToast(true);
+    // 本番（CalendarController::destroy）は削除のあと完了画面「カレンダーの削除が完了しました」
+    navigate(`${basePath}/schedule/register/complete?date=${selectedDateKey}`, { state: { deleted: true } });
   }
 
   return (
@@ -65,6 +65,8 @@ export function CalendarPage() {
         title="点検予定"
         showBack
         action={
+          // 本番は予定を登録済みの日には「新規登録」を出さない（isEnableActionButton = !$isRegistered && !$isHoliday）
+          selectedProducts && selectedProducts.length > 0 ? undefined : (
           <Link
             to={`${basePath}/schedule/register?date=${selectedDateKey}`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
@@ -72,6 +74,7 @@ export function CalendarPage() {
             <PlusIcon />
             新規登録
           </Link>
+          )
         }
       />
       <Breadcrumb
@@ -242,24 +245,25 @@ export function CalendarPage() {
                           {product.name}
                         </span>
                       </div>
-                      {/* 製造日・ロットNo. は予定の登録・編集で入れた値（無ければ製品マスタの値）。入っている製品だけ出す */}
-                      {(selectedEntry?.details?.[product.id]?.manufactureDate ?? product.manufactureDate) && (
+                      {/* 製造日・ロットNo. は予定の登録・編集で入れた値（無ければ製品マスタの値）。
+                          本番どおり全製品に出し、値が無ければ「ー」 */}
+                      {(
                         <div className="flex gap-4 h-8 items-center">
                           <span className="text-base text-[var(--semantic-text-primary)] w-28">
                             製造日
                           </span>
                           <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                            {(selectedEntry?.details?.[product.id]?.manufactureDate ?? product.manufactureDate ?? "").replaceAll("-", "/")}
+                            {(selectedEntry?.details?.[product.id]?.manufactureDate ?? product.manufactureDate ?? "").replaceAll("-", "/") || "ー"}
                           </span>
                         </div>
                       )}
-                      {(selectedEntry?.details?.[product.id]?.lotNumber ?? product.lotNumber) && (
+                      {(
                         <div className="flex gap-4 h-8 items-center">
                           <span className="text-base text-[var(--semantic-text-primary)] w-28">
                             ロットNo.
                           </span>
                           <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                            {selectedEntry?.details?.[product.id]?.lotNumber ?? product.lotNumber}
+                            {(selectedEntry?.details?.[product.id]?.lotNumber ?? product.lotNumber) || "ー"}
                           </span>
                         </div>
                       )}
@@ -279,10 +283,10 @@ export function CalendarPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                検体製品設定の削除
+                検体予定設定の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">
@@ -305,9 +309,6 @@ export function CalendarPage() {
         </div>
       )}
 
-      {showDeletedToast && (
-        <Toast message="削除されました。" onClose={() => setShowDeletedToast(false)} />
-      )}
       {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );

@@ -440,11 +440,11 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   /* ===== 管理画面: 帳票管理 › ガラスプラスチック管理 (Ver.1.5) ===== */
   "src/admin/features/glass-plastic/FactorySelectionPage.tsx": factorySelect("帳票管理", "ガラスプラスチック管理", "点検場所（フロア）の一覧"),
   "src/admin/features/glass-plastic/FloorSelectionPage.tsx": {
-    summary: "ガラス・プラスチック管理の点検場所（フロア）を工場ごとに一覧する画面です。",
+    summary: "ガラスプラスチック管理の点検場所（フロア）を工場ごとに一覧する画面です。",
     points: ["「アプリ表示中」「アプリ非表示」のタブで切り替える", "フロアを押して詳細へ、「新規登録」で追加"],
   },
   "src/admin/features/glass-plastic/FloorDetailPage.tsx": {
-    summary: "フロア 1 件の詳細です。配置図と、その上に置いた点検箇所（ガラス・プラスチック製品の位置）を確認します。",
+    summary: "フロア 1 件の詳細です。配置図と、その上に置いた点検箇所（ガラスプラスチック製品の位置）を確認します。",
     points: ["フロア名・アプリ表示期間・配置図を表示", "点検箇所ごとの修理状況を確認", "「編集」でフォームへ、「削除」で削除"],
   },
   "src/admin/features/glass-plastic/FloorRegistrationPage.tsx": {
@@ -810,7 +810,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   ),
   "src/admin/features/approvals-water-inspection/RecordDetailPage.tsx": approvalDetail("使用水の点検", "点検場所ごとの臭い・濁り・異物・pH・残留塩素・UV 殺菌灯の記録"),
   "src/admin/features/approvals-glass-plastic/RecordDetailPage.tsx": approvalDetail(
-    "ガラス・プラスチック管理",
+    "ガラスプラスチック管理",
     "点検場所（フロア）の配置図と、点検箇所ごとの結果",
     ["配置図の上のピンから点検箇所を選ぶ、絞り込みで異常のみ表示"]
   ),
@@ -859,9 +859,9 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   /* ===== 管理画面: 確認管理 ===== */
   "src/admin/features/confirmations-water-inspection/RecordsListPage.tsx": confirmationList("使用水の点検", "日付・点検時間・点検場所と各点検項目・実施者"),
   "src/admin/features/confirmations-water-inspection/RecordDetailPage.tsx": confirmationDetail("使用水の点検", "点検場所ごとの臭い・濁り・異物・pH・残留塩素・UV 殺菌灯の記録"),
-  "src/admin/features/confirmations-glass-plastic/RecordsListPage.tsx": confirmationList("ガラス・プラスチック管理", "日付・点検場所（フロア）・結果"),
+  "src/admin/features/confirmations-glass-plastic/RecordsListPage.tsx": confirmationList("ガラスプラスチック管理", "日付・点検場所（フロア）・結果"),
   "src/admin/features/confirmations-glass-plastic/RecordDetailPage.tsx": confirmationDetail(
-    "ガラス・プラスチック管理",
+    "ガラスプラスチック管理",
     "フロアの配置図と点検箇所ごとの結果・修理状況",
     ["配置図の上のピンから点検箇所を選ぶ、絞り込みで異常のみ表示"]
   ),
@@ -903,12 +903,12 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
 
   "src/admin/features/data-search-glass-plastic/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "ガラスプラスチック管理", "点検場所選択"),
   "src/admin/features/data-search-glass-plastic/FloorSelectionPage.tsx": {
-    summary: "データ検索のガラス・プラスチック管理で、点検場所（フロア）を選ぶ画面です。",
+    summary: "データ検索のガラスプラスチック管理で、点検場所（フロア）を選ぶ画面です。",
     points: ["フロアを押すとそのフロアのデータ一覧へ"],
   },
-  "src/admin/features/data-search-glass-plastic/DataListPage.tsx": searchList("ガラス・プラスチック管理", "日付・点検場所・総点検箇所数・正常/異常ありの数"),
+  "src/admin/features/data-search-glass-plastic/DataListPage.tsx": searchList("ガラスプラスチック管理", "日付・点検場所・総点検箇所数・正常/異常ありの数"),
   "src/admin/features/data-search-glass-plastic/RecordDetailPage.tsx": searchDetail(
-    "ガラス・プラスチック管理",
+    "ガラスプラスチック管理",
     "フロアの配置図と点検箇所ごとの結果・修理状況",
     ["配置図の上のピンから点検箇所を選ぶ、絞り込みで異常のみ表示"]
   ),
@@ -1138,10 +1138,10 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     points: ["ボタンで履歴表に戻る"],
   },
 
-  /* ===== アプリ: ガラス・プラスチック管理 ===== */
-  "src/app/features/glass-plastic/FloorSelectionPage.tsx": appEntry("ガラス・プラスチック管理", "点検場所（フロア）"),
+  /* ===== アプリ: ガラスプラスチック管理 ===== */
+  "src/app/features/glass-plastic/FloorSelectionPage.tsx": appEntry("ガラスプラスチック管理", "点検場所（フロア）"),
   "src/app/features/glass-plastic/FloorInspectionPage.tsx": {
-    summary: "フロアの配置図を見ながら、ガラス・プラスチック製品の点検箇所を 1 つずつ点検する画面です。",
+    summary: "フロアの配置図を見ながら、ガラスプラスチック製品の点検箇所を 1 つずつ点検する画面です。",
     points: [
       "配置図のピンを押して点検箇所を選ぶ。拡大・縮小ができる",
       "「すべて」「異常あり」「正常」で箇所を絞り込む",
@@ -1149,8 +1149,8 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
       "すべて点検したら「確認」へ",
     ],
   },
-  "src/app/features/glass-plastic/FloorInspectionConfirmPage.tsx": appConfirm("ガラス・プラスチック管理", "点検場所・点検箇所ごとの結果（内容・原因・対応）", ["配置図で未確認の箇所が無いかを見直す"]),
-  "src/app/features/glass-plastic/FloorInspectionCompletePage.tsx": appComplete("ガラス・プラスチック管理", "フロアの一覧"),
+  "src/app/features/glass-plastic/FloorInspectionConfirmPage.tsx": appConfirm("ガラスプラスチック管理", "点検場所・点検箇所ごとの結果（内容・原因・対応）", ["配置図で未確認の箇所が無いかを見直す"]),
+  "src/app/features/glass-plastic/FloorInspectionCompletePage.tsx": appComplete("ガラスプラスチック管理", "フロアの一覧"),
 
   /* ===== アプリ: 秤点検記録 ===== */
   "src/app/features/scale-inspection/PostSelectionPage.tsx": appEntry("秤点検記録", "持ち場"),

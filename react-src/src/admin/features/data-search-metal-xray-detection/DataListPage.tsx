@@ -44,14 +44,16 @@ function ResultIcon({ result }: { result: InspectionResult }) {
 }
 
 
+// 本番（dataSearch/detector/configurations/list.blade.php）は check_date->format('y.m.d')（例 25.04.01）
 function formatDate(date: string) {
-  return date.replaceAll("-", "/");
+  const [y, m, d] = date.split("-");
+  return `${y.slice(-2)}.${m}.${d}`;
 }
 
 const COLUMNS = [
   { label: "操作", width: "w-[104px]" },
   { label: "ステータス", width: "w-[104px] shrink-0" },
-  { label: "実施日", width: "w-[111px]" },
+  { label: "日付", width: "w-[111px]" },
   { label: "点検構成名", width: "flex-1 min-w-[200px]" },
   { label: "結果", width: "w-[80px]" },
   { label: "確認者", width: "w-[100px]" },
@@ -253,7 +255,7 @@ export function DataListPage() {
             onClick={() => setMonthPickerOpen((v) => !v)}
             className="flex items-center gap-1 text-xl text-[var(--semantic-text-primary)]"
           >
-            {year}年{month + 1}月
+            {year}年{String(month + 1).padStart(2, "0")}月
             <span
               aria-hidden
               className="inline-block size-3 shrink-0"

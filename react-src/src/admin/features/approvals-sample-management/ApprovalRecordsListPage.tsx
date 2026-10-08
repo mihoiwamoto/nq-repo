@@ -1,4 +1,3 @@
-import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
@@ -9,41 +8,27 @@ import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
-import iconDownload from "../../../assets/figma/icons/common/download.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
 import { useDemoFactoryName } from "../../data/factoryDemo";
 
-function HyphenIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="7" y1="11.5" x2="17" y2="11.5" stroke="#333333" strokeWidth="2" strokeLinecap="round"/>
-    </svg>
-  );
+/* 本番（reports/approvals/specimen/index.blade.php）：実施日は y.m.d（例 25.04.01）、
+   ロットNo.・賞味期限・製造日は無ければ空欄 */
+function shortDate(date: string) {
+  const [y, m, d] = date.split("-");
+  return `${y.slice(-2)}.${m}.${d}`;
 }
 
 function DateDisplay({ date }: { date: string | undefined }) {
-  if (!date) {
-    return <HyphenIcon />;
-  }
+  if (!date) return null;
   return <>{date.replaceAll("-", "/")}</>;
 }
 
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
+/* 列は本番どおり 操作・ステータス・実施日・製品名・ロットNo.・賞味期限・製造日・検体種別・検体数量・単位・保管場所・確認者
+   （備考・状態・破棄日・実施者は出さない。詳細画面には出す） */
 const COLUMNS: { label: string; width: string }[] = [
   { label: "操作", width: "w-[104px]" },
   { label: "ステータス", width: "w-[96px]" },
   { label: "実施日", width: "w-[111px]" },
-  { label: "製品名", width: "w-[280px]" },
+  { label: "製品名", width: "flex-1 min-w-[280px]" },
   { label: "ロットNo.", width: "w-[111px]" },
   { label: "賞味期限", width: "w-[111px]" },
   { label: "製造日", width: "w-[111px]" },
@@ -51,10 +36,6 @@ const COLUMNS: { label: string; width: string }[] = [
   { label: "検体数量", width: "w-[80px]" },
   { label: "単位", width: "w-[80px]" },
   { label: "保管場所", width: "w-[120px]" },
-  { label: "備考", width: "flex-1 min-w-[280px]" },
-  { label: "状態", width: "w-[111px]" },
-  { label: "破棄日", width: "w-[111px]" },
-  { label: "実施者", width: "w-[100px]" },
   { label: "確認者", width: "w-[100px]" },
 ];
 
@@ -64,50 +45,10 @@ export function ApprovalRecordsListPage() {
   const { records: allRecords } = useRecords();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
   const records = useDemoList(allRecords);
-  const tableRef = useRef<HTMLDivElement>(null);
   const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
   const request = approvalRequests.find((r) => r.ledgerSlug === "sample-management");
 
-  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
-  const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-
   const rowStripeClasses = getDateStripeClasses(records, (r) => r.date);
-
-  function handleDownload() {
-    const header = [
-      "実施日",
-      "製品名",
-      "ロットNo.",
-      "賞味期限",
-      "製造日",
-      "検体種別",
-      "検体数量",
-      "単位",
-      "保管場所",
-      "備考",
-      "状態",
-      "破棄日",
-      "実施者",
-      "確認者",
-    ];
-    const rows = records.map((r) => [
-      r.date,
-      r.productName,
-      r.lotNumber ?? "",
-      r.expirationDate,
-      r.manufactureDate,
-      r.sampleType,
-      r.sampleQuantity,
-      r.unit,
-      r.storageLocation,
-      r.remarks,
-      r.status,
-      r.discardedDate ?? "",
-      r.implementer,
-      r.confirmer,
-    ]);
-    downloadCsv([header, ...rows], "データ一覧.csv");
-  }
 
   const handleApprove = () => {
     requestApproval(() => {
@@ -124,28 +65,6 @@ export function ApprovalRecordsListPage() {
       <PageTitleBar
         title="データ一覧"
         showBack
-        action={
-          <button
-            type="button"
-            onClick={() => setDownloadDialogOpen(true)}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)]"
-            title="CSVダウンロード"
-          >
-            <span
-              aria-hidden
-              className="inline-block size-5 shrink-0"
-              style={{
-                WebkitMaskImage: `url("${iconDownload}")`,
-                maskImage: `url("${iconDownload}")`,
-                WebkitMaskSize: "contain",
-                maskSize: "contain",
-                WebkitMaskRepeat: "no-repeat",
-                maskRepeat: "no-repeat",
-                backgroundColor: "currentColor",
-              }}
-            />
-          </button>
-        }
       />
       <Breadcrumb
         items={[
@@ -160,8 +79,8 @@ export function ApprovalRecordsListPage() {
           </div>
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">25年4月点検分</p>
-            <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-              <div className="flex flex-col min-w-[1986px]">
+            <div className="w-full rounded-lg overflow-x-auto">
+              <div className="flex flex-col min-w-[1384px]">
                 <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                   {COLUMNS.map((col) => (
                     <div
@@ -194,14 +113,14 @@ export function ApprovalRecordsListPage() {
                         <ApprovalStatusBadge status={record.approvalStatus} />
                       </div>
                       <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        <DateDisplay date={record.date} />
+                        {shortDate(record.date)}
                       </div>
-                      <div className="w-[280px] shrink-0 flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left whitespace-nowrap overflow-hidden text-ellipsis" title={record.productName}>
+                      <div className="flex-1 min-w-[280px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left whitespace-nowrap overflow-hidden text-ellipsis" title={record.productName}>
                         {record.productName}
                       </div>
                       {/* ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目 */}
                       <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        {record.lotNumber || <HyphenIcon />}
+                        {record.lotNumber ?? ""}
                       </div>
                       <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                         <DateDisplay date={record.expirationDate} />
@@ -220,18 +139,6 @@ export function ApprovalRecordsListPage() {
                       </div>
                       <div className="w-[120px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                         {record.storageLocation}
-                      </div>
-                      <div className="flex-1 min-w-[280px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
-                        {record.remarks}
-                      </div>
-                      <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
-                        {record.status}
-                      </div>
-                      <div className="w-[111px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                        <DateDisplay date={record.discardedDate} />
-                      </div>
-                      <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
-                        {record.implementer}
                       </div>
                       <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                         {record.confirmer}
@@ -255,71 +162,6 @@ export function ApprovalRecordsListPage() {
         </button>
       </div>
 
-      {downloadDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setDownloadDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[640px]">
-            <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-              ダウンロード形式選択
-            </h2>
-            <div className="flex flex-col gap-2 items-start w-full">
-              <p className="text-base text-[var(--semantic-text-primary)]">
-                ダウンロード形式を選択してください
-              </p>
-              <div className="flex w-full rounded-lg overflow-hidden border border-[#d0d0d0]">
-                <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-center px-6 py-4 text-white text-base w-[160px] shrink-0">
-                  ファイル形式
-                </div>
-                <div className="bg-white flex flex-col gap-3 justify-center px-6 py-4 flex-1">
-                  <label className="flex items-center gap-2 text-base text-[var(--semantic-text-primary)]">
-                    <input
-                      type="radio"
-                      name="downloadFormat"
-                      value="csv"
-                      checked={downloadFormat === "csv"}
-                      onChange={() => setDownloadFormat("csv")}
-                    />
-                    CSV形式
-                  </label>
-                  <label className="flex items-center gap-2 text-base text-[var(--semantic-text-primary)]">
-                    <input
-                      type="radio"
-                      name="downloadFormat"
-                      value="pdf"
-                      checked={downloadFormat === "pdf"}
-                      onChange={() => setDownloadFormat("pdf")}
-                    />
-                    PDF形式
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-6 items-center justify-center w-full">
-              <button
-                type="button"
-                onClick={() => setDownloadDialogOpen(false)}
-                className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
-              >
-                キャンセル
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, "データ一覧.pdf");
-                  }
-                  setDownloadDialogOpen(false);
-                }}
-                className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
-              >
-                ダウンロード
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -36,7 +36,8 @@ export function NewRegistrationPage() {
 
   function handleSubmit() {
     if (!name) {
-      setError("検体製品名は必須です");
+      // 本番（Specimen/Product/StoreRequest の messages）の文言
+      setError("検体製品名を選択してください。");
       return;
     }
     addProduct(name);

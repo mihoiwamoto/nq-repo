@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Toast } from "../../components/Toast";
 import { useSampleManagement } from "./SampleManagementContext";
 import { AddProductDialog } from "./AddProductDialog";
 import { DateFilterInput } from "../../components/DateFilterInput";
@@ -33,8 +32,6 @@ export function ScheduleRegistrationPage() {
   const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
 
   const selectedProducts = productIds
     .map((id) => products.find((p) => p.id === id))
@@ -50,8 +47,12 @@ export function ScheduleRegistrationPage() {
   }
 
   function handleSubmit() {
-    if (!date || productIds.length === 0) {
-      setError("日付と検体対象製品は必須です");
+    // 本番（Calendar/StoreRequest の messages）は項目ごとのエラー
+    const messages: string[] = [];
+    if (!date) messages.push("製造予定日は必須です。");
+    if (productIds.length === 0) messages.push("製品は必須です。");
+    if (messages.length > 0) {
+      setError(messages.join("\n"));
       return;
     }
     upsertScheduleEntry(
@@ -70,16 +71,13 @@ export function ScheduleRegistrationPage() {
     setProductIds([]);
     setDeleteAllDialogOpen(false);
     setMenuOpen(false);
-    setToastMessage("削除されました。");
-    setShowToast(true);
+    // 本番（calendar/create.js の deleteCalendarEvents）は外すだけでトーストを出さない
   }
 
   function confirmDeleteProduct() {
     if (!productToDelete) return;
     setProductIds((prev) => prev.filter((id) => id !== productToDelete));
     setProductToDelete(null);
-    setToastMessage("削除されました。");
-    setShowToast(true);
   }
 
   const productToDeleteName = products.find((p) => p.id === productToDelete)?.name;
@@ -213,7 +211,7 @@ export function ScheduleRegistrationPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        {error && <p className="whitespace-pre-line text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button
@@ -253,7 +251,7 @@ export function ScheduleRegistrationPage() {
                 全製品の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">
@@ -285,7 +283,7 @@ export function ScheduleRegistrationPage() {
                 {productToDeleteName}の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">
@@ -308,7 +306,6 @@ export function ScheduleRegistrationPage() {
         </div>
       )}
 
-      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
     </div>
   );
 }

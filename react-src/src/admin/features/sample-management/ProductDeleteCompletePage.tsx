@@ -6,7 +6,8 @@ export function ProductDeleteCompletePage() {
 
   return (
     <div>
-      <PageTitleBar title="検体管理" />
+      {/* 本番の共通の完了画面（admin/components/complate.blade.php）は見出しが「完了画面」で固定 */}
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg

@@ -20,8 +20,13 @@ export function StorageFormPage() {
   const [error, setError] = useState("");
 
   function handleSubmit() {
-    if (!name || !factoryId) {
-      setError("保管場所と工場は必須です");
+    // 本番（StorageLocation/StoreRequest）は項目ごとのエラー。保管場所は 128 文字まで
+    const messages: string[] = [];
+    if (!name) messages.push("保管場所を入力してください。");
+    else if (name.length > 128) messages.push("保管場所は128文字以内で入力してください。");
+    if (!factoryId) messages.push("工場を入力してください。");
+    if (messages.length > 0) {
+      setError(messages.join("\n"));
       return;
     }
     if (isEditing && existing) {
@@ -55,7 +60,8 @@ export function StorageFormPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="例）小型物置"
+              placeholder="例）自社保管庫"
+              maxLength={128}
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
           </div>
@@ -80,7 +86,7 @@ export function StorageFormPage() {
           )}
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        {error && <p className="whitespace-pre-line text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button

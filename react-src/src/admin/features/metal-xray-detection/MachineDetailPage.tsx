@@ -8,11 +8,11 @@ import { useMetalXrayManagement } from "./MetalXrayManagementContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
+// 本番（configurations/show.blade.php）どおり、無い日付は空にして間に「 ~ 」を挟む
 function formatDisplayPeriod(displayFrom?: string, displayTo?: string) {
-  if (!displayFrom && !displayTo) return "指定なし";
   const from = displayFrom ? displayFrom.replaceAll("-", "/") : "";
   const to = displayTo ? displayTo.replaceAll("-", "/") : "";
-  return `${from}〜${to}`;
+  return `${from} ~ ${to}`;
 }
 
 export function MachineDetailPage() {
@@ -114,7 +114,7 @@ export function MachineDetailPage() {
           <div className="flex items-center justify-start w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">金属探知機名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
-              {machine.metalDetectorName || "ー"}
+              {machine.metalDetectorName || ""}
             </p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
@@ -128,7 +128,7 @@ export function MachineDetailPage() {
           <div className="flex items-center justify-start w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">X線探知機名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
-              {machine.xrayDetectorName || "ー"}
+              {machine.xrayDetectorName || ""}
             </p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
@@ -142,7 +142,7 @@ export function MachineDetailPage() {
           <div className="flex items-center justify-start w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">ウェイトチェッカー名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
-              {machine.weightCheckerName || "ー"}
+              {machine.weightCheckerName || ""}
             </p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
@@ -155,7 +155,8 @@ export function MachineDetailPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-start w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">主な通過製品</p>
-            {machine.mainPassProducts.length > 0 ? (
+            {/* 本番どおり 1 件ずつ縦に並べ、無いときは何も出さない */}
+            {machine.mainPassProducts.length > 0 && (
               <div className="flex flex-col">
                 {machine.mainPassProducts.map((product) => (
                   <p key={product} className="text-xl text-[var(--semantic-text-primary)]">
@@ -163,8 +164,6 @@ export function MachineDetailPage() {
                   </p>
                 ))}
               </div>
-            ) : (
-              <p className="text-xl text-[var(--semantic-text-primary)]">ー</p>
             )}
           </div>
         </div>
@@ -179,7 +178,7 @@ export function MachineDetailPage() {
                 {machine.name}の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">

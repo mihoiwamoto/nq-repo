@@ -15,11 +15,18 @@ import type { ApprovalStatus } from "../../data/approvals";
 import type { InspectionRecord, MachineApprovalRecord } from "./types";
 import { useDemoFactoryName } from "../../data/factoryDemo";
 
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
-  { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
-  { value: "rejected", label: "差し戻し" },
-];
+/**
+ * 本番の approval.blade.php と同じ並び（点検済み・承認待ち・差し戻し・承認）。点検済みは選べない。
+ * 「承認」は承認済みのときだけ「承認済み」と出す（ApprovalStatus::selectLabel）。
+ */
+function statusOptions(current: ApprovalStatus): { value: string; label: string; disabled?: boolean }[] {
+  return [
+    { value: "checked", label: "点検済み", disabled: true },
+    { value: "pending", label: "承認待ち" },
+    { value: "rejected", label: "差し戻し" },
+    { value: "approved", label: current === "approved" ? "承認済み" : "承認" },
+  ];
+}
 
 const CheckmarkIconOk = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -109,6 +116,7 @@ export function MachineDetailView({
   } = useApprovalConfirm();
 
   const [comment, setComment] = useState("");
+  const [showCommentToast, setShowCommentToast] = useState(false);
 
   if (!record) {
     return (
@@ -148,6 +156,8 @@ export function MachineDetailView({
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
       {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {/* 本番（ApprovalCommentController::createApprovalComment）はコメントのあと「コメントを登録しました。」 */}
+      {showCommentToast && <Toast message="コメントを登録しました。" onClose={() => setShowCommentToast(false)} />}
       <PageTitleBar title="点検内容一覧" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">
@@ -159,7 +169,7 @@ export function MachineDetailView({
             <Pulldown
               value={record.approvalStatus}
               onChange={handleStatusChange}
-              options={STATUS_OPTIONS}
+              options={statusOptions(record.approvalStatus)}
               disabled={record.approvalStatus !== "pending"}
               className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
               style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
@@ -240,6 +250,7 @@ export function MachineDetailView({
               onSubmit={() => {
                 addComment(record.id, comment);
                 setComment("");
+                setShowCommentToast(true);
               }}
             />
           )}

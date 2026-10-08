@@ -31,8 +31,8 @@ const TEST_PIECE_DATA = {
         pieces: [
           { name: "テストピース：Sus球", value: "2.0" },
           { name: "検知確認：Sus球", status: "正常" },
-          { name: "テストピース：Sus線", value: "3.0" },
-          { name: "検知確認：Sus線", status: "正常" },
+          { name: "テストピース：Susワイヤー", value: "3.0" },
+          { name: "検知確認：Susワイヤー", status: "正常" },
           { name: "テストピース：ガラス球", value: "3.0" },
           { name: "検知確認：ガラス球", status: "正常" },
           { name: "テストピース：セラミック", value: "3.0" },

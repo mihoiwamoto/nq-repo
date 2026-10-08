@@ -44,6 +44,7 @@ export function ChecklistSettingsTable({
   const storeKey = checklistKey(unitPath, factoryId);
   const [items, setItems] = useState<ChecklistItem[]>(() => checklists[storeKey] ?? initialItems);
   const [showToast, setShowToast] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
   const nextId = useRef(1000);
 
   function addItem() {
@@ -112,7 +113,6 @@ export function ChecklistSettingsTable({
                       type="text"
                       value={item.description}
                       onChange={(e) => updateItem(item.id, "description", e.target.value)}
-                      placeholder="確認内容を入力"
                       className="bg-white border border-[#d0d0d0] w-full h-10 px-4 py-2 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
                     />
                   </div>
@@ -137,6 +137,11 @@ export function ChecklistSettingsTable({
             <img src={iconPlus} alt="" aria-hidden className="size-5" />
             行追加
           </button>
+          {errors.map((message) => (
+            <p key={message} className="text-sm text-[var(--semantic-brand-danger)]">
+              {message}
+            </p>
+          ))}
         </div>
 
         <div className="flex gap-4 items-center">
@@ -150,6 +155,12 @@ export function ChecklistSettingsTable({
           <button
             type="button"
             onClick={() => {
+              // 本番（OperationCheckItem/UpdateRequest）はカテゴリ・確認内容とも必須
+              const next: string[] = [];
+              if (items.some((item) => !item.name)) next.push("カテゴリを選択してください。");
+              if (items.some((item) => !item.description.trim())) next.push("確認内容を入力してください。");
+              setErrors(next);
+              if (next.length > 0) return;
               saveChecklist(storeKey, items);
               navigate(listPath, { state: { justSaved: true } });
             }}

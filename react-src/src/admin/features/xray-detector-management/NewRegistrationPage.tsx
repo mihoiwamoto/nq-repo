@@ -15,7 +15,7 @@ let nextId = 1000;
 const SETTING_COLUMNS: { key: keyof Omit<XrayTestPieceSetting, "id" | "productName">; label: string }[] = [
   { key: "settingNumber", label: "設定番号" },
   { key: "susBall", label: "Sus球" },
-  { key: "susWire", label: "Sus線" },
+  { key: "susWire", label: "Susワイヤー" },
   { key: "glassBall", label: "ガラス球" },
   { key: "ceramic", label: "セラミック" },
   { key: "rubberBall", label: "ゴム球" },
@@ -35,6 +35,38 @@ function emptySetting(): XrayTestPieceSetting {
     ceramic: "",
     rubberBall: "",
   };
+}
+
+
+/**
+ * 本番（Detector/Xray/StoreRequest・UpdateRequest）の入力チェック。test_piece_settings は 1 行以上・各行の
+ * 製品名/規格・設定番号・各サイズは必須、サイズは数値で 0〜9999.9、同じ製品は複数行で選べない。
+ * 文言は custom.test_piece_settings.*.product_ref.required（「:attributeを選択してください。」）と lang/ja/validation.php。
+ */
+function validateSettings<T extends { productName: string; settingNumber: string }>(
+  rows: T[],
+  sizes: { key: keyof T; label: string }[],
+): string[] {
+  const messages: string[] = [];
+  const push = (message: string) => {
+    if (!messages.includes(message)) messages.push(message);
+  };
+  if (rows.length === 0) push("設定番号/テストピース設定は必須です。");
+  for (const row of rows) {
+    if (!row.productName.trim()) push("製品名/規格を選択してください。");
+    if (!row.settingNumber.trim()) push("設定番号は必須です。");
+    for (const size of sizes) {
+      const value = String(row[size.key] ?? "").trim();
+      if (!value) {
+        push(`${size.label}は必須です。`);
+      } else if (!/^\d+(\.\d+)?$/.test(value) || Number(value) > 9999.9) {
+        push(`${size.label}は0〜9999.9の間で入力してください。`);
+      }
+    }
+  }
+  const picked = rows.map((row) => row.productName).filter((name) => name.trim() !== "");
+  if (new Set(picked).size !== picked.length) push("同じ製品が複数選択されています。");
+  return messages;
 }
 
 export function NewRegistrationPage() {
@@ -70,13 +102,21 @@ export function NewRegistrationPage() {
   }
 
   function handleSubmit() {
-    if (!name.trim()) {
-      setError("X線探知機名は必須です");
+    const messages: string[] = [];
+    if (!name.trim()) messages.push("X線探知機名は必須です。");
+    messages.push(
+      ...validateSettings(
+        settings,
+        SETTING_COLUMNS.filter((col) => col.key !== "settingNumber"),
+      ),
+    );
+    if (messages.length > 0) {
+      setError(messages.join("\n"));
       return;
     }
     const unit = {
       name: name.trim(),
-      settings: settings.filter((row) => row.productName.trim() !== ""),
+      settings,
     };
     if (isEditing && unitId) {
       updateUnit(unitId, unit);
@@ -123,7 +163,7 @@ export function NewRegistrationPage() {
                   <p className="text-xl leading-[1.4] text-[var(--semantic-text-primary)]">
                     設定番号/テストピース設定
                   </p>
-                  <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
+                  <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
                 </div>
                 <div className="text-sm leading-[1.2] text-[var(--semantic-text-secondary)] w-full">
                   <p>設定番号がない場合には「標準」と入力してください。</p>
@@ -165,7 +205,7 @@ export function NewRegistrationPage() {
                             value={row.productName}
                             onChange={(value) => updateRow(row.id, "productName", value)}
                             options={CANDIDATE_PRODUCTS.map((product) => ({ value: product, label: product }))}
-                            placeholder="例）マンゴープリン　ストレート　1kg"
+                            placeholder="例）マンゴープリン ストレート 1kg"
                             className="bg-[var(--semantic-background-surface)] border border-[#d0d0d0] flex h-10 items-center px-4 rounded-lg w-full text-base text-[var(--semantic-text-primary)]"
                           />
                         </div>
@@ -179,7 +219,7 @@ export function NewRegistrationPage() {
                               type="text"
                               value={row[col.key]}
                               onChange={(e) => updateRow(row.id, col.key, e.target.value)}
-                              placeholder="ー"
+                              placeholder="-"
                               className="bg-[var(--semantic-background-surface)] border border-[#d0d0d0] h-10 px-4 rounded-lg w-full text-base text-center text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
                             />
                           </div>
@@ -213,7 +253,7 @@ export function NewRegistrationPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        {error && <p className="whitespace-pre-line text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button

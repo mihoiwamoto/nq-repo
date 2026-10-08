@@ -17,17 +17,10 @@ import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadSampleCsv, downloadSamplePdf } from "./sampleExport";
 import { PlusIcon } from "../../components/PlusIcon";
 
-function HyphenIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="7" y1="11.5" x2="17" y2="11.5" stroke="#333333" strokeWidth="2" strokeLinecap="round"/>
-    </svg>
-  );
-}
-
+// 本番（dataSearch/specimen/list.blade.php）は賞味期限・製造日・ロットNo. が無ければ空欄
 function DateDisplay({ date }: { date: string | undefined }) {
   if (!date) {
-    return <HyphenIcon />;
+    return null;
   }
   return <>{date.replaceAll("-", "/")}</>;
 }
@@ -225,7 +218,7 @@ export function DataListPage() {
               onClick={() => setMonthPickerOpen((v) => !v)}
               className="flex items-center gap-1 text-xl text-[var(--semantic-text-primary)]"
             >
-              {year}年{month + 1}月
+              {year}年{String(month + 1).padStart(2, "0")}月
               <span
                 aria-hidden
                 className="inline-block size-3 shrink-0"
@@ -367,7 +360,7 @@ export function DataListPage() {
                     </div>
                     {/* ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目 */}
                     <div className="w-[120px] ml-4 shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                      {record.lotNumber ? record.lotNumber : <HyphenIcon />}
+                      {record.lotNumber ?? ""}
                     </div>
                     <div className="w-[96px] ml-4 shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       <DateDisplay date={record.expirationDate} />

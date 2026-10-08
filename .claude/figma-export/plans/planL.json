@@ -1,0 +1,1908 @@
+[
+{
+"id": "L001",
+"name": "帳票管理 › 帳票選択",
+"pf": "admin",
+"hash": "admin/ledger-management",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "I001"
+},
+{
+"id": "L002",
+"name": "帳票管理 › 機械器具点検 › 工場選択",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H002"
+},
+{
+"id": "L003",
+"name": "帳票管理 › 機械器具点検 › ラインの一覧",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H003"
+},
+{
+"id": "L004",
+"name": "帳票管理 › 機械器具点検 › ラインの新規登録",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/lines/new",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H004"
+},
+{
+"id": "L005",
+"name": "帳票管理 › 機械器具点検 › 登録完了",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/lines/registered",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H005"
+},
+{
+"id": "L006",
+"name": "帳票管理 › 機械器具点検 › ラインの詳細",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/lines/l8",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H006"
+},
+{
+"id": "L007",
+"name": "帳票管理 › 機械器具点検 › 確認項目の設定",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/checklist-settings",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H007"
+},
+{
+"id": "L008",
+"name": "帳票管理 › 機械器具点検 › 確認項目の設定（ダイアログ：確認項目の削除）",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/checklist-settings",
+"steps": [
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H008"
+},
+{
+"id": "L009",
+"name": "帳票管理 › 機械器具点検 › 確認項目の削除完了",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/checklist-settings/deleted",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H009"
+},
+{
+"id": "L010",
+"name": "帳票管理 › 機械器具点検 › 点検予定",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H010"
+},
+{
+"id": "L011",
+"name": "帳票管理 › 機械器具点検 › 予定の新規登録",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule/register",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H011"
+},
+{
+"id": "L012",
+"name": "帳票管理 › 機械器具点検 › 予定の新規登録（ポップアップ：持ち場/ライン名の追加）",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule/register",
+"steps": [
+{
+"click": "追加"
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H012"
+},
+{
+"id": "L013",
+"name": "帳票管理 › 機械器具点検 › 予定の登録完了",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule/register/complete",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H013"
+},
+{
+"id": "L014",
+"name": "帳票管理 › 機械器具点検 › 点検予定（メニュー：⋮）",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"sel": "img[alt=\"メニュー\"]"
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H014"
+},
+{
+"id": "L015",
+"name": "帳票管理 › 機械器具点検 › 点検予定（トースト：削除されました）",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"sel": "img[alt=\"メニュー\"]"
+},
+{
+"click": "削除",
+"exact": 1,
+"after": 500
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H015"
+},
+{
+"id": "L016",
+"name": "帳票管理 › 機械器具点検 › 予定の編集",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H016"
+},
+{
+"id": "L017",
+"name": "帳票管理 › 機械器具点検 › 予定の新規登録（ライン追加後）",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule/register",
+"steps": [
+{
+"click": "追加"
+},
+{
+"click": "【毎週】豆乳ライン",
+"in": 1
+},
+{
+"click": "【毎週】ゆばライン（その他）",
+"in": 1
+},
+{
+"click": "追加",
+"exact": 1,
+"in": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H017"
+},
+{
+"id": "L018",
+"name": "帳票管理 › 機械器具点検 › 点検予定（トースト：更新されました）",
+"pf": "admin",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"click": "保存",
+"exact": 1,
+"after": 400
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "H018"
+},
+{
+"id": "L019",
+"name": "帳票一覧",
+"pf": "app",
+"hash": "app/ledger-list",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検",
+"（App）確認待ち_機械器具点検",
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I033"
+},
+{
+"id": "L020",
+"name": "帳票一覧 › 機械器具点検（ポップアップ：実施者の選択）",
+"pf": "app",
+"hash": "app/ledger-list",
+"steps": [
+{
+"click": "機械器具点検"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I034"
+},
+{
+"id": "L021",
+"name": "帳票一覧 › 機械器具点検 › ラインの一覧",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I035"
+},
+{
+"id": "L022",
+"name": "帳票一覧 › 機械器具点検 › ラインの一覧（パネル：点検済み）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection",
+"steps": [
+{
+"click": "点検済み"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I036"
+},
+{
+"id": "L023",
+"name": "帳票一覧 › 機械器具点検 › ラインの点検",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l10",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I037"
+},
+{
+"id": "L024",
+"name": "帳票一覧 › 機械器具点検 › ラインの点検（ポップアップ：点検見送り）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l10",
+"steps": [
+{
+"click": "点検見送り"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I038"
+},
+{
+"id": "L025",
+"name": "帳票一覧 › 機械器具点検 › ラインの点検（ポップアップ：異常あり）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l10",
+"steps": [
+{
+"click": "異常あり",
+"nth": 0
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I039"
+},
+{
+"id": "L026",
+"name": "帳票一覧 › 機械器具点検 › 翌日分のラインの一覧",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/next-day",
+"steps": [
+{
+"click": "毎週"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I040"
+},
+{
+"id": "L027",
+"name": "帳票一覧 › 機械器具点検 › ラインの点検（ポップアップ：途中保存）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l10",
+"steps": [
+{
+"click": "途中保存"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I041"
+},
+{
+"id": "L028",
+"name": "帳票一覧 › 機械器具点検 › 提出内容の確認",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l8/confirm",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I042"
+},
+{
+"id": "L029",
+"name": "帳票一覧 › 機械器具点検 › 点検見送り確認",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l8/skip-confirm",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I043"
+},
+{
+"id": "L030",
+"name": "帳票一覧 › 機械器具点検 › 提出完了",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l8/complete",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I044"
+},
+{
+"id": "L031",
+"name": "点検予定",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G045"
+},
+{
+"id": "L032",
+"name": "点検予定（ポップアップ：新規登録）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "新規登録",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G046"
+},
+{
+"id": "L033",
+"name": "点検予定（ポップアップ：新規登録・登録済み）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "新規登録",
+"exact": 1
+},
+{
+"click": "機械器具点検",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G047"
+},
+{
+"id": "L034",
+"name": "点検予定（ポップアップ：新規登録・帳票なし）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"eval": "window.postMessage({nvideo:'go',hash:'app/schedule',flags:{hide:'equipment-inspection,cleaning-record,sensory-inspection'}},'*')",
+"after": 900
+},
+{
+"click": "2",
+"exact": 1,
+"nth": 0
+},
+{
+"click": "1",
+"exact": 1,
+"nth": 0
+},
+{
+"click": "新規登録",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G048"
+},
+{
+"id": "L035",
+"name": "帳票一覧 › 機械器具点検 › ラインの一覧（毎週）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection",
+"steps": [
+{
+"click": "毎週"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I055"
+},
+{
+"id": "L036",
+"name": "帳票一覧 › 機械器具点検 › ラインの点検（ポップアップ：点検見送り・毎週）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection",
+"steps": [
+{
+"click": "毎週"
+},
+{
+"click": "原料受入ライン"
+},
+{
+"click": "点検見送り"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I056"
+},
+{
+"id": "L037",
+"name": "帳票一覧 › 機械器具点検 › ラインの一覧（見送り後）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection",
+"steps": [
+{
+"click": "毎週"
+},
+{
+"click": "原料受入ライン"
+},
+{
+"click": "点検見送り"
+},
+{
+"click": "はい",
+"exact": 1,
+"in": 1
+},
+{
+"eval": "window.__type=(ph,val)=>{const el=[...document.querySelectorAll('input,textarea')].find(e=>e.placeholder===ph);const proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(el,val);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.dispatchEvent(new Event('blur',{bubbles:true}));};__type(\"理由を記入してください。\",\"設備メンテナンスのため\");",
+"after": 400
+},
+{
+"click": "点検を見送る",
+"in": 1
+},
+{
+"click": "提出",
+"exact": 1
+},
+{
+"click": "機械器具点検を続ける"
+},
+{
+"click": "毎週",
+"optional": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I057"
+},
+{
+"id": "L038",
+"name": "帳票一覧 › 機械器具点検 › 翌日分のラインの一覧（見送り後）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection",
+"steps": [
+{
+"click": "毎週"
+},
+{
+"click": "原料受入ライン"
+},
+{
+"click": "点検見送り"
+},
+{
+"click": "はい",
+"exact": 1,
+"in": 1
+},
+{
+"eval": "window.__type=(ph,val)=>{const el=[...document.querySelectorAll('input,textarea')].find(e=>e.placeholder===ph);const proto=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(el,val);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}));el.dispatchEvent(new Event('blur',{bubbles:true}));};__type(\"理由を記入してください。\",\"設備メンテナンスのため\");",
+"after": 400
+},
+{
+"click": "点検を見送る",
+"in": 1
+},
+{
+"click": "提出",
+"exact": 1
+},
+{
+"click": "機械器具点検を続ける"
+},
+{
+"eval": "history.pushState(null,'','/react/app/ledger-list/equipment-inspection/next-day');dispatchEvent(new PopStateEvent('popstate'))",
+"after": 900
+},
+{
+"click": "毎週",
+"optional": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I058"
+},
+{
+"id": "L039",
+"name": "帳票一覧 › 機械器具点検 › ラインの点検（全て異常なし）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l8",
+"steps": [
+{
+"click": "全て異常なし",
+"nth": 0
+},
+{
+"click": "全て異常なし",
+"nth": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I059"
+},
+{
+"id": "L040",
+"name": "帳票一覧 › 機械器具点検 › ラインの点検（ポップアップ：異常あり・その他）",
+"pf": "app",
+"hash": "app/ledger-list/equipment-inspection/lines/l8",
+"steps": [
+{
+"click": "異常あり",
+"nth": 0
+},
+{
+"click": "その他",
+"exact": 1,
+"nth": 0,
+"in": 1
+},
+{
+"click": "その他",
+"exact": 1,
+"nth": 1,
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "I060"
+},
+{
+"id": "L041",
+"name": "確認待ち",
+"pf": "app",
+"hash": "app/pending-review",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_機械器具点検"
+],
+"src": "I088"
+},
+{
+"id": "L042",
+"name": "確認待ち › 機械器具点検 › 確認待ちの詳細（ポップアップ：確認者の選択）",
+"pf": "app",
+"hash": "app/pending-review",
+"steps": [
+{
+"eval": "[...document.querySelectorAll('button')].find(b=>/豆乳ライン/.test(b.innerText)&&/機械器具点検/.test(b.innerText)&&/点検済み/.test(b.innerText)).click()",
+"after": 900
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_機械器具点検"
+],
+"src": "I089"
+},
+{
+"id": "L043",
+"name": "確認待ち › 機械器具点検 › 確認待ちの詳細",
+"pf": "app",
+"hash": "app/pending-review/p2",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_機械器具点検"
+],
+"src": "I090"
+},
+{
+"id": "L044",
+"name": "確認待ち › 機械器具点検 › 確認待ちの詳細（ポップアップ：提出完了）",
+"pf": "app",
+"hash": "app/pending-review/p2",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "提出",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_機械器具点検"
+],
+"src": "I091"
+},
+{
+"id": "L045",
+"name": "確認待ち › 機械器具点検（絞り込み後）",
+"pf": "app",
+"hash": "app/pending-review",
+"steps": [
+{
+"click": "絞り込み検索"
+},
+{
+"click": "機械器具点検",
+"in": 1
+},
+{
+"click": "絞り込み",
+"exact": 1,
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_機械器具点検"
+],
+"src": "I092"
+},
+{
+"id": "L046",
+"name": "確認待ち（ポップアップ：絞り込み条件）",
+"pf": "app",
+"hash": "app/pending-review",
+"steps": [
+{
+"click": "絞り込み検索"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_機械器具点検"
+],
+"src": "I093"
+},
+{
+"id": "L047",
+"name": "承認申請管理",
+"pf": "admin",
+"hash": "admin/approvals",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_機械器具点検"
+],
+"src": "I098"
+},
+{
+"id": "L048",
+"name": "承認申請管理 › 機械器具点検 › データ一覧",
+"pf": "admin",
+"hash": "admin/approvals/equipment-inspection",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_機械器具点検"
+],
+"src": "F099"
+},
+{
+"id": "L049",
+"name": "承認申請管理 › 機械器具点検 › データ一覧（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/equipment-inspection",
+"steps": [
+{
+"click": "承認する",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_機械器具点検"
+],
+"src": "F100"
+},
+{
+"id": "L050",
+"name": "承認申請管理 › 機械器具点検 › 詳細",
+"pf": "admin",
+"hash": "admin/approvals/equipment-inspection/records/a1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_機械器具点検"
+],
+"src": "I101"
+},
+{
+"id": "L051",
+"name": "承認申請管理 › 機械器具点検 › 詳細（ダイアログ：承認の確認）",
+"pf": "admin",
+"hash": "admin/approvals/equipment-inspection/records/a1",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "承認済み",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_機械器具点検"
+],
+"src": "I102"
+},
+{
+"id": "L052",
+"name": "承認申請管理 › 機械器具点検 › 詳細（ダイアログ：差し戻し理由）",
+"pf": "admin",
+"hash": "admin/approvals/equipment-inspection/records/a1",
+"steps": [
+{
+"click": "承認待ち",
+"exact": 1
+},
+{
+"click": "差し戻し",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_機械器具点検"
+],
+"src": "I103"
+},
+{
+"id": "L053",
+"name": "承認申請管理 › 機械器具点検 › 詳細（点検見送り）",
+"pf": "admin",
+"hash": "admin/approvals/equipment-inspection/records/a4",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）承認申請管理_機械器具点検"
+],
+"src": "I104"
+},
+{
+"id": "L054",
+"name": "確認待ち › 機械器具点検 › 確認待ちの詳細（差し戻し）（ポップアップ：確認者の選択）",
+"pf": "app",
+"hash": "app/pending-review",
+"steps": [
+{
+"eval": "[...document.querySelectorAll('button')].find(b=>/豆乳ライン/.test(b.innerText)&&/機械器具点検/.test(b.innerText)&&/差し戻し/.test(b.innerText)).click()",
+"after": 900
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I111"
+},
+{
+"id": "L055",
+"name": "確認待ち › 機械器具点検 › 差し戻しの内容",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I112"
+},
+{
+"id": "L056",
+"name": "確認待ち › 機械器具点検 › 点検内容の修正",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I113"
+},
+{
+"id": "L057",
+"name": "確認待ち › 機械器具点検 › 差し戻しの内容（ポップアップ：差し戻し対応完了）",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "編集を保存",
+"exact": 1
+},
+{
+"eval": "[...document.querySelectorAll('*')].filter(e=>e.scrollHeight>e.clientHeight+10&&/(auto|scroll)/.test(getComputedStyle(e).overflowY)).forEach(e=>{e.scrollTop=e.scrollHeight;e.dispatchEvent(new Event('scroll'))})"
+},
+{
+"click": "差し戻し対応完了",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I114"
+},
+{
+"id": "L058",
+"name": "確認待ち › 機械器具点検 › 差し戻しの内容（ポップアップ：実施者の選択）",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I115"
+},
+{
+"id": "L059",
+"name": "確認待ち › 機械器具点検 › 内容の修正（ポップアップ：点検見送り）",
+"pf": "app",
+"hash": "app/pending-review/p14",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検見送り"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I116"
+},
+{
+"id": "L060",
+"name": "確認待ち（差し戻しのある一覧）",
+"pf": "app",
+"hash": "app/pending-review",
+"steps": [
+{
+"eval": "[...document.querySelectorAll('*')].filter(e=>e.scrollHeight>e.clientHeight+10&&/(auto|scroll)/.test(getComputedStyle(e).overflowY)).forEach(e=>{e.scrollTop=e.scrollHeight;e.dispatchEvent(new Event('scroll'))})"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "I117"
+},
+{
+"id": "L061",
+"name": "進捗一覧",
+"pf": "app",
+"hash": "app/progress",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I124"
+},
+{
+"id": "L062",
+"name": "進捗一覧（ポップアップ：絞り込み条件）",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"click": "絞り込み検索"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I125"
+},
+{
+"id": "L063",
+"name": "進捗一覧 › 機械器具点検（ポップアップ：実施者の選択）",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"click": "【毎日】ゆばライン（つまみ関係）"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I126"
+},
+{
+"id": "L064",
+"name": "進捗一覧 › 機械器具点検 › ラインの点検",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"click": "【毎日】ゆばライン（つまみ関係）"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I127"
+},
+{
+"id": "L065",
+"name": "進捗一覧 › 機械器具点検 › 提出内容の確認",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"click": "【毎日】ゆばライン（つまみ関係）"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "全て異常なし",
+"nth": 0
+},
+{
+"click": "全て異常なし",
+"nth": 1
+},
+{
+"click": "終業",
+"exact": 1
+},
+{
+"click": "全て異常なし",
+"nth": 0
+},
+{
+"click": "全て異常なし",
+"nth": 1
+},
+{
+"click": "確認画面へ",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I128"
+},
+{
+"id": "L066",
+"name": "進捗一覧 › 機械器具点検 › 提出完了",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"click": "【毎日】ゆばライン（つまみ関係）"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "全て異常なし",
+"nth": 0
+},
+{
+"click": "全て異常なし",
+"nth": 1
+},
+{
+"click": "終業",
+"exact": 1
+},
+{
+"click": "全て異常なし",
+"nth": 0
+},
+{
+"click": "全て異常なし",
+"nth": 1
+},
+{
+"click": "確認画面へ",
+"exact": 1
+},
+{
+"click": "提出",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I129"
+},
+{
+"id": "L067",
+"name": "進捗一覧 › 機械器具点検（絞り込み後）",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"click": "絞り込み検索"
+},
+{
+"click": "機械器具点検",
+"in": 1
+},
+{
+"click": "絞り込み",
+"exact": 1,
+"in": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I130"
+},
+{
+"id": "L068",
+"name": "進捗一覧（未点検）",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"eval": "[...document.querySelectorAll('button')].find(b=>b.innerText.trim().startsWith('未点検')).click()",
+"after": 700
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I131"
+},
+{
+"id": "L069",
+"name": "進捗一覧（アコーディオンを閉じた状態）",
+"pf": "app",
+"hash": "app/progress",
+"steps": [
+{
+"eval": "[...document.querySelectorAll('button[aria-label=閉じる]')].forEach(b=>b.click())",
+"after": 700
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）進捗一覧_機械器具点検"
+],
+"src": "I132"
+},
+{
+"id": "L070",
+"name": "データ検索 › 帳票選択",
+"pf": "admin",
+"hash": "admin/data-search",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_機械器具点検"
+],
+"src": "I138"
+},
+{
+"id": "L071",
+"name": "データ検索 › 機械器具点検 › 工場選択",
+"pf": "admin",
+"hash": "admin/data-search/equipment-inspection",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_機械器具点検"
+],
+"src": "F139"
+},
+{
+"id": "L072",
+"name": "データ検索 › 機械器具点検 › データ一覧",
+"pf": "admin",
+"hash": "admin/data-search/equipment-inspection/factories/f1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7759:2296",
+"sections": [
+"（Admin）データ検索_機械器具点検"
+],
+"src": "R01"
+},
+{
+"id": "L073",
+"name": "データ検索 › 機械器具点検 › データ一覧（ポップアップ：年月の選択）",
+"pf": "admin",
+"hash": "admin/data-search/equipment-inspection/factories/f1",
+"steps": [
+{
+"click": "2025年4月",
+"exact": 1
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7759:2296",
+"sections": [
+"（Admin）データ検索_機械器具点検"
+],
+"src": "R02"
+},
+{
+"id": "L074",
+"name": "データ検索 › 機械器具点検 › データ一覧（ダイアログ：ダウンロード形式選択）",
+"pf": "admin",
+"hash": "admin/data-search/equipment-inspection/factories/f1",
+"steps": [
+{
+"wait": 800
+},
+{
+"click": "CSVダウンロード",
+"after": 900
+}
+],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"secid": "7759:2296",
+"sections": [
+"（Admin）データ検索_機械器具点検"
+],
+"src": "R03"
+},
+{
+"id": "L075",
+"name": "データ検索 › 機械器具点検 › 詳細",
+"pf": "admin",
+"hash": "admin/data-search/equipment-inspection/factories/f1/records/r1",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_機械器具点検"
+],
+"src": "I143"
+},
+{
+"id": "L076",
+"name": "データ検索 › 機械器具点検 › 詳細（点検見送り）",
+"pf": "admin",
+"hash": "admin/data-search/equipment-inspection/factories/f1/records/r4",
+"steps": [],
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"sections": [
+"（Admin）データ検索_機械器具点検"
+],
+"src": "I144"
+},
+{
+"id": "L077",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（新規登録）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-09",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G049"
+},
+{
+"id": "L078",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（登録済みの詳細）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G050"
+},
+{
+"id": "L079",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（編集）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G051"
+},
+{
+"id": "L080",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（ポップアップ：持ち場/ライン名の追加）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-09",
+"steps": [
+{
+"click": "追加"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G052"
+},
+{
+"id": "L081",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（ダイアログ：削除）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G053"
+},
+{
+"id": "L082",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（保存完了）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-01",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"click": "保存",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "H054"
+},
+{
+"id": "L083",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（予定なしの日）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "2",
+"exact": 1,
+"nth": 0
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G061"
+},
+{
+"id": "L084",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（休業日）",
+"pf": "app",
+"hash": "app/schedule",
+"steps": [
+{
+"click": "6 休業日",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "G062"
+},
+{
+"id": "L085",
+"name": "点検予定 › 機械器具点検 持ち場/ライン設定（登録完了）",
+"pf": "app",
+"hash": "app/schedule/equipment-inspection/2025-04-09",
+"steps": [
+{
+"click": "追加"
+},
+{
+"click": "【毎週】原料受入ライン",
+"in": 1
+},
+{
+"click": "追加",
+"exact": 1,
+"in": 1
+},
+{
+"click": "登録",
+"exact": 1
+}
+],
+"w": 768,
+"h": 976,
+"q": "",
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "H063"
+},
+{
+"pf": "admin",
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"id": "L086",
+"name": "帳票管理 › 機械器具点検 › 予定の編集（ダイアログ：持ち場/ライン設定の削除）",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+}
+],
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "HN034"
+},
+{
+"pf": "admin",
+"w": 1440,
+"h": 960,
+"q": "&role=administrator",
+"id": "L087",
+"name": "帳票管理 › 機械器具点検 › 予定の削除完了",
+"hash": "admin/ledger-management/equipment-inspection/factories/f1/schedule",
+"steps": [
+{
+"click": "編集",
+"exact": 1
+},
+{
+"sel": "img[alt=\"削除\"]"
+},
+{
+"click": "削除",
+"exact": 1,
+"in": 1
+}
+],
+"sections": [
+"（Admin）帳票管理_機械器具点検"
+],
+"src": "HN035"
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"id": "L088",
+"name": "確認待ち › 機械器具点検 › 確認待ちの詳細（見送り）",
+"hash": "app/pending-review/p20",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"sections": [
+"（App）確認待ち_機械器具点検"
+],
+"src": "In1"
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"id": "L089",
+"name": "確認待ち › 機械器具点検 › 差し戻しの内容（見送り）",
+"hash": "app/pending-review/p19",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "In2"
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"id": "L090",
+"name": "確認待ち › 機械器具点検 › 点検内容の修正（見送り）",
+"hash": "app/pending-review/p19",
+"steps": [
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+},
+{
+"click": "点検内容を修正する"
+},
+{
+"pick": 1
+},
+{
+"click": "次へ",
+"in": 1
+}
+],
+"sections": [
+"（App）確認待ち_差し戻し_機械器具点検"
+],
+"src": "In3"
+},
+{
+"pf": "app",
+"w": 768,
+"h": 976,
+"q": "",
+"id": "L091",
+"name": "帳票一覧 › 機械器具点検 › 翌日分のラインの一覧（毎日）",
+"hash": "app/ledger-list/equipment-inspection/next-day",
+"steps": [
+{
+"eval": "[...document.querySelectorAll('button')].find(b=>b.innerText.trim().startsWith('毎日')).click()",
+"after": 700
+}
+],
+"sections": [
+"（App）帳票一覧_機械器具点検"
+],
+"src": "In4"
+}
+]

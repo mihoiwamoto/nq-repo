@@ -15,11 +15,18 @@ import type { ApprovalStatus } from "../../data/approvals";
 import type { SampleApprovalRecord } from "./types";
 import { useDemoFactoryName } from "../../data/factoryDemo";
 
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
-  { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
-  { value: "rejected", label: "差し戻し" },
-];
+/**
+ * 本番の approval.blade.php と同じ並び（点検済み・承認待ち・差し戻し・承認）。点検済みは選べない。
+ * 「承認」は承認済みのときだけ「承認済み」と出す（ApprovalStatus::selectLabel）。
+ */
+function statusOptions(current: ApprovalStatus): { value: string; label: string; disabled?: boolean }[] {
+  return [
+    { value: "checked", label: "点検済み", disabled: true },
+    { value: "pending", label: "承認待ち" },
+    { value: "rejected", label: "差し戻し" },
+    { value: "approved", label: current === "approved" ? "承認済み" : "承認" },
+  ];
+}
 
 function formatDate(date: string | undefined) {
   return date ? date.replaceAll("-", "/") : "ー";
@@ -75,6 +82,7 @@ export function RecordDetailView({
   } = useApprovalConfirm();
 
   const [comment, setComment] = useState("");
+  const [showCommentToast, setShowCommentToast] = useState(false);
 
   if (!record) {
     return (
@@ -107,6 +115,8 @@ export function RecordDetailView({
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
       {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {/* 本番（ApprovalCommentController::createApprovalComment）はコメントのあと「コメントを登録しました。」 */}
+      {showCommentToast && <Toast message="コメントを登録しました。" onClose={() => setShowCommentToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -118,7 +128,7 @@ export function RecordDetailView({
             <Pulldown
               value={record.approvalStatus}
               onChange={handleStatusChange}
-              options={STATUS_OPTIONS}
+              options={statusOptions(record.approvalStatus)}
               disabled={record.approvalStatus !== "pending"}
               className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
               style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
@@ -135,13 +145,11 @@ export function RecordDetailView({
             <p className="text-sm text-[var(--semantic-text-secondary)]">賞味期限</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{formatDate(record.expirationDate)}</p>
           </div>
-          {/* ロットNo. は管理画面で「記載する」とした製品だけに入る任意項目 */}
-          {record.lotNumber && (
-            <div className="flex flex-col gap-2 items-start">
-              <p className="text-sm text-[var(--semantic-text-secondary)]">ロットNo.</p>
-              <p className="text-base text-[var(--semantic-text-primary)]">{record.lotNumber}</p>
-            </div>
-          )}
+          {/* 本番（specimen/result/show.blade.php）はロットNo. を常に出し、無いときは空欄 */}
+          <div className="flex flex-col gap-2 items-start">
+            <p className="text-sm text-[var(--semantic-text-secondary)]">ロットNo.</p>
+            <p className="text-base text-[var(--semantic-text-primary)] min-h-6">{record.lotNumber ?? ""}</p>
+          </div>
         </div>
 
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
@@ -170,7 +178,7 @@ export function RecordDetailView({
           <div className="flex items-start justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">製造日</p>
             <div className="flex flex-col items-end gap-1">
-              <p className="text-xl text-[var(--semantic-text-primary)]">{formatDate(record.manufactureDate)}</p>
+              <p className="text-xl text-[var(--semantic-text-primary)]">{record.manufactureDate ? formatDate(record.manufactureDate) : ""}</p>
               {record.manufactureDate && record.timestamp && (
                 <p className="text-sm text-[var(--semantic-text-secondary)] font-normal">
                   {record.timestamp}
@@ -272,6 +280,7 @@ export function RecordDetailView({
               onSubmit={() => {
                 addComment(record.id, comment);
                 setComment("");
+                setShowCommentToast(true);
               }}
               maxLength={255}
             />

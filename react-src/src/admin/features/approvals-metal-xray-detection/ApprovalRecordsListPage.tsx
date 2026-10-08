@@ -27,8 +27,10 @@ function ResultTag({ result }: { result: InspectionResult }) {
   );
 }
 
+// 本番（inspects/detector/check/list.blade.php）は check_date->format('y.m.d')（例 25.04.01）
 function formatDate(date: string) {
-  return date.replaceAll("-", "/");
+  const [y, m, d] = date.split("-");
+  return `${y.slice(-2)}.${m}.${d}`;
 }
 
 function overallResult(record: { records: { result: InspectionResult }[] }): InspectionResult {

@@ -21,7 +21,7 @@ export function NewRegistrationPage() {
 
   function handleSubmit() {
     if (!name.trim()) {
-      setError("ウェイトチェッカー名は必須です");
+      setError("ウェイトチェッカー名は必須です。");
       return;
     }
     const unit = { name: name.trim() };
@@ -43,6 +43,7 @@ export function NewRegistrationPage() {
           { label: "工場選択", to: "/admin/ledger-management/metal-xray-detection" },
           { label: "金属/X線探知機記録", to: `${basePath}` },
           { label: "ウェイトチェッカー管理", to: `${basePath}/weight-checkers` },
+          ...(isEditing ? [{ label: "詳細", to: `${basePath}/weight-checkers/${unitId}` }] : []),
           { label: isEditing ? "編集" : "新規登録" },
         ]}
       />

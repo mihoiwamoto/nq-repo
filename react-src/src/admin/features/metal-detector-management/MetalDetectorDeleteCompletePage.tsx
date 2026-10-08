@@ -6,7 +6,8 @@ export function MetalDetectorDeleteCompletePage() {
 
   return (
     <div>
-      <PageTitleBar title="帳票管理" />
+      {/* 本番の共通の完了画面（admin/components/complate.blade.php）は見出しが「完了画面」で固定 */}
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
@@ -26,7 +27,7 @@ export function MetalDetectorDeleteCompletePage() {
             />
           </svg>
           <p className="text-2xl text-[var(--semantic-text-primary)]">
-            金属探知機管理の削除が完了しました
+            金属探知機の削除が完了しました
           </p>
         </div>
         <Link

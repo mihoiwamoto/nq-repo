@@ -48,11 +48,13 @@ function DetectorSelect({
   onChange,
   options,
   label,
+  error,
 }: {
   value: string;
   onChange: (value: string) => void;
   options: string[];
   label: string;
+  error?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -137,6 +139,7 @@ function DetectorSelect({
           </div>
         )}
       </div>
+      {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
     </div>
   );
 }
@@ -159,30 +162,32 @@ export function NewRegistrationPage() {
   const [xrayDetectorName, setXrayDetectorName] = useState(existing?.xrayDetectorName ?? "");
   const [recordWeightChecker, setRecordWeightChecker] = useState(existing?.recordWeightChecker ?? false);
   const [weightCheckerName, setWeightCheckerName] = useState(existing?.weightCheckerName ?? "");
-  const [recordSealing, setRecordSealing] = useState(existing?.recordSealing ?? true);
+  const [recordSealing, setRecordSealing] = useState(existing?.recordSealing ?? false);
   const [mainPassProducts, setMainPassProducts] = useState<string[]>(existing?.mainPassProducts ?? []);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
-  const [error, setError] = useState("");
+  // 本番どおり入力欄ごとにエラーを出す（各欄の直後の @error。FormRequest で全項目を一度に検証する）
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   function handleSubmit() {
-    if (!name.trim()) {
-      setError("点検構成名は必須です");
-      return;
-    }
+    // 文言は本番の lang/ja/validation.php（required・custom.detector_*_id.required_if）と StoreRequest/UpdateRequest の withValidator
+    const next: Record<string, string> = {};
+    if (!name.trim()) next.name = "点検構成名は必須です。";
     if (recordMetalDetector && !metalDetectorName.trim()) {
-      setError("金属探知機を記録する場合、機器名の選択は必須です");
-      return;
+      next.metal = "金属探知機が「記録する」の場合、金属探知機名は必須です。";
     }
     if (recordXrayDetector && !xrayDetectorName.trim()) {
-      setError("X線探知機を記録する場合、機器名の選択は必須です");
-      return;
+      next.xray = "X線探知機が「記録する」の場合、X線探知機名は必須です。";
     }
     if (recordWeightChecker && !weightCheckerName.trim()) {
-      setError("ウェイトチェッカーを記録する場合、機器名の選択は必須です");
-      return;
+      next.weight = "ウェイトチェッカーが「記録する」の場合、ウェイトチェッカー名は必須です。";
     }
+    if (!recordMetalDetector && !recordXrayDetector && !recordWeightChecker && !recordSealing) {
+      next.checkItems = "点検項目は少なくとも1つ以上「記録する」を選択してください。";
+    }
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
     const machine = {
       name: name.trim(),
       displayFrom: displayFrom || undefined,
@@ -223,7 +228,7 @@ export function NewRegistrationPage() {
             <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
           </div>
           <p className="text-sm text-[var(--semantic-text-secondary)]">
-            日付指定が無い場合は、常にアプリ上に表示されます。
+            この点検構成設定を有効にする期間を入力してください。
           </p>
           <div className="flex gap-2 items-center">
             <DateFilterInput value={displayFrom} onChange={setDisplayFrom} />
@@ -244,9 +249,10 @@ export function NewRegistrationPage() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="例）XXXXXXX"
+            placeholder="~~500g以下"
             className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
           />
+          {errors.name && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.name}</p>}
         </div>
 
         <div className="flex flex-col gap-1 items-start">
@@ -263,6 +269,7 @@ export function NewRegistrationPage() {
             onChange={setMetalDetectorName}
             options={METAL_DETECTORS}
             label="金属探知機名"
+            error={errors.metal}
           />
         )}
 
@@ -280,6 +287,7 @@ export function NewRegistrationPage() {
             onChange={setXrayDetectorName}
             options={XRAY_DETECTORS}
             label="X線探知機名"
+            error={errors.xray}
           />
         )}
 
@@ -297,6 +305,7 @@ export function NewRegistrationPage() {
             onChange={setWeightCheckerName}
             options={WEIGHT_CHECKERS}
             label="ウェイトチェッカー名"
+            error={errors.weight}
           />
         )}
 
@@ -306,6 +315,9 @@ export function NewRegistrationPage() {
             <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
           </div>
           <RecordToggle value={recordSealing} onChange={setRecordSealing} />
+          {errors.checkItems && (
+            <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.checkItems}</p>
+          )}
         </div>
 
         <div className="flex flex-col items-start gap-4 w-full">
@@ -332,8 +344,6 @@ export function NewRegistrationPage() {
             + 製品追加
           </button>
         </div>
-
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button

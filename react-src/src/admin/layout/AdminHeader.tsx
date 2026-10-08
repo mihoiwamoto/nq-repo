@@ -29,8 +29,8 @@ export function AdminHeader() {
           type="button"
           onClick={() => setMenuOpen((v) => !v)}
           data-nq-part="account"
-          // 確定デザイン（7139:161756 ほか）：幅 120・左右 8px（2026-10-08）
-          className="h-10 w-[120px] px-2 truncate rounded-lg bg-white flex items-center justify-center text-base text-[var(--semantic-text-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
+          // 本番（stg）に合わせて 幅 280・高さ 40・余白 8px。メニューも同じ幅（2026-10-08。確定デザインの幅 120 から変更）
+          className="h-10 w-[280px] px-2 truncate rounded-lg bg-white flex items-center justify-center text-base text-[var(--semantic-text-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
         >
           {ACCOUNT_NAME}
         </button>
@@ -38,7 +38,7 @@ export function AdminHeader() {
         {menuOpen && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-            <div className="absolute right-0 min-w-full w-max top-[calc(100%+8px)] z-50 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-start py-2">
+            <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col items-start py-2">
               {MENU_LINKS.map((item) => (
                 <Link
                   key={item.to}

@@ -116,9 +116,10 @@ export function MachineSelectionPage() {
                 >
                   <p className="text-xl text-[var(--semantic-text-primary)]">{machine.name}</p>
                   <div className="flex gap-6 items-start text-base text-[var(--semantic-text-secondary)]">
-                    <p>金属探知機：{machine.recordMetalDetector ? machine.metalDetectorUnit : "記録しない"}</p>
-                    <p>X線探知機：{machine.recordXrayDetector ? machine.xrayDetectorUnit : "記録しない"}</p>
-                    <p>ウェイトチェッカー：{machine.recordWeightChecker ? machine.weightCheckerUnit : "記録しない"}</p>
+                    {/* 本番（configurations/index.blade.php）は記録する機器だけを「金属探知機：名前」のように並べ、記録しない機器は出さない */}
+                    {machine.recordMetalDetector && <p>金属探知機：{machine.metalDetectorName}</p>}
+                    {machine.recordXrayDetector && <p>X線探知機：{machine.xrayDetectorName}</p>}
+                    {machine.recordWeightChecker && <p>ウェイトチェッカー：{machine.weightCheckerName}</p>}
                   </div>
                 </Link>
               ))

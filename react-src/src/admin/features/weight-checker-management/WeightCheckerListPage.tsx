@@ -25,9 +25,18 @@ export function WeightCheckerListPage() {
   const units = useDemoList(allUnits);
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
   const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("更新しました。");
+
+  // 本番（Detector*Controller::changeOrder）は並べ替えのあと「並び順を変更しました。」を出す
+  function handleMove(id: string, direction: "up" | "down") {
+    moveUnit(id, direction);
+    setToastMessage("並び順を変更しました。");
+    setShowToast(true);
+  }
 
   useEffect(() => {
     if (location.state?.justSaved) {
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);
@@ -38,7 +47,7 @@ export function WeightCheckerListPage() {
 
   return (
     <div>
-      {showToast && <Toast message="更新しました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message={toastMessage} onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="ウェイトチェッカー管理"
         showBack
@@ -102,7 +111,7 @@ export function WeightCheckerListPage() {
                 <div className="w-[120px] flex items-center justify-center gap-2 p-2">
                   <button
                     type="button"
-                    onClick={() => moveUnit(unit.id, "up")}
+                    onClick={() => handleMove(unit.id, "up")}
                     disabled={index === 0}
                     className="flex items-center justify-center disabled:opacity-50"
                   >
@@ -110,7 +119,7 @@ export function WeightCheckerListPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => moveUnit(unit.id, "down")}
+                    onClick={() => handleMove(unit.id, "down")}
                     disabled={index === units.length - 1}
                     className="flex items-center justify-center disabled:opacity-50"
                   >

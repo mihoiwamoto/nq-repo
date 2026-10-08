@@ -1,13 +1,11 @@
 import { Link } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { useStorageManagement } from "./StorageManagementContext";
 
 export function StorageCompletePage({ message }: { message: string }) {
-  const { origin } = useStorageManagement();
   return (
     <div>
-      {/* 帳票管理から入ったときの見出しは「帳票管理」（確定デザイン 7139:162558） */}
-      <PageTitleBar title={origin ? "帳票管理" : "保管場所管理"} />
+      {/* 本番の共通の完了画面（admin/components/complate.blade.php）は見出しが「完了画面」で固定 */}
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
