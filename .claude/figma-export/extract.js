@@ -180,6 +180,17 @@
         const ts = textStyle(cs);
         // Use the line box (lines × line-height), not the glyph box, so Figma's text height and the parent's padding match CSS.
         const nl = Math.max(1, tops.size), bh = ts.lh ? nl * ts.lh : rr.height, by = rr.top - (bh - rr.height) / 2;
+        // 省略記号（truncate / line-clamp）は Figma でも「…」で切る（2026-10-08。ないとセルの端で文字が途中で切れて見える）
+        const clamp = parseInt(cs.webkitLineClamp, 10);
+        if (cs.textOverflow === 'ellipsis' || clamp > 0) {
+          const ml = clamp > 0 ? clamp : 1;
+          const availW = rc.right - parseFloat(cs.paddingRight) - parseFloat(cs.borderRightWidth) - rr.left;
+          const lhx = ts.lh || ts.fs * 1.5;
+          if ((ml === 1 && tops.size <= 1 && rr.width > availW + 0.5) || (ml > 1 && tops.size > ml)) {
+            kids.push(Object.assign({ n: txt.trim().slice(0, 30), t: txt.trim(), x: r1(rr.left - rc.left), y: r1((ml > 1 ? rr.top : by) - rc.top), w: r1(ml === 1 ? availW : rr.width), h: r1(ml === 1 ? bh : ml * lhx), sl: 0, el: ml }, ts));
+            continue;
+          }
+        }
         kids.push(Object.assign({ n: txt.trim().slice(0, 30), t: txt.trim(), x: r1(rr.left - rc.left), y: r1(by - rc.top), w: r1(rr.width), h: r1(bh), sl: tops.size <= 1 ? 1 : 0 }, ts));
       } else if (ch.nodeType === 1) {
         const k = walk(ch, rc); if (k) { if (Array.isArray(k)) kids.push(...k); else kids.push(k); }

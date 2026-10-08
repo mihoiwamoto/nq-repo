@@ -15,7 +15,8 @@ let D,IH;
 function mk(x){let n;
  if(x.t!==undefined){n=figma.createText();n.fontName={family:F,style:WS[Math.min(9,Math.max(1,Math.round(x.fw/100)))]};n.characters=x.t;n.fontSize=x.fs;n.fills=[P(x.c)];
   if(x.lh)n.lineHeight={unit:'PIXELS',value:x.lh};if(x.ls)n.letterSpacing={unit:'PIXELS',value:x.ls};if(x.ta)n.textAlignHorizontal=x.ta==='C'?'CENTER':'RIGHT';if(x.u)n.textDecoration='UNDERLINE';
-  if(x.sl)n.textAutoResize='WIDTH_AND_HEIGHT';else{n.resize(Math.max(1,x.w),Math.max(1,x.h));n.textAutoResize='HEIGHT';}}
+  if(x.sl)n.textAutoResize='WIDTH_AND_HEIGHT';else{n.resize(Math.max(1,x.w),Math.max(1,x.h));n.textAutoResize='HEIGHT';}
+  if(x.el){n.textAutoResize='NONE';n.resize(Math.max(1,x.w),Math.max(1,x.h));n.textTruncation='ENDING';n.maxLines=x.el;}} // 省略記号（extract.js の el。2026-10-08）
  else if(x.sv!==undefined){try{n=figma.createNodeFromSvg(D.SV[x.sv]);}catch(e){n=figma.createFrame();n.resize(Math.max(0.01,x.w),Math.max(0.01,x.h));n.fills=[];}}
  else{n=figma.createFrame();n.resize(Math.max(0.01,x.w),Math.max(0.01,x.h));n.fills=x.im!==undefined?[{type:'IMAGE',scaleMode:'FILL',imageHash:IH[x.im]}]:x.f?[P(x.f)]:[];
   if(x.r!==undefined){if(Array.isArray(x.r)){n.topLeftRadius=x.r[0];n.topRightRadius=x.r[1];n.bottomRightRadius=x.r[2];n.bottomLeftRadius=x.r[3];}else n.cornerRadius=x.r;}
@@ -50,6 +51,8 @@ function titleBar(f){const fb=f.absoluteBoundingBox;const inOv=n=>{let p=n.paren
  const t=f.findAll(n=>n.type==='TEXT'&&n.fontSize>=24&&!inOv(n)&&n.absoluteBoundingBox.y-fb.y<160&&n.absoluteBoundingBox.x-fb.x>220).sort((a,b)=>a.absoluteBoundingBox.y-b.absoluteBoundingBox.y)[0];if(!t)return;
  let bar=t.parent;while(bar&&bar!==f&&!(bar.width>=900&&bar.height>=40))bar=bar.parent;if(!bar||bar===f||bar.layoutMode==='NONE')return;
  bar.paddingTop=0;bar.paddingBottom=0;bar.counterAxisAlignItems='CENTER';if(bar.layoutSizingVertical!=='FIXED')bar.layoutSizingVertical='FIXED';bar.resize(bar.width,88);
+ // PageTitleBar は文字の入れ物も帯の高さいっぱい（FILL）なので、入れ物の中でも上下中央にする（2026-10-08。承認申請管理・完了画面で文字が上に寄っていた）
+ for(let p=t.parent;p&&p!==bar;p=p.parent){if(p.type!=='FRAME')continue;if(p.layoutMode==='HORIZONTAL')p.counterAxisAlignItems='CENTER';else if(p.layoutMode==='VERTICAL')p.primaryAxisAlignItems='CENTER';}
  for(const d of bar.findAll(n=>n.type==='FRAME'&&n.layoutSizingVertical==='FILL'&&/^(button|a:)/.test(n.name)&&Math.round(n.height)===88)){const p=d.parent;d.layoutSizingVertical='FIXED';d.resize(d.width,d.name==='button'?Math.round(d.width):40);
   for(const inner of d.findAll(n=>n.type==='FRAME'&&n.layoutSizingVertical==='FILL')){inner.layoutSizingVertical='FIXED';inner.resize(inner.width,Math.round(inner.width));}
   if(p.layoutMode==='HORIZONTAL')p.counterAxisAlignItems='CENTER';else if(p.layoutMode==='VERTICAL')p.primaryAxisAlignItems='CENTER';if(d.layoutMode==='HORIZONTAL')d.counterAxisAlignItems='CENTER';else if(d.layoutMode==='VERTICAL')d.primaryAxisAlignItems='CENTER';}}

@@ -4,7 +4,7 @@ const COL='機械器具点検';
 const pg=await figma.getNodeByIdAsync('7688:98558');await figma.setCurrentPageAsync(pg);
 function grow(n){if(n.type!=='FRAME')return;for(const c of n.children)if(c.type==='FRAME'&&c.layoutPositioning!=='ABSOLUTE')grow(c);
  if(!n.children.length)return;const old=n.height;
- if(n.layoutMode==='NONE'){const mb=Math.max(...n.children.filter(c=>c.visible).map(c=>c.y+c.height));if(mb>old+0.5)n.resize(n.width,Math.ceil(mb+24));return;}
+ if(n.layoutMode==='NONE'){const mb=Math.max(...n.children.filter(c=>c.visible).map(c=>c.y+c.height));if(mb>old+8)n.resize(n.width,Math.ceil(mb+24));return;} // 8px 以下のはみ出し（枠線・影・今日の丸）は伸ばさない（2026-10-08：カレンダーの下に 24〜30px の空き、1280 のサイドメニューで 792px になっていた）
  if(n.layoutMode==='VERTICAL')n.primaryAxisSizingMode='AUTO';else n.counterAxisSizingMode='AUTO';
  if(n.height<old-0.5){if(n.layoutMode==='VERTICAL')n.primaryAxisSizingMode='FIXED';else n.counterAxisSizingMode='FIXED';n.resize(n.width,old);}}
 function expand(f){const h0=f.height;const vp=Math.round(f.width)===768?1024:960; // 管理画面は 1440×960（2026-10-08）
