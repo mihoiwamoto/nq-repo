@@ -5,7 +5,7 @@ import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { useRecords } from "./RecordsContext";
 import { useDemoList } from "../../../components/demo/demoStore";
-import { getRowStripeClasses } from "../../utils/tableStripe";
+import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import { useDemoFactoryName } from "../../data/factoryDemo";
@@ -42,7 +42,8 @@ export function ApprovalRecordsListPage() {
 
   /* 確定デザイン 7139:163788：絞り込みの段と月送りは無く、申請の題（「25年4月1日点検分_ソルビン酸」）の下に表だけを出す（2026-10-06） */
   const filtered = records;
-  const rowStripeClasses = getRowStripeClasses(filtered);
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   const handleApprove = () => {
     requestApproval(() => {
@@ -110,8 +111,8 @@ export function ApprovalRecordsListPage() {
                       <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                         {formatDateShort(record.date)}
                       </div>
-                      <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-semibold text-[var(--semantic-text-primary)]" title={record.additiveName}>
-                        <span className="block w-full truncate">{record.additiveName}</span>
+                      <div className="min-w-0 flex items-center justify-center p-2 h-full text-sm font-semibold text-[var(--semantic-text-primary)]" title={record.additiveName}>
+                        <span className="block w-full truncate text-center">{record.additiveName}</span>
                       </div>
                       <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                         {record.type}
@@ -123,7 +124,7 @@ export function ApprovalRecordsListPage() {
                         {record.currentStock}
                       </div>
                       <div className="min-w-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.storageLocation}>
-                        <span className="block w-full truncate">{record.storageLocation}</span>
+                        <span className="block w-full truncate text-center">{record.storageLocation}</span>
                       </div>
                       <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.remarks}>
                         <span className="block w-full truncate">{record.remarks}</span>
@@ -144,7 +145,9 @@ export function ApprovalRecordsListPage() {
         <button
           type="button"
           onClick={handleApprove}
-          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
+          // 承認待ちが 0 件のときは押せない（2026-10-08 ユーザー指定）
+          disabled={records.filter((r) => r.approvalStatus === "pending").length === 0}
+          className="bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する
         </button>

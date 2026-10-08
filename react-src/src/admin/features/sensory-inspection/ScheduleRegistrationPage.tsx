@@ -5,6 +5,16 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useSensoryInspection } from "./SensoryInspectionContext";
 import { AddProductDialog } from "./AddProductDialog";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import { PlusIcon } from "../../components/PlusIcon";
+import type { ComparisonSetting } from "./types";
+
+/** 比較製品の選択（本番の product-list.hbs：なし／あり／未設定） */
+const COMPARISON_OPTIONS: { value: 0 | 1 | null; label: string }[] = [
+  { value: 0, label: "なし" },
+  { value: 1, label: "あり" },
+  { value: null, label: "未設定" },
+];
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
 export function ScheduleRegistrationPage() {
@@ -22,6 +32,9 @@ export function ScheduleRegistrationPage() {
   const [productIds, setProductIds] = useState<string[]>(
     existingEntry?.productIds ?? scheduleEntries[duplicateFrom]?.productIds ?? []
   );
+  const [comparisons, setComparisons] = useState<Record<string, ComparisonSetting>>(
+    existingEntry?.comparisons ?? scheduleEntries[duplicateFrom]?.comparisons ?? {}
+  );
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
@@ -35,11 +48,19 @@ export function ScheduleRegistrationPage() {
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   function handleSubmit() {
-    if (!date || productIds.length === 0) {
-      setError("日付と検査対象製品は必須です");
+    // 本番どおり項目ごとのエラー
+    const errors: string[] = [];
+    if (!date) errors.push("製造予定日は必須です。");
+    if (productIds.length === 0) errors.push("製品は必須です。");
+    if (errors.length > 0) {
+      setError(errors.join("\n"));
       return;
     }
-    upsertScheduleEntry(date, productIds);
+    const kept: Record<string, ComparisonSetting> = {};
+    productIds.forEach((id) => {
+      if (comparisons[id]) kept[id] = comparisons[id];
+    });
+    upsertScheduleEntry(date, productIds, kept);
     if (isEditing) {
       navigate(`${basePath}/schedule`, { state: { justSaved: true, date } });
     } else {
@@ -103,7 +124,8 @@ export function ScheduleRegistrationPage() {
                 onClick={() => setAddDialogOpen(true)}
                 className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg flex items-center justify-center gap-1 text-base text-[var(--semantic-brand-primary)]"
               >
-                + 製品追加
+                <PlusIcon />
+                製品追加
               </button>
               <div className="relative">
                 <button
@@ -123,7 +145,7 @@ export function ScheduleRegistrationPage() {
                       }}
                       className="w-full text-left px-4 py-2 text-base text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
                     >
-                      全て削除
+                      製品全削除
                     </button>
                   </div>
                 )}
@@ -136,29 +158,83 @@ export function ScheduleRegistrationPage() {
                   データがありません。
                 </p>
               ) : (
-                selectedProducts.map((product) => (
-                  <div key={product.id} className="flex items-center w-full gap-4">
-                    <span className="w-[112px] text-base text-[var(--semantic-text-primary)]">
-                      製品名
-                    </span>
-                    <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                      {product.name}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setProductToDelete(product.id)}
-                      className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center shrink-0"
-                    >
-                      <img src={iconTrash} alt="削除" className="size-6" />
-                    </button>
-                  </div>
-                ))
+                selectedProducts.map((product, index) => {
+                  const comparison = comparisons[product.id] ?? { isComparison: null };
+                  return (
+                    <div key={product.id} className="flex flex-col gap-3 w-full">
+                      {index > 0 && <div className="border-t border-[#d0d0d0] w-full" />}
+                      <div className="flex items-center w-full gap-4">
+                        <span className="w-[140px] shrink-0 text-base text-[var(--semantic-text-primary)]">
+                          製品名
+                        </span>
+                        <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                          {product.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setProductToDelete(product.id)}
+                          className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center shrink-0"
+                        >
+                          <img src={iconTrash} alt="削除" className="size-6" />
+                        </button>
+                      </div>
+                      <div className="flex items-center w-full gap-4">
+                        <span className="w-[140px] shrink-0 text-base text-[var(--semantic-text-primary)]">
+                          比較製品
+                        </span>
+                        <div className="flex gap-4 items-center">
+                          {COMPARISON_OPTIONS.map((option) => {
+                            const active = comparison.isComparison === option.value;
+                            return (
+                              <button
+                                key={option.label}
+                                type="button"
+                                onClick={() =>
+                                  setComparisons((prev) => ({
+                                    ...prev,
+                                    [product.id]: {
+                                      isComparison: option.value,
+                                      manufacturedAt: option.value === 1 ? prev[product.id]?.manufacturedAt : undefined,
+                                    },
+                                  }))
+                                }
+                                className={`h-10 w-[120px] rounded-lg shadow-[0px_2px_4px_rgba(51,51,51,0.24)] text-base bg-white ${
+                                  active
+                                    ? "border border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
+                                    : "border border-[#d0d0d0] text-[var(--semantic-text-secondary)]"
+                                }`}
+                              >
+                                {option.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      {comparison.isComparison === 1 && (
+                        <div className="flex items-center w-full gap-4">
+                          <span className="w-[140px] shrink-0 text-base text-[var(--semantic-text-primary)]">
+                            比較製品製造日
+                          </span>
+                          <DateFilterInput
+                            value={comparison.manufacturedAt ?? ""}
+                            onChange={(value) =>
+                              setComparisons((prev) => ({
+                                ...prev,
+                                [product.id]: { isComparison: 1, manufacturedAt: value || undefined },
+                              }))
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--semantic-brand-danger)] whitespace-pre-line">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button
@@ -198,7 +274,7 @@ export function ScheduleRegistrationPage() {
                 全製品の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">
@@ -230,7 +306,7 @@ export function ScheduleRegistrationPage() {
                 {productToDeleteName}の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">

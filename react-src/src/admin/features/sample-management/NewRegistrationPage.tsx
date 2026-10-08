@@ -4,6 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useSampleManagement } from "./SampleManagementContext";
 import { CORE_SYSTEM_PRODUCT_NAMES } from "./mockData";
+import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 
 export function NewRegistrationPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -59,22 +60,33 @@ export function NewRegistrationPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">検体製品名</p>
             <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
           </div>
-          <div className="flex items-center bg-white h-12 px-4 rounded-lg w-full">
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onFocus={() => setPulldownOpen(true)}
-              placeholder="例）仕出しだし巻き玉子 冷凍"
-              className="bg-transparent h-full flex-1 text-base text-[var(--semantic-text-primary)] placeholder:text-[#808080] border-none focus:outline-none"
-            />
-            <svg className="w-6 h-6 ml-3 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12.9422 18.4924C12.507 19.1887 11.493 19.1887 11.0578 18.4924L3.0625 5.7C2.59997 4.95994 3.13201 4 4.00472 4L19.9953 4C20.868 4 21.4 4.95995 20.9375 5.7L12.9422 18.4924Z" fill="#999999"/>
-            </svg>
+          {/* 本番は TomSelect（create:false）で候補から選ぶだけ。手入力はしない（2026-10-08。確定デザイン 6296:132485）。
+              見た目は周りの Pulldown（薬品管理の単位など）と同じ。data-nq-part は画面説明・再生が入力欄として数える印 */}
+          <div data-nq-part="pulldown" className="w-full">
+            <button
+              type="button"
+              onClick={() => setPulldownOpen((v) => !v)}
+              className="flex items-center gap-2 bg-white h-12 px-4 rounded-lg w-full text-base text-[var(--semantic-text-primary)]"
+            >
+              <span
+                className={`flex-1 min-w-0 text-left truncate ${
+                  name ? "" : "text-[var(--semantic-text-secondary)] font-bold"
+                }`}
+              >
+                {name || "例）仕出しだし巻き玉子 冷凍"}
+              </span>
+              <img
+                src={iconPulldown}
+                alt=""
+                aria-hidden
+                className={`inline-block size-4 shrink-0 transition-transform ${pulldownOpen ? "rotate-180" : ""}`}
+                style={{ filter: "brightness(0) invert(0.5)" }}
+              />
+            </button>
           </div>
 
           {pulldownOpen && (
-            <div className="absolute top-full left-0 mt-1 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 w-full z-10">
+            <div className="absolute top-full left-0 mt-1 bg-white shadow-[0px_0px_3px_rgba(51,51,51,0.24)] rounded-lg p-2 w-full max-h-[290px] overflow-y-auto z-50">
               {nqRepoNames.length > 0 && (
                 <div className="flex flex-col items-start w-full">
                   <div className="flex items-center justify-center py-2 w-full">
@@ -85,7 +97,11 @@ export function NewRegistrationPage() {
                       key={productName}
                       type="button"
                       onClick={() => selectName(productName)}
-                      className="flex h-[42px] items-center px-4 rounded-lg w-full text-left text-base text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-brand-primary)] hover:text-white"
+                      className={`flex h-[42px] items-center px-4 rounded-lg w-full text-left text-base ${
+                        name === productName
+                          ? "bg-[var(--semantic-brand-primary)] text-white"
+                          : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
+                      }`}
                     >
                       {productName}
                     </button>
@@ -101,7 +117,11 @@ export function NewRegistrationPage() {
                     key={productName}
                     type="button"
                     onClick={() => selectName(productName)}
-                    className="flex h-[42px] items-center px-4 rounded-lg w-full text-left text-base text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-brand-primary)] hover:text-white"
+                    className={`flex h-[42px] items-center px-4 rounded-lg w-full text-left text-base ${
+                        name === productName
+                          ? "bg-[var(--semantic-brand-primary)] text-white"
+                          : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
+                      }`}
                   >
                     {productName}
                   </button>

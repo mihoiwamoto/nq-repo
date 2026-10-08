@@ -1,7 +1,6 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
-import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { DateFilterInput } from "../../components/DateFilterInput";
@@ -15,7 +14,8 @@ import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import { downloadSampleCsv, downloadSamplePdf } from "./sampleExport";
+import { PlusIcon } from "../../components/PlusIcon";
 
 function HyphenIcon() {
   return (
@@ -32,16 +32,6 @@ function DateDisplay({ date }: { date: string | undefined }) {
   return <>{date.replaceAll("-", "/")}</>;
 }
 
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 const MONTH_LABELS = [
   "1月", "2月", "3月", "4月", "5月", "6月",
@@ -50,7 +40,6 @@ const MONTH_LABELS = [
 
 const COLUMNS: { label: string; width: string; marginLeft?: string; justify?: string }[] = [
   { label: "操作", width: "w-[104px]" },
-  { label: "ステータス", width: "w-[104px] shrink-0" },
   { label: "実施日", width: "w-[96px]" },
   { label: "製品名", width: "w-[200px]" },
   { label: "ロットNo.", width: "w-[120px]", marginLeft: "ml-4" },
@@ -60,11 +49,8 @@ const COLUMNS: { label: string; width: string; marginLeft?: string; justify?: st
   { label: "検体数量", width: "w-[88px]" },
   { label: "単位", width: "w-[64px]" },
   { label: "保管場所", width: "w-[104px]" },
-  { label: "備考", width: "flex-1 min-w-[160px]" },
-  { label: "状態", width: "w-[88px]" },
-  { label: "破棄日", width: "w-[96px]" },
-  { label: "実施者", width: "w-[100px]" },
-  { label: "確認者", width: "w-[100px]" },
+  /* 本番どおり 備考・破棄日・実施者・確認者 の列は出さない（詳細画面には出す。2026-10-08） */
+  { label: "状態", width: "flex-1 min-w-[88px]" },
 ];
 
 export function DataListPage() {
@@ -78,10 +64,8 @@ export function DataListPage() {
   const [filterOpen, setFilterOpen] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [productFilter, setProductFilter] = useState("");
-  const [onlyRejected, setOnlyRejected] = useState(false);
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
@@ -96,9 +80,10 @@ export function DataListPage() {
     if (ry !== year || rm !== month + 1) return false;
     if (dateFilter && r.date !== dateFilter) return false;
     if (productFilter && r.productName !== productFilter) return false;
-    if (onlyRejected && r.approvalStatus !== "rejected") return false;
     return true;
   });
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  filtered.sort((a, b) => a.date.localeCompare(b.date));
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
@@ -110,44 +95,8 @@ export function DataListPage() {
   function handleReset() {
     setDateFilter("");
     setProductFilter("");
-    setOnlyRejected(false);
   }
 
-  function handleDownload() {
-    const header = [
-      "実施日",
-      "製品名",
-      "ロットNo.",
-      "賞味期限",
-      "製造日",
-      "検体種別",
-      "検体数量",
-      "単位",
-      "保管場所",
-      "備考",
-      "状態",
-      "破棄日",
-      "実施者",
-      "確認者",
-    ];
-    const rows = filtered.map((r) => [
-      r.date,
-      r.productName,
-      r.lotNumber ?? "",
-      r.expirationDate,
-      r.manufactureDate,
-      r.sampleType,
-      r.sampleQuantity,
-      r.unit,
-      r.storageLocation,
-      r.remarks,
-      r.status,
-      r.discardedDate ?? "",
-      r.implementer,
-      r.confirmer,
-    ]);
-    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
-  }
 
   return (
     <div>
@@ -195,7 +144,7 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+            className="flex items-center gap-2 h-5 text-base text-[var(--semantic-brand-primary)]"
           >
             <span>絞り込み検索</span>
             {filterOpen ? (
@@ -213,7 +162,7 @@ export function DataListPage() {
                 }}
               />
             ) : (
-              <span>+</span>
+              <PlusIcon />
             )}
           </button>
           {filterOpen && (
@@ -228,15 +177,7 @@ export function DataListPage() {
                     placeholder="製品名"
                   />
                 </div>
-                <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
-                  <input
-                    type="checkbox"
-                    checked={onlyRejected}
-                    onChange={(e) => setOnlyRejected(e.target.checked)}
-                    className="size-4 accent-[var(--semantic-brand-primary)]"
-                  />
-                  差し戻しのものだけ表示
-                </label>
+                {/* 確定デザイン（6296:131118）の絞り込みは 日付・製品名だけ。「差し戻しのものだけ表示」は出さない */}
               </div>
               <div className="flex gap-2 items-center">
                 <button
@@ -388,8 +329,8 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1768px]">
+          <div className="w-full rounded-lg overflow-x-auto">
+            <div className="flex flex-col min-w-[1312px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
                   <div
@@ -417,9 +358,6 @@ export function DataListPage() {
                       >
                         詳細
                       </Link>
-                    </div>
-                    <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full">
-                      <ApprovalStatusBadge status={record.approvalStatus} />
                     </div>
                     <div className="w-[96px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                       <DateDisplay date={record.date} />
@@ -449,20 +387,8 @@ export function DataListPage() {
                     <div className="w-[104px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.storageLocation}
                     </div>
-                    <div className="flex-1 min-w-[160px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                      {record.remarks}
-                    </div>
-                    <div className="w-[88px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
+                    <div className="flex-1 min-w-[88px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
                       {record.status}
-                    </div>
-                    <div className="w-[96px] shrink-0 flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
-                      <DateDisplay date={record.discardedDate} />
-                    </div>
-                    <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
-                      {record.implementer}
-                    </div>
-                    <div className="w-[100px] shrink-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
-                      {record.confirmer}
                     </div>
                   </div>
                 ))
@@ -523,9 +449,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadSampleCsv(filtered, factoryName, year, month);
+                  } else {
+                    await downloadSamplePdf(filtered, factoryName, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

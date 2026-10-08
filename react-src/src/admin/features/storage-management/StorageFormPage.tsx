@@ -70,7 +70,7 @@ export function StorageFormPage() {
               value={factoryId}
               onChange={setFactoryId}
               options={FACTORIES.map((factory) => ({ value: factory.id, label: factory.name }))}
-              placeholder="工場を選択"
+              placeholder="選択してください"
               className="bg-white h-12 px-4 rounded-lg text-base w-[240px] text-[var(--semantic-text-primary)]"
               style={{
                 fontWeight: factoryId ? 700 : 400,

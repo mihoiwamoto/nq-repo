@@ -1,39 +1,25 @@
-import { useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Pulldown } from "../../components/Pulldown";
-import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { floors } from "../../../app/features/glass-plastic/mockData";
 import { useRecords } from "./RecordsContext";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { countByStatus } from "./types";
 import { getDateStripeClasses } from "../../utils/tableStripe";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import { downloadGlassPlasticCsv, downloadGlassPlasticPdf } from "./glassPlasticExport";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
-import iconMinus from "../../../assets/figma/icons/common/minus.svg";
-import iconSearch from "../../../assets/figma/icons/common/search.svg";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
   return `${y.slice(2)}.${m}.${d}`;
 }
 
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 const MONTH_LABELS = [
   "1月", "2月", "3月", "4月", "5月", "6月",
@@ -66,27 +52,17 @@ export function DataListPage() {
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
-  const [filterOpen, setFilterOpen] = useState(true);
-  const [dateFilter, setDateFilter] = useState("");
-  const [implementerFilter, setImplementerFilter] = useState("");
-  const [onlyAbnormal, setOnlyAbnormal] = useState(false);
-
-  const implementerOptions = useMemo(
-    () => Array.from(new Set(records.filter((r) => r.floorId === floorId).map((r) => r.implementer))),
-    [records, floorId]
-  );
+  // 本番（データ検索のガラス・プラスチック）はデータ一覧に絞り込み検索が無い
 
   const filtered = records
     .filter((r) => r.floorId === floorId)
     .filter((r) => {
       const [ry, rm] = r.date.split("-").map(Number);
       if (ry !== year || rm !== month + 1) return false;
-      if (dateFilter && r.date !== dateFilter) return false;
-      if (implementerFilter && r.implementer !== implementerFilter) return false;
-      if (onlyAbnormal && countByStatus(r).issue === 0) return false;
       return true;
     });
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  filtered.sort((a, b) => a.date.localeCompare(b.date));
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
@@ -95,28 +71,7 @@ export function DataListPage() {
     setMonth(next.getMonth());
   }
 
-  function handleReset() {
-    setDateFilter("");
-    setImplementerFilter("");
-    setOnlyAbnormal(false);
-  }
 
-  function handleDownload() {
-    const header = ["日付", "点検場所", "総点検箇所数", "正常", "異常あり", "実施者", "確認者"];
-    const rows = filtered.map((r) => {
-      const { total, normal, issue } = countByStatus(r);
-      return [
-        r.date,
-        r.floorName,
-        String(total),
-        String(normal),
-        String(issue),
-        r.implementer,
-        r.confirmer,
-      ];
-    });
-    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
-  }
 
   return (
     <div>
@@ -161,72 +116,6 @@ export function DataListPage() {
           </p>
         </div>
 
-        <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
-          <button
-            type="button"
-            onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
-          >
-            <span>絞り込み検索</span>
-            {filterOpen ? (
-              <span
-                aria-hidden
-                className="inline-block size-5 shrink-0"
-                style={{
-                  WebkitMaskImage: `url("${iconMinus}")`,
-                  maskImage: `url("${iconMinus}")`,
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  backgroundColor: "var(--semantic-brand-primary)",
-                }}
-              />
-            ) : (
-              <span>+</span>
-            )}
-          </button>
-          {filterOpen && (
-            <div className="flex gap-6 items-center justify-end w-full">
-              <div className="flex flex-col gap-4 flex-1">
-                <div className="flex gap-4 items-center">
-                  <DateFilterInput value={dateFilter} onChange={setDateFilter} />
-                  <Pulldown
-                    value={implementerFilter}
-                    onChange={setImplementerFilter}
-                    options={implementerOptions.map((label) => ({ value: label, label }))}
-                    placeholder="実施者"
-                  />
-                </div>
-                <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
-                  <input
-                    type="checkbox"
-                    checked={onlyAbnormal}
-                    onChange={(e) => setOnlyAbnormal(e.target.checked)}
-                    className="size-4 accent-[var(--semantic-brand-primary)]"
-                  />
-                  異常があるものだけ表示
-                </label>
-              </div>
-              <div className="flex gap-2 items-center">
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
-                >
-                  リセット
-                </button>
-                <button
-                  type="button"
-                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
-                >
-                  <img src={iconSearch} alt="" className="size-5" />
-                  検索
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex items-center justify-between relative">
@@ -254,7 +143,7 @@ export function DataListPage() {
               onClick={() => setMonthPickerOpen((v) => !v)}
               className="flex items-center gap-1 text-xl text-[var(--semantic-text-primary)]"
             >
-              {year}年{month + 1}月
+              {year}年{String(month + 1).padStart(2, "0")}月
               <span
                 aria-hidden
                 className="inline-block size-3 shrink-0"
@@ -358,7 +247,7 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
+          <div className="w-full rounded-lg overflow-x-auto">
             <div className="flex flex-col min-w-[1004px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
@@ -480,9 +369,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadGlassPlasticCsv(filtered, factoryName, floorName, year, month);
+                  } else {
+                    await downloadGlassPlasticPdf(filtered, factoryName, floorName, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

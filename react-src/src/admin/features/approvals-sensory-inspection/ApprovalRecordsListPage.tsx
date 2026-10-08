@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
+import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { useRecords } from "./RecordsContext";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
@@ -20,6 +21,7 @@ function isRecordAbnormal(record: SensoryApprovalRecord) {
 
 const COLUMNS = [
   { label: "操作", width: "w-[104px]" },
+  { label: "ステータス", width: "w-[96px]" },
   { label: "日付", width: "w-[80px]" },
   { label: "検査製品名", width: "w-[240px]" },
   ...CRITERIA.map((c) => ({ label: c, width: "w-[64px]" })),
@@ -58,11 +60,11 @@ export function ApprovalRecordsListPage() {
       <div className="flex flex-col items-center gap-6 p-6">
         <div className="flex flex-col gap-6 items-start w-full">
           <div className="bg-white flex items-center px-4 py-2 rounded-lg w-fit">
-            <p className="text-xl text-[var(--semantic-text-primary)]">25年4月1日点検分</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">25.04.01点検分</p>
           </div>
 
           <div className="w-full rounded-lg overflow-x-auto">
-            <div className="flex flex-col min-w-[1100px]">
+            <div className="flex flex-col min-w-[1196px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
                   <div
@@ -92,6 +94,9 @@ export function ApprovalRecordsListPage() {
                         >
                           詳細
                         </Link>
+                      </div>
+                      <div className="w-[96px] flex items-center justify-center p-2 h-full">
+                        <ApprovalStatusBadge status={record.approvalStatus} />
                       </div>
                       <div className="w-[80px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)]">
                         {record.date.replaceAll("-", "/")}
@@ -140,7 +145,9 @@ export function ApprovalRecordsListPage() {
         <button
           type="button"
           onClick={handleApprove}
-          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
+          // 承認待ちが 0 件のときは押せない（2026-10-08 ユーザー指定）。この一覧の記録は全部承認待ちなので件数で見る
+          disabled={records.length === 0}
+          className="bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する
         </button>

@@ -116,7 +116,7 @@ export function ConfirmPage() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
         {/* 確定デザイン 7139:233919・7139:245095：注意の帯 56px、実施日のカード 70px（2026-10-08） */}
         <div className="bg-[#f7f292] flex gap-2 items-center h-14 px-4 rounded-lg w-full max-w-full shrink-0">
-          <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
+          <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>

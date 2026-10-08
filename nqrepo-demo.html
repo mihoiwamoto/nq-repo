@@ -1512,8 +1512,8 @@ function helpClear(){ const h = S.app.help; h.cat = ''; h.q = ''; h.kw = ''; ren
 
 /* =========================================================================
    点検予定（equipment-inspection/SchedulePage.tsx）
-     ＋ 機械器具点検 点検管理（SchedulePointSettingPage.tsx）＋ 官能検査記録 検査商品設定（sensory-inspection/ScheduleRegisterPage.tsx）
-   持ち場／ライン・商品・検査項目の色は React の mockData をそのまま写した。カレンダーは React と同じ 2025 年 4 月から始まる（今日＝2025-04-03）
+     ＋ 機械器具点検 点検管理（SchedulePointSettingPage.tsx）＋ 官能検査記録 検査製品設定（sensory-inspection/ScheduleRegisterPage.tsx）
+   持ち場／ライン・製品・検査項目の色は React の mockData をそのまま写した。カレンダーは React と同じ 2025 年 4 月から始まる（今日＝2025-04-03）
    ========================================================================= */
 const EQ_LINES = [
   ['l19','原料受入ライン','weekly'],['l1','豆乳ライン','weekly'],['l2','ゆばライン（その他）','weekly'],['l3','殺菌ライン','weekly'],['l5','充填・包装ライン','weekly'],
@@ -1539,7 +1539,7 @@ const eqEntries = () => S.empty ? {} : S.app.schedEq;
 const snEntries = () => S.empty ? {} : S.app.schedSn;
 const schedLedgers = key => [
   {slug:'equipment-inspection', sc:'schedEq', lb:'機械器具点検 点検管理',   has:!!(eqEntries()[key]||[]).length},
-  {slug:'sensory-inspection',   sc:'schedSn', lb:'官能検査記録 検査商品設定', has:!!(snEntries()[key]||[]).length},
+  {slug:'sensory-inspection',   sc:'schedSn', lb:'官能検査記録 検査製品設定', has:!!(snEntries()[key]||[]).length},
 ];
 const ckbox = (on, sz) => `<span class="sq r4 sh0" style="width:${sz}px;height:${sz}px;border:1px solid ${on?'var(--g)':'var(--mute)'};background:${on?'var(--g)':'#fff'}">${on?mk('common/check.svg',Math.round(sz*.7),'#fff'):''}</span>`;
 const eqLabel = id => { const l = EQ_LINES.find(x=>x[0]===id); return l ? `【${FREQ_LB[l[2]]}】${l[1]}` : id; };
@@ -1579,7 +1579,7 @@ function apSchedule(){
       <div class="f fc f1 ic ovy wf" style="padding:0 16px 40px;min-height:0">${closed ? '' : reg.map(l=>`<div class="wf"><button type="button" class="f fc is jc wf tlf" style="padding:16px 8px" onclick="schedOpen('${l.sc}','${sel}');render()"><span class="f ic g2 wf">${aico(l.slug,24)}<span class="f1 mn0 tl ci">${l.lb}</span></span></button><div class="bline wf" style="height:1px"></div></div>`).join('')}</div>
     </div></div>`;
 }
-/* ---- 点検予定のポップアップ（新規登録の帳票選び／登録済み／持ち場・商品の追加／削除の確認） ---- */
+/* ---- 点検予定のポップアップ（新規登録の帳票選び／登録済み／持ち場・製品の追加／削除の確認） ---- */
 function schedDlgHTML(){
   const d = S.app.sdlg, sf = S.app.sf;
   const box = (inner, w, gap) => `<div class="ov"><div class="bg50" onclick="closeDlg()"></div><div class="dlg" style="width:${w}px;max-width:calc(100% - 32px);gap:${gap}px">${inner}</div></div>`;
@@ -1597,8 +1597,8 @@ function schedDlgHTML(){
       <div class="bw f fc ic r8 wf ovy" style="height:308px;padding:0 16px">${rows.length ? rows.map(([id,n,f],i)=>{ const on = p.sel.includes(id); return `<button type="button" class="f ic g2 wf sh0 tlf ${i<rows.length-1?'bb':''}" style="min-height:48px;padding:8px 0;border-color:var(--line)" onclick="sfToggle('${id}')"><span class="f ic g1 mn0">${ckbox(on,16)}<span class="ts tr1 ${on?'cg':'ci'}">【${FREQ_LB[f]}】${esc(n)}</span></span></button>`; }).join('') : `<p class="ts cm wf" style="padding:16px 0">該当する持ち場/ラインがありません</p>`}</div></div>
       <div class="f g10 ic jc wf"><button type="button" class="b64 bw bd bci ci" onclick="closeDlg()">閉じる</button><button type="button" class="b64 bg cw" onclick="sfPickDone()">追加</button></div>`, 640, 40); }
   if (d==='pickSn'){ const p = sf.pick; const rows = SN_PRODUCTS.filter(([,n])=>n.includes(p.q));
-    return box(`<h2 class="t2xl ci">商品追加</h2><div class="f g2 ic wf"><input class="inp f1" placeholder="商品名を入力" value="${esc(p.q)}" oninput="S.app.sf.pick.q=this.value;render({keep:this})"><button type="button" class="bw bd bcg r8 tb cg sh0" style="height:48px;padding:0 16px">検索</button></div>
-      <div class="bw f fc is r8 wf ovy" style="max-height:40vh">${rows.length ? rows.map(([id,n],i)=>{ const on = p.sel.includes(id); return `<button type="button" class="f ic g2 wf tlf ${i<rows.length-1?'bb':''}" style="padding:12px 16px;border-color:var(--line)" onclick="sfToggle('${id}')">${ckbox(on,24)}<span class="tb ci f1">${esc(n)}</span>${critTags()}</button>`; }).join('') : `<p class="tb cm" style="padding:16px">該当する商品がありません</p>`}</div>
+    return box(`<h2 class="t2xl ci">製品追加</h2><div class="f g2 ic wf"><input class="inp f1" placeholder="製品名を入力" value="${esc(p.q)}" oninput="S.app.sf.pick.q=this.value;render({keep:this})"><button type="button" class="bw bd bcg r8 tb cg sh0" style="height:48px;padding:0 16px">検索</button></div>
+      <div class="bw f fc is r8 wf ovy" style="max-height:40vh">${rows.length ? rows.map(([id,n],i)=>{ const on = p.sel.includes(id); return `<button type="button" class="f ic g2 wf tlf ${i<rows.length-1?'bb':''}" style="padding:12px 16px;border-color:var(--line)" onclick="sfToggle('${id}')">${ckbox(on,24)}<span class="tb ci f1">${esc(n)}</span>${critTags()}</button>`; }).join('') : `<p class="tb cm" style="padding:16px">該当する製品がありません</p>`}</div>
       <div class="f g4 ic jc wf"><button type="button" class="bw s2 r8 tb ci" style="height:48px;width:160px" onclick="closeDlg()">閉じる</button><button type="button" class="bg r8 tb cw" style="height:48px;width:160px" onclick="sfPickDone()">追加</button></div>`, 480, 24); }
   return '';
 }
@@ -1616,11 +1616,11 @@ function sfSave(){ const sf = S.app.sf; const n = sf.sc==='schedEq' ? sf.ids.len
   if (!n){ if (sf.ex){ delete store[sf.date]; sf.done = 'deleted'; render(); } return; }
   store[sf.date] = sf.sc==='schedEq' ? [...sf.ids] : sf.items.map(x=>Object.assign({},x));
   sf.done = sf.ex ? 'saved' : 'registered'; render(); }
-/* ---- 機械器具点検 点検管理／官能検査記録 検査商品設定（同じ入口。sf.sc で分かれる） ---- */
+/* ---- 機械器具点検 点検管理／官能検査記録 検査製品設定（同じ入口。sf.sc で分かれる） ---- */
 function apSchedForm(){
   const sf = S.app.sf; if (!sf){ S.app.sc = 'schedule'; return apSchedule(); }
-  const eq = sf.sc==='schedEq'; const title = eq ? '機械器具点検 点検管理' : '官能検査記録 検査商品設定';
-  if (sf.done){ const msg = sf.done==='deleted' ? (eq ? '機械器具点検の削除が完了しました！' : '検査商品設定の削除が完了しました！') : sf.done==='saved' ? '保存が完了しました！' : '登録が完了しました！';
+  const eq = sf.sc==='schedEq'; const title = eq ? '機械器具点検 点検管理' : '官能検査記録 検査製品設定';
+  if (sf.done){ const msg = sf.done==='deleted' ? (eq ? '機械器具点検の削除が完了しました！' : '検査製品設定の削除が完了しました！') : sf.done==='saved' ? '保存が完了しました！' : '登録が完了しました！';
     return apHead(eq ? '機械器具点検 点検設定' : title) + `<div class="f1 f fc ic jc g6 p6">${CIRCLE_CHECK}<p class="t2xl cg">${msg}</p>${sf.done!=='deleted'?'<p class="tb ci">ご登録ありがとうございます。</p>':''}<button type="button" class="bw bd bcg r8 tb cg" style="height:48px;padding:0 24px" onclick="S.app.sf=null;apGo('schedule')">点検予定に戻る</button></div>`; }
   const edit = sf.view==='edit'; const n = eq ? sf.ids.length : sf.items.length;
   const back = `<button type="button" class="b64 bw bd bci ci sh0" style="padding:0 16px;${eq?'':'width:136px'}" onclick="S.app.sf=null;apGo('schedule')">戻る</button>`;
@@ -1642,12 +1642,12 @@ function apSchedForm(){
   return apHead(title, edit ? '' : `<button type="button" class="bw bd bcg f g2 ic r8 ts cg" style="height:40px;padding:0 16px" onclick="S.app.sf.view='edit';render()">${im('common/edit.svg',16,'編集')}編集</button>`) + `<div class="f1 mn0 ovy p4 f fc g4 ic">
     <div class="bw f fc is r8 wf ovh">
       <div class="f ic jb wf bp" style="padding:16px"><p class="tb ci f ic g1">日付 <span class="cd">※</span></p><p class="tb ci">${dateJp(sf.date)}</p></div><div class="bline wf" style="height:1px"></div>
-      ${edit ? `<div class="f ic jb wf" style="padding:16px"><p class="tb ci f ic g1">検査対象商品 <span class="cd">※</span></p><button type="button" class="bw bd bcg r8 ts cg" style="height:40px;padding:0 16px" onclick="sfPickOpen()">＋ 商品追加</button></div>` : ''}
+      ${edit ? `<div class="f ic jb wf" style="padding:16px"><p class="tb ci f ic g1">検査対象製品 <span class="cd">※</span></p><button type="button" class="bw bd bcg r8 ts cg" style="height:40px;padding:0 16px" onclick="sfPickOpen()">＋ 製品追加</button></div>` : ''}
       ${n ? sf.items.map(it=>`<div class="f fc g3 wf bt" style="padding:16px;border-color:var(--line)">
-        <div class="f ic jb g2"><p class="tb cm sh0">商品名</p><div class="f ic g2 wrap je"><span class="tb ci">${esc(snName(it.pid))}</span>${critTags()}</div></div>
-        <div class="f ic jb g2"><p class="tb cm sh0">比較商品</p><div class="f ic g2">${edit ? `<div class="bw bd f ic r8 ovh" style="height:40px;border-color:var(--line)">${CMP.map(([v,l])=>`<button type="button" class="ts ${it.cmp===v?'bg cw':'cm'}" style="height:40px;padding:0 16px" onclick="sfCmp('${it.pid}','${v}')">${l}</button>`).join('')}</div>${trash(it.pid,16)}` : `<span class="tb ci">${cmpLb(it.cmp)}</span>`}</div></div>
-        ${it.cmp==='present' ? `<div class="f ic jb g2"><p class="tb cm sh0">比較商品製造日</p>${edit ? `<input type="date" class="inp" style="height:40px;width:180px;padding:0 12px" value="${esc(it.date)}" onchange="sfCmpDate('${it.pid}',this.value)">` : `<span class="tb ci">${esc(it.date)||'未設定'}</span>`}</div>` : ''}</div>`).join('')
-         : `<p class="tb cm" style="padding:16px">登録された商品がありません</p>`}
+        <div class="f ic jb g2"><p class="tb cm sh0">製品名</p><div class="f ic g2 wrap je"><span class="tb ci">${esc(snName(it.pid))}</span>${critTags()}</div></div>
+        <div class="f ic jb g2"><p class="tb cm sh0">比較製品</p><div class="f ic g2">${edit ? `<div class="bw bd f ic r8 ovh" style="height:40px;border-color:var(--line)">${CMP.map(([v,l])=>`<button type="button" class="ts ${it.cmp===v?'bg cw':'cm'}" style="height:40px;padding:0 16px" onclick="sfCmp('${it.pid}','${v}')">${l}</button>`).join('')}</div>${trash(it.pid,16)}` : `<span class="tb ci">${cmpLb(it.cmp)}</span>`}</div></div>
+        ${it.cmp==='present' ? `<div class="f ic jb g2"><p class="tb cm sh0">比較製品製造日</p>${edit ? `<input type="date" class="inp" style="height:40px;width:180px;padding:0 12px" value="${esc(it.date)}" onchange="sfCmpDate('${it.pid}',this.value)">` : `<span class="tb ci">${esc(it.date)||'未設定'}</span>`}</div>` : ''}</div>`).join('')
+         : `<p class="tb cm" style="padding:16px">登録された製品がありません</p>`}
     </div></div>
     <div class="bw sh0 f ic jb" style="padding:16px 24px;box-shadow:0 -4px 16px rgba(51,51,51,.16)">${back}${edit?`<button type="button" class="r8 txl cw" style="height:64px;padding:0 24px;background:${n?'var(--g)':'var(--line)'}" ${n?'':'disabled'} onclick="sfSave()">${sf.ex?'保存':'登録'}</button>`:''}</div>`;
 }
@@ -2270,7 +2270,7 @@ const MX_FIELDS = f => {
   return [fd('content','点検内容','ro'), fd('abTime','点検時間','text',{ph:'例：10:30'}), fd('prod','異常製品','text',{ph:'製品名を入力'}), fd('qty','通過数量','num',{ph:'例：100'}), fd('abQty','異常数量','num',{ph:'例：1'}),
     fd('cause','原因','select',{opts:['異物混入','故障','その他'], pills:true}), TA('causeNote','','原因を記入してください。'), fd('action','対応','select',{opts:['点検調整','再加工','破棄','その他'], pills:true}), TA('actionNote','','対応を記入してください。'), TA('note','備考','テキストを入力')];
 };
-const SENSORY_NOTE = ['【点数の評価基準】','　5点・・・標準品と同等の品位が保たれている','　4点・・・標準品よりやや劣るが遜色ない品位が保たれている','　3点・・・標準品より劣るが商品として必要な品位が保たれている','　2点・・・標準品よりかなり劣り商品として不向き','　1点・・・標準品より著しく劣り商品としての品位が失われている'];
+const SENSORY_NOTE = ['【点数の評価基準】','　5点・・・標準品と同等の品位が保たれている','　4点・・・標準品よりやや劣るが遜色ない品位が保たれている','　3点・・・標準品より劣るが製品として必要な品位が保たれている','　2点・・・標準品よりかなり劣り製品として不向き','　1点・・・標準品より著しく劣り製品としての品位が失われている'];
 const stockFields = (ph2, note) => [fd('kind','区分','select',{opts:['入庫','出庫'], ph:ph2}), fd('qty','数量','num',{ph:'例）1,000'}), fd('stock','現在庫数','stock',{ph:'例）4,000', note}), TA('note','備考','例）月次定期発注による補充入庫')];
 
 /* ---- アプリ側の見本データ（React の src/app/features/<slug>/mockData.ts を写したもの）----
@@ -2382,10 +2382,10 @@ const AX = {
     head:(f, it) => [['実施日', jpDate(f.date)],['実施者', S.app.actor],['持ち場', it.name]], cols:[['操作',80],['秤No.(ラベル名)',204],['シリアルナンバー',128],['動作<br>確認',60],['水平<br>点検',60],['汚れ',60],['秤の<br>表示値(g)',80]],
     complete:{msg:'保存が完了しました！', sub:'ご記入ありがとうございます。', primary:['秤点検記録を続ける','list'], secondary:['帳票一覧に戻る','ledgers']},
     toV:(f, sc, post) => [sc.name, sc.serial, post.name, f.checks.op==='ng' ? '異常あり' : '正常', f.checks.lv ? '正常' : '—', f.checks.dirt ? 'なし' : '—', f.vals.disp||'', f.vals.note||'']},
-  'sensory-inspection': {title:'官能検査記録', noun:'検査製品', progress:true, search:'商品名を入力', tags:true,
+  'sensory-inspection': {title:'官能検査記録', noun:'検査製品', progress:true, search:'製品名を入力', tags:true,
     routes:{list:'', form:'products/:item', confirm:'products/:item/confirm', complete:'products/:item/complete', review:'products/:item/review'},
-    formTitle:()=>'官能検査記録', info:it=>[['検査商品名', it.name],['賞味期限', it.exp||'']],
-    fields:[fd('date','実施日','date'), fd('mfg','製造日','date'), fd('cmp','比較商品','select',{opts:['比較商品なし','比較商品あり']}), fd('cmpDate','比較商品製造日','date',{when:f=>f.vals.cmp==='比較商品あり'}), {ty:'note', lines:SENSORY_NOTE},
+    formTitle:()=>'官能検査記録', info:it=>[['検査製品名', it.name],['賞味期限', it.exp||'']],
+    fields:[fd('date','実施日','date'), fd('mfg','製造日','date'), fd('cmp','比較製品','select',{opts:['比較製品なし','比較製品あり']}), fd('cmpDate','比較製品製造日','date',{when:f=>f.vals.cmp==='比較製品あり'}), {ty:'note', lines:SENSORY_NOTE},
       ...['味','形','色','食感','香り','とろみ'].map((c,i)=>fd('s'+i, c, 'score'))],
     head:(f) => [['実施者', S.app.actor],['実施日', jpDate(f.date)]],
     complete:{msg:'保存が完了しました！', sub:'ご記入ありがとうございます。', primary:['官能検査記録を続ける','list'], secondary:['帳票一覧に戻る','ledgers']},
@@ -2544,9 +2544,9 @@ const AX_SEED = {
   'scale-inspection': (f, it, sub) => { const ng = axScalesOf(it).findIndex(s=>s.id===sub.id)===1; const ts = `${jpDate(it.date)} 09:00`; const set = (k, v) => { f.checks[k] = v; f.ts[k] = ts; };
     set('op', ng ? 'ng' : 'ok'); if (ng) f.ng.op = {cause:'表示が点灯しない', action:'修理'}; set('lv', true); set('dirt', true);
     f.vals.disp = '100'; f.ts.disp = ts; if (ng) f.vals.note = '修理担当者へ連絡済み'; },
-  /* 官能検査：pendingReviewScoreRows[0]（製造日 2025/03/24・比較商品なし・味〜香り 5・とろみ 3）。時刻は実施日 09:00、実施者はいまの人 */
+  /* 官能検査：pendingReviewScoreRows[0]（製造日 2025/03/24・比較製品なし・味〜香り 5・とろみ 3）。時刻は実施日 09:00、実施者はいまの人 */
   'sensory-inspection': (f, it) => { const ts = `${jpDate(it.date)} 09:00`; const put = (k, v) => { f.vals[k] = v; f.ts[k] = ts; };
-    put('mfg', '2025-03-24'); put('cmp', '比較商品なし'); ['5','5','5','5','5','3'].forEach((v, i) => put('s'+i, v)); },
+    put('mfg', '2025-03-24'); put('cmp', '比較製品なし'); ['5','5','5','5','5','3'].forEach((v, i) => put('s'+i, v)); },
   /* 検体管理：SAMPLE_REVIEW_DETAILS。自前の記録が無い検体は先頭を流用。時刻は実施日 09:00、実施者はいまの人 */
   'sample-management': (f, it) => { const [mfg, kind, qty, unit, place, note] = SAMPLE_SEED[it.id] || SAMPLE_SEED.s1; const ts = `${jpDate(it.date)} 09:00`; const put = (k, v) => { f.vals[k] = v; f.ts[k] = ts; };
     put('mfg', it.mfg ? it.mfg.replaceAll('/','-') : mfg); put('kind', kind); put('qty', qty); put('unit', unit); put('place', place); f.vals.note = note; },

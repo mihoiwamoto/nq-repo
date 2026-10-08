@@ -19,7 +19,12 @@ export function PostFormPage() {
 
   function handleSubmit() {
     if (!name.trim()) {
-      setError("持ち場名は必須です");
+      setError("持ち場名は必須です。");
+      return;
+    }
+    // 本番は同じ工場に同じ名前の持ち場があると登録できない（WorkStationController の flashError）
+    if (posts.some((p) => p.factoryId === factoryId && p.id !== existing?.id && p.name === name.trim())) {
+      setError("名前が重複しています");
       return;
     }
     const input = { factoryId: factoryId!, name };
@@ -34,7 +39,7 @@ export function PostFormPage() {
 
   return (
     <div>
-      <PageTitleBar title="持ち場管理" showBack />
+      <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -59,7 +64,7 @@ export function PostFormPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="例）プリン製造ライン"
+              placeholder="例）製造ライン"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
           </div>

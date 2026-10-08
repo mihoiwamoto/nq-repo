@@ -15,11 +15,17 @@ import { CRITERIA, isAbnormalScore, type SensoryApprovalRecord } from "./types";
 import iconArrowDown from "../../../assets/figma/icons/common/arrow-down.svg";
 import { useDemoFactoryName } from "../../data/factoryDemo";
 
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
+/** 本番の approval.blade.php と同じ並び。点検済みは選べない。「承認」は承認済みのときだけ「承認済み」と出す */
+const STATUS_OPTIONS: { value: ApprovalStatus | "checked"; label: string; disabled?: boolean }[] = [
+  { value: "checked", label: "点検済み", disabled: true },
   { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
   { value: "rejected", label: "差し戻し" },
+  { value: "approved", label: "承認" },
 ];
+
+function statusLabel(status: ApprovalStatus) {
+  return status === "approved" ? "承認済み" : STATUS_OPTIONS.find((opt) => opt.value === status)?.label;
+}
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
@@ -65,6 +71,7 @@ export function RecordDetailView({
   addComment: (id: string, text: string) => void;
 }) {
   const [comment, setComment] = useState("");
+  const [showCommentToast, setShowCommentToast] = useState(false);
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const {
     showConfirmDialog,
@@ -97,7 +104,11 @@ export function RecordDetailView({
     if (value === "approved") {
       requestApproval(() => setApprovalStatus(record.id, value));
     } else if (value === "rejected") {
-      requestRejection(() => setApprovalStatus(record.id, value));
+      requestRejection((reason) => {
+        setApprovalStatus(record.id, value);
+        // 差し戻し理由はコメントとして残す（本番 ApprovalFlowService::updateApprovalStatus → createComment）
+        if (reason) addComment(record.id, reason);
+      });
     } else {
       setApprovalStatus(record.id, value);
     }
@@ -112,7 +123,8 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {showCommentToast && <Toast message="コメントを登録しました。" onClose={() => setShowCommentToast(false)} />}
       <PageTitleBar title="点数一覧" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">
@@ -128,7 +140,7 @@ export function RecordDetailView({
               className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px] flex items-center justify-between gap-2 disabled:cursor-not-allowed"
               style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
             >
-              {STATUS_OPTIONS.find((opt) => opt.value === record.approvalStatus)?.label}
+              {statusLabel(record.approvalStatus)}
               {!isStatusLocked && (
                 <span
                   aria-hidden
@@ -153,11 +165,14 @@ export function RecordDetailView({
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => handleStatusChange(opt.value)}
+                      disabled={opt.disabled}
+                      onClick={() => opt.value !== "checked" && handleStatusChange(opt.value)}
                       className={`h-[42px] px-2 rounded-lg text-base text-left w-full ${
                         opt.value === record.approvalStatus
                           ? "bg-[var(--semantic-brand-primary)] text-white"
-                          : "text-[var(--semantic-text-primary)]"
+                          : opt.disabled
+                            ? "text-[#d0d0d0] cursor-not-allowed"
+                            : "text-[var(--semantic-text-primary)]"
                       }`}
                     >
                       {opt.label}
@@ -233,6 +248,28 @@ export function RecordDetailView({
                   ))}
                 </tr>
               ))}
+              {/* 本番の show.blade.php：表の最後に 平均（小数 1 桁。3 未満は赤） */}
+              {record.scoreEntries.length > 0 && (
+                <tr className="h-14 bg-white border-t border-[#808080]">
+                  <td className="w-[104px]" />
+                  <td className="w-[256px] px-2 text-sm text-[var(--semantic-text-primary)]">平均</td>
+                  {CRITERIA.map((c) => {
+                    const avg =
+                      record.scoreEntries.reduce((sum, entry) => sum + entry.scores[c].score, 0) /
+                      record.scoreEntries.length;
+                    return (
+                      <td
+                        key={c}
+                        className={`flex-1 text-center text-sm ${
+                          Math.trunc(avg) < 3 ? "bg-[#f85c5c] text-white" : "text-[var(--semantic-text-primary)]"
+                        }`}
+                      >
+                        {avg.toFixed(1)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -270,6 +307,7 @@ export function RecordDetailView({
             onSubmit={() => {
               addComment(record.id, comment);
               setComment("");
+              setShowCommentToast(true);
             }}
             maxLength={255}
           />

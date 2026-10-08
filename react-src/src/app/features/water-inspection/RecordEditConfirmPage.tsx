@@ -127,8 +127,8 @@ export function RecordEditConfirmPage() {
       chlorineToggle: { ...original.chlorineToggle, checked: state.chlorineChecked },
       uvOperatingHours: state.uvOperatingHours,
       uvToggle: { ...original.uvToggle, checked: state.uvChecked },
-      uvIndicatorLight: state.uvIndicatorOk ? "点灯" : "消灯",
-      errorIndicatorLight: state.errorIndicatorOk ? "消灯" : "点灯",
+      uvIndicatorLight: state.uvIndicatorOk ? "点灯" : "異常",
+      errorIndicatorLight: state.errorIndicatorOk ? "消灯" : "異常",
     });
     if (!navigator.onLine) notifyOfflineInspection();
     navigate(
@@ -145,7 +145,7 @@ export function RecordEditConfirmPage() {
     <>
       <AppHeader title={`使用水の点検_${original.location}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-[640px]">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-[640px]">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
@@ -181,12 +181,12 @@ export function RecordEditConfirmPage() {
           </div>
           <Row
             label="UV表示灯"
-            value={state.uvIndicatorOk ? "点灯" : "消灯"}
+            value={state.uvIndicatorOk ? "点灯" : "異常"}
             timestamp={metaFor(fieldTimestamps.uvIndicator)}
           />
           <Row
             label="異常検出灯"
-            value={state.errorIndicatorOk ? "消灯" : "点灯"}
+            value={state.errorIndicatorOk ? "消灯" : "異常"}
             timestamp={metaFor(fieldTimestamps.errorIndicator)}
           />
         </div>
@@ -212,7 +212,7 @@ export function RecordEditConfirmPage() {
       {showExitDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowExitDialog(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
             <div className="flex flex-col gap-4 items-center w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 　未保存の項目があります

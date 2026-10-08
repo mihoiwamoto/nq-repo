@@ -17,7 +17,7 @@ export function CompanyFormPage() {
 
   function handleSubmit() {
     if (!name) {
-      setError("企業名は必須です");
+      setError("企業名は必須です。");
       return;
     }
     if (isEditing && existing) {
@@ -35,6 +35,7 @@ export function CompanyFormPage() {
       <Breadcrumb
         items={[
           { label: "企業管理", to: "/admin/company" },
+          ...(isEditing ? [{ label: "詳細", to: `/admin/company/${companyId}` }] : []),
           { label: isEditing ? "編集" : "新規登録" },
         ]}
       />
@@ -43,13 +44,14 @@ export function CompanyFormPage() {
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">企業名</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+              {/* 本番の編集画面は※必須を出さない */}
+              {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
             </div>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="例）㈱西原食品"
+              placeholder="例）(株)西原食品"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
           </div>

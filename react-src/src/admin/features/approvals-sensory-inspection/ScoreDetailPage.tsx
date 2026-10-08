@@ -75,7 +75,7 @@ export function ScoreDetailView({
             </p>
           </div>
           <div className="flex flex-col gap-2 items-start">
-            <p className="text-sm text-[var(--semantic-text-secondary)]">賞味期限</p>
+            <p className="text-sm text-[var(--semantic-text-secondary)]">賞味期間</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{formatDate(record.expiryDate)}</p>
           </div>
         </div>
@@ -94,20 +94,21 @@ export function ScoreDetailView({
           <div className="flex items-center justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">比較製品</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">
-              {entry.hasComparisonProduct ? "比較製品あり" : "比較製品なし"}
+              {entry.hasComparisonProduct == null
+                ? "未設定"
+                : entry.hasComparisonProduct
+                  ? "比較製品あり"
+                  : "比較製品なし"}
             </p>
           </div>
-          {entry.hasComparisonProduct && (
-            <>
-              <div className="border-t border-[#d0d0d0] w-full" />
-              <div className="flex items-center justify-between w-full">
-                <p className="text-xl text-[var(--semantic-text-primary)]">比較製品製造日</p>
-                <p className="text-xl text-[var(--semantic-text-primary)]">
-                  {entry.comparisonManufactureDate ? formatDate(entry.comparisonManufactureDate) : ""}
-                </p>
-              </div>
-            </>
-          )}
+          {/* 本番の detail.blade.php は比較製品製造日を常に出し、無いときは「未設定」 */}
+          <div className="border-t border-[#d0d0d0] w-full" />
+          <div className="flex items-center justify-between w-full">
+            <p className="text-xl text-[var(--semantic-text-primary)]">比較製品製造日</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">
+              {entry.comparisonManufactureDate ? formatDate(entry.comparisonManufactureDate) : "未設定"}
+            </p>
+          </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">実施日</p>
@@ -124,7 +125,7 @@ export function ScoreDetailView({
                   <ScoreTag score={score} />
                 </div>
                 {abnormal && reason && (
-                  <p className="text-base text-[var(--semantic-text-secondary)] px-2">原因：{reason}</p>
+                  <p className="text-base text-[var(--semantic-text-secondary)] px-2">理由：{reason}</p>
                 )}
                 {timestamp && (
                   <p className="text-sm text-[var(--semantic-text-secondary)] text-right w-full font-normal">

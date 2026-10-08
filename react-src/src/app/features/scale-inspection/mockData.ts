@@ -1,6 +1,7 @@
 /* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
 import { withTplFallback } from "../../data/targetId";
-export type PostStatus = "not_inspected" | "inspected";
+/* 本番の API（check_status 0:未点検／1:点検済み／2:確認完了／9:差し戻し）に合わせて全部持つ（2026-10-08）。見本は未点検・点検済みだけ */
+export type PostStatus = "not_inspected" | "inspected" | "confirmed" | "rejected";
 
 export type Post = {
   id: string;
@@ -13,11 +14,15 @@ export type Post = {
 export const POST_STATUS_LABELS: Record<PostStatus, string> = {
   not_inspected: "未点検",
   inspected: "点検済み",
+  confirmed: "確認完了",
+  rejected: "差し戻し",
 };
 
 export const POST_STATUS_COLORS: Record<PostStatus, string> = {
   not_inspected: "var(--semantic-text-secondary)",
   inspected: "#DCAA14",
+  confirmed: "var(--semantic-status-success)",
+  rejected: "var(--semantic-status-error)",
 };
 
 export const posts: Post[] = [
@@ -30,7 +35,7 @@ export const posts: Post[] = [
 
 export type ActionCheck = "ok" | "ng" | null;
 
-export const ACTION_OPTIONS = ["電池交換", "修理", "その他"] as const;
+export const ACTION_OPTIONS = ["別の秤を使用", "電池交換", "修理", "その他"] as const;
 export type ActionOption = (typeof ACTION_OPTIONS)[number];
 
 export const WEIGHT_ISSUE_OPTIONS = ["故障", "その他"] as const;
@@ -163,7 +168,7 @@ export const SCALE_REPAIR_STATUS_LABELS: Record<ScaleRepairStatus, string> = {
   action_needed: "要対応",
   no_repair: "修理しない",
   repairing: "修理中",
-  done: "修理完了",
+  done: "対応完了",
 };
 
 export const SCALE_REPAIR_STATUS_COLORS: Record<ScaleRepairStatus, string> = {

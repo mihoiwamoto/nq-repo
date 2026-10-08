@@ -6,7 +6,7 @@ export function ProductDeleteCompletePage() {
 
   return (
     <div>
-      <PageTitleBar title="検査製品選択" />
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
@@ -25,7 +25,7 @@ export function ProductDeleteCompletePage() {
               strokeLinejoin="round"
             />
           </svg>
-          <p className="text-2xl text-[var(--semantic-text-primary)]">製品の削除が完了しました</p>
+          <p className="text-2xl text-[var(--semantic-text-primary)]">検査製品の削除が完了しました</p>
         </div>
         <Link
           to={`/admin/ledger-management/sensory-inspection/factories/${factoryId}`}

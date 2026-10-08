@@ -4,6 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useScaleInspection } from "./ScaleInspectionContext";
+import { PlusIcon } from "../../components/PlusIcon";
 
 function isCurrentlyDisplayed(displayFrom?: string, displayTo?: string) {
   if (!displayFrom && !displayTo) return true;
@@ -42,7 +43,8 @@ export function SettingsPage() {
             to={`${basePath}/scales/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />
@@ -104,7 +106,7 @@ export function SettingsPage() {
                   to={`${basePath}/scales/${scale.id}`}
                   className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-20 w-full flex flex-col gap-1 justify-center px-4"
                 >
-                  <p className="text-xl text-[var(--semantic-text-primary)]">{scale.label}</p>
+                  <p className="text-xl text-[var(--semantic-text-primary)]">秤No.({scale.label})</p>
                   <p className="text-base text-[var(--semantic-text-secondary)]">
                     持ち場：{getPostName(scale.postId)}
                   </p>

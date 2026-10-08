@@ -9,6 +9,7 @@ import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } fro
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import { PlusIcon } from "../../components/PlusIcon";
 
 export function CalendarPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -21,7 +22,6 @@ export function CalendarPage() {
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
-  const [showDeletedToast, setShowDeletedToast] = useState(false);
   const [showUpdateToast, setShowUpdateToast] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -55,7 +55,8 @@ export function CalendarPage() {
   function confirmDeleteEntry() {
     removeScheduleEntry(selectedDateKey);
     setDeleteDialogOpen(false);
-    setShowDeletedToast(true);
+    // 本番は削除のあと完了画面（「カレンダーの削除が完了しました」）
+    navigate(`${basePath}/schedule/register/complete?date=${selectedDateKey}`, { state: { deleted: true } });
   }
 
   return (
@@ -68,7 +69,8 @@ export function CalendarPage() {
             to={`${basePath}/schedule/register?date=${selectedDateKey}`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />
@@ -229,19 +231,43 @@ export function CalendarPage() {
                   データがありません。
                 </p>
               ) : (
-                selectedProducts.map((product, i) => (
-                  <div key={`${product.id}-${i}`}>
-                    <div className="flex gap-4 h-12 items-center">
-                      <span className="text-base text-[var(--semantic-text-primary)] w-28">
-                        製品名
-                      </span>
-                      <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                        {product.name}
-                      </span>
+                selectedProducts.map((product, i) => {
+                  // 本番の index.blade.php：比較製品は あり／なし／未設定、製造日は入っているときだけ
+                  const comparison = selectedEntry?.comparisons?.[product.id];
+                  const comparisonLabel =
+                    comparison?.isComparison === 1 ? "あり" : comparison?.isComparison === 0 ? "なし" : "未設定";
+                  return (
+                    <div key={`${product.id}-${i}`}>
+                      <div className="flex gap-4 h-12 items-center">
+                        <span className="text-base text-[var(--semantic-text-primary)] w-36">
+                          製品名
+                        </span>
+                        <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                          {product.name}
+                        </span>
+                      </div>
+                      <div className="flex gap-4 h-12 items-center">
+                        <span className="text-base text-[var(--semantic-text-primary)] w-36">
+                          比較製品
+                        </span>
+                        <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                          {comparisonLabel}
+                        </span>
+                      </div>
+                      {comparison?.manufacturedAt && (
+                        <div className="flex gap-4 h-12 items-center">
+                          <span className="text-base text-[var(--semantic-text-primary)] w-36">
+                            比較製品製造日
+                          </span>
+                          <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                            {comparison.manufacturedAt.replaceAll("-", "/")}
+                          </span>
+                        </div>
+                      )}
+                      {i < selectedProducts.length - 1 && <div className="border-t border-[#d0d0d0]" />}
                     </div>
-                    {i < selectedProducts.length - 1 && <div className="border-t border-[#d0d0d0]" />}
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
@@ -257,7 +283,7 @@ export function CalendarPage() {
                 検査製品設定の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">
@@ -280,8 +306,7 @@ export function CalendarPage() {
         </div>
       )}
 
-      {showDeletedToast && <Toast message="削除されました。" onClose={() => setShowDeletedToast(false)} />}
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );
 }

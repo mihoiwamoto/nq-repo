@@ -140,7 +140,7 @@ export function RecordPage() {
       <>
         <AppHeader title="官能検査記録" />
         <div className="flex-1 flex items-center justify-center p-6">
-          <p className="text-base text-[var(--semantic-text-secondary)]">対象の商品が見つかりません。</p>
+          <p className="text-base text-[var(--semantic-text-secondary)]">対象の製品が見つかりません。</p>
         </div>
       </>
     );
@@ -168,7 +168,6 @@ export function RecordPage() {
 
   function confirmDialog() {
     if (!dialogCriterion || dialogScore === null) return;
-    if (dialogScore <= 2 && dialogReason.trim() === "") return;
     setScores((prev) => ({
       ...prev,
       [dialogCriterion]: { score: dialogScore, reason: dialogScore <= 2 ? dialogReason : "" },
@@ -201,8 +200,8 @@ export function RecordPage() {
     });
   }
 
-  const dialogConfirmDisabled =
-    dialogScore === null || (dialogScore <= 2 && dialogReason.trim() === "");
+  // 本番の API は各項目の備考（note）を任意で持つ（openapi:7475 など）。空でも「完了」を押せる（2026-10-08）
+  const dialogConfirmDisabled = dialogScore === null;
 
   return (
     <>
@@ -210,7 +209,7 @@ export function RecordPage() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-5 items-center">
         <div className="bg-white flex flex-col gap-2 items-start p-4 rounded-lg w-full max-w-full">
           <div className="flex gap-2 items-center">
-            <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
+            <span className="text-base text-[#808080] w-[90px]">検査製品名</span>
             <span className="text-base text-[var(--semantic-text-primary)]">{product.name}</span>
           </div>
           <div className="flex gap-2 items-center">
@@ -250,7 +249,7 @@ export function RecordPage() {
           <div className="flex flex-col gap-1 w-full">
             <div className="flex items-center justify-between w-full">
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-                比較商品 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                比較製品 <span className="text-[var(--semantic-brand-danger)]">※</span>
               </p>
               <PulldownSelect
                 value={comparison}
@@ -259,8 +258,8 @@ export function RecordPage() {
                   stamp("comparison", v);
                 }}
                 options={[
-                  { value: "none", label: "比較商品なし" },
-                  { value: "present", label: "比較商品あり" },
+                  { value: "none", label: "比較製品なし" },
+                  { value: "present", label: "比較製品あり" },
                 ]}
               />
             </div>
@@ -273,7 +272,7 @@ export function RecordPage() {
               <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center justify-between w-full">
                   <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-                    比較商品製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                    比較製品製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
                   </p>
                   <DateFilterInput
                     value={comparisonManufactureDate}
@@ -296,9 +295,9 @@ export function RecordPage() {
             <p className="text-base">【点数の評価基準】</p>
             <p className="text-sm leading-[1.6]">　5点・・・標準品と同等の品位が保たれている</p>
             <p className="text-sm leading-[1.6]">　4点・・・標準品よりやや劣るが遜色ない品位が保たれている</p>
-            <p className="text-sm leading-[1.6]">　3点・・・標準品より劣るが商品として必要な品位が保たれている</p>
-            <p className="text-sm leading-[1.6]">　2点・・・標準品よりかなり劣り商品として不向き</p>
-            <p className="text-sm leading-[1.6]">　1点・・・標準品より著しく劣り商品としての品位が失われている</p>
+            <p className="text-sm leading-[1.6]">　3点・・・標準品より劣るが製品として必要な品位が保たれている</p>
+            <p className="text-sm leading-[1.6]">　2点・・・標準品よりかなり劣り製品として不向き</p>
+            <p className="text-sm leading-[1.6]">　1点・・・標準品より著しく劣り製品としての品位が失われている</p>
           </div>
 
           {CRITERIA.map((criterion, index) => (
@@ -313,8 +312,8 @@ export function RecordPage() {
                   onSelect={(value) => handleScoreClick(criterion, value)}
                 />
               </div>
-              {scores[criterion] && scores[criterion]!.score <= 2 && (
-                <p className="text-base text-[#808080] px-2">理由：{scores[criterion]!.reason}</p>
+              {scores[criterion] && scores[criterion]!.score <= 2 && scores[criterion]!.reason.trim() !== "" && (
+                <p className="text-base text-[#808080] px-2">備考：{scores[criterion]!.reason}</p>
               )}
               <RecordTimestamp inspector={inspectorName} timestamp={timestamps[criterion]} />
               {index < CRITERIA.length - 1 && <div className="border-t border-[#d0d0d0] w-full" />}
@@ -346,7 +345,7 @@ export function RecordPage() {
       {dialogCriterion && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full mx-40 mx-16 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full mx-40 mx-16 max-h-[90vh] overflow-y-auto">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">点検箇所</h2>
               <div className="flex flex-col gap-6 items-start w-full">
@@ -363,12 +362,12 @@ export function RecordPage() {
                 {dialogScore !== null && dialogScore <= 2 && (
                   <div className="flex flex-col gap-2 items-start w-full">
                     <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-                      理由 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                      備考
                     </p>
                     <textarea
                       value={dialogReason}
                       onChange={(e) => setDialogReason(e.target.value)}
-                      placeholder="理由を記入してください。"
+                      placeholder="備考を記入してください。"
                       className="bg-white p-2 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)] placeholder:font-normal w-full h-[82px] resize-none"
                     />
                   </div>

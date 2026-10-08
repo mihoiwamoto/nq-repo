@@ -5,6 +5,8 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { useSampleManagement } from "./SampleManagementContext";
 import { AddProductDialog } from "./AddProductDialog";
+import { DateFilterInput } from "../../components/DateFilterInput";
+import type { ScheduleProductDetail } from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
 export function ScheduleRegistrationPage() {
@@ -22,6 +24,10 @@ export function ScheduleRegistrationPage() {
   const [productIds, setProductIds] = useState<string[]>(
     existingEntry?.productIds ?? scheduleEntries[duplicateFrom]?.productIds ?? []
   );
+  // 製品ごとの製造日・ロットNo.（任意）。初期値は予定に保存した値、無ければ製品マスタの値
+  const [details, setDetails] = useState<Record<string, ScheduleProductDetail>>(
+    existingEntry?.details ?? scheduleEntries[duplicateFrom]?.details ?? {}
+  );
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
@@ -34,12 +40,25 @@ export function ScheduleRegistrationPage() {
     .map((id) => products.find((p) => p.id === id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
+  function detailOf(id: string): ScheduleProductDetail {
+    const product = products.find((p) => p.id === id);
+    return details[id] ?? { manufactureDate: product?.manufactureDate ?? "", lotNumber: product?.lotNumber ?? "" };
+  }
+
+  function setDetail(id: string, patch: ScheduleProductDetail) {
+    setDetails((prev) => ({ ...prev, [id]: { ...detailOf(id), ...patch } }));
+  }
+
   function handleSubmit() {
     if (!date || productIds.length === 0) {
       setError("日付と検体対象製品は必須です");
       return;
     }
-    upsertScheduleEntry(date, productIds);
+    upsertScheduleEntry(
+      date,
+      productIds,
+      Object.fromEntries(productIds.map((id) => [id, detailOf(id)]))
+    );
     if (isEditing) {
       navigate(`${basePath}/schedule`, { state: { justSaved: true, date } });
     } else {
@@ -123,7 +142,7 @@ export function ScheduleRegistrationPage() {
                       }}
                       className="w-full text-left px-4 py-2 text-base text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
                     >
-                      全て削除
+                      製品全削除
                     </button>
                   </div>
                 )}
@@ -152,27 +171,33 @@ export function ScheduleRegistrationPage() {
                           {product.name}
                         </span>
                       </div>
-                      {/* 製造日・ロットNo. は管理画面で「記載する」とした製品だけに出る任意項目 */}
-                      {product.manufactureDate && (
-                        <div className="flex gap-2 items-start w-full">
-                          <span className="w-[162px] shrink-0 text-base leading-4 text-[var(--semantic-text-primary)]">
-                            製造日
-                          </span>
-                          <span className="flex-1 text-base leading-4 text-[var(--semantic-text-primary)]">
-                            {product.manufactureDate.replaceAll("-", "/")}
-                          </span>
-                        </div>
-                      )}
-                      {product.lotNumber && (
-                        <div className="flex gap-2 items-start w-full">
-                          <span className="w-[162px] shrink-0 text-base leading-4 text-[var(--semantic-text-primary)]">
-                            ロットNo.
-                          </span>
-                          <span className="flex-1 text-base leading-4 text-[var(--semantic-text-primary)]">
-                            {product.lotNumber}
-                          </span>
-                        </div>
-                      )}
+                      {/* 製造日・ロットNo. は製品ごとの入力欄（任意。確定デザイン 6296:132592） */}
+                      <div className="flex gap-2 items-center w-full">
+                        <span className="w-[162px] shrink-0 flex gap-2 items-center text-base leading-4 text-[var(--semantic-text-primary)]">
+                          製造日
+                          <span className="text-sm text-[var(--semantic-text-secondary)]">※任意</span>
+                        </span>
+                        {/* 白いカードの上なので枠線のある filter の見た目（確定デザインも枠線つき） */}
+                        <DateFilterInput
+                          className="w-[200px]"
+                          placeholder="日付を選択"
+                          value={detailOf(product.id).manufactureDate ?? ""}
+                          onChange={(v) => setDetail(product.id, { manufactureDate: v })}
+                        />
+                      </div>
+                      <div className="flex gap-2 items-center w-full">
+                        <span className="w-[162px] shrink-0 flex gap-2 items-center text-base leading-4 text-[var(--semantic-text-primary)]">
+                          ロットNo.
+                          <span className="text-sm text-[var(--semantic-text-secondary)]">※任意</span>
+                        </span>
+                        <input
+                          type="text"
+                          value={detailOf(product.id).lotNumber ?? ""}
+                          onChange={(e) => setDetail(product.id, { lotNumber: e.target.value })}
+                          placeholder="例）XXXXXX"
+                          className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px] placeholder:text-[var(--semantic-text-secondary)]"
+                        />
+                      </div>
                     </div>
                     <button
                       type="button"

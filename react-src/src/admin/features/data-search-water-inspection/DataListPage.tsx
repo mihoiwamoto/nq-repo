@@ -1,12 +1,13 @@
-import { useMemo, useState, useRef } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Pulldown } from "../../components/Pulldown";
-import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
+import { Toast } from "../../components/Toast";
+import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { getDateStripeClasses } from "../../utils/tableStripe";
 import type { WaterCheckResult, WaterSearchRecord } from "./types";
@@ -16,9 +17,7 @@ import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
-import iconMinus from "../../../assets/figma/icons/common/minus.svg";
-import iconSearch from "../../../assets/figma/icons/common/search.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import { downloadWaterCsv, downloadWaterPdf } from "./waterExport";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -81,26 +80,7 @@ function CheckCell({ result, width }: { result: WaterCheckResult; width: number 
   );
 }
 
-function isRecordAbnormal(record: WaterSearchRecord) {
-  return (
-    record.taste.status === "abnormal" ||
-    record.smell.status === "abnormal" ||
-    record.color.status === "abnormal" ||
-    record.turbidity.status === "abnormal" ||
-    record.foreignMatter.status === "abnormal"
-  );
-}
 
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 const MONTH_LABELS = [
   "1月", "2月", "3月", "4月", "5月", "6月",
@@ -129,7 +109,10 @@ const COLUMNS = [
 
 export function DataListPage() {
   const { factoryId, pointId } = useParams<{ factoryId: string; pointId: string }>();
-  const { records: allRecords } = useRecords();
+  const { records: allRecords, setApprovalStatus } = useRecords();
+  // 本番はデータ一覧の下に一括承認の「承認する」がある（承認申請管理の一覧と同じ画面）
+  const { showConfirmDialog, showToast, closeToast, requestApproval, confirmApproval, cancelApproval } =
+    useApprovalConfirm();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
   const records = useDemoList(allRecords);
   const factoryName = getFactoryName(factoryId);
@@ -139,28 +122,18 @@ export function DataListPage() {
   const [year, setYear] = useState(2025);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
   const [month, setMonth] = useState(3);
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
-  const [filterOpen, setFilterOpen] = useState(true);
-  const [dateFilter, setDateFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [onlyAbnormal, setOnlyAbnormal] = useState(false);
-
-  const locationOptions = useMemo(
-    () => Array.from(new Set(records.filter((r) => r.location === location).map((r) => r.location))),
-    [records, location]
-  );
+  // 本番（データ検索の使用水）はデータ一覧に絞り込み検索が無い
 
   const filtered = records.filter((r) => {
     if (r.location !== location) return false;
     const [ry, rm] = r.date.split("-").map(Number);
     if (ry !== year || rm !== month + 1) return false;
-    if (dateFilter && r.date !== dateFilter) return false;
-    if (locationFilter && r.location !== locationFilter) return false;
-    if (onlyAbnormal && !isRecordAbnormal(r)) return false;
     return true;
   });
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  filtered.sort((a, b) => a.date.localeCompare(b.date));
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
@@ -169,33 +142,7 @@ export function DataListPage() {
     setMonth(next.getMonth());
   }
 
-  function handleReset() {
-    setDateFilter("");
-    setLocationFilter("");
-    setOnlyAbnormal(false);
-  }
 
-  function handleDownload() {
-    const header = COLUMNS.filter((c) => c.key !== "action" && c.key !== "status").map((c) => c.label);
-    const rows = filtered.map((r) => [
-      r.date,
-      r.time,
-      r.location,
-      r.taste.status === "normal" ? "正常" : "異常あり",
-      r.smell.status === "normal" ? "正常" : "異常あり",
-      r.color.status === "normal" ? "正常" : "異常あり",
-      r.turbidity.status === "normal" ? "正常" : "異常あり",
-      r.foreignMatter.status === "normal" ? "正常" : "異常あり",
-      String(r.ph),
-      String(r.chlorine),
-      String(r.uvOperatingHours),
-      r.uvIndicatorLight === "on" ? "点灯" : "消灯",
-      r.abnormalDetectionLight === "on" ? "点灯" : "消灯",
-      r.implementer,
-      r.confirmer,
-    ]);
-    downloadCsv([header, ...rows], `使用水の点検_${location}_${year}${String(month + 1).padStart(2, "0")}.csv`);
-  }
 
   return (
     <div>
@@ -243,72 +190,6 @@ export function DataListPage() {
           </div>
         </div>
 
-        <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
-          <button
-            type="button"
-            onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
-          >
-            <span>絞り込み検索</span>
-            {filterOpen ? (
-              <span
-                aria-hidden
-                className="inline-block size-5 shrink-0"
-                style={{
-                  WebkitMaskImage: `url("${iconMinus}")`,
-                  maskImage: `url("${iconMinus}")`,
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  backgroundColor: "var(--semantic-brand-primary)",
-                }}
-              />
-            ) : (
-              <span>+</span>
-            )}
-          </button>
-          {filterOpen && (
-            <div className="flex gap-6 items-center justify-end w-full">
-              <div className="flex flex-col gap-4 flex-1">
-                <div className="flex gap-4 items-center">
-                  <DateFilterInput value={dateFilter} onChange={setDateFilter} />
-                  <Pulldown
-                    value={locationFilter}
-                    onChange={setLocationFilter}
-                    options={locationOptions.map((label) => ({ value: label, label }))}
-                    placeholder="点検場所"
-                  />
-                </div>
-                <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
-                  <input
-                    type="checkbox"
-                    checked={onlyAbnormal}
-                    onChange={(e) => setOnlyAbnormal(e.target.checked)}
-                    className="size-4 accent-[var(--semantic-brand-primary)]"
-                  />
-                  異常があるものだけ表示
-                </label>
-              </div>
-              <div className="flex gap-2 items-center">
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
-                >
-                  リセット
-                </button>
-                <button
-                  type="button"
-                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
-                >
-                  <img src={iconSearch} alt="" className="size-5" />
-                  検索
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
 
         <div className="relative flex items-center justify-between">
           <button
@@ -335,7 +216,7 @@ export function DataListPage() {
             onClick={() => setMonthPickerOpen((v) => !v)}
             className="flex items-center gap-1 text-xl text-[var(--semantic-text-primary)]"
           >
-            {year}年{month + 1}月
+            {year}年{String(month + 1).padStart(2, "0")}月
             <span
               aria-hidden
               className="inline-block size-3 shrink-0"
@@ -439,7 +320,7 @@ export function DataListPage() {
           )}
         </div>
 
-        <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
+        <div className="w-full rounded-lg overflow-x-auto">
           <div className="flex flex-col min-w-[1320px]">
             <div className="bg-[#f6f6f6] flex h-[50px] items-center">
               {COLUMNS.map((c) => (
@@ -494,7 +375,11 @@ export function DataListPage() {
                   </div>
                   <ChlorineCell record={record} width={100} />
                   <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
-                    {record.uvOperatingHours}
+                    {/* 本番は UV殺菌灯を交換したとき値の下に「交換」 */}
+                    <span className="flex flex-col items-center">
+                      {record.uvOperatingHours}
+                      {record.uvLampReplaced && <span className="text-xs">交換</span>}
+                    </span>
                   </div>
                   <div
                     className={`flex items-center justify-center p-2 h-full text-sm shrink-0 ${
@@ -504,7 +389,7 @@ export function DataListPage() {
                     }`}
                     style={{ width: 100 }}
                   >
-                    {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
+                    {record.uvIndicatorLight === "on" ? "点灯" : "異常"}
                   </div>
                   <div
                     className={`flex items-center justify-center p-2 h-full text-sm shrink-0 ${
@@ -514,7 +399,7 @@ export function DataListPage() {
                     }`}
                     style={{ width: 100 }}
                   >
-                    {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
+                    {record.abnormalDetectionLight === "on" ? "異常" : "消灯"}
                   </div>
                   <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
                     {record.implementer}
@@ -528,6 +413,26 @@ export function DataListPage() {
           </div>
         </div>
       </div>
+
+      <div className="flex justify-center pb-6">
+        <button
+          type="button"
+          onClick={() =>
+            requestApproval(() =>
+              filtered
+                .filter((r) => r.approvalStatus === "pending")
+                .forEach((r) => setApprovalStatus(r.id, "approved"))
+            )
+          }
+          // 承認申請管理の一覧と同じく、承認待ちが 0 件のときは押せない（2026-10-08 ユーザー指定）
+          disabled={filtered.every((r) => r.approvalStatus !== "pending")}
+          className="bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
+        >
+          承認する
+        </button>
+      </div>
+      {showConfirmDialog && <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />}
+      {showToast && <Toast message="一括承認が完了しました。" onClose={closeToast} />}
 
       {downloadDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -580,9 +485,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `使用水の点検_${location}_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadWaterCsv(filtered, factoryName, location, year, month);
+                  } else {
+                    await downloadWaterPdf(filtered, factoryName, location, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

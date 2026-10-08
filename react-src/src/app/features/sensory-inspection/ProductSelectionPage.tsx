@@ -65,7 +65,7 @@ export function ProductSelectionPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="商品名を入力"
+              placeholder="製品名を入力"
               className="flex-1 bg-white border border-[#808080] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
             />
             <button
@@ -77,14 +77,14 @@ export function ProductSelectionPage() {
           </div>
 
           <div className="flex flex-col gap-6 items-start w-full">
-            {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中） */}
+            {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯） */}
             {products.length === 0 && <AppEmptyState />}
             {filtered.map((product) => (
               <button
                 key={product.id}
                 type="button"
                 onClick={() => handleProductClick(product.id)}
-                className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-6 h-20 items-center p-4 rounded-lg w-full text-left"
+                className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-6 h-20 items-center p-4 rounded-lg w-full text-left"
               >
                 <div className="flex-1 flex flex-col gap-2 min-w-0">
                   <p className="text-lg text-[var(--semantic-text-primary)]">{product.name}</p>

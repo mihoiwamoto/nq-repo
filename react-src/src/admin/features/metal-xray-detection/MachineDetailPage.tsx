@@ -30,7 +30,7 @@ export function MachineDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);
@@ -155,9 +155,17 @@ export function MachineDetailPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-start w-full gap-4">
             <p className="text-xl text-[var(--semantic-brand-primary)] w-[152px]">主な通過製品</p>
-            <p className="text-xl text-[var(--semantic-text-primary)] text-right">
-              {machine.mainPassProducts.length > 0 ? machine.mainPassProducts.join("、") : "ー"}
-            </p>
+            {machine.mainPassProducts.length > 0 ? (
+              <div className="flex flex-col">
+                {machine.mainPassProducts.map((product) => (
+                  <p key={product} className="text-xl text-[var(--semantic-text-primary)]">
+                    {product}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xl text-[var(--semantic-text-primary)]">ー</p>
+            )}
           </div>
         </div>
       </div>

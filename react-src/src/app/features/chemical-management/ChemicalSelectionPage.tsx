@@ -27,17 +27,17 @@ export function ChemicalSelectionPage() {
       <AppHeader title="薬品管理" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-6 items-center">
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中） */}
+          {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯） */}
           {chemicals.length === 0 && <AppEmptyState />}
           {chemicals.map((chemical) => (
             <button
               key={chemical.id}
               type="button"
               onClick={() => handleChemicalSelection(chemical.id)}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-6 h-20 items-center p-4 rounded-lg w-full text-left"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-6 h-20 items-center p-4 rounded-lg w-full text-left"
             >
               <div className="flex-1 flex flex-col gap-2 min-w-0">
-                <p className="text-lg text-[var(--semantic-text-primary)]">{chemical.name}</p>
+                <p className="text-lg text-black">{chemical.name}</p>
               </div>
               {/* 薬品・添加物は毎日の点検ではないので「未点検」の札は出さない（確定デザイン 7139:245326 の注記。2026-10-06） */}
               {chemical.status !== "not_inspected" && (

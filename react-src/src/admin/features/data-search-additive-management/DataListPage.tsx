@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
@@ -7,7 +7,7 @@ import { DateFilterInput } from "../../components/DateFilterInput";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
 import { useDemoList } from "../../../components/demo/demoStore";
-import { getRowStripeClasses } from "../../utils/tableStripe";
+import { getDateStripeClasses } from "../../utils/tableStripe";
 import type { AdditiveTransactionType } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
@@ -15,22 +15,12 @@ import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import { downloadAdditiveCsv, downloadAdditivePdf } from "./additiveExport";
+import { PlusIcon } from "../../components/PlusIcon";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
   return `${y.slice(2)}.${m}.${d}`;
-}
-
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 const MONTH_LABELS = [
@@ -65,7 +55,6 @@ export function DataListPage() {
   const [filterOpen, setFilterOpen] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [additiveFilter, setAdditiveFilter] = useState("");
   const [storageLocationFilter, setStorageLocationFilter] = useState("");
@@ -91,7 +80,9 @@ export function DataListPage() {
     if (storageLocationFilter && r.storageLocation !== storageLocationFilter) return false;
     return true;
   });
-  const rowStripeClasses = getRowStripeClasses(filtered);
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  filtered.sort((a, b) => a.date.localeCompare(b.date));
+  const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
@@ -103,22 +94,6 @@ export function DataListPage() {
     setDateFilter("");
     setAdditiveFilter("");
     setStorageLocationFilter("");
-  }
-
-  function handleDownload() {
-    const header = ["日付", "添加物名", "区分", "数量", "現在庫数", "保管場所", "備考", "実施者", "確認者"];
-    const rows = filtered.map((r) => [
-      r.date,
-      r.additiveName,
-      r.type,
-      r.quantity,
-      r.currentStock,
-      r.storageLocation,
-      r.remarks,
-      r.implementer,
-      r.confirmer,
-    ]);
-    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
   }
 
   return (
@@ -167,7 +142,7 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+            className="flex items-center gap-2 h-5 text-base text-[var(--semantic-brand-primary)]"
           >
             <span>絞り込み検索</span>
             {filterOpen ? (
@@ -185,7 +160,7 @@ export function DataListPage() {
                 }}
               />
             ) : (
-              <span>+</span>
+              <PlusIcon />
             )}
           </button>
           {filterOpen && (
@@ -359,7 +334,7 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-hidden">
+          <div className="w-full rounded-lg overflow-hidden">
             <div className="grid w-full" style={{ gridTemplateColumns: COLS }}>
               <div className="col-span-full grid grid-cols-subgrid bg-[#f6f6f6] h-[50px] items-center">
                 {COLUMNS.map((col) => (
@@ -393,8 +368,8 @@ export function DataListPage() {
                     <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {formatDateShort(record.date)}
                     </div>
-                    <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-semibold text-[var(--semantic-text-primary)]" title={record.additiveName}>
-                      <span className="block w-full truncate">{record.additiveName}</span>
+                    <div className="min-w-0 flex items-center justify-center p-2 h-full text-sm font-semibold text-[var(--semantic-text-primary)]" title={record.additiveName}>
+                      <span className="block w-full truncate text-center">{record.additiveName}</span>
                     </div>
                     <div className="flex items-center justify-center p-2 h-full whitespace-nowrap text-sm font-semibold text-[var(--semantic-text-primary)]">
                       {record.type}
@@ -406,7 +381,7 @@ export function DataListPage() {
                       {record.currentStock}
                     </div>
                     <div className="min-w-0 flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.storageLocation}>
-                      <span className="block w-full truncate">{record.storageLocation}</span>
+                      <span className="block w-full truncate text-center">{record.storageLocation}</span>
                     </div>
                     <div className="min-w-0 flex items-center justify-start p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]" title={record.remarks}>
                       <span className="block w-full truncate">{record.remarks}</span>
@@ -476,9 +451,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadAdditiveCsv(filtered, factoryName, year, month);
+                  } else {
+                    await downloadAdditivePdf(filtered, factoryName, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

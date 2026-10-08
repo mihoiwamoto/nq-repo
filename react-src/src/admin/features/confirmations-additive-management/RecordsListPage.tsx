@@ -15,6 +15,7 @@ import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
+import { PlusIcon } from "../../components/PlusIcon";
 
 const STATUS_OPTIONS: { value: ConfirmStatus; label: string }[] = [
   { value: "unconfirmed", label: "点検済み" },
@@ -116,7 +117,7 @@ export function RecordsListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+            className="flex items-center gap-2 h-5 text-base text-[var(--semantic-brand-primary)]"
           >
             <span>絞り込み検索</span>
             {filterOpen ? (
@@ -134,7 +135,7 @@ export function RecordsListPage() {
                 }}
               />
             ) : (
-              <span>+</span>
+              <PlusIcon />
             )}
           </button>
           {filterOpen && (

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { Toast } from "../../components/Toast";
@@ -16,7 +16,6 @@ import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 const PAGE_SIZE = 10;
 
 export function DeviceListPage() {
-  const navigate = useNavigate();
   const location = useLocation();
   const [devices, setDevices] = useState<LoginDevice[]>(() => loadDevices());
   const shownDevices = useDemoList(devices);
@@ -27,14 +26,14 @@ export function DeviceListPage() {
   const [page, setPage] = useState(1);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("更新されました。");
+  const [toastMessage, setToastMessage] = useState("更新しました。");
   const [notifiedDeviceId, setNotifiedDeviceId] = useState<string | null>(null);
   const [notificationQueue, setNotificationQueue] = useState<string[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     if ((location.state as any)?.deleted) {
-      setToastMessage("削除されました。");
+      setToastMessage("デバイスを削除しました");
       setShowToast(true);
     }
   }, [location.state]);
@@ -104,13 +103,13 @@ export function DeviceListPage() {
     setPage(1);
   }
 
-  function updateStatus(id: string, status: DeviceStatus) {
+  function updateStatus(id: string, status: DeviceStatus, message = "更新しました。") {
     setDevices((prev) => {
       const next = prev.map((d) => (d.id === id ? { ...d, status } : d));
       saveDevices(next);
       return next;
     });
-    setToastMessage("更新されました。");
+    setToastMessage(message);
     setShowToast(true);
   }
 
@@ -122,7 +121,9 @@ export function DeviceListPage() {
       return next;
     });
     setDeleteTargetId(null);
-    navigate("/admin/devices/deleted", { state: { deleted: true } });
+    // 本番は完了画面に進まず、一覧のまま「デバイスを削除しました」
+    setToastMessage("デバイスを削除しました");
+    setShowToast(true);
   }
 
   function handleRefresh() {
@@ -136,8 +137,14 @@ export function DeviceListPage() {
     setNotifiedDeviceId(null);
   }
 
+  // 本番：キャンセルは「保留」にして「デバイス認証がキャンセルされました」
+  function cancelFromNotification(id: string) {
+    updateStatus(id, "rejected", "デバイス認証がキャンセルされました");
+    closeNotification();
+  }
+
   function approveFromNotification(id: string) {
-    updateStatus(id, "authenticated");
+    updateStatus(id, "authenticated", "デバイス認証が完了しました");
     setNotifiedDeviceId(null);
   }
 
@@ -183,7 +190,7 @@ export function DeviceListPage() {
                 value={factoryInput}
                 onChange={setFactoryInput}
                 options={FACTORIES.map((factory) => ({ value: factory.id, label: factory.name }))}
-                placeholder="工場選択"
+                placeholder="工場"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
               />
               <input
@@ -257,14 +264,21 @@ export function DeviceListPage() {
                   <Pulldown
                     value={device.status}
                     onChange={(value) => updateStatus(device.id, value as DeviceStatus)}
-                    options={[
-                      { value: "pending", label: DEVICE_STATUS_LABELS.pending },
-                      { value: "authenticated", label: DEVICE_STATUS_LABELS.authenticated },
-                    ]}
+                    disabled={device.status === "pending"}
+                    options={
+                      device.status === "pending"
+                        ? [{ value: "pending", label: DEVICE_STATUS_LABELS.pending }]
+                        : [
+                            { value: "authenticated", label: DEVICE_STATUS_LABELS.authenticated },
+                            { value: "rejected", label: DEVICE_STATUS_LABELS.rejected },
+                          ]
+                    }
                     className={`bg-white border border-[#d0d0d0] h-10 px-2 rounded-lg text-sm w-[120px] ${
                       device.status === "authenticated"
                         ? "text-[var(--semantic-brand-primary)]"
-                        : "text-[var(--semantic-text-primary)]"
+                        : device.status === "rejected"
+                          ? "text-[var(--semantic-brand-danger)]"
+                          : "text-[var(--semantic-text-primary)]"
                     }`}
                   />
                 </div>
@@ -348,7 +362,7 @@ export function DeviceListPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                ログイン端末情報を削除
+                {devices.find((d) => d.id === deleteTargetId)?.name}を削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。削除しますか？
@@ -380,7 +394,7 @@ export function DeviceListPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                ログイン端末認証
+                ログイン認証
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 下記端末のログインを許可しますか？
@@ -407,17 +421,17 @@ export function DeviceListPage() {
             <div className="flex gap-6 items-center justify-center w-full">
               <button
                 type="button"
-                onClick={() => closeNotification()}
+                onClick={() => cancelFromNotification(notifiedDevice.id)}
                 className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
               >
-                保留
+                キャンセル
               </button>
               <button
                 type="button"
                 onClick={() => approveFromNotification(notifiedDevice.id)}
                 className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
               >
-                認証する
+                許可する
               </button>
             </div>
           </div>

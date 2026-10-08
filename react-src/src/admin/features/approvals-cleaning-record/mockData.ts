@@ -41,7 +41,7 @@ export const cleaningApprovalRecords: CleaningApprovalRecord[] = [
     confirmer: "加藤由美",
     locations: [
       {
-        name: "つまみ上げバック機",
+        name: "つまみ上げパック機",
         items: [
           { name: "シール部", category: "清掃項目", cleaned: true, implementer: "高橋和子", timestamp: "2025/04/01 07:08" },
           { name: "コンベアベルト", category: "清掃項目", cleaned: true, implementer: "高橋和子", timestamp: "2025/04/01 07:12" },

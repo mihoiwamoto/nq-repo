@@ -54,7 +54,7 @@ export function CompanyDetailPage() {
 
   return (
     <div>
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
@@ -93,7 +93,7 @@ export function CompanyDetailPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                企業情報を削除
+                {company.name}を削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。削除しますか？

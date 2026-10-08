@@ -4,7 +4,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 export function StaffCompletePage({ message }: { message: string }) {
   return (
     <div>
-      <PageTitleBar title="職員管理" />
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
@@ -29,7 +29,8 @@ export function StaffCompletePage({ message }: { message: string }) {
           to="/admin/staff"
           className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
         >
-          職員管理一覧に戻る
+          {/* 本番：新規登録の完了は「職員情報一覧に戻る」、削除の完了は「職員管理一覧に戻る」 */}
+          {message.includes("新規登録") ? "職員情報一覧に戻る" : "職員管理一覧に戻る"}
         </Link>
       </div>
     </div>

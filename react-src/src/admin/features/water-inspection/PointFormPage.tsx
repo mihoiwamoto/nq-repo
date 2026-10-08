@@ -45,7 +45,7 @@ function ToggleField({
               : "text-[var(--semantic-text-secondary)] opacity-60"
           }`}
         >
-          記録しない
+          記載しない
         </button>
         <button
           type="button"
@@ -56,7 +56,7 @@ function ToggleField({
               : "text-[var(--semantic-text-secondary)] opacity-60"
           }`}
         >
-          記録する
+          記載する
         </button>
       </div>
     </div>
@@ -82,8 +82,17 @@ export function PointFormPage() {
   const [error, setError] = useState("");
 
   function handleSubmit() {
+    // 本番（Water/Area の StoreRequest・UpdateRequest）の入力チェックと文言
     if (!name) {
-      setError("点検場所は必須です");
+      setError("点検場所は必須です。");
+      return;
+    }
+    if (checks.uvOperatingHours && !uvAlertHours) {
+      setError("UV殺菌灯稼働時間（h）が「記載する」の場合、UV殺菌灯表示アラート時間(h)は必須です。");
+      return;
+    }
+    if (displayFrom && displayTo && displayTo < displayFrom) {
+      setError("アプリ表示終了日は開始日以降の日付で入力してください。");
       return;
     }
     const input = {
@@ -105,7 +114,7 @@ export function PointFormPage() {
 
   return (
     <div>
-      <PageTitleBar title="使用水の点検" showBack />
+      <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -167,7 +176,7 @@ export function PointFormPage() {
                   type="text"
                   value={uvAlertHours}
                   onChange={(e) => setUvAlertHours(e.target.value)}
-                  placeholder="例）4,000"
+                  placeholder="7,900"
                   className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
                 />
               </div>

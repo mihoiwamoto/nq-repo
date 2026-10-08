@@ -51,12 +51,15 @@ export function RecordDetailView({
   breadcrumb,
   setApprovalStatus,
   addComment,
+  readOnly = false,
 }: {
   record: SampleApprovalRecord | undefined;
   factoryName: string;
   breadcrumb: BreadcrumbItem[];
   setApprovalStatus: (id: string, status: ApprovalStatus) => void;
   addComment: (id: string, text: string) => void;
+  /** データ検索から開いたとき。承認ステータスのプルダウンとコメントの入力欄を出さない（コメントの一覧だけ） */
+  readOnly?: boolean;
 }) {
   const {
     showConfirmDialog,
@@ -85,7 +88,11 @@ export function RecordDetailView({
     if (value === "approved") {
       requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
     } else if (value === "rejected") {
-      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
+      requestRejection((reason) => {
+        setApprovalStatus(record.id, value as ApprovalStatus);
+        // 差し戻し理由はコメントとして残す（本番 ApprovalFlowService::updateApprovalStatus → createComment）
+        if (reason) addComment(record.id, reason);
+      });
     } else {
       setApprovalStatus(record.id, value as ApprovalStatus);
     }
@@ -99,7 +106,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -107,14 +114,16 @@ export function RecordDetailView({
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
             <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
-          <Pulldown
-            value={record.approvalStatus}
-            onChange={handleStatusChange}
-            options={STATUS_OPTIONS}
-            disabled={record.approvalStatus !== "pending"}
-            className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
-            style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
-          />
+          {!readOnly && (
+            <Pulldown
+              value={record.approvalStatus}
+              onChange={handleStatusChange}
+              options={STATUS_OPTIONS}
+              disabled={record.approvalStatus !== "pending"}
+              className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
+              style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
+            />
+          )}
         </div>
 
         <div className="bg-white flex flex-wrap gap-x-16 gap-y-6 items-center p-4 rounded-lg w-full">
@@ -256,15 +265,17 @@ export function RecordDetailView({
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
-          <CommentInputBox
-            value={comment}
-            onChange={setComment}
-            onSubmit={() => {
-              addComment(record.id, comment);
-              setComment("");
-            }}
-            maxLength={255}
-          />
+          {!readOnly && (
+            <CommentInputBox
+              value={comment}
+              onChange={setComment}
+              onSubmit={() => {
+                addComment(record.id, comment);
+                setComment("");
+              }}
+              maxLength={255}
+            />
+          )}
         </div>
       </div>
     </div>

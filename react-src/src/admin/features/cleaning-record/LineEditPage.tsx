@@ -8,8 +8,8 @@ import type { LineFrequency } from "./types";
 
 /**
  * 清掃記録の持ち場/ラインの編集（2026-10-07）。確定デザインに清掃記録の編集は無いので、機械器具点検の編集（7139:258646）と同じ形にした。
- * 直せるのはアプリ表示期間だけ。持ち場/ライン名・点検頻度・清掃箇所・清掃項目は登録した内容を灰色で見せるだけ（変えられない）。
- * 「保存」で詳細へ戻り「更新されました。」のトースト、「キャンセル」で詳細へ戻る。
+ * 直せるのはアプリ表示期間だけ。持ち場/ライン名・清掃頻度・清掃箇所・清掃項目は登録した内容を灰色で見せるだけ（変えられない）。
+ * 「保存」で詳細へ戻り「更新しました。」のトースト、「キャンセル」で詳細へ戻る。
  */
 const FREQUENCY_OPTIONS: { key: LineFrequency; label: string }[] = [
   { key: "daily", label: "毎日" },
@@ -79,7 +79,8 @@ export function LineEditPage() {
               <p className="text-xl text-[var(--semantic-text-primary)]">アプリ表示期間</p>
               <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
             </div>
-            <p className="text-sm text-[var(--semantic-text-secondary)]">
+            {/* 確定デザイン（8091:82823）：説明文の行の高さ 17px */}
+            <p className="text-sm leading-[17px] text-[var(--semantic-text-secondary)]">
               日付指定が無い場合は、常にアプリ上に表示されます。
             </p>
             <div className="flex gap-2 items-center">
@@ -91,14 +92,14 @@ export function LineEditPage() {
 
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <FieldLabel label="持ち場/ライン名" required />
-            <p className="text-sm text-[var(--semantic-text-secondary)]">
+            <p className="text-sm leading-[17px] text-[var(--semantic-text-secondary)]">
               この点検構成を識別するための名称を入力してください。
             </p>
             <LockedField value={line.name} />
           </div>
 
           <div className="flex flex-col gap-1 items-start">
-            <FieldLabel label="点検頻度" required />
+            <FieldLabel label="清掃頻度" required />
             <div className="flex gap-2 items-center">
               {FREQUENCY_OPTIONS.map((option) => (
                 <div

@@ -28,7 +28,6 @@ import {
   setKitState,
 } from "../../frameBridge";
 import { openFeedbackPanel } from "../feedback/feedbackStore";
-import { EMPTY_PATTERNS, saveEmptyPattern, useEmptyPattern } from "../../app/components/AppEmptyState";
 import { KIT_VERSIONS, chooseKitVer, getKitVer } from "../../data/ledgerVisibility";
 import { ScreenCoachMarks } from "../screen-description/ScreenCoachMarks";
 import { isKitDescPath, setKitDescClosed, useKitDescClosed } from "./KitScreenDescription";
@@ -254,11 +253,6 @@ const CSS = `
 .nvdesc:hover{border-color:#2f7fd4}
 .nvdesc[aria-pressed="true"]{background:#2f7fd4;border-color:#2f7fd4;color:#fff}
 /* 一時的：データが無いときの見せ方の切替（フローティングボタンの左） */
-.nvempty{display:flex;align-items:center;gap:2px;height:40px;padding:4px;border-radius:999px;background:var(--nb);border:1px solid var(--nl);box-shadow:var(--nsh)}
-.nvempty-h{font-size:11px;color:var(--nm);padding:0 8px 0 10px;white-space:nowrap}
-.nvempty button{height:30px;padding:0 12px;border:0;border-radius:999px;background:transparent;color:var(--nt);font-size:12px;white-space:nowrap;cursor:pointer}
-.nvempty button:hover{background:var(--nal)}
-.nvempty button[aria-checked="true"]{background:var(--na);color:#fff;font-weight:700}
 @media (max-width:700px){ .nvpanel{width:min(300px,calc(100vw - 40px))} }
 @media (prefers-reduced-motion:reduce){.nvfab,.nvpanel,.nvfab .cr,.nvtip{transition:none!important;animation:none!important}}
 `;
@@ -310,7 +304,6 @@ export function KitSwitch() {
   const [coach, setCoach] = useState(false); // 画面説明（? ボタン）
   const role = useCurrentRole(loadCurrentRole("administrator"));
   const factory = useAppFactory();
-  const emptyPattern = useEmptyPattern(); // データが無いときの見せ方（一時的な切替。AppEmptyState.tsx）
   const location = useLocation();
   const navigate = useNavigate();
   const box = useRef<HTMLDivElement>(null);
@@ -600,23 +593,6 @@ export function KitSwitch() {
       </div>
       {coach && <ScreenCoachMarks onClose={() => setCoach(false)} cardBottom={130} skipKinds={COACH_SKIP} options={COACH_OPTIONS} />}
       <div className="nvrow">
-      {/* 一時的：アプリの一覧が空のときの見せ方を 3 パターンから選ぶ（決まったら外す。AppEmptyState.tsx） */}
-      {pf === "app" && (
-        <div className="nvempty" role="radiogroup" aria-label="データが無いときの表示" onClick={(e) => e.stopPropagation()}>
-          <span className="nvempty-h">データ無し</span>
-          {EMPTY_PATTERNS.map((p) => (
-            <button
-              key={p.key}
-              type="button"
-              role="radio"
-              aria-checked={p.key === emptyPattern}
-              onClick={() => saveEmptyPattern(p.key)}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-      )}
       {descHere && (
         <button
           className="nvhelp nvdesc"

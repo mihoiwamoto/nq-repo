@@ -30,13 +30,13 @@ export function SettingsPage() {
             <button
               type="button"
               onClick={() => setShowLogoutDialog(true)}
-              className="bg-white drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex h-16 items-center px-4 py-3 rounded-lg w-full text-left"
+              className="bg-white drop-shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex h-16 items-center px-4 py-3 rounded-lg w-full text-left"
             >
               <p className="text-lg text-[var(--semantic-text-primary)]">ログアウト</p>
             </button>
             <Link
               to="/app/settings/license"
-              className="bg-white drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex h-16 items-center px-4 py-3 rounded-lg w-full"
+              className="bg-white drop-shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex h-16 items-center px-4 py-3 rounded-lg w-full"
             >
               <p className="text-lg text-[var(--semantic-text-primary)]">ライセンス情報</p>
             </Link>
@@ -48,7 +48,7 @@ export function SettingsPage() {
       {showLogoutDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowLogoutDialog(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
             <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
               ログアウトしますか
             </h2>

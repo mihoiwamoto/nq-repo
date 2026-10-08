@@ -24,7 +24,7 @@ export function RecordDetailPage() {
         { label: "工場選択", to: "/admin/data-search/glass-plastic" },
         { label: "点検場所選択", to: basePath },
         { label: "データ一覧", to: `${basePath}/floors/${floorId}` },
-        { label: "データ詳細" },
+        { label: "詳細" },
       ]}
       setApprovalStatus={setApprovalStatus}
       addComment={addComment}

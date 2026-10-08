@@ -28,8 +28,13 @@ export function FloorEditPage() {
   }
 
   function handleSubmit() {
+    // 本番（Gp/UpdateRequest）の入力チェックと文言
     if (!name.trim()) {
-      setError("フロア名は必須です");
+      setError("フロア名は必須です。");
+      return;
+    }
+    if (displayFrom && displayTo && displayTo < displayFrom) {
+      setError("アプリ表示終了日は開始日以降の日付で入力してください。");
       return;
     }
     updateFloor(floor!.id, {
@@ -54,11 +59,15 @@ export function FloorEditPage() {
       />
       <div className="flex flex-col gap-10 items-start p-6">
         <div className="flex flex-col gap-1 items-start w-[480px]">
-          <p className="text-xl text-[var(--semantic-text-primary)]">フロア名</p>
+          <div className="flex gap-2 items-center">
+            <p className="text-xl text-[var(--semantic-text-primary)]">フロア名</p>
+            <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+          </div>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            placeholder="例）本社工場 1階"
             className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
           />
         </div>
@@ -72,13 +81,13 @@ export function FloorEditPage() {
             <DateFilterInput
               value={displayFrom}
               onChange={setDisplayFrom}
-              placeholder="開始日を選択"
+              placeholder="日付を選択"
             />
             <span className="text-[var(--semantic-text-primary)]">〜</span>
             <DateFilterInput
               value={displayTo}
               onChange={setDisplayTo}
-              placeholder="終了日を選択"
+              placeholder="日付を選択"
             />
           </div>
         </div>

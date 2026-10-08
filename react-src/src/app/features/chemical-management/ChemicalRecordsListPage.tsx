@@ -80,12 +80,13 @@ export function ChemicalRecordsListPage() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4">
         {readOnlyStatus ? (
           <>
+            {/* 確定デザイン 7139:249686：「編集」と実施日のカードのあいだは 8px、カードは高さ 70px（2026-10-08） */}
             {readOnlyStatus === "inspected" && (
-              <div className="flex justify-end">
+              <div className="flex justify-end -mb-2">
                 <button
                   type="button"
                   onClick={() => navigate(basePath, { state: { ...state, date, editing: true } })}
-                  className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
+                  className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 w-24 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
                 >
                   <img src={iconEdit} alt="" className="size-5" />
                   編集
@@ -93,8 +94,8 @@ export function ChemicalRecordsListPage() {
               </div>
             )}
             <div className="bg-white flex items-center justify-between px-4 py-6 rounded-lg">
-              <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
-              <p className="text-base text-[var(--semantic-text-primary)]">{date.replaceAll("-", "/")}</p>
+              <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">実施日</p>
+              <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{date.replaceAll("-", "/")}</p>
             </div>
           </>
         ) : (
@@ -106,7 +107,7 @@ export function ChemicalRecordsListPage() {
               <DateFilterInput value={date} onChange={setDate} variant="borderless" />
             </div>
 
-            {!progressEditable && <div className="border-t border-[#d0d0d0] w-full" />}
+            {!progressEditable && <div className="border-t border-[#d0d0d0] w-full mt-1 mb-[3px]" />}
           </>
         )}
 

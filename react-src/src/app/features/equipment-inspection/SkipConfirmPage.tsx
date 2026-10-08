@@ -65,7 +65,7 @@ export function SkipConfirmPage() {
     <>
       <AppHeader title={`機械器具点検_${(fromProgress || editReturn) && line ? `【${FREQUENCY_LABELS[line.frequency]}】` : ""}${lineName}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。

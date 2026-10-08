@@ -78,17 +78,17 @@ export function ConfirmPage() {
     <>
       <AppHeader title="官能検査記録" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
           </p>
         </div>
 
-        {/* 検査商品名と賞味期限は 1 行ずつ。ラベルの幅をそろえて値を縦に並べる */}
+        {/* 検査製品名と賞味期限は 1 行ずつ。ラベルの幅をそろえて値を縦に並べる */}
         <div className="bg-white flex flex-wrap gap-x-10 gap-y-2 items-center p-4 rounded-lg w-full max-w-full">
           <div className="flex gap-2 items-center w-full">
-            <span className="text-base text-[#808080] w-[90px] shrink-0">検査商品名</span>
+            <span className="text-base text-[#808080] w-[90px] shrink-0">検査製品名</span>
             <span className="text-base text-[var(--semantic-text-primary)]">{product.name}</span>
           </div>
           <div className="flex gap-2 items-center">
@@ -112,8 +112,8 @@ export function ConfirmPage() {
           />
           <HLine />
           <ConfirmRow
-            label="比較商品"
-            value={record.comparison === "present" ? "比較商品あり" : "比較商品なし"}
+            label="比較製品"
+            value={record.comparison === "present" ? "比較製品あり" : "比較製品なし"}
             inspector={inspectorName}
             timestamp={timestamps.comparison}
           />
@@ -121,7 +121,7 @@ export function ConfirmPage() {
             <>
               <HLine />
               <ConfirmRow
-                label="比較商品製造日"
+                label="比較製品製造日"
                 value={record.comparisonManufactureDate.replaceAll("-", "/")}
                 inspector={inspectorName}
                 timestamp={timestamps.comparisonManufactureDate}
@@ -139,8 +139,8 @@ export function ConfirmPage() {
                     <p className="text-base text-[var(--semantic-text-primary)]">{criterion}</p>
                     <ScoreTag score={score.score} />
                   </div>
-                  {score.score <= 2 && (
-                    <p className="text-base text-[#808080] px-2">理由：{score.reason}</p>
+                  {score.score <= 2 && score.reason.trim() !== "" && (
+                    <p className="text-base text-[#808080] px-2">備考：{score.reason}</p>
                   )}
                   <RecordTimestamp inspector={inspectorName} timestamp={timestamps[criterion]} />
                 </div>

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import iconPulldown from "../../assets/figma/icons/common/pulldown.svg";
 
-export type PulldownOption = { value: string; label: string };
+/** disabled の選択肢は灰色で並べるだけで押せない（本番の承認ステータスの「点検済み」など。2026-10-08） */
+export type PulldownOption = { value: string; label: string; disabled?: boolean };
 
 const DEFAULT_TRIGGER_CLASSNAME =
   "bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]";
@@ -95,9 +96,12 @@ export function Pulldown({
             <button
               key={option.value}
               type="button"
-              onClick={() => select(option.value)}
+              onClick={() => !option.disabled && select(option.value)}
+              disabled={option.disabled}
               className={`flex h-[42px] items-center px-2 rounded-lg w-full text-left text-base whitespace-nowrap ${
-                value === option.value
+                option.disabled
+                  ? "text-[var(--semantic-text-secondary)] cursor-not-allowed"
+                  : value === option.value
                   ? "bg-[var(--semantic-brand-primary)] text-white"
                   : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
               }`}

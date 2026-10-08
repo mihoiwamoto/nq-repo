@@ -13,7 +13,7 @@ interface PulldownSelectProps<T extends string> {
   widthClassName?: string;
 }
 
-/** 選択肢の箱は確定デザイン（7139:234054・7139:245228）どおり、選択欄に 4px 重ね、項目の高さ 38px（2026-10-08） */
+/** ▼ は #808080、選択肢の箱の影は 0 2 6。選択肢の箱は確定デザイン（7139:234054・7139:245228）どおり、選択欄に 4px 重ね、項目の高さ 38px（2026-10-08） */
 export function PulldownSelect<T extends string>({
   value,
   onChange,
@@ -41,13 +41,13 @@ export function PulldownSelect<T extends string>({
         >
           {selectedLabel ?? placeholder}
         </span>
-        <img src={iconArrowDown} alt="" className="size-4 shrink-0" />
+        <img src={iconArrowDown} alt="" className="size-4 shrink-0" style={{ filter: "brightness(0) invert(0.5)" }} />
       </button>
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div
-            className={`absolute left-0 top-full -mt-1 bg-white rounded-lg shadow-[0px_0px_3px_rgba(51,51,51,0.24)] p-2 z-50 ${widthClassName}`}
+            className={`absolute left-0 top-full -mt-1 bg-white rounded-lg shadow-[0px_2px_6px_rgba(51,51,51,0.24)] p-2 z-50 ${widthClassName}`}
           >
             {items.map((item) => (
               <button

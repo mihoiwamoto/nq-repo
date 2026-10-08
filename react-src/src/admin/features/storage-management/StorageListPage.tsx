@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { getFactoryName } from "../../../data/factories";
+import { FACTORIES, getFactoryName } from "../../../data/factories";
+import { Pulldown } from "../../components/Pulldown";
 import { storageOriginCrumbs, useStorageManagement } from "./StorageManagementContext";
 import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
+import { PlusIcon } from "../../components/PlusIcon";
 
 const PAGE_SIZE = 10;
 
@@ -85,10 +87,14 @@ export function StorageListPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
+  const [factoryInput, setFactoryInput] = useState("");
+  const [factory, setFactory] = useState("");
   const [page, setPage] = useState(1);
 
-  /* 確定デザインの絞り込みは保管場所の名前だけ（工場のプルダウンは無い。2026-10-06） */
-  const filtered = storageLocations.filter((location) => location.name.includes(search));
+  /* 絞り込みは 保管場所の名前 と 工場選択（本番どおり全工場から選ぶ。確定デザイン 9310:36292。2026-10-08） */
+  const filtered = storageLocations.filter(
+    (location) => location.name.includes(search) && (!factory || location.factoryId === factory)
+  );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
   const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -96,11 +102,14 @@ export function StorageListPage() {
   const handleReset = () => {
     setSearchInput("");
     setSearch("");
+    setFactoryInput("");
+    setFactory("");
     setPage(1);
   };
 
   const handleSearch = () => {
     setSearch(searchInput);
+    setFactory(factoryInput);
     setPage(1);
   };
 
@@ -114,7 +123,8 @@ export function StorageListPage() {
             to="new"
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />
@@ -140,6 +150,13 @@ export function StorageListPage() {
                   onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="保管場所で検索"
                   className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
+                />
+                <Pulldown
+                  value={factoryInput}
+                  onChange={setFactoryInput}
+                  options={FACTORIES.map((f) => ({ value: f.id, label: f.name }))}
+                  placeholder="工場選択"
+                  className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base font-normal text-[var(--semantic-text-primary)] w-[240px]"
                 />
                 <div className="flex gap-3 ml-auto">
                   <button

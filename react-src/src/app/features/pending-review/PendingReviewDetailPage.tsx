@@ -12,6 +12,7 @@ import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import { CommentInput } from "../../components/CommentInput";
 import { CompleteDialog } from "../../components/CompleteDialog";
+import { SUBMIT_DONE_TITLE, SubmitComplete } from "../../components/SubmitComplete";
 import { DrumRollPicker } from "../../components/DrumRollPicker";
 import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { commentTimestamp } from "../../utils/date";
@@ -36,6 +37,7 @@ import {
   skippedRemarks as cleaningSkippedRemarks,
   skippedReviewRemarks as cleaningSkippedReviewRemarks,
   CLEANING_REJECTION_COMMENTS,
+  ACTORS as CLEANING_ACTORS,
 } from "../cleaning-record/mockData";
 import floorMapImage from "../../../assets/figma/floorplans/floor-a.png";
 import {
@@ -95,6 +97,7 @@ import { ACTORS } from "../progress/mockData";
 import { findFactoryItem } from "../../data/factoryAppData";
 import { loadAppFactory } from "../../../data/appFactoryStore";
 import { ConfirmerPickerDialog, confirmersFor, stepAfterConfirmer } from "./ConfirmerPicker";
+import { PendingReviewListPage } from "./PendingReviewListPage";
 
 const METAL_XRAY_REVIEW_COLUMNS = [
   { key: "action", label: "操作", width: 80 },
@@ -104,7 +107,7 @@ const METAL_XRAY_REVIEW_COLUMNS = [
   { key: "passedProduct", label: "通過製品", width: 200 },
   { key: "result", label: "結果", width: 80 },
   { key: "remarks", label: "備考", width: 160 },
-  { key: "inspectorName", label: "実施者", width: 112 },
+  // 確定デザイン（確認待ち_金属/X線探知機記録 6198:82877）は 実施者 の列が無い（2026-10-08）
 ] as const;
 
 function MetalXrayChecklistGroup({
@@ -190,7 +193,7 @@ function RepairStatusDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-[0px_2px_3px_rgba(51,51,51,0.24)] overflow-hidden z-20 w-32">
+          <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-[0px_2px_6px_rgba(51,51,51,0.24)] overflow-hidden z-20 w-32">
             {options.map((status) => (
               <button
                 key={status}
@@ -271,7 +274,7 @@ function GlassPlasticMap({ floorName }: { floorName: string }) {
         style={{ transform: `scale(${mapScale})` }}
         className={`transition-transform ${mapExpanded ? "" : "max-h-[300px]"}`}
       />
-      <div className="absolute right-4 bottom-4 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_3px_rgba(51,51,51,0.24)]">
+      <div className="absolute right-4 bottom-4 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_6px_rgba(51,51,51,0.24)]">
         <button
           type="button"
           onClick={() => setMapScale((s) => Math.min(s + 0.2, 2))}
@@ -556,7 +559,8 @@ type PendingReviewStep =
 function CleaningSkipRemarksCard({ remarks }: { remarks: string }) {
   return (
     <div className="bg-white flex flex-col gap-2 items-start px-4 py-6 rounded-lg w-full max-w-full">
-      <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+      {/* 確定デザイン（7139:229031）：「備考」の行は高さ 22（カード 156） */}
+      <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
       <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)] whitespace-pre-wrap">{remarks}</p>
     </div>
   );
@@ -754,18 +758,20 @@ export function PendingReviewDetailPage() {
   const confirmedReview = review;
 
   // 差し戻しの「点検内容を修正する」→ 実施者を選んで「次へ」で記録の編集へ（機械器具点検・清掃記録・薬品管理・添加物管理）
+  // 並ぶ人は帳票ごとに違う。清掃記録は帳票一覧と同じ 9 人（確定デザイン 7139:228981）
+  const rejectActors = isCleaning ? CLEANING_ACTORS : ACTORS;
   const openRejectEdit = (go: (actorName: string) => void) => {
-    setEquipmentActorId(ACTORS[0].id);
+    setEquipmentActorId(rejectActors[0].id);
     setRejectEditTarget(() => go);
   };
   const rejectActorPicker = rejectEditTarget && (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={() => setRejectEditTarget(null)} />
       {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
-      <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+      <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
         <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
         <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
-          {ACTORS.map((a) => (
+          {rejectActors.map((a) => (
             <button
               key={a.id}
               type="button"
@@ -793,7 +799,7 @@ export function PendingReviewDetailPage() {
             type="button"
             onClick={() => {
               const go = rejectEditTarget;
-              const picked = ACTORS.find((a) => a.id === equipmentActorId) ?? ACTORS[0];
+              const picked = rejectActors.find((a) => a.id === equipmentActorId) ?? rejectActors[0];
               setRejectEditTarget(null);
               go(picked.name);
             }}
@@ -930,16 +936,15 @@ export function PendingReviewDetailPage() {
     const selectPickerPerson = setConfirmerId;
     return (
       <>
-        <AppHeader title="確認待ち" />
-        <div className="flex-1 flex items-center justify-center">
-          <ConfirmerPickerDialog
-            people={pickerPeople}
-            selectedId={pickerSelectedId}
-            onSelect={selectPickerPerson}
-            onClose={() => navigate("/app/pending-review")}
-            onNext={() => setStep(stepAfterConfirmer(review?.ledgerSlug))}
-          />
-        </div>
+        {/* 確定デザイン（7139:233693・7139:244827）：ポップアップの後ろは確認待ちの一覧（2026-10-08） */}
+        <PendingReviewListPage />
+        <ConfirmerPickerDialog
+          people={pickerPeople}
+          selectedId={pickerSelectedId}
+          onSelect={selectPickerPerson}
+          onClose={() => navigate("/app/pending-review")}
+          onNext={() => setStep(stepAfterConfirmer(review?.ledgerSlug))}
+        />
       </>
     );
   }
@@ -1045,13 +1050,13 @@ export function PendingReviewDetailPage() {
 
       return (
         <>
-          <AppHeader title={`ガラス・プラスチック管理_${floorName}`} />
+          <AppHeader title={`ガラスプラスチック管理_${floorName}`} />
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
             <GlassPlasticMap floorName={floorName} />
             <div className="flex flex-col gap-2 items-start w-full max-w-full">
               <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
               <p className="text-sm text-[var(--semantic-text-secondary)]">
-                異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
+                異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「対応完了」ステータスに変更してください。
               </p>
             </div>
             <div className="bg-white rounded-lg p-4 flex flex-col gap-6 items-start w-full max-w-full">
@@ -1129,7 +1134,7 @@ export function PendingReviewDetailPage() {
 
     return (
       <>
-        <AppHeader title={`ガラス・プラスチック管理_${floorName}`} />
+        <AppHeader title={`ガラスプラスチック管理_${floorName}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
           <GlassPlasticMap floorName={floorName} />
           <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
@@ -1397,7 +1402,7 @@ export function PendingReviewDetailPage() {
           className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
           onReachEnd={() => setEquipmentScrolledToEnd(true)}
         >
-          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
             <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
             <p className="text-sm text-[var(--semantic-text-primary)]">
               承認者から差し戻し理由のコメントがあります。
@@ -1623,7 +1628,7 @@ export function PendingReviewDetailPage() {
               <div className="border-t border-[#d0d0d0] w-full -mb-px" />
               <div className="flex flex-col gap-2 items-start w-full">
                 <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
-                <p className="text-base leading-[22px] font-normal text-[var(--semantic-text-primary)]">
+                <p className="text-base leading-[26px] font-normal text-[var(--semantic-text-primary)]">
                   {selectedAdditiveRecord.remarks}
                 </p>
               </div>
@@ -1654,14 +1659,15 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title={`${stockLabel}_${stockItem.name}`} />
         <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center">
-          <div className="flex items-center justify-between w-full max-w-full">
+          <div className="flex h-12 items-center justify-between w-full max-w-full">
             <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
               実施日 <span className="text-[var(--semantic-brand-danger)]">※</span>
             </p>
-            {/* 薬品管理（7139:244874）・添加物管理（7139:233626）の確定デザインは日付の欄（カレンダーのアイコンつき）と下の区切り線 */}
+            {/* 薬品管理（7139:244874）・添加物管理（7139:233626）の確定デザインは日付の欄（カレンダーのアイコンつき）と下の区切り線。
+                線は上から 164px・表は 184px（2026-10-08） */}
             <DateFilterInput value="2025-04-01" onChange={() => {}} variant="borderless" />
           </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
+          <div className="border-t border-[#d0d0d0] w-full mt-1 mb-[3px]" />
 
           <div className="bg-white rounded-lg overflow-x-auto w-full max-w-full">
             {/* 確定デザイン 7139:233626：見出し 56・行 48・備考 1 行・「詳細」56×32 の 12px・文字は標準の太さ・数量と現在庫数は単位付き（2026-10-08） */}
@@ -1799,7 +1805,7 @@ export function PendingReviewDetailPage() {
             <div className="flex flex-col gap-2 items-start w-full max-w-full">
               <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
               <p className="text-sm text-[var(--semantic-text-secondary)]">
-                異常があった秤は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
+                異常があった秤は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「対応完了」ステータスに変更してください。
               </p>
             </div>
             <div className="bg-white rounded-lg p-4 flex flex-col gap-6 items-start w-full max-w-full">
@@ -1952,7 +1958,7 @@ export function PendingReviewDetailPage() {
           <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
             <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full">
               <div className="flex gap-2 items-center">
-                <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
+                <span className="text-base text-[#808080] w-[90px]">検査製品名</span>
                 <span className="text-base text-[var(--semantic-text-primary)]">
                   {pendingReviewProduct.name}
                 </span>
@@ -1995,9 +2001,9 @@ export function PendingReviewDetailPage() {
               <div className="border-t border-[#d0d0d0] w-full" />
               <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center justify-between w-full">
-                  <p className="text-base text-[var(--semantic-text-primary)]">比較商品</p>
+                  <p className="text-base text-[var(--semantic-text-primary)]">比較製品</p>
                   <p className="text-base text-[var(--semantic-text-primary)]">
-                    {selectedRow.comparison === "present" ? "比較商品あり" : "比較商品なし"}
+                    {selectedRow.comparison === "present" ? "比較製品あり" : "比較製品なし"}
                   </p>
                 </div>
                 <RecordTimestamp inspector={selectedRow.inspectorName} timestamp={rowTimestamp} />
@@ -2007,7 +2013,7 @@ export function PendingReviewDetailPage() {
                   <div className="border-t border-[#d0d0d0] w-full" />
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex items-center justify-between w-full">
-                      <p className="text-base text-[var(--semantic-text-primary)]">比較商品製造日</p>
+                      <p className="text-base text-[var(--semantic-text-primary)]">比較製品製造日</p>
                       <p className="text-base text-[var(--semantic-text-primary)]">
                         {selectedRow.comparisonManufactureDate.replaceAll("-", "/")}
                       </p>
@@ -2031,8 +2037,8 @@ export function PendingReviewDetailPage() {
                         color={score.score <= 2 ? "#f85c5c" : "#19c95f"}
                       />
                     </div>
-                    {score.score <= 2 && (
-                      <p className="text-base text-[#808080] px-2">理由：{score.reason}</p>
+                    {score.score <= 2 && score.reason.trim() !== "" && (
+                      <p className="text-base text-[#808080] px-2">備考：{score.reason}</p>
                     )}
                     <RecordTimestamp
                       inspector={selectedRow.inspectorName}
@@ -2061,7 +2067,7 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title="官能検査記録" />
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
             <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
             <p className="text-sm text-[var(--semantic-text-primary)]">
               実施予定者に足りていない時はコメント欄に記載してください。
@@ -2070,7 +2076,7 @@ export function PendingReviewDetailPage() {
 
           <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full">
             <div className="flex gap-2 items-center">
-              <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
+              <span className="text-base text-[#808080] w-[90px]">検査製品名</span>
               <span className="text-base text-[var(--semantic-text-primary)]">
                 {pendingReviewProduct.name}
               </span>
@@ -2209,6 +2215,19 @@ export function PendingReviewDetailPage() {
     function handleMetalXraySubmit() {
       setOutcome("approved");
       setShowComplete(true);
+    }
+
+    // 本番（Excel No.28／No.31）は、確認者の「提出」のあとも差し戻しの「差し戻し対応完了」のあとも、ポップアップではなく
+    // 帳票の提出完了と同じ完了画面（「提出が完了しました！」「金属/X線探知機記録を続ける」「戻る」）を出す（2026-10-08）
+    if (showComplete || metalXrayResponseComplete) {
+      return (
+        <SubmitComplete
+          ledgerTitle="金属/X線探知機記録"
+          title={SUBMIT_DONE_TITLE}
+          primary={{ label: "金属/X線探知機記録を続ける", onClick: () => navigate("/app/ledger-list/metal-xray-detection") }}
+          secondary={{ label: "戻る", onClick: () => navigate("/app/pending-review") }}
+        />
+      );
     }
 
     if (step === "machineRecordDetail" && selectedMachineRecord) {
@@ -2359,7 +2378,7 @@ export function PendingReviewDetailPage() {
             className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
             onReachEnd={() => setEquipmentScrolledToEnd(true)}
           >
-            <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+            <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
               <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
               <p className="text-sm text-[var(--semantic-text-primary)]">
                 承認者から差し戻し理由のコメントがあります。
@@ -2434,9 +2453,6 @@ export function PendingReviewDetailPage() {
                       >
                         {record.remarks}
                       </td>
-                      <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
-                        {record.inspectorName}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -2490,7 +2506,7 @@ export function PendingReviewDetailPage() {
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               <div className="absolute inset-0 bg-black/50" onClick={() => setMetalXrayActorPickerOpen(false)} />
               {/* 帳票一覧・進捗一覧の実施者選択と同じ見た目（640×738 / 3列グリッド） */}
-              <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+              <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
                 <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
                 <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
                   {ACTORS.map((a) => (
@@ -2529,14 +2545,6 @@ export function PendingReviewDetailPage() {
             </div>
           )}
 
-          {metalXrayResponseComplete && (
-            <CompleteDialog
-              title="差し戻し対応が完了しました"
-              message="ご確認ありがとうございます。"
-              buttonLabel="確認待ちに戻る"
-              onButtonClick={() => navigate("/app/pending-review")}
-            />
-          )}
         </>
       );
     }
@@ -2611,9 +2619,6 @@ export function PendingReviewDetailPage() {
                     >
                       {record.remarks}
                     </td>
-                    <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
-                      {record.inspectorName}
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -2665,14 +2670,6 @@ export function PendingReviewDetailPage() {
           </button>
         </div>
 
-        {showComplete && (
-          <CompleteDialog
-            title="提出が完了しました"
-            message="ご確認ありがとうございます。"
-            buttonLabel="確認待ちに戻る"
-            onButtonClick={() => navigate("/app/pending-review")}
-          />
-        )}
       </>
     );
   }
@@ -2717,7 +2714,7 @@ export function PendingReviewDetailPage() {
           className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
           onReachEnd={() => setEquipmentScrolledToEnd(true)}
         >
-          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+          <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
             <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
             <p className="text-sm text-[var(--semantic-text-primary)]">
               承認者から差し戻し理由のコメントがあります。
@@ -2902,8 +2899,9 @@ export function PendingReviewDetailPage() {
       <>
         <AppHeader title={`清掃記録_${lineLabel}`} />
         {/* 差し戻し内容を最後まで読むまで完了ボタンは押せない（機械器具点検と同じ） */}
+        {/* 確定デザイン（7139:229163・7139:229031）：ヘッダーの下 24px に注意の帯、帯の下 24px に実施日・実施者のカード（104） */}
         <ScrollEndArea
-          className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-4 flex flex-col gap-4 items-center"
           onReachEnd={() => setEquipmentScrolledToEnd(true)}
         >
           {/* 差し戻しは他の帳票と同じく黄色の注意の帯を出す（確定デザイン 7139:229031。2026-10-07）。「持ち場/ライン」の行は無く、実施者を出す */}
@@ -2914,12 +2912,12 @@ export function PendingReviewDetailPage() {
             </p>
           </div>
 
-          <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
-            <div className="flex items-center justify-between w-full">
+          <div className="bg-white flex flex-col gap-3 items-start mt-2 px-4 py-6 rounded-lg w-full max-w-full">
+            <div className="flex items-center justify-between w-full [&>p]:leading-[22px]">
               <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
               <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
             </div>
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between w-full [&>p]:leading-[22px]">
               <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 {pendingReviewRecords["つまみ上げパック機|シール部"]?.inspector}
@@ -2943,7 +2941,8 @@ export function PendingReviewDetailPage() {
                 <p className="text-base text-white">{point.location}</p>
               </div>
               <div className="flex flex-col gap-3 items-start px-2 w-full">
-                <p className="text-base text-[var(--semantic-brand-primary)]">清掃項目</p>
+                {/* 確定デザイン（7139:221291 と同じ）：「清掃項目」は高さ 16 */}
+                <p className="text-base leading-none text-[var(--semantic-brand-primary)]">清掃項目</p>
                 {point.items.map((item) => {
                   const record = pendingReviewRecords[keyFor(point.location, item)];
                   return (
@@ -2963,11 +2962,11 @@ export function PendingReviewDetailPage() {
                   );
                 })}
               </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
+              <div className="border-t border-[#d0d0d0] w-full -mb-px" />
             </div>
           ))}
             <div className="flex flex-col gap-2 items-start w-full">
-              <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+              <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
               <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)]">{cleaningInitialRemarks}</p>
             </div>
           </div>
@@ -3033,13 +3032,15 @@ export function PendingReviewDetailPage() {
   return (
     <>
       <AppHeader title={`${isCleaning ? "清掃記録" : "機械器具点検"}_${lineLabel}`} />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
+      {/* 確定デザイン（清掃記録 7139:221291・機械器具点検 7139:283080）：ヘッダーの下 24px に 1 枚目のカード（144） */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-4 flex flex-col gap-4 items-center">
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
-          <div className="flex items-center justify-between w-full">
+          {/* 清掃記録の確定デザイン（7139:221291）：実施日・実施者の行は高さ 22 */}
+          <div className={`flex items-center justify-between w-full ${isCleaning ? "[&>p]:leading-[22px]" : ""}`}>
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-base text-[var(--semantic-text-primary)]">2025/04/01</p>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className={`flex items-center justify-between w-full ${isCleaning ? "[&>p]:leading-[22px]" : ""}`}>
             <p className="text-base text-[var(--semantic-text-primary)]">
               {isCleaning ? "実施者" : "確認者"}
             </p>
@@ -3077,7 +3078,8 @@ export function PendingReviewDetailPage() {
                   <p className="text-base text-white">{point.location}</p>
                 </div>
                 <div className="flex flex-col gap-3 items-start px-2 w-full">
-                  <p className="text-base text-[var(--semantic-brand-primary)]">清掃項目</p>
+                  {/* 確定デザイン（7139:221291）：「清掃項目」は高さ 16 */}
+                  <p className="text-base leading-none text-[var(--semantic-brand-primary)]">清掃項目</p>
                   {point.items.map((item) => {
                     const record = pendingReviewRecords[keyFor(point.location, item)];
                     return (
@@ -3097,11 +3099,12 @@ export function PendingReviewDetailPage() {
                     );
                   })}
                 </div>
-                <div className="border-t border-[#d0d0d0] w-full" />
+                {/* 確定デザイン（7139:221291）：線は場所を取らない（次の清掃箇所 546） */}
+                <div className="border-t border-[#d0d0d0] w-full -mb-px" />
               </div>
             ))}
               <div className="flex flex-col gap-2 items-start w-full">
-                <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+                <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
                 <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)]">
                   {cleaningInitialRemarks}
                 </p>

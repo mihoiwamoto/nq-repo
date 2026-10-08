@@ -170,7 +170,7 @@ export function ChemicalRecordingPage() {
                 value={quantity}
                 onChange={(e) => applyQuantity(e.target.value)}
                 placeholder="例）1,000"
-                className="bg-white h-12 px-4 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
+                className="bg-white h-12 pl-4 pr-2 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
               />
             </div>
 
@@ -198,7 +198,7 @@ export function ChemicalRecordingPage() {
                     setCurrentStockEdited(true);
                   }}
                   placeholder="例）4,000"
-                  className="bg-white h-12 px-4 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
+                  className="bg-white h-12 pl-4 pr-2 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
                 />
               </div>
             </div>
@@ -210,12 +210,12 @@ export function ChemicalRecordingPage() {
             <div className="border-t border-[#d0d0d0] w-full" />
 
             <div className="flex flex-col gap-2 items-start w-full">
-              <p className="text-lg text-[var(--semantic-text-primary)]">備考</p>
+              <p className="text-lg leading-[18px] text-[var(--semantic-text-primary)]">備考</p>
               <textarea
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 placeholder="月次定期発注による補充入庫"
-                className="bg-white min-h-20 p-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
+                className="bg-white min-h-20 p-2 rounded-lg resize-none text-base font-normal text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
               />
             </div>
           </div>

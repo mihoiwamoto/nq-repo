@@ -47,13 +47,13 @@ export function PointSelectionPage() {
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-10 items-center">
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中） */}
+          {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯） */}
           {points.length === 0 && <AppEmptyState />}
           {points.map((point) => (
             <Link
               key={point.id}
               to={`/app/ledger-list/water-inspection/points/${point.id}`}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center px-4 py-3 rounded-lg w-full"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center px-4 py-3 rounded-lg w-full"
             >
               <p className="flex-1 text-lg text-[var(--semantic-text-primary)]">{point.name}</p>
               <StatusChip color={POINT_STATUS_COLORS[point.status]}>{POINT_STATUS_LABELS[point.status]}</StatusChip>

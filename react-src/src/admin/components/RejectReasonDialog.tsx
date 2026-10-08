@@ -5,7 +5,8 @@ export function RejectReasonDialog({
   onConfirm,
 }: {
   onCancel: () => void;
-  onConfirm: () => void;
+  /** 入力した差し戻し理由（前後の空白を除く）を渡す */
+  onConfirm: (reason: string) => void;
 }) {
   const [reason, setReason] = useState("");
   const canConfirm = reason.trim().length > 0;
@@ -39,7 +40,7 @@ export function RejectReasonDialog({
           </button>
           <button
             type="button"
-            onClick={onConfirm}
+            onClick={() => onConfirm(reason.trim())}
             disabled={!canConfirm}
             className={`flex-1 h-12 rounded-lg text-base text-white ${
               canConfirm ? "bg-[var(--semantic-brand-danger)]" : "bg-[#d0d0d0]"

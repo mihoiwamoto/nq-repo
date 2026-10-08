@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
@@ -16,7 +16,8 @@ import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import { downloadScaleCsv, downloadScalePdf } from "./scaleExport";
+import { PlusIcon } from "../../components/PlusIcon";
 
 function CheckCell({ record, field }: { record: ScaleRecord; field: "operation" | "level" | "dirt" }) {
   if (record.skipped) {
@@ -97,16 +98,6 @@ function formatDateShort(date: string) {
   return `${y.slice(2)}.${m}.${d}`;
 }
 
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 const MONTH_LABELS = [
   "1月", "2月", "3月", "4月", "5月", "6月",
@@ -117,10 +108,10 @@ const COLUMNS = [
   { label: "操作", width: "w-[104px]" },
   { label: "ステータス", width: "w-[104px] shrink-0" },
   { label: "日付", width: "w-[80px]" },
-  { label: "秤No.(ラベル名)", width: "w-[148px]" },
+  { label: "秤NO.(ラベル名)", width: "w-[148px]" },
   { label: "シリアルナンバー", width: "w-[148px]" },
   { label: "持ち場", width: "w-[148px]" },
-  { label: "動作確認", width: "w-[100px]" },
+  { label: "動作", width: "w-[100px]" },
   { label: "水平点検", width: "w-[100px]" },
   { label: "汚れ", width: "w-[100px]" },
   { label: "秤の表示値(g)", width: "w-[100px]" },
@@ -140,7 +131,6 @@ export function DataListPage() {
   const [filterOpen, setFilterOpen] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [scaleFilter, setScaleFilter] = useState("");
   const [postFilter, setPostFilter] = useState("");
@@ -165,7 +155,9 @@ export function DataListPage() {
     if (postFilter && r.post !== postFilter) return false;
     if (onlyAbnormal && !isAbnormal(r)) return false;
     return true;
-  });
+    // 日付順（同じ日は見本の並びのまま）。画面の表・PDF・CSV とも同じ並び（2026-10-08 ユーザー指定）
+  }).sort((a, b) => a.date.localeCompare(b.date));
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
@@ -181,35 +173,6 @@ export function DataListPage() {
     setOnlyAbnormal(false);
   }
 
-  function handleDownload() {
-    const header = [
-      "日付",
-      "秤No.(ラベル名)",
-      "シリアルナンバー",
-      "持ち場",
-      "動作確認",
-      "水平点検",
-      "汚れ",
-      "秤の表示値(g)",
-      "備考",
-      "実施者",
-      "確認者",
-    ];
-    const rows = filtered.map((r) => [
-      r.date,
-      r.scaleLabel,
-      r.serialNumber,
-      r.post,
-      r.skipped ? "―" : r.operationCheck === "ok" ? "正常" : "異常あり",
-      r.skipped || r.operationCheck === "ng" ? "―" : r.levelCheck === "ok" ? "正常" : "―",
-      r.skipped || r.operationCheck === "ng" ? "―" : r.dirtCheck === "ok" ? "正常" : "―",
-      r.skipped || r.operationCheck === "ng" || r.displayValue === null ? "―" : String(r.displayValue),
-      r.remarks,
-      r.implementer,
-      r.confirmer,
-    ]);
-    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
-  }
 
   return (
     <div>
@@ -257,7 +220,7 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+            className="flex items-center gap-2 h-5 text-base text-[var(--semantic-brand-primary)]"
           >
             <span>絞り込み検索</span>
             {filterOpen ? (
@@ -275,7 +238,7 @@ export function DataListPage() {
                 }}
               />
             ) : (
-              <span>+</span>
+              <PlusIcon />
             )}
           </button>
           {filterOpen && (
@@ -456,7 +419,7 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
+          <div className="w-full rounded-lg overflow-x-auto">
             <div className="flex flex-col min-w-[1628px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
@@ -583,9 +546,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadScaleCsv(filtered, factoryName, year, month);
+                  } else {
+                    await downloadScalePdf(filtered, factoryName, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

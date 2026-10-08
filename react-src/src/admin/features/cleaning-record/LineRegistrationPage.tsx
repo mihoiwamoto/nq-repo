@@ -101,7 +101,7 @@ export function LineRegistrationPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">アプリ表示期間</p>
             <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)]">
+          <p className="text-sm leading-[17px] text-[var(--semantic-text-secondary)]">
             日付指定が無い場合は、常にアプリ上に表示されます。
           </p>
           <div className="flex gap-2 items-center">
@@ -116,7 +116,7 @@ export function LineRegistrationPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">持ち場/ライン名</p>
             <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
           </div>
-          <p className="text-sm text-[var(--semantic-text-secondary)]">
+          <p className="text-sm leading-[17px] text-[var(--semantic-text-secondary)]">
             この点検構成を識別するための名称を入力してください。
           </p>
           <input

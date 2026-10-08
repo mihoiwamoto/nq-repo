@@ -9,6 +9,7 @@ import { buildMonthGrid, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtil
 import { useFactoryManagement } from "./FactoryManagementContext";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import { PlusIcon } from "../../components/PlusIcon";
 
 export function FactoryFormPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -26,7 +27,8 @@ export function FactoryFormPage() {
   const [ledgerSlugs, setLedgerSlugs] = useState<string[]>(existing?.ledgerSlugs ?? []);
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
-  const [error, setError] = useState("");
+  // 本番（FactoryRequest）と同じく項目ごとにエラーを出す。文言は本番の lang/ja/validation.php
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   function goToMonth(delta: number) {
     const next = new Date(year, month + delta, 1);
@@ -47,10 +49,18 @@ export function FactoryFormPage() {
   }
 
   function handleSubmit() {
-    if (!name || !companyId || !loginId || (!isEditing && !password) || ledgerSlugs.length === 0) {
-      setError("必須項目を入力してください");
-      return;
-    }
+    const next: Record<string, string> = {};
+    if (!name) next.name = "工場名は必須です。";
+    if (!companyId) next.companyId = "企業を入力してください。";
+    if (!loginId) next.loginId = "工場IDは必須です。";
+    else if (!/^\d{6}$/.test(loginId)) next.loginId = "工場IDは6桁の数字で入力してください。";
+    if (!isEditing && !password) next.password = "パスワードは必須です。";
+    else if (password && (password.length < 8 || password.length > 64))
+      next.password = "パスワードは8〜64文字の間で入力してください。";
+    else if (password && !/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/.test(password))
+      next.password = "パスワードは英数字記号を組み合わせてください。";
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
     const input = { name, address, companyId, loginId, closedDays, ledgerSlugs, password };
     if (isEditing && existing) {
       updateFactory(existing.id, input);
@@ -75,6 +85,7 @@ export function FactoryFormPage() {
       <Breadcrumb
         items={[
           { label: "工場管理", to: "/admin/factory" },
+          ...(isEditing ? [{ label: "詳細", to: `/admin/factory/${factoryId}` }] : []),
           { label: isEditing ? "編集" : "新規登録" },
         ]}
       />
@@ -83,7 +94,7 @@ export function FactoryFormPage() {
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">工場名</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+              {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
             </div>
             <input
               type="text"
@@ -93,6 +104,7 @@ export function FactoryFormPage() {
               autoComplete="off"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080] bold-placeholder"
             />
+            {errors.name && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.name}</p>}
           </div>
 
           <div className="flex flex-col gap-1 items-start w-[480px]">
@@ -110,7 +122,7 @@ export function FactoryFormPage() {
           <div className="flex flex-col gap-1 items-start">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">企業</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+              {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
             </div>
             <div className="flex gap-6 items-center">
               <Pulldown
@@ -124,15 +136,17 @@ export function FactoryFormPage() {
                 to="/admin/company/new"
                 className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-sm text-[var(--semantic-brand-primary)]"
               >
-                + 新規登録
+                <PlusIcon />
+                新規登録
               </Link>
             </div>
+            {errors.companyId && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.companyId}</p>}
           </div>
 
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">工場ID</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+              {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
             </div>
             <p className="text-sm text-[#808080]">アプリのログイン時使用するIDになります。</p>
             <input
@@ -145,19 +159,24 @@ export function FactoryFormPage() {
                 isEditing ? 'text-[var(--semantic-text-primary)]' : 'text-[#808080]'
               }`}
             />
+            {errors.loginId && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.loginId}</p>}
           </div>
 
           <div className="flex flex-col gap-1 items-start w-[480px]">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">パスワード</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">
-                {isEditing ? "※任意" : "※必須"}
-              </span>
+              {!isEditing && <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>}
             </div>
             <p className="text-sm text-[#808080]">
               アプリのログイン時使用するパスワードになります。
               <br />
-              ※8文字以上の英数字、記号を含む
+              {isEditing && (
+                <>
+                  変更しない場合は、空欄のままで構いません。
+                  <br />
+                </>
+              )}
+              ※8文字以上の英数字、大文字、小文字、記号を含む
             </p>
             <input
               type="password"
@@ -169,15 +188,15 @@ export function FactoryFormPage() {
                 isEditing ? 'text-[var(--semantic-text-primary)]' : 'text-[#808080]'
               }`}
             />
+            {errors.password && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.password}</p>}
           </div>
 
           <div className="flex flex-col gap-3 items-start w-full">
             <div className="flex flex-col gap-1 items-start">
               <div className="flex gap-2 items-center">
                 <p className="text-xl text-[var(--semantic-text-primary)]">休業日</p>
-                <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
               </div>
-              <p className="text-sm text-[#808080]">休業日をカレンダーで選択してください。</p>
+              <p className="text-sm text-[#808080]">休業日をカレンダー上で選択してください。</p>
             </div>
             <div className="flex flex-col gap-2 items-start">
               <div className="flex items-center justify-between w-[560px]">
@@ -283,7 +302,6 @@ export function FactoryFormPage() {
           <div className="flex flex-col gap-3 items-start w-full">
             <div className="flex gap-2 items-center">
               <p className="text-xl text-[var(--semantic-text-primary)]">点検項目</p>
-              <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
             <div className="flex flex-wrap gap-6 items-start">
               {visibleLedgerCategories().map((category) => {
@@ -308,7 +326,6 @@ export function FactoryFormPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button

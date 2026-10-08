@@ -1,4 +1,5 @@
 import type { ChemicalRecord } from "./types";
+import { amount, aprilDays, at, statusAt, ymd } from "../../data/demoRecordGen";
 
 export const chemicalRecords: ChemicalRecord[] = [
   {
@@ -87,3 +88,62 @@ export const chemicalRecords: ChemicalRecord[] = [
     approvalStatus: "approved",
   },
 ];
+
+/* ───────────────────────────────────────────────────────────────
+ * 2026-10-08：データ検索の見本を増やした分（上の dch1〜dch5 は画面設計の hash と確定デザインが使うので変えない）。
+ * 薬品ごとに在庫を持ち、入庫で増え・出庫で減る（前在庫数 → 現在庫数 が前の行とつながる）。単位は薬品ごと（ml・g・本・kg）。
+ * 4 月の稼働日に 1〜2 件、3 月末・5 月頭にも少し。備考あり/なし・長い備考・長い薬品名 を混ぜる。
+ * ─────────────────────────────────────────────────────────────── */
+const CHEMICALS = [
+  { name: "次亜塩素酸ナトリウム（6%）", unit: "ml", stock: 18000, inQty: 10000, outQty: [1500, 2000, 2500], place: "小型物置" },
+  { name: "アルコール製剤", unit: "本", stock: 24, inQty: 24, outQty: [3, 4, 6], place: "倉庫棟A" },
+  { name: "中性洗剤", unit: "ml", stock: 9000, inQty: 6000, outQty: [500, 800, 1000], place: "大型物置" },
+  { name: "クエン酸", unit: "g", stock: 4500, inQty: 2000, outQty: [250, 500], place: "大型物置" },
+  { name: "アルカリ洗浄剤（CIP 洗浄用 高濃度タイプ・希釈して使用）", unit: "kg", stock: 60, inQty: 20, outQty: [4, 5, 8], place: "化学物質保管室" },
+];
+
+const CHEM_REMARKS_IN = ["月次定期発注による補充入庫", "", "緊急発注分の追加入庫"];
+const CHEM_REMARKS_OUT = [
+  "",
+  "洗浄作業使用分として出庫",
+  "",
+  "製造ラインの定期洗浄（CIP）用。使用後の空き容器は保管室の回収箱へ戻した。希釈倍率は作業手順書どおり 50 倍。",
+];
+
+function chemicalExtra(): ChemicalRecord[] {
+  const out: ChemicalRecord[] = [];
+  const stock = CHEMICALS.map((c) => c.stock);
+  const days: [number, number][] = [[3, 26], [3, 31], ...aprilDays(4, 30, [12, 19, 26]).map((d) => [4, d] as [number, number]), [5, 1], [5, 7]];
+  let n = 0;
+  days.forEach(([m, d], di) => {
+    const count = di % 3 === 0 ? 2 : 1;
+    for (let k = 0; k < count; k++) {
+      const ci = (di * 2 + k) % CHEMICALS.length;
+      const c = CHEMICALS[ci];
+      const prev = stock[ci];
+      // 在庫が少なくなったら入庫、ほかは出庫
+      const isIn = prev < c.inQty || (n % 6 === 5);
+      const qty = isIn ? c.inQty : at(c.outQty, n);
+      const next = isIn ? prev + qty : prev - qty;
+      stock[ci] = next;
+      out.push({
+        id: `dch-x${String(m).padStart(2, "0")}${String(d).padStart(2, "0")}-${k + 1}`,
+        date: ymd(m, d),
+        chemicalName: c.name,
+        type: isIn ? "入庫" : "出庫",
+        previousStock: amount(prev, c.unit),
+        quantity: amount(qty, c.unit),
+        currentStock: amount(next, c.unit),
+        storageLocation: c.place,
+        remarks: isIn ? at(CHEM_REMARKS_IN, n) : at(CHEM_REMARKS_OUT, n),
+        implementer: at(["田中裕子", "吉田浩二", "松本奈々"], n),
+        confirmer: n % 4 === 3 ? "佐藤健一" : "山本真理",
+        approvalStatus: statusAt(n),
+      });
+      n++;
+    }
+  });
+  return out;
+}
+
+chemicalRecords.push(...chemicalExtra());

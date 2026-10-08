@@ -26,13 +26,14 @@ export const ledgerCategories: LedgerCategory[] = [
   {
     slug: "glass-plastic",
     adminLabel: "ガラスプラスチック管理",
-    appLabel: "ガラス・プラスチック管理",
+    appLabel: "ガラスプラスチック管理",
     adminIcon: glassPlasticAdmin,
     appIcon: appIconUrl("glass-plastic"),
   },
   {
     slug: "scale-inspection",
-    adminLabel: "秤点検管理",
+    // 本番（app/Consts/ReportType.php）の帳票名は「秤点検記録」（2026-10-08 本番に合わせた）
+    adminLabel: "秤点検記録",
     appLabel: "秤点検記録",
     adminIcon: scaleInspectionAdmin,
     appIcon: appIconUrl("scale-inspection"),

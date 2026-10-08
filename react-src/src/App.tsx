@@ -298,6 +298,8 @@ import { SchedulePage as AppEquipmentSchedulePage } from "./app/features/equipme
 import { SchedulePointSettingPage as AppEquipmentSchedulePointSettingPage } from "./app/features/equipment-inspection/SchedulePointSettingPage";
 import { SensoryScheduleProviderOutlet } from "./app/features/sensory-inspection/ScheduleContext";
 import { ScheduleRegisterPage as AppSensoryScheduleRegisterPage } from "./app/features/sensory-inspection/ScheduleRegisterPage";
+import { SampleScheduleProviderOutlet as AppSampleScheduleProviderOutlet } from "./app/features/sample-management/ScheduleContext";
+import { SchedulePage as AppSampleSchedulePage } from "./app/features/sample-management/SchedulePage";
 import { WaterInspectionProviderOutlet as AppWaterInspectionProviderOutlet } from "./app/features/water-inspection/WaterInspectionContext";
 import { PointSelectionPage as AppWaterPointSelectionPage } from "./app/features/water-inspection/PointSelectionPage";
 import { PointDetailPage as AppWaterPointDetailPage } from "./app/features/water-inspection/PointDetailPage";
@@ -347,6 +349,7 @@ import { SampleInspectionPage as AppSampleInspectionPage } from "./app/features/
 import { SampleConfirmPage as AppSampleConfirmPage } from "./app/features/sample-management/SampleConfirmPage";
 import { SampleSubmitCompletePage as AppSampleSubmitCompletePage } from "./app/features/sample-management/SampleSubmitCompletePage";
 import { StoredSampleDetailPage as AppStoredSampleDetailPage } from "./app/features/sample-management/StoredSampleDetailPage";
+import { SampleDiscardCompletePage as AppSampleDiscardCompletePage } from "./app/features/sample-management/SampleDiscardCompletePage";
 import { MachineSelectionPage as AppMetalXrayMachineSelectionPage } from "./app/features/metal-xray-detection/MachineSelectionPage";
 import { MachineDetailPage as AppMetalXrayMachineDetailPage } from "./app/features/metal-xray-detection/MachineDetailPage";
 import { MachineRecordFormPage as AppMetalXrayMachineRecordFormPage } from "./app/features/metal-xray-detection/MachineRecordFormPage";
@@ -737,11 +740,11 @@ function App() {
           />
           <Route
             path="factories/:factoryId/post-management/new/complete"
-            element={<PostManagementCompletePage message="持ち場管理の新規登録が完了しました" />}
+            element={<PostManagementCompletePage message="登録が完了しました" />}
           />
           <Route
             path="factories/:factoryId/post-management/deleted"
-            element={<PostManagementCompletePage message="持ち場管理の削除が完了しました" />}
+            element={<PostManagementCompletePage message="削除が完了しました" />}
           />
         </Route>
         <Route
@@ -1115,11 +1118,11 @@ function App() {
           <Route path="new" element={<StorageFormPage />} />
           <Route
             path="new/complete"
-            element={<StorageCompletePage message="保管場所の新規登録が完了しました" />}
+            element={<StorageCompletePage message="保管場所情報の新規登録が完了しました" />}
           />
           <Route
             path="deleted"
-            element={<StorageCompletePage message="保管場所の削除が完了しました" />}
+            element={<StorageCompletePage message="保管場所情報の削除が完了しました" />}
           />
           <Route path=":locationId" element={<StorageDetailPage />} />
           <Route path=":locationId/edit" element={<StorageFormPage />} />
@@ -1158,6 +1161,7 @@ function App() {
           />
           <Route element={<SensoryScheduleProviderOutlet />}>
           <Route element={<AppCleaningScheduleProviderOutlet />}>
+          <Route element={<AppSampleScheduleProviderOutlet />}>
             <Route path="schedule" element={<AppEquipmentSchedulePage />} />
             <Route
               path="schedule/equipment-inspection/:dateKey"
@@ -1172,6 +1176,16 @@ function App() {
               path="schedule/sensory-inspection/:dateKey"
               element={<AppSensoryScheduleRegisterPage />}
             />
+            {/* 検体管理 検体製品設定（確定デザイン 6198:78679。本番の点検予定に合わせて 2026-10-08 に足した） */}
+            <Route
+              path="schedule/sample-management/:dateKey"
+              element={<AppSampleSchedulePage key="detail" />}
+            />
+            <Route
+              path="schedule/sample-management/:dateKey/copy"
+              element={<AppSampleSchedulePage key="copy" copy />}
+            />
+          </Route>
           </Route>
           </Route>
         </Route>
@@ -1293,6 +1307,10 @@ function App() {
         <Route
           path="ledger-list/sample-management/stored/:storedId"
           element={<AppStoredSampleDetailPage />}
+        />
+        <Route
+          path="ledger-list/sample-management/discard-complete"
+          element={<AppSampleDiscardCompletePage />}
         />
         <Route path="ledger-list/specimen-management" element={<AppSpecimenListPage />} />
         <Route

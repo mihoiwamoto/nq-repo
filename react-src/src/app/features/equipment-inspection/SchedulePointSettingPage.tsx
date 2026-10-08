@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
-import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
+import { SubmitComplete } from "../../components/SubmitComplete";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
@@ -80,14 +80,14 @@ export function SchedulePointSettingPage() {
 
   if (result) {
     const message = result === "saved" ? "保存が完了しました！" : "登録が完了しました！";
-    // 確定デザイン（7139:283879・7139:283906）：進捗一覧の提出完了と同じ上寄せの完了画面（ボタン 360×64）
+    // 確定デザイン（7139:283879・7139:283906）：上寄せの完了画面（ボタン 360×64）。チェック印はヘッダーの下 24px（144）で、
+    // 進捗一覧の提出完了（76px 下げた形）ではなく帳票一覧の提出完了と同じ位置
     return (
-      <ProgressSubmitComplete
+      <SubmitComplete
         ledgerTitle="機械器具点検 持ち場/ライン設定"
         title={message}
         message="ご登録ありがとうございます。"
-        backLabel="点検予定に戻る"
-        onBack={() => navigate("/app/schedule")}
+        secondary={{ label: "点検予定に戻る", onClick: () => navigate("/app/schedule") }}
       />
     );
   }
@@ -257,7 +257,7 @@ export function SchedulePointSettingPage() {
       {pickerOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setPickerOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)] max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)] max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">持ち場/ライン名</h2>
             <div className="flex flex-col gap-4 items-start w-full">
               <div className="flex gap-4 items-start w-full">
@@ -353,7 +353,7 @@ export function SchedulePointSettingPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteTarget(null)} />
           {/* 確定デザイン（7139:284185）：幅 640、題は「{持ち場/ライン名}の削除」、ボタンは大きい「キャンセル」（枠線）と「削除」 */}
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 {lineLabel(deleteTarget)}の削除

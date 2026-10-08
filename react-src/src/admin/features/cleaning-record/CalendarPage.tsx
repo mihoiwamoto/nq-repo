@@ -28,7 +28,7 @@ export function CalendarPage() {
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("更新されました。");
+  const [toastMessage, setToastMessage] = useState("更新しました。");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +41,7 @@ export function CalendarPage() {
         setYear(y);
         setMonth(m - 1);
       }
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => setShowToast(false), 3000);
       navigate(location.pathname, { replace: true });
@@ -240,8 +240,9 @@ export function CalendarPage() {
                   >
                     <img src={iconKebabMenu} alt="メニュー" className="size-6" />
                   </button>
+                  {/* 確定デザイン（7139:161562）：メニューはボタンの下 9px */}
                   {menuOpen && (
-                    <div className="absolute right-0 top-full mt-1 bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg p-2 w-60 z-50">
+                    <div className="absolute right-0 top-full mt-[9px] bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg p-2 w-60 z-50">
                       <button
                         type="button"
                         onClick={handleDuplicate}

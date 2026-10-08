@@ -1,13 +1,15 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 
 export function ScaleCompletePage() {
   const { factoryId } = useParams<{ factoryId: string }>();
   const basePath = `/admin/ledger-management/scale-inspection/factories/${factoryId}`;
+  // 削除のあとも本番どおり完了画面を出す（App.tsx のルートを増やさず、registered に state で来る）
+  const deleted = Boolean((useLocation().state as { deleted?: boolean } | null)?.deleted);
 
   return (
     <div>
-      <PageTitleBar title="帳票管理" />
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
@@ -27,14 +29,14 @@ export function ScaleCompletePage() {
             />
           </svg>
           <p className="text-2xl text-[var(--semantic-text-primary)]">
-            秤点検記録設定の新規登録が完了しました
+            {deleted ? "秤点検記録設定の削除が完了しました" : "秤点検記録の新規登録が完了しました"}
           </p>
         </div>
         <Link
           to={basePath}
           className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
         >
-          秤点検記録設定一覧に戻る
+          {deleted ? "秤点検記録設定に戻る" : "秤点検記録一覧に戻る"}
         </Link>
       </div>
     </div>

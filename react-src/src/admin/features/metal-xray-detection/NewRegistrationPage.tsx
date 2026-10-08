@@ -68,8 +68,9 @@ function DetectorSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedLabel = value || "";
-  const selectedColor = value ? "#333333" : "#d0d0d0";
+  // 未選択は確定デザイン（6296:133013）どおり「選択してください」を薄い文字で出す
+  const selectedLabel = value || "選択してください";
+  const selectedColor = value ? "#333333" : "#808080";
 
   return (
     <div className="flex flex-col gap-1 items-start w-[240px] mb-4" ref={containerRef}>

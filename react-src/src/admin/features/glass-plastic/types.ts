@@ -1,10 +1,12 @@
-export type RepairStatus = "action_needed" | "repairing" | "repaired" | "no_repair";
+// 本番の RepairStatusType（要対応・修理中・対応完了・修理しない・修理なし）
+export type RepairStatus = "action_needed" | "repairing" | "repaired" | "no_repair" | "never_repaired";
 
 export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
   action_needed: "要対応",
   repairing: "修理中",
-  repaired: "修理完了",
+  repaired: "対応完了",
   no_repair: "修理しない",
+  never_repaired: "修理なし",
 };
 
 export const REPAIR_STATUS_COLORS: Record<RepairStatus, string> = {
@@ -12,6 +14,7 @@ export const REPAIR_STATUS_COLORS: Record<RepairStatus, string> = {
   repairing: "var(--semantic-status-caution)",
   repaired: "var(--semantic-status-success)",
   no_repair: "var(--semantic-text-secondary)",
+  never_repaired: "var(--semantic-text-secondary)",
 };
 
 export const REPAIR_STATUS_NEXT_OPTIONS: Record<RepairStatus, RepairStatus[]> = {
@@ -19,6 +22,8 @@ export const REPAIR_STATUS_NEXT_OPTIONS: Record<RepairStatus, RepairStatus[]> = 
   repairing: ["repairing", "repaired"],
   no_repair: ["no_repair"],
   repaired: ["repaired"],
+  // 本番（RepairStatusType::getValidationType）は 修理なし から 要対応 へだけ変えられる
+  never_repaired: ["never_repaired", "action_needed"],
 };
 
 export type RepairItem = {

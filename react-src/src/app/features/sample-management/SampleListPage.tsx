@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { DateFilterInput } from "../../components/DateFilterInput";
 import { AppHeader } from "../../layout/AppHeader";
 import { SampleProgressPanel } from "./SampleProgressPanel";
@@ -18,7 +18,6 @@ import checkboxOnIcon from "@images/Icon/ckeckbox_on.svg";
 import checkboxOffIcon from "@images/Icon/ckeckbox.svg";
 import searchIcon from "@images/Icon/search.svg";
 import burnIcon from "@images/Icon/burn.svg";
-import iconCheckWhite from "../../../assets/figma/icons/common/checkmark-custom.svg";
 import { StatusChip } from "../../components/StatusChip";
 import { useDemoList, useDemoUninspected } from "../../../components/demo/demoStore";
 import { AppEmptyState } from "../../components/AppEmptyState";
@@ -62,7 +61,9 @@ export function SampleListPage() {
   const location = useLocation();
   const inspectorName =
     (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
-  const discardedId = (location.state as { discardedId?: string } | null)?.discardedId;
+  const navigate = useNavigate();
+  // 破棄の完了画面（discard-complete）の「保管検体に戻る」から、破棄した検体の id を受け取る
+  const discardedFromState = (location.state as { discardedIds?: string[] } | null)?.discardedIds ?? [];
   const initialTab = (location.state as { tab?: SampleTab } | null)?.tab ?? "today";
   const [tab, setTab] = useState<SampleTab>(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,8 +77,9 @@ export function SampleListPage() {
   const [bulkDiscardDate, setBulkDiscardDate] = useState("");
   const [bulkDiscardReason, setBulkDiscardReason] = useState<DiscardReason | null>(null);
   const [bulkOtherReasonText, setBulkOtherReasonText] = useState("");
-  const [bulkDiscardCompleteDialogOpen, setBulkDiscardCompleteDialogOpen] = useState(false);
-  const [discardedIds, setDiscardedIds] = useState<Set<string>>(new Set(discardedId ? [discardedId] : []));
+  // 本番（Excel No.46／No.57）は「その他」の理由が空だと「破棄理由を入力してください。」を出して止める（2026-10-08）
+  const [bulkReasonError, setBulkReasonError] = useState(false);
+  const [discardedIds] = useState<Set<string>>(() => new Set(discardedFromState));
 
   // 動作デモの「データが無い」を試している間は、検体が 1 件も無い状態にする
   // 「今日」は今日採取する検体（点検予定）なので、動作デモ「データが無い」でも
@@ -157,6 +159,8 @@ export function SampleListPage() {
   }
 
   function openBulkDiscardDialog() {
+    setBulkOtherReasonText("");
+    setBulkReasonError(false);
     setBulkDiscardDate("");
     setBulkDiscardReason("expired");
     setBulkDiscardDialogOpen(true);
@@ -166,14 +170,15 @@ export function SampleListPage() {
 
   function handleBulkDiscard() {
     if (!canBulkDiscard) return;
-    setDiscardedIds((prev) => new Set([...prev, ...selectedForDiscard]));
+    if (bulkDiscardReason === "other" && bulkOtherReasonText.trim() === "") {
+      setBulkReasonError(true);
+      return;
+    }
     setBulkDiscardDialogOpen(false);
-    exitBulkSelectionMode();
-    setBulkDiscardCompleteDialogOpen(true);
-  }
-
-  function handleBulkCompleteClose() {
-    setBulkDiscardCompleteDialogOpen(false);
+    // 確定デザインでは破棄のあとは全画面の完了画面（6198:77801）。「保管検体に戻る」で保管検体のタブへ戻る（2026-10-08）
+    navigate("/app/ledger-list/sample-management/discard-complete", {
+      state: { discardedIds: [...discardedIds, ...selectedForDiscard] },
+    });
   }
 
   const [progressOpen, setProgressOpen] = useState(false);
@@ -270,7 +275,7 @@ export function SampleListPage() {
                       key={entry.id}
                       to={`/app/ledger-list/sample-management/samples/${entry.id}`}
                       state={{ inspectorName }}
-                      className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center justify-between p-4 rounded-lg w-full"
+                      className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center justify-between p-4 rounded-lg w-full"
                     >
                       {/* 製造日・ロットNo. は管理画面で「記載する」とした製品だけに出る任意項目 */}
                       <div className="flex-1 flex flex-col gap-2 items-start justify-center min-w-0">
@@ -355,11 +360,12 @@ export function SampleListPage() {
                 {storedSamples.length === 0 ? (
                   <AppEmptyState />
                 ) : filteredStoredSamples.length === 0 ? (
-                  <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6 w-full">
-                    {storedSamples.length === 0
-                      ? "保管中の検体はまだありません"
-                      : "該当する検体はありません"}
-                  </p>
+                  // 確定デザイン（6198:77995）：絞り込みで 0 件のときは白いカードに「該当するデータがありません」（2026-10-08）
+                  <div className="bg-white flex items-center justify-center px-6 py-12 rounded-lg w-full">
+                    <p className="text-xl text-[var(--semantic-text-primary)] text-center">
+                      該当するデータがありません
+                    </p>
+                  </div>
                 ) : (
                   filteredStoredSamples.map((sample) => {
                     const cardContent = (
@@ -399,7 +405,7 @@ export function SampleListPage() {
                           <button
                             type="button"
                             onClick={() => toggleSelected(sample.id)}
-                            className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg flex-1 text-left"
+                            className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg flex-1 text-left"
                           >
                             {cardContent}
                           </button>
@@ -411,7 +417,7 @@ export function SampleListPage() {
                       <Link
                         key={sample.id}
                         to={`/app/ledger-list/sample-management/stored/${sample.id}`}
-                        className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg w-full"
+                        className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg w-full"
                       >
                         {cardContent}
                       </Link>
@@ -458,7 +464,7 @@ export function SampleListPage() {
       {filterDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFilterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <h2 className="text-2xl text-black text-center w-full">絞り込み条件</h2>
             <div className="flex flex-col gap-6 items-start w-full">
               <div className="flex flex-col gap-2 items-start w-full">
@@ -543,7 +549,7 @@ export function SampleListPage() {
       {bulkDiscardDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setBulkDiscardDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-full mx-16 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="flex flex-col gap-6 items-center w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">検体一括破棄</h2>
               <p className="text-base text-[var(--semantic-text-primary)] w-full">
@@ -598,6 +604,7 @@ export function SampleListPage() {
                       onClick={() => {
                         setBulkDiscardReason(reason);
                         if (reason !== "other") setBulkOtherReasonText("");
+                        setBulkReasonError(false);
                       }}
                       className={`h-12 w-34 rounded-lg text-base border ${
                         bulkDiscardReason === reason
@@ -613,10 +620,16 @@ export function SampleListPage() {
                   <input
                     type="text"
                     value={bulkOtherReasonText}
-                    onChange={(e) => setBulkOtherReasonText(e.target.value)}
-                    placeholder="理由を入力してください"
+                    onChange={(e) => {
+                      setBulkOtherReasonText(e.target.value);
+                      setBulkReasonError(false);
+                    }}
+                    placeholder="その他の場合は理由を記入してください。"
                     className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full border border-[#d0d0d0] placeholder:text-[var(--semantic-text-secondary)]"
                   />
+                )}
+                {bulkReasonError && (
+                  <p className="text-sm text-[var(--semantic-brand-danger)] w-full">破棄理由を入力してください。</p>
                 )}
               </div>
             </div>
@@ -639,27 +652,6 @@ export function SampleListPage() {
                 一括破棄
               </button>
             </div>
-          </div>
-        </div>
-      )}
-
-      {bulkDiscardCompleteDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={handleBulkCompleteClose} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-full max-w-[480px]">
-            <div className="flex flex-col gap-4 items-center w-full">
-              <div className="w-16 h-16 rounded-full bg-[var(--semantic-status-success)] flex items-center justify-center">
-                <img src={iconCheckWhite} alt="" aria-hidden="true" className="size-10" />
-              </div>
-              <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center">廃棄が完了しました</h2>
-            </div>
-            <button
-              type="button"
-              onClick={handleBulkCompleteClose}
-              className="bg-[var(--semantic-brand-primary)] h-16 w-60 rounded-lg text-xl text-white"
-            >
-              一覧に戻る
-            </button>
           </div>
         </div>
       )}

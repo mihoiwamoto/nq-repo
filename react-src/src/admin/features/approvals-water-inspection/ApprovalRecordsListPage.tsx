@@ -1,10 +1,8 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
-import { Pulldown } from "../../components/Pulldown";
-import { DateFilterInput } from "../../components/DateFilterInput";
 import { ApprovalConfirmDialog } from "../../components/ApprovalConfirmDialog";
 import { useRecords } from "./RecordsContext";
 import { useDemoList } from "../../../components/demo/demoStore";
@@ -16,8 +14,9 @@ import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
 import iconXMark from "../../../assets/figma/icons/common/x-mark.svg";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
-import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import { useDemoFactoryName } from "../../data/factoryDemo";
+import iconDownload from "../../../assets/figma/icons/common/download.svg";
+import { downloadWaterCsv, downloadWaterPdf } from "../data-search-water-inspection/waterExport";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -104,24 +103,16 @@ export function ApprovalRecordsListPage() {
   const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
   const request = approvalRequests.find((r) => r.ledgerSlug === "water-inspection");
 
-  const [filterOpen, setFilterOpen] = useState(true);
-  const [dateFilter, setDateFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [onlyRejected, setOnlyRejected] = useState(false);
+  // 本番の承認申請管理のデータ一覧はデータ検索のデータ一覧と同じ画面で、絞り込み検索が無い
+  // 本番は承認申請管理から開いてもダウンロードのボタンがある（データ検索のデータ一覧と同じ画面）
+  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3);
-
-  const locationOptions = useMemo(
-    () => Array.from(new Set(records.map((r) => r.location))),
-    [records]
-  );
 
   const filtered = records.filter((r) => {
     const [ry, rm] = r.date.split("-").map(Number);
     if (ry !== year || rm !== month + 1) return false;
-    if (dateFilter && r.date !== dateFilter) return false;
-    if (locationFilter && r.location !== locationFilter) return false;
-    if (onlyRejected && r.approvalStatus !== "rejected") return false;
     return true;
   });
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
@@ -132,11 +123,6 @@ export function ApprovalRecordsListPage() {
     setMonth(next.getMonth());
   }
 
-  function handleReset() {
-    setDateFilter("");
-    setLocationFilter("");
-    setOnlyRejected(false);
-  }
 
   const handleApprove = () => {
     requestApproval(() => {
@@ -150,7 +136,32 @@ export function ApprovalRecordsListPage() {
       {showConfirmDialog && (
         <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
       )}
-      <PageTitleBar title="データ一覧" showBack />
+      <PageTitleBar
+        title="データ一覧"
+        showBack
+        action={
+          <button
+            type="button"
+            onClick={() => setDownloadDialogOpen(true)}
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)]"
+            title="CSVダウンロード"
+          >
+            <span
+              aria-hidden
+              className="inline-block size-5 shrink-0"
+              style={{
+                WebkitMaskImage: `url("${iconDownload}")`,
+                maskImage: `url("${iconDownload}")`,
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                backgroundColor: "currentColor",
+              }}
+            />
+          </button>
+        }
+      />
       <Breadcrumb
         items={[
           { label: "承認申請管理", to: "/admin/approvals" },
@@ -163,71 +174,6 @@ export function ApprovalRecordsListPage() {
             <p className="text-xl text-[var(--semantic-text-primary)]">{demoFactoryName}</p>
           </div>
 
-          <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
-            <button
-              type="button"
-              onClick={() => setFilterOpen((v) => !v)}
-              className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
-            >
-              <span>絞り込み検索</span>
-              {filterOpen ? (
-                <span
-                  aria-hidden
-                  className="inline-block size-4 shrink-0"
-                  style={{
-                    WebkitMaskImage: `url("${iconMinus}")`,
-                    maskImage: `url("${iconMinus}")`,
-                    WebkitMaskSize: "contain",
-                    maskSize: "contain",
-                    WebkitMaskRepeat: "no-repeat",
-                    maskRepeat: "no-repeat",
-                    backgroundColor: "var(--semantic-brand-primary)",
-                  }}
-                />
-              ) : (
-                <span>+</span>
-              )}
-            </button>
-            {filterOpen && (
-              <div className="flex gap-6 items-end justify-between w-full">
-                <div className="flex flex-col gap-4 flex-1">
-                  <div className="flex gap-4 items-center">
-                    <DateFilterInput value={dateFilter} onChange={setDateFilter} />
-                    <Pulldown
-                      value={locationFilter}
-                      onChange={setLocationFilter}
-                      options={locationOptions.map((label) => ({ value: label, label }))}
-                      placeholder="点検場所"
-                    />
-                  </div>
-                  <label className="flex gap-2 items-center text-base text-[var(--semantic-text-secondary)]">
-                    <input
-                      type="checkbox"
-                      checked={onlyRejected}
-                      onChange={(e) => setOnlyRejected(e.target.checked)}
-                      className="size-4 accent-[var(--semantic-brand-primary)]"
-                    />
-                    差し戻しのものだけ表示
-                  </label>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)]"
-                  >
-                    リセット
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-sm text-white"
-                  >
-                    検索
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
 
           <div className="flex flex-col gap-2 items-start w-full">
             <div className="flex items-center justify-between w-full">
@@ -251,7 +197,7 @@ export function ApprovalRecordsListPage() {
                 />
               </button>
               <p className="text-xl text-[var(--semantic-text-primary)]">
-                {year}年{month + 1}月_使用水の点検
+                {year}年{String(month + 1).padStart(2, "0")}月
               </p>
               <button
                 type="button"
@@ -336,7 +282,7 @@ export function ApprovalRecordsListPage() {
                         }`}
                         style={{ width: 100 }}
                       >
-                        {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
+                        {record.uvIndicatorLight === "on" ? "点灯" : "異常"}
                       </div>
                       <div
                         className={`flex items-center justify-center p-2 h-full text-sm shrink-0 ${
@@ -346,7 +292,7 @@ export function ApprovalRecordsListPage() {
                         }`}
                         style={{ width: 100 }}
                       >
-                        {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
+                        {record.abnormalDetectionLight === "on" ? "異常" : "消灯"}
                       </div>
                       <div className="flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] shrink-0" style={{ width: 100 }}>
                         {record.implementer}
@@ -364,11 +310,79 @@ export function ApprovalRecordsListPage() {
         <button
           type="button"
           onClick={handleApprove}
-          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
+          // 承認待ちが 0 件のときは押せない（2026-10-08 ユーザー指定）
+          disabled={records.filter((r) => r.approvalStatus === "pending").length === 0}
+          className="bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する
         </button>
       </div>
+
+      {downloadDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setDownloadDialogOpen(false)} />
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[640px]">
+            <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+              ダウンロード形式選択
+            </h2>
+            <div className="flex flex-col gap-2 items-start w-full">
+              <p className="text-base text-[var(--semantic-text-primary)]">
+                ダウンロード形式を選択してください
+              </p>
+              <div className="flex w-full rounded-lg overflow-hidden border border-[#d0d0d0]">
+                <div className="bg-[var(--semantic-brand-primary)] flex items-center justify-center px-6 py-4 text-white text-base w-[160px] shrink-0">
+                  ファイル形式
+                </div>
+                <div className="bg-white flex flex-col gap-3 justify-center px-6 py-4 flex-1">
+                  <label className="flex items-center gap-2 text-base text-[var(--semantic-text-primary)]">
+                    <input
+                      type="radio"
+                      name="downloadFormat"
+                      value="csv"
+                      checked={downloadFormat === "csv"}
+                      onChange={() => setDownloadFormat("csv")}
+                    />
+                    CSV形式
+                  </label>
+                  <label className="flex items-center gap-2 text-base text-[var(--semantic-text-primary)]">
+                    <input
+                      type="radio"
+                      name="downloadFormat"
+                      value="pdf"
+                      checked={downloadFormat === "pdf"}
+                      onChange={() => setDownloadFormat("pdf")}
+                    />
+                    PDF形式
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-6 items-center justify-center w-full">
+              <button
+                type="button"
+                onClick={() => setDownloadDialogOpen(false)}
+                className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (downloadFormat === "csv") {
+                    downloadWaterCsv(filtered, demoFactoryName, "", year, month);
+                  } else {
+                    await downloadWaterPdf(filtered, demoFactoryName, "", year, month);
+                  }
+                  setDownloadDialogOpen(false);
+                }}
+                className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
+              >
+                ダウンロード
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

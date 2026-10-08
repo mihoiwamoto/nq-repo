@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
@@ -15,7 +15,7 @@ import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import { downloadCleaningCsv, downloadCleaningPdf } from "./cleaningExport";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -33,17 +33,6 @@ function CleanedIcon({ cleaned }: { cleaned: boolean }) {
       </svg>
     </span>
   );
-}
-
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 const MONTH_LABELS = [
@@ -66,7 +55,6 @@ export function DataListPage() {
   const [filterOpen, setFilterOpen] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [lineFilter, setLineFilter] = useState("");
   const [year, setYear] = useState(2025);
@@ -85,6 +73,8 @@ export function DataListPage() {
     if (lineFilter && r.lineLabel !== lineFilter) return false;
     return true;
   });
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  filtered.sort((a, b) => a.date.localeCompare(b.date));
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
@@ -96,19 +86,6 @@ export function DataListPage() {
   function handleReset() {
     setDateFilter("");
     setLineFilter("");
-  }
-
-  function handleDownload() {
-    const header = ["実施日", "持ち場名/ライン名", "清掃済み", "備考", "実施者", "確認者"];
-    const rows = filtered.map((r) => [
-      r.date,
-      r.lineLabel,
-      r.cleaned ? "済" : "未",
-      r.remarks,
-      r.implementer,
-      r.confirmer,
-    ]);
-    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
   }
 
   return (
@@ -188,6 +165,8 @@ export function DataListPage() {
                       onChange={setLineFilter}
                       options={lineOptions.map((label) => ({ value: label, label }))}
                       placeholder="持ち場/ライン名"
+                      // 確定デザイン（7139:162265）：幅 240
+                      className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px]"
                     />
                   </div>
                 </div>
@@ -342,7 +321,7 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-hidden">
+          <div className="w-full rounded-lg overflow-hidden">
             <div className="grid w-full" style={{ gridTemplateColumns: COLS }}>
               <div className="col-span-full grid grid-cols-subgrid bg-[#f6f6f6] h-[50px] items-center">
                 {/* 確定デザイン 7139:162265 にステータスの列は無い */}
@@ -456,9 +435,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadCleaningCsv(filtered, factoryName, year, month);
+                  } else {
+                    await downloadCleaningPdf(filtered, factoryName, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

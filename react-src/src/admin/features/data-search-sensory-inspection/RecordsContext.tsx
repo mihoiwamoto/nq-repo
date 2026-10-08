@@ -5,6 +5,7 @@ import { sensoryRecords } from "./mockRecords";
 import { CURRENT_ACCOUNT } from "../account/mockData";
 import type { SensoryRecord } from "./types";
 import { useFactoryList } from "../../data/factoryDemo";
+import { commentTimestamp } from "../../utils/recordTimestamps";
 
 type RecordsContextValue = {
   records: SensoryRecord[];
@@ -34,7 +35,7 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
                     {
                       id: `${id}-${Date.now()}`,
                       author: CURRENT_ACCOUNT.name,
-                      timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                      timestamp: commentTimestamp(),
                       text,
                     },
                   ],

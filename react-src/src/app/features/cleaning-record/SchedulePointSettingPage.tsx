@@ -5,7 +5,7 @@
 import { Fragment, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
-import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
+import { SubmitComplete } from "../../components/SubmitComplete";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
@@ -49,7 +49,9 @@ export function SchedulePointSettingPage() {
   }
 
   function openPicker() {
-    setPickerSelected(new Set(lineIds));
+    // まだ 1 件も選んでいないときは、毎週のタブの先頭を選んだ状態で開く（確定デザイン 7139:220540。2026-10-08 ユーザー指定）
+    const firstWeekly = lines.find((l) => l.frequency === "weekly");
+    setPickerSelected(new Set(lineIds.length === 0 && firstWeekly ? [firstWeekly.id] : lineIds));
     setPickerTab("weekly");
     setPickerSearch("");
     setPickerOpen(true);
@@ -84,14 +86,14 @@ export function SchedulePointSettingPage() {
 
   if (result) {
     const message = result === "saved" ? "保存が完了しました！" : "登録が完了しました！";
-    // 確定デザイン（7139:283879・7139:283906）：進捗一覧の提出完了と同じ上寄せの完了画面（ボタン 360×64）
+    // 確定デザイン（7139:221030・7139:220457）：上寄せの完了画面（ボタン 360×64）。チェック印はヘッダーの下 24px（144）で、
+    // 進捗一覧の提出完了（76px 下げた形）ではなく帳票一覧の提出完了と同じ位置
     return (
-      <ProgressSubmitComplete
+      <SubmitComplete
         ledgerTitle="清掃記録 持ち場/ライン設定"
         title={message}
         message="ご登録ありがとうございます。"
-        backLabel="点検予定に戻る"
-        onBack={() => navigate("/app/schedule")}
+        secondary={{ label: "点検予定に戻る", onClick: () => navigate("/app/schedule") }}
       />
     );
   }
@@ -141,7 +143,8 @@ export function SchedulePointSettingPage() {
               <div className="flex flex-col items-center px-4 py-4 w-full">
                 {lineIds.map((lineId, index) => (
                   <Fragment key={lineId}>
-                    {index > 0 && <div className="h-px w-full bg-[#d0d0d0] my-4" />}
+                    {/* 確定デザイン（7139:220875）：線は場所を取らず、行の間隔 72 */}
+                    {index > 0 && <div className="h-px w-full bg-[#d0d0d0] mt-4 mb-[15px]" />}
                     <div className="flex gap-4 h-10 items-center w-full">
                       <p className="shrink-0 text-base text-[var(--semantic-text-primary)]">持ち場/ライン名</p>
                       <p className="flex-1 min-w-0 text-base text-right text-[var(--semantic-text-primary)]">
@@ -211,7 +214,8 @@ export function SchedulePointSettingPage() {
                 ) : (
                   lineIds.map((lineId, index) => (
                     <Fragment key={lineId}>
-                      {index > 0 && <div className="h-px w-full bg-[#d0d0d0] my-4" />}
+                      {/* 確定デザイン（7139:220819・7139:220484）：線は場所を取らず、行の間隔 72 */}
+                      {index > 0 && <div className="h-px w-full bg-[#d0d0d0] mt-4 mb-[15px]" />}
                       <div className="flex gap-4 h-10 items-center w-full">
                         <p className="shrink-0 text-base text-[var(--semantic-text-primary)]">持ち場/ライン名</p>
                         <p className="flex-1 min-w-0 text-base text-right text-[var(--semantic-text-primary)]">
@@ -261,7 +265,7 @@ export function SchedulePointSettingPage() {
       {pickerOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setPickerOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)] max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)] max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">持ち場/ライン名</h2>
             <div className="flex flex-col gap-4 items-start w-full">
               <div className="flex gap-4 items-start w-full">
@@ -357,7 +361,7 @@ export function SchedulePointSettingPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteTarget(null)} />
           {/* 確定デザイン（7139:220761）：幅 640、題は「{持ち場/ライン名}の削除」、ボタンは大きい「キャンセル」（枠線）と「削除」 */}
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 {lineLabel(deleteTarget)}の削除

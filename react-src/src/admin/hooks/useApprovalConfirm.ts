@@ -4,7 +4,8 @@ export function useApprovalConfirm() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const pendingActionRef = useRef<(() => void) | null>(null);
+  /** 差し戻しの action は差し戻し理由を受け取る（本番 ApprovalFlowService::updateApprovalStatus は理由をコメントとして残す） */
+  const pendingActionRef = useRef<((reason?: string) => void) | null>(null);
 
   function requestApproval(action: () => void) {
     pendingActionRef.current = action;
@@ -23,13 +24,13 @@ export function useApprovalConfirm() {
     setShowConfirmDialog(false);
   }
 
-  function requestRejection(action: () => void) {
+  function requestRejection(action: (reason?: string) => void) {
     pendingActionRef.current = action;
     setShowRejectDialog(true);
   }
 
-  function confirmRejection() {
-    pendingActionRef.current?.();
+  function confirmRejection(reason?: string) {
+    pendingActionRef.current?.(reason);
     pendingActionRef.current = null;
     setShowRejectDialog(false);
     setShowToast(true);

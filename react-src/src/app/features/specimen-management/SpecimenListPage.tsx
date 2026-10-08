@@ -61,7 +61,7 @@ export function SpecimenListPage() {
         <div className="w-full max-w-[480px]">
           <h2 className="text-lg font-semibold text-[#333] mb-4">検体一覧</h2>
           <div className="flex flex-col gap-3">
-            {/* 見せ方は AppEmptyState で 3 パターン試し中 */}
+            {/* AppEmptyState の白い帯 */}
             {specimens.length === 0 && <AppEmptyState />}
             {specimens.map((item) => (
               <div

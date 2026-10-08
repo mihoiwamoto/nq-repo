@@ -28,7 +28,8 @@ function groupByDate(reviews: typeof PENDING_REVIEWS) {
       groups.push({ date: review.date, items: [review] });
     }
   }
-  return groups;
+  // 確定デザイン（7139:221204）：新しい日付が上（04/01 → 03/31）。日付は MM/DD なので文字の並びで比べる（2026-10-08）
+  return groups.sort((a, b) => b.date.localeCompare(a.date));
 }
 
 export function PendingReviewListPage() {
@@ -77,10 +78,11 @@ export function PendingReviewListPage() {
 
   return (
     <div className="flex flex-col h-full min-w-0">
-      <AppHeader title="確認待ち" />
+      {/* 本番（Excel No.32）の見出しは「確認一覧」（左のタブ名は「確認待ち」のまま。2026-10-08） */}
+      <AppHeader title="確認一覧" />
       {/* 確定デザイン（7139:221059）：ヘッダーの下 24px から、注意の帯 56px・絞り込み検索 48px・日付の見出し 52px・カード 78px */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-4 flex flex-col gap-4">
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg shrink-0">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg shrink-0">
           <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             こちらは確認者専用の画面になります。実施者の方は操作不要です。
@@ -109,7 +111,7 @@ export function PendingReviewListPage() {
         </button>
 
         {appliedFilters.size > 0 && (
-          <div className="flex flex-wrap gap-2 items-center">
+          <div className="flex flex-wrap gap-4 items-center">
             <span className="text-sm text-black shrink-0">絞り込み条件</span>
             {Array.from(appliedFilters).map((slug) => {
               const ledger = ledgerFor(slug);
@@ -134,13 +136,8 @@ export function PendingReviewListPage() {
           </div>
         )}
 
-        {groups.length === 0 ? (
-          <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6">
-            {reviews.length === 0
-              ? "確認待ちの記録はまだありません"
-              : "該当する確認待ちはありません"}
-          </p>
-        ) : (
+        {/* 本番（Excel No.33）は 0 件のときも絞り込みで 0 件のときも案内文を出さない（2026-10-08） */}
+        {groups.length === 0 ? null : (
           <div className="flex flex-col gap-10">
             {groups.map((group) => (
               <div key={group.date} className="flex flex-col gap-4">
@@ -209,10 +206,11 @@ export function PendingReviewListPage() {
       {filterDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFilterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[90vw] max-h-[90vh]">
-            <h2 className="text-2xl text-[var(--semantic-text-primary)]">絞り込み条件</h2>
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[90vw] max-h-[90vh]">
+            {/* 確定デザイン（7139:221158・7139:229429）：見出しの高さ 34、カードは 180 幅で左から 24px 間隔 */}
+            <h2 className="text-2xl leading-[34px] text-black">絞り込み条件</h2>
             {/* 高さは中身に合わせる（以前の h-[754px] では 10 個目のタイルが切れた） */}
-            <div className="grid grid-cols-3 gap-6 w-full content-start overflow-y-auto overflow-x-hidden min-h-0 shrink">
+            <div className="grid grid-cols-[repeat(3,180px)] gap-6 w-full content-start overflow-y-auto overflow-x-hidden min-h-0 shrink">
               {visibleLedgerCategories(FILTER_LEDGERS).map((ledger) => {
                 const selected = pickerSelected.has(ledger.slug);
                 return (

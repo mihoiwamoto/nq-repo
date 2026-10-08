@@ -101,7 +101,11 @@ export function RecordDetailView({
     if (value === "approved") {
       requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
     } else if (value === "rejected") {
-      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
+      requestRejection((reason) => {
+        setApprovalStatus(record.id, value as ApprovalStatus);
+        // 差し戻し理由はコメントとして残す（本番 ApprovalFlowService::updateApprovalStatus → createComment）
+        if (reason) addComment(record.id, reason);
+      });
     } else {
       setApprovalStatus(record.id, value as ApprovalStatus);
     }
@@ -115,7 +119,7 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">

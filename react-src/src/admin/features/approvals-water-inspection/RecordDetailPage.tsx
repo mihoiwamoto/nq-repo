@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Pulldown } from "../../components/Pulldown";
+import { Pulldown, type PulldownOption } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
 import { CommentInputBox } from "../../components/CommentInputBox";
 import { APPROVAL_STATUS_COLOR } from "../../components/ApprovalStatusBadge";
@@ -16,11 +16,16 @@ import type { WaterApprovalRecord, WaterCheckResult } from "./types";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
 import { useDemoFactoryName } from "../../data/factoryDemo";
 
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
-  { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
-  { value: "rejected", label: "差し戻し" },
-];
+// 本番のプルダウンの選択肢は「承認」。承認したあとの表示は「承認済み」。
+// 先頭に押せない「点検済み」を並べる（本番の ApprovalStatus と同じ並び。2026-10-08）
+function statusOptions(current: ApprovalStatus): PulldownOption[] {
+  return [
+    { value: "checked", label: "点検済み", disabled: true },
+    { value: "pending", label: "承認待ち" },
+    { value: "rejected", label: "差し戻し" },
+    { value: "approved", label: current === "approved" ? "承認済み" : "承認" },
+  ];
+}
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
@@ -70,8 +75,9 @@ function CheckRow({
       </div>
       {result.status === "abnormal" && (
         <div className="flex flex-col gap-1 items-start px-2 text-base text-[var(--semantic-text-secondary)] w-full">
-          <p>原因：{result.cause || "不明"}</p>
-          <p>対応：{result.action || "記録なし"}</p>
+          {/* 本番は原因・対応が無いときは空のまま */}
+          <p>原因：{result.cause ?? ""}</p>
+          <p>対応：{result.action ?? ""}</p>
         </div>
       )}
       {timestamp && <Timestamp implementer={implementer} timestamp={timestamp} />}
@@ -126,6 +132,8 @@ export function RecordDetailView({
   } = useApprovalConfirm();
 
   const [newComment, setNewComment] = useState("");
+  const [commentError, setCommentError] = useState("");
+  const [commentToast, setCommentToast] = useState(false);
 
   if (!record) {
     return (
@@ -137,15 +145,26 @@ export function RecordDetailView({
 
   function handleAddComment() {
     if (!record || !newComment.trim()) return;
+    // 本番（ApprovalComment の StoreRequest）は 255 文字まで
+    if (newComment.trim().length > 255) {
+      setCommentError("コメントは255文字以内で指定してください。");
+      return;
+    }
+    setCommentError("");
     addComment(record.id, newComment.trim());
     setNewComment("");
+    setCommentToast(true);
   }
 
   const handleStatusChange = (value: string) => {
     if (value === "approved") {
       requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
     } else if (value === "rejected") {
-      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
+      requestRejection((reason) => {
+        setApprovalStatus(record.id, value as ApprovalStatus);
+        // 差し戻し理由はコメントとして残す（本番 ApprovalFlowService::updateApprovalStatus → createComment）
+        if (reason) addComment(record.id, reason);
+      });
     } else {
       setApprovalStatus(record.id, value as ApprovalStatus);
     }
@@ -159,7 +178,8 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {commentToast && <Toast message="コメントを登録しました。" onClose={() => setCommentToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -170,7 +190,7 @@ export function RecordDetailView({
           <Pulldown
             value={record.approvalStatus}
             onChange={handleStatusChange}
-            options={STATUS_OPTIONS}
+            options={statusOptions(record.approvalStatus)}
             disabled={record.approvalStatus !== "pending"}
             className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
             style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
@@ -292,7 +312,8 @@ export function RecordDetailView({
                     : "text-[var(--semantic-text-primary)]"
                 }`}
               >
-                {record.uvIndicatorLight === "on" ? "点灯" : "消灯"}
+                {/* 本番は異常（消灯）のとき「異常」と赤字 */}
+                {record.uvIndicatorLight === "on" ? "点灯" : "異常"}
               </p>
             </div>
             {hasValue(record.uvIndicatorLight) && (
@@ -311,7 +332,8 @@ export function RecordDetailView({
                     : "text-[var(--semantic-text-primary)]"
                 }`}
               >
-                {record.abnormalDetectionLight === "on" ? "点灯" : "消灯"}
+                {/* 本番は異常（点灯）のとき「異常」と赤字 */}
+                {record.abnormalDetectionLight === "on" ? "異常" : "消灯"}
               </p>
             </div>
             {hasValue(record.abnormalDetectionLight) && (
@@ -324,6 +346,7 @@ export function RecordDetailView({
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
           <CommentInputBox value={newComment} onChange={setNewComment} onSubmit={handleAddComment} />
+          {commentError && <p className="text-sm text-[var(--semantic-brand-danger)]">{commentError}</p>}
         </div>
       </div>
     </div>

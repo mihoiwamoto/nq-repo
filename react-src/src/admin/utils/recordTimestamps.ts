@@ -33,3 +33,12 @@ export function stepTimestamps(
     return seedTimestamp(date, `${hh}:${mm}`);
   });
 }
+
+/**
+ * コメントを足したときの日時「2026.10.08 16:54」（端末の時刻＝日本時間）。
+ * 以前は toISOString() から作っていて、世界標準時（日本時間の 9 時間前）になっていた（2026-10-08 に直した）。
+ */
+export function commentTimestamp(d: Date = new Date()): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}

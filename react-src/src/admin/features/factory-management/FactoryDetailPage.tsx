@@ -97,13 +97,13 @@ export function FactoryDetailPage() {
         <div className="bg-white flex flex-col gap-6 items-start px-4 py-6 rounded-lg w-full">
           <Row label="工場名">{factory.name}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="工場住所">{factory.address || "未登録"}</Row>
+          <Row label="住所">{factory.address}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
           <Row label="企業名">{getCompanyName(factory.companyId)}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
           <Row label="工場ID">{factory.loginId}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="パスワード">{factory.hasPassword ? "登録済み" : "未登録"}</Row>
+          <Row label="パスワード">{factory.hasPassword ? "設定済み" : "未設定"}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
 
           <Row label="休業日">
@@ -236,7 +236,7 @@ export function FactoryDetailPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                工場情報を削除
+                {factory.name}を削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。削除しますか？
@@ -262,7 +262,7 @@ export function FactoryDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );

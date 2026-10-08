@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { ProgressSubmitComplete } from "../../components/ProgressSubmitComplete";
-import { SubmitComplete } from "../../components/SubmitComplete";
+import { SUBMIT_DONE_TITLE, SubmitComplete } from "../../components/SubmitComplete";
 import { useFromProgress } from "../../layout/ProgressFlowContext";
 import { useGlassPlastic } from "./GlassPlasticContext";
 
@@ -20,21 +20,22 @@ export function FloorInspectionCompletePage() {
   // 進捗一覧から入った一連の画面かどうかはレイアウト側が保持している
   const fromProgress = useFromProgress();
 
-  const ledgerTitle = `ガラス・プラスチック管理_${floorName}`;
+  const ledgerTitle = `ガラスプラスチック管理_${floorName}`;
 
   // 進捗一覧から入った場合は、帳票を続ける導線は出さず進捗一覧に戻すだけ
   if (fromProgress) {
-    return <ProgressSubmitComplete ledgerTitle={ledgerTitle} />;
+    return <ProgressSubmitComplete ledgerTitle={ledgerTitle} title={SUBMIT_DONE_TITLE} />;
   }
 
   return (
     <SubmitComplete
       ledgerTitle={ledgerTitle}
+      title={SUBMIT_DONE_TITLE}
       primary={{
-        label: "ガラス・プラスチック管理を続ける",
+        label: "ガラスプラスチック管理を続ける",
         onClick: () => navigate("/app/ledger-list/glass-plastic"),
       }}
-      secondary={{ label: "帳票一覧に戻る", onClick: () => navigate("/app/ledger-list") }}
+      secondary={{ label: "戻る", onClick: () => navigate("/app/ledger-list") }}
     />
   );
 }

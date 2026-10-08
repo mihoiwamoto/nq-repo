@@ -1,7 +1,8 @@
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { getCompanyName } from "../../../data/companies";
-import { ROLE_COLORS, ROLE_LABELS } from "../staff-management/types";
+import { ROLE_COLORS, ROLE_LABELS, SYSTEM_AUTHORITY_LABELS } from "../staff-management/types";
+import type { SystemAuthority } from "../staff-management/types";
 import { HIDDEN_ROLES, saveCurrentRole } from "../../../data/roleStore";
 import type { PrototypeRoleId } from "../../../data/roleStore";
 import { useCurrentRole } from "../../../data/useCurrentRole";
@@ -123,6 +124,8 @@ export function AccountPage() {
   const account = CURRENT_ACCOUNT;
   const role = useCurrentRole(DEFAULT_ROLE);
   const currentRole = getRoleOption(role);
+  const isSystemUser =
+    account.systemAuthority === "quality_management" || account.systemAuthority === "information_system";
 
   return (
     <div>
@@ -133,12 +136,20 @@ export function AccountPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
           <Row label="社員番号">{account.employeeNumber}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="企業">{getCompanyName(account.companyId)}</Row>
+          {/* 本番：システム権限（情報システム部・品質管理部）のユーザーは工場を持たないので、システム権限を出して企業名・勤務工場は出さない */}
+          {isSystemUser ? (
+            <>
+              <Row label="システム権限">{SYSTEM_AUTHORITY_LABELS[account.systemAuthority as SystemAuthority]}</Row>
+              <div className="border-t border-[#d0d0d0] w-full" />
+            </>
+          ) : (
+          <>
+          <Row label="企業名">{getCompanyName(account.companyId)}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
 
           {account.assignments.map((assignment, index) => (
             <div key={`${assignment.factoryId}-${index}`} className="flex flex-col gap-4 w-full">
-              <Row label="工場">{getFactoryName(assignment.factoryId)}</Row>
+              <Row label="勤務工場">{getFactoryName(assignment.factoryId)}</Row>
               <div className="flex gap-4 items-center w-full">
                 <div className="w-40 shrink-0 text-xl text-[var(--semantic-brand-primary)]">権限</div>
                 <span
@@ -154,10 +165,12 @@ export function AccountPage() {
               <div className="border-t border-[#d0d0d0] w-full" />
             </div>
           ))}
+          </>
+          )}
 
-          <Row label="メールアドレス">{account.email}</Row>
+          <Row label="メールアドレス">{account.email || "未設定"}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="パスワード">{account.hasPassword ? "登録済み" : "未登録"}</Row>
+          <Row label="パスワード">{account.hasPassword ? "登録済み" : "未設定"}</Row>
         </div>
 
         <RoleSwitcher role={role} onSelect={saveCurrentRole} />

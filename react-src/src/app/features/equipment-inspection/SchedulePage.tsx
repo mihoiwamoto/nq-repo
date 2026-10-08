@@ -7,6 +7,7 @@ import { useInspection } from "./InspectionContext";
 import { buildMonthGrid, formatDateLabel, isClosedDay, toDateKey } from "./calendarUtils";
 import { useSensorySchedule } from "../sensory-inspection/ScheduleContext";
 import { useCleaningSchedule } from "../cleaning-record/ScheduleContext";
+import { useSampleSchedule } from "../sample-management/ScheduleContext";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
@@ -21,6 +22,10 @@ const cleaningRecordIcon = ledgerCategories.find(
 )?.appIcon;
 const sensoryInspectionIcon = ledgerCategories.find(
   (category) => category.slug === "sensory-inspection"
+)?.appIcon;
+
+const sampleManagementIcon = ledgerCategories.find(
+  (category) => category.slug === "sample-management"
 )?.appIcon;
 
 type SchedulableLedger = {
@@ -38,6 +43,7 @@ export function SchedulePage() {
   const { entries } = useInspection();
   const { entries: sensoryEntries } = useSensorySchedule();
   const { entries: cleaningEntries } = useCleaningSchedule();
+  const { entries: sampleEntries } = useSampleSchedule();
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3); // 0-indexed: April
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
@@ -52,6 +58,7 @@ export function SchedulePage() {
     const equipmentEntry = entries[dateKey];
     const sensoryEntry = sensoryEntries[dateKey];
     const cleaningEntry = cleaningEntries[dateKey];
+    const sampleEntry = sampleEntries[dateKey];
     return [
       {
         slug: "equipment-inspection",
@@ -70,9 +77,17 @@ export function SchedulePage() {
       {
         slug: "sensory-inspection",
         icon: sensoryInspectionIcon,
-        label: "官能検査記録 検査商品設定",
+        label: "官能検査記録 検査製品設定",
         hasEntry: !!sensoryEntry && sensoryEntry.products.length > 0,
         targetPath: `/app/schedule/sensory-inspection/${dateKey}`,
+      },
+      // 本番（iOS）の点検予定は 官能検査記録・検体管理（確定デザイン 6198:78826。2026-10-08）
+      {
+        slug: "sample-management",
+        icon: sampleManagementIcon,
+        label: "検体管理 検体製品設定",
+        hasEntry: !!sampleEntry && sampleEntry.products.length > 0,
+        targetPath: `/app/schedule/sample-management/${dateKey}`,
       },
     ].filter((ledger) => !isLedgerHidden(ledger.slug)); // 画面設計の Ver の切替で隠している帳票は出さない
   }
@@ -299,18 +314,19 @@ export function SchedulePage() {
       {registerDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setRegisterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">新規登録</h2>
-            <div className="flex flex-col gap-3 w-full">
+            {/* 確定デザイン（7139:220651）：選択肢は高さ 56・左右 8px・アイコン 24・文字 18px、間は 16px */}
+            <div className="flex flex-col gap-4 w-full">
             {selectedLedgers.map((ledger) => (
               <button
                 key={ledger.slug}
                 type="button"
                 onClick={() => chooseLedger(ledger)}
-                className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex items-center gap-2 h-14 px-4 rounded-lg w-full text-left"
+                className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex items-center gap-2 h-14 px-2 rounded-lg w-full text-left"
               >
-                {ledger.icon && <img src={ledger.icon} alt="" className="size-5" />}
-                <span className="text-base text-[var(--semantic-text-primary)]">{ledger.dialogLabel ?? ledger.label}</span>
+                {ledger.icon && <img src={ledger.icon} alt="" className="size-6" />}
+                <span className="text-lg text-[var(--semantic-text-primary)]">{ledger.dialogLabel ?? ledger.label}</span>
               </button>
             ))}
             </div>
@@ -328,7 +344,7 @@ export function SchedulePage() {
       {alreadyRegisteredOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setAlreadyRegisteredOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">新規登録</h2>
             <p className="text-base text-[var(--semantic-text-primary)] w-full">
               すでに当日の点検が登録されている為、新規登録できません。「編集」から登録内容を変更できます。
@@ -347,7 +363,7 @@ export function SchedulePage() {
       {unavailableOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setUnavailableOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)]">新規登録</h2>
             <p className="text-base text-[var(--semantic-text-primary)] text-center">
               点検予定に使用する帳票が設定されていないため、新規登録できません。管理画面より帳票を設定してから、再度登録してください。

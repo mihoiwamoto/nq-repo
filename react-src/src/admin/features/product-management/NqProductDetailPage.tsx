@@ -15,12 +15,17 @@ export function NqProductDetailPage() {
   const location = useLocation();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   const product = nqProducts.find((item) => item.id === productId);
 
   useEffect(() => {
     if ((location.state as any)?.deleted) {
       setShowToast(true);
+    }
+    // 本番：編集を保存すると詳細へ戻って「更新しました。」
+    if ((location.state as any)?.updated) {
+      setShowUpdateToast(true);
     }
   }, [location.state]);
 
@@ -80,7 +85,7 @@ export function NqProductDetailPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                {product?.name}を削除
+                製品を削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。削除しますか？
@@ -107,6 +112,7 @@ export function NqProductDetailPage() {
       )}
 
       {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );
 }

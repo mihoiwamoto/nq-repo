@@ -129,7 +129,7 @@ export function DateFilterInput({
         <img
           src={iconCalendar}
           alt=""
-          className={`absolute right-4 cursor-pointer ${isForm ? "size-6" : "w-5 h-5"}`}
+          className={`absolute right-4 cursor-pointer size-6`}
           onClick={() => setIsOpen(true)}
         />
       </label>

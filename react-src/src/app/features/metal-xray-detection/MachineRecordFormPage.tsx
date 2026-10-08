@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { recordTimestamp } from "../../utils/date";
 import { isUnrecorded } from "../../utils/recordTimestamps";
@@ -11,6 +11,7 @@ import iconCheck from "../../../assets/figma/icons/common/checkmark.svg";
 import {
   ABNORMAL_ACTIONS,
   ABNORMAL_CAUSES,
+  MACHINE_ADDED_RECORD_IDS,
   MACHINE_RECORDS,
   MACHINES,
   METAL_DETECTOR_CHECKLIST,
@@ -20,6 +21,7 @@ import {
   XRAY_DETECTOR_CHECKLIST,
   XRAY_DETECTOR_UNITS,
   XRAY_TEST_PIECES,
+  recordsForMachine,
   type AbnormalAction,
   type AbnormalCause,
   type ChecklistGroup,
@@ -54,12 +56,27 @@ function currentTimeOnly() {
 }
 
 function addMachineRecord(machineId: string, record: MachineRecord) {
-  const existing = MACHINE_RECORDS[machineId] ?? [];
+  const existing = recordsForMachine(machineId);
   MACHINE_RECORDS[machineId] = [...existing, record];
+  // 機器の詳細は、ここで足した記録を一覧のステータスに関係なく表に並べる
+  MACHINE_ADDED_RECORD_IDS.add(record.id);
 }
 
 function newRecordId() {
   return `r${Date.now()}${Math.floor(Math.random() * 1000)}`;
+}
+
+/**
+ * 「点検箇所」ポップアップのキャンセルで、押す前の ✕／✓ と入力時刻に戻す
+ * （本番 iOS の abnormalDialogCancelled：cell.status = target.previousStatus。2026-10-08）
+ */
+function restoreKeyed<T>(set: Dispatch<SetStateAction<Record<string, T>>>, key: string, prev: T | undefined) {
+  set((p) => {
+    const next = { ...p };
+    if (prev === undefined) delete next[key];
+    else next[key] = prev;
+    return next;
+  });
 }
 
 function answeredChecks(checks: Record<string, OkNg | null>): Record<string, OkNg> {
@@ -70,7 +87,11 @@ function answeredChecks(checks: Record<string, OkNg | null>): Record<string, OkN
   return result;
 }
 
-function OkNgToggle({ value, onChange, onNgClick, inspectorName, inspectionDate, time, timestamp }: { value: OkNg | null; onChange: (v: OkNg) => void; onNgClick?: () => void; inspectorName?: string; inspectionDate?: string; time?: string; timestamp?: string }) {
+/**
+ * ✕／✓ の切り替え。✕ を押すと onNgClick、✓ を押すと onOkClick で「点検箇所」のポップアップを開く
+ * （確定デザイン 動作確認_正常時ダイアログ 10398:110750 は ✓ でもポップアップを出す。2026-10-08）
+ */
+function OkNgToggle({ value, onChange, onNgClick, onOkClick, timestamp }: { value: OkNg | null; onChange: (v: OkNg) => void; onNgClick?: () => void; onOkClick?: () => void; inspectorName?: string; inspectionDate?: string; time?: string; timestamp?: string }) {
   return (
     <div className="flex flex-col items-end shrink-0 gap-1">
       <div className="flex items-center shrink-0 rounded-lg overflow-hidden">
@@ -88,7 +109,10 @@ function OkNgToggle({ value, onChange, onNgClick, inspectorName, inspectionDate,
         </button>
         <button
           type="button"
-          onClick={() => onChange("ok")}
+          onClick={() => {
+            onChange("ok");
+            onOkClick?.();
+          }}
           className={`h-12 w-20 flex items-center justify-center ${
             value === "ok" ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
           }`}
@@ -101,76 +125,20 @@ function OkNgToggle({ value, onChange, onNgClick, inspectorName, inspectionDate,
   );
 }
 
-const TIME_PICKER_HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
-const TIME_PICKER_MINUTES = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0"));
-
-function TimePickerInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const hourListRef = useRef<HTMLDivElement>(null);
-  const minuteListRef = useRef<HTMLDivElement>(null);
-  const [hour, minute] = value ? value.split(":") : ["", ""];
-
-  useEffect(() => {
-    if (!open) return;
-    hourListRef.current?.querySelector('[data-selected="true"]')?.scrollIntoView({ block: "center" });
-    minuteListRef.current?.querySelector('[data-selected="true"]')?.scrollIntoView({ block: "center" });
-  }, [open]);
-
+/**
+ * 点検時間の欄。確定デザイン（8931:84272・8931:85697）は「現在時刻」の横のテキスト欄（プレースホルダ「12:00」）で、
+ * 時・分の一覧は出さない（2026-10-08）
+ */
+function TimeTextInput({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
-    <div className="relative shrink-0">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg flex items-center justify-between gap-2 text-base text-[var(--semantic-text-primary)] w-[160px]"
-      >
-        <span>{value || "--:--"}</span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0">
-          <circle cx="8" cy="8" r="6.5" stroke="var(--semantic-text-secondary)" />
-          <path d="M8 4.5V8L10.2 9.5" stroke="var(--semantic-text-secondary)" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full mt-1 bg-white rounded-lg shadow-[0px_0px_3px_rgba(51,51,51,0.24)] p-2 z-50 flex gap-1">
-            <div ref={hourListRef} className="flex flex-col gap-0.5 max-h-48 overflow-y-auto w-14">
-              {TIME_PICKER_HOURS.map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  data-selected={h === hour}
-                  onClick={() => onChange(`${h}:${minute || "00"}`)}
-                  className={`h-9 shrink-0 rounded-lg text-base ${
-                    h === hour
-                      ? "bg-[var(--semantic-brand-primary)] text-white"
-                      : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
-                  }`}
-                >
-                  {h}
-                </button>
-              ))}
-            </div>
-            <div ref={minuteListRef} className="flex flex-col gap-0.5 max-h-48 overflow-y-auto w-14">
-              {TIME_PICKER_MINUTES.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  data-selected={m === minute}
-                  onClick={() => onChange(`${hour || "00"}:${m}`)}
-                  className={`h-9 shrink-0 rounded-lg text-base ${
-                    m === minute
-                      ? "bg-[var(--semantic-brand-primary)] text-white"
-                      : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+    <input
+      type="text"
+      inputMode="numeric"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder="12:00"
+      className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[280px] text-right placeholder:text-[var(--semantic-text-secondary)]"
+    />
   );
 }
 
@@ -208,7 +176,7 @@ function DetectorGroup({
   checkTimestamps: Record<string, string>;
   onCheckTimestampChange: (key: string, value: string) => void;
   machineType: "metal" | "xray";
-  onAnomalyClick?: (type: "machine-record", itemName: string, machineType: "metal" | "xray", itemKey?: string) => void;
+  onAnomalyClick?: (type: "machine-record", itemName: string, machineType: "metal" | "xray", itemKey?: string, initialResult?: OkNg) => void;
   inspectorName?: string;
   inspectionDate?: string;
   anomalies?: Record<string, { cause?: string; response: string }>;
@@ -237,7 +205,7 @@ function DetectorGroup({
             >
               現在時刻
             </button>
-            <TimePickerInput
+            <TimeTextInput
               value={time}
               onChange={(v) => {
                 onTimeChange(v);
@@ -268,7 +236,8 @@ function DetectorGroup({
                       onCheckChange(item.key, value);
                       onCheckTimestampChange(item.key, currentTimeString(inspectorName));
                     }}
-                    onNgClick={() => onAnomalyClick?.("machine-record", item.label, machineType, item.key)}
+                    onNgClick={() => onAnomalyClick?.("machine-record", item.label, machineType, item.key, "ng")}
+                    onOkClick={() => onAnomalyClick?.("machine-record", item.label, machineType, item.key, "ok")}
                     inspectionDate={inspectionDate}
                     time={time}
                     timestamp={checks[item.key] === "ng" ? undefined : checkTimestamps[item.key]}
@@ -343,7 +312,7 @@ function TestPieceDetectorGroup({
   checkTimestamps: Record<string, string>;
   onCheckTimestampChange: (key: string, value: string) => void;
   inspectorName?: string;
-  onAnomalyClick?: (type: "test-piece" | "product", itemName: string, itemKey?: string) => void;
+  onAnomalyClick?: (type: "test-piece" | "product", itemName: string, itemKey?: string, initialResult?: OkNg) => void;
   anomalies?: Record<string, { cause?: string; responseType?: string; response?: string }>;
 }) {
   return (
@@ -370,7 +339,7 @@ function TestPieceDetectorGroup({
             >
               現在時刻
             </button>
-            <TimePickerInput
+            <TimeTextInput
               value={time}
               onChange={(v) => {
                 onTimeChange(v);
@@ -440,7 +409,8 @@ function TestPieceDetectorGroup({
                   onCheckChange(piece.key, value);
                   onCheckTimestampChange(piece.key, currentTimeString(inspectorName));
                 }}
-                onNgClick={() => onAnomalyClick?.("test-piece", piece.label, piece.key)}
+                onNgClick={() => onAnomalyClick?.("test-piece", piece.label, piece.key, "ng")}
+                onOkClick={() => onAnomalyClick?.("test-piece", piece.label, piece.key, "ok")}
                 timestamp={checkTimestamps[piece.key]}
               />
             </div>
@@ -457,9 +427,21 @@ export function MachineRecordFormPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as
-    | { inspectionDate?: string; inspectorName?: string; content?: InspectionContent; fromProgress?: boolean }
+    | {
+        inspectionDate?: string;
+        inspectorName?: string;
+        content?: InspectionContent;
+        /** 前の画面（機器の詳細）のポップアップで選んだ実施区分。テストピース・製品通過だけ */
+        phase?: ExecutionPhase;
+        fromProgress?: boolean;
+        /** 機器の詳細へ戻るときに渡し直す、機器の詳細が受け取っていた state */
+        back?: Record<string, unknown> | null;
+      }
     | null;
   const content = state?.content ?? "動作確認";
+  // 実施区分は前の画面のポップアップで選び、ここでは表示だけ（確定デザイン 8931:84819・8931:85697。2026-10-08）
+  const executionPhase: ExecutionPhase = state?.phase ?? "開始";
+  const passExecutionPhase: ExecutionPhase = executionPhase;
   const inspectorName = state?.inspectorName ?? "";
   const machine = findFactoryItem(MACHINES, machineId);
 
@@ -477,7 +459,6 @@ export function MachineRecordFormPage() {
   const [xrayCheckTimestamps, setXrayCheckTimestamps] = useState<Record<string, string>>({});
   const [remarks, setRemarks] = useState("");
 
-  const [executionPhase, setExecutionPhase] = useState<ExecutionPhase>("開始");
   const [passedProducts, setPassedProducts] = useState<string[]>([]);
   const [metalSettingNumber, setMetalSettingNumber] = useState("");
   const [metalSettingNumberTimestamp, setMetalSettingNumberTimestamp] = useState("");
@@ -495,8 +476,6 @@ export function MachineRecordFormPage() {
   const [passedQuantityTimestamp, setPassedQuantityTimestamp] = useState("");
   const [weightCheckerTimestamp, setWeightCheckerTimestamp] = useState("");
 
-  const [passExecutionPhase, setPassExecutionPhase] = useState<ExecutionPhase>("開始");
-  const [passExecutionPhaseTimestamp, setPassExecutionPhaseTimestamp] = useState("");
   const [passProducts, setPassProducts] = useState<string[]>([]);
   const [passQuantity, setPassQuantity] = useState("");
   const [weightCheckerTime, setWeightCheckerTime] = useState("");
@@ -540,7 +519,11 @@ export function MachineRecordFormPage() {
     itemName: string;
     machineType?: "metal" | "xray";
     itemKey?: string;
+    /** ポップアップを開いたときの ✕／✓（✓ を押して開いたときは ✓） */
+    initialResult?: OkNg;
     onConfirmCallback?: () => void;
+    /** キャンセルで押す前の状態に戻す */
+    onCancel?: () => void;
   } | null>(null);
 
   const [productSelection, setProductSelection] = useState<{
@@ -582,7 +565,6 @@ export function MachineRecordFormPage() {
       setXrayChecks({});
       setXrayCheckTimestamps({});
       setRemarks("");
-      setExecutionPhase("開始");
       setPassedProducts([]);
       setMetalSettingNumber("");
       setMetalSettingNumberTimestamp("");
@@ -599,8 +581,6 @@ export function MachineRecordFormPage() {
       setPassedQuantity("");
       setPassedQuantityTimestamp("");
       setWeightCheckerTimestamp("");
-      setPassExecutionPhase("開始");
-      setPassExecutionPhaseTimestamp("");
       setPassProducts([]);
       setPassQuantity("");
       setWeightCheckerTime("");
@@ -639,7 +619,10 @@ export function MachineRecordFormPage() {
 
   const basePath = `/app/ledger-list/metal-xray-detection`;
   const listPath = `${basePath}/machines/${machineId}`;
-  const confirmPath = `${basePath}/machines/${machineId}/confirm`;
+  // 「保存」「一覧へ戻る」は機器の詳細へ戻る。機器の詳細が受け取っていた state（進捗のステータス・差し戻しの戻り先など）を
+  // そのまま戻し、実施日だけこの画面に来たときのものにする（確定デザイン 機器詳細_点検内容記録後 6198:80157。2026-10-08）
+  const backState = { ...(state?.back ?? {}), inspectionDate: state?.inspectionDate };
+  const backToDetail = () => navigate(listPath, { state: backState });
 
   const isFormValid = () => {
     if (content === "製品通過") {
@@ -670,33 +653,8 @@ export function MachineRecordFormPage() {
               <div className="border-t border-[#d0d0d0] w-full" />
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">実施区分</p>
-                <div className="flex gap-2 items-center">
-                  {(["開始", "終了"] as const).map((phase) => (
-                    <button
-                      key={phase}
-                      type="button"
-                      onClick={() => {
-                        setPassExecutionPhase(phase);
-                        setPassExecutionPhaseTimestamp(currentTimeString());
-                      }}
-                      className={`h-10 w-20 rounded-lg text-sm border ${
-                        passExecutionPhase === phase
-                          ? "bg-white border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
-                          : "bg-white border-[#d0d0d0] text-[var(--semantic-text-secondary)]"
-                      }`}
-                    >
-                      {phase}
-                    </button>
-                  ))}
-                </div>
+                <p className="text-base text-[var(--semantic-text-primary)]">{passExecutionPhase}</p>
               </div>
-              {passExecutionPhaseTimestamp && (
-                <div className="flex items-center justify-end w-full">
-                  <p className="text-sm font-normal text-[var(--semantic-text-secondary)]">
-                    {inspectorName && `${inspectorName} `}{passExecutionPhaseTimestamp}
-                  </p>
-                </div>
-              )}
             </div>
 
             <div className="flex flex-col gap-3 items-start w-full">
@@ -793,7 +751,7 @@ export function MachineRecordFormPage() {
                     >
                       現在時刻
                     </button>
-                    <TimePickerInput
+                    <TimeTextInput
                       value={weightCheckerTime}
                       onChange={(v) => {
                         setWeightCheckerTime(v);
@@ -845,7 +803,8 @@ export function MachineRecordFormPage() {
                             setWeightCalibrationCheck(v);
                             setWeightCalibrationTimestamp(currentTimeString(inspectorName));
                           }}
-                          onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "分銲を乗せての校正点検" })}
+                          onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "分銅を乗せての校正点検", onCancel: () => { setWeightCalibrationCheck(weightCalibrationCheck); setWeightCalibrationTimestamp(weightCalibrationTimestamp); } })}
+                          onOkClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "分銅を乗せての校正点検", initialResult: "ok", onCancel: () => { setWeightCalibrationCheck(weightCalibrationCheck); setWeightCalibrationTimestamp(weightCalibrationTimestamp); } })}
                           timestamp={weightCalibrationCheck === "ng" ? undefined : weightCalibrationTimestamp}
                         />
                       </div>
@@ -873,7 +832,8 @@ export function MachineRecordFormPage() {
                             setWeightPackageMatchCheck(v);
                             setWeightPackageMatchTimestamp(currentTimeString(inspectorName));
                           }}
-                          onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "通過させる製品のパッケージ（印字）との照合" })}
+                          onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "通過させる製品のパッケージ（印字）との照合", onCancel: () => { setWeightPackageMatchCheck(weightPackageMatchCheck); setWeightPackageMatchTimestamp(weightPackageMatchTimestamp); } })}
+                          onOkClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "通過させる製品のパッケージ（印字）との照合", initialResult: "ok", onCancel: () => { setWeightPackageMatchCheck(weightPackageMatchCheck); setWeightPackageMatchTimestamp(weightPackageMatchTimestamp); } })}
                           timestamp={weightPackageMatchCheck === "ng" ? undefined : weightPackageMatchTimestamp}
                         />
                       </div>
@@ -917,7 +877,7 @@ export function MachineRecordFormPage() {
                     >
                       現在時刻
                     </button>
-                    <TimePickerInput
+                    <TimeTextInput
                       value={sealingTime}
                       onChange={(v) => {
                         setSealingTime(v);
@@ -943,7 +903,8 @@ export function MachineRecordFormPage() {
                       setSealingCheck(v);
                       setSealingTimestamp(currentTimeString(inspectorName));
                     }}
-                    onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "シーリング" })}
+                    onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "シーリング", onCancel: () => { setSealingCheck(sealingCheck); setSealingTimestamp(sealingTimestamp); } })}
+                          onOkClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "シーリング", initialResult: "ok", onCancel: () => { setSealingCheck(sealingCheck); setSealingTimestamp(sealingTimestamp); } })}
                     timestamp={sealingCheck === "ng" ? undefined : sealingTimestamp}
                   />
                 </div>
@@ -976,7 +937,7 @@ export function MachineRecordFormPage() {
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => navigate(listPath)}
+            onClick={backToDetail}
             className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
             一覧へ戻る
@@ -1006,7 +967,7 @@ export function MachineRecordFormPage() {
                   sealingCheck,
                 },
               });
-              navigate(confirmPath, { state: { inspectionDate: state?.inspectionDate, inspectorName: state?.inspectorName, hideAddButton: true, fromProgress: state?.fromProgress } });
+              backToDetail();
             }}
             className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
               isFormValid()
@@ -1039,10 +1000,13 @@ export function MachineRecordFormPage() {
             isOpen={anomalyDialog.isOpen}
             type={anomalyDialog.type}
             itemName={anomalyDialog.itemName}
-            machineName="ウエイトチェッカー"
+            machineName={anomalyDialog.itemName === "シーリング" ? "シーリング" : "ウェイトチェッカー"}
+            unitName={anomalyDialog.itemName === "シーリング" ? undefined : weightCheckerUnit}
+            initialResult={anomalyDialog.initialResult}
             onClose={() => setAnomalyDialog(null)}
+            onCancel={anomalyDialog.onCancel}
             onConfirm={(_data) => {
-              if (anomalyDialog.itemName === "分銲を乗せての校正点検") {
+              if (anomalyDialog.itemName === "分銅を乗せての校正点検") {
                 if (_data.inspectionResult === "ok") {
                   setWeightCalibrationCheck("ok");
                   setWeightCalibrationAnomaly(null);
@@ -1089,22 +1053,7 @@ export function MachineRecordFormPage() {
               <div className="border-t border-[#d0d0d0] w-full" />
               <div className="flex items-center justify-between w-full">
                 <p className="text-base text-[var(--semantic-text-primary)]">実施区分</p>
-                <div className="flex gap-2 items-center">
-                  {(["開始", "終了"] as const).map((phase) => (
-                    <button
-                      key={phase}
-                      type="button"
-                      onClick={() => setExecutionPhase(phase)}
-                      className={`h-10 w-20 rounded-lg text-sm border ${
-                        executionPhase === phase
-                          ? "bg-white border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
-                          : "bg-white border-[#d0d0d0] text-[var(--semantic-text-secondary)]"
-                      }`}
-                    >
-                      {phase}
-                    </button>
-                  ))}
-                </div>
+                <p className="text-base text-[var(--semantic-text-primary)]">{executionPhase}</p>
               </div>
             </div>
 
@@ -1175,7 +1124,14 @@ export function MachineRecordFormPage() {
               checkTimestamps={metalPieceCheckTimestamps}
               onCheckTimestampChange={(key, value) => setMetalPieceCheckTimestamps((prev) => ({ ...prev, [key]: value }))}
               inspectorName={inspectorName}
-              onAnomalyClick={(type, itemName, itemKey) => setAnomalyDialog({ isOpen: true, type, itemName, itemKey, machineType: "metal" })}
+              onAnomalyClick={(type, itemName, itemKey, initialResult) => {
+                const prevCheck = itemKey ? metalPieceChecks[itemKey] : undefined;
+                const prevStamp = itemKey ? metalPieceCheckTimestamps[itemKey] : undefined;
+                setAnomalyDialog({
+                  isOpen: true, type, itemName, itemKey, machineType: "metal", initialResult,
+                  onCancel: itemKey ? () => { restoreKeyed(setMetalPieceChecks, itemKey, prevCheck); restoreKeyed(setMetalPieceCheckTimestamps, itemKey, prevStamp); } : undefined,
+                });
+              }}
               anomalies={metalPieceAnomalies}
             />
 
@@ -1202,7 +1158,14 @@ export function MachineRecordFormPage() {
               checkTimestamps={xrayPieceCheckTimestamps}
               onCheckTimestampChange={(key, value) => setXrayPieceCheckTimestamps((prev) => ({ ...prev, [key]: value }))}
               inspectorName={inspectorName}
-              onAnomalyClick={(type, itemName, itemKey) => setAnomalyDialog({ isOpen: true, type, itemName, itemKey, machineType: "xray" })}
+              onAnomalyClick={(type, itemName, itemKey, initialResult) => {
+                const prevCheck = itemKey ? xrayPieceChecks[itemKey] : undefined;
+                const prevStamp = itemKey ? xrayPieceCheckTimestamps[itemKey] : undefined;
+                setAnomalyDialog({
+                  isOpen: true, type, itemName, itemKey, machineType: "xray", initialResult,
+                  onCancel: itemKey ? () => { restoreKeyed(setXrayPieceChecks, itemKey, prevCheck); restoreKeyed(setXrayPieceCheckTimestamps, itemKey, prevStamp); } : undefined,
+                });
+              }}
               anomalies={xrayPieceAnomalies}
             />
 
@@ -1244,7 +1207,7 @@ export function MachineRecordFormPage() {
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => navigate(listPath)}
+            onClick={backToDetail}
             className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
             一覧へ戻る
@@ -1277,7 +1240,7 @@ export function MachineRecordFormPage() {
                   xrayPieceAnomalyNotes: xrayPieceAnomalies,
                 },
               });
-              navigate(confirmPath, { state: { inspectionDate: state?.inspectionDate, inspectorName: state?.inspectorName, hideAddButton: true, fromProgress: state?.fromProgress } });
+              backToDetail();
             }}
             className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
           >
@@ -1291,8 +1254,10 @@ export function MachineRecordFormPage() {
             type={anomalyDialog.type}
             itemName={anomalyDialog.itemName}
             machineType={anomalyDialog.machineType}
-            machineName={machine?.name}
+            unitName={anomalyDialog.machineType === "metal" ? metalUnit : xrayUnit}
+            initialResult={anomalyDialog.initialResult}
             onClose={() => setAnomalyDialog(null)}
+            onCancel={anomalyDialog.onCancel}
             onConfirm={(_data) => {
               console.log("🔥 MachineRecordFormPage onConfirm called");
               if (anomalyDialog?.type === "machine-record" && anomalyDialog?.itemKey && anomalyDialog?.machineType) {
@@ -1389,7 +1354,7 @@ export function MachineRecordFormPage() {
                   setAbnormalTime(e.target.value);
                   setAbnormalTimeTimestamp(timeStringFor(e.target.value, inspectorName));
                 }}
-                placeholder="例：10:30"
+                placeholder="12:00"
                 className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
               />
             </div>
@@ -1581,7 +1546,7 @@ export function MachineRecordFormPage() {
         <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
           <button
             type="button"
-            onClick={() => navigate(listPath)}
+            onClick={backToDetail}
             className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
           >
             一覧へ戻る
@@ -1591,7 +1556,7 @@ export function MachineRecordFormPage() {
             onClick={() => {
               addMachineRecord(machine.id, {
                 id: newRecordId(),
-                category: "ー",
+                category: "—",
                 time: abnormalTime,
                 content,
                 passedProduct: abnormalProducts.join("、"),
@@ -1607,7 +1572,7 @@ export function MachineRecordFormPage() {
                   abnormalActionNote,
                 },
               });
-              navigate(confirmPath, { state: { inspectionDate: state?.inspectionDate, inspectorName: state?.inspectorName, hideAddButton: true, fromProgress: state?.fromProgress } });
+              backToDetail();
             }}
             className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
           >
@@ -1660,14 +1625,18 @@ export function MachineRecordFormPage() {
             checkTimestamps={metalCheckTimestamps}
             onCheckTimestampChange={(key, value) => setMetalCheckTimestamps((prev) => ({ ...prev, [key]: value }))}
             machineType="metal"
-            onAnomalyClick={(type, itemName, machineType, itemKey) => {
+            onAnomalyClick={(type, itemName, machineType, itemKey, initialResult) => {
+              const prevCheck = itemKey ? metalChecks[itemKey] : undefined;
+              const prevStamp = itemKey ? metalCheckTimestamps[itemKey] : undefined;
               setAnomalyDialog({
                 isOpen: true,
                 type,
                 itemName,
                 machineType,
                 itemKey,
-                onConfirmCallback: itemKey ? () => setMetalChecks((prev) => ({ ...prev, [itemKey]: "ok" })) : undefined
+                initialResult,
+                onConfirmCallback: itemKey ? () => setMetalChecks((prev) => ({ ...prev, [itemKey]: "ok" })) : undefined,
+                onCancel: itemKey ? () => { restoreKeyed(setMetalChecks, itemKey, prevCheck); restoreKeyed(setMetalCheckTimestamps, itemKey, prevStamp); } : undefined,
               });
             }}
             inspectorName={inspectorName}
@@ -1692,14 +1661,18 @@ export function MachineRecordFormPage() {
             inspectorName={inspectorName}
             inspectionDate={state?.inspectionDate}
             machineType="xray"
-            onAnomalyClick={(type, itemName, machineType, itemKey) => {
+            onAnomalyClick={(type, itemName, machineType, itemKey, initialResult) => {
+              const prevCheck = itemKey ? xrayChecks[itemKey] : undefined;
+              const prevStamp = itemKey ? xrayCheckTimestamps[itemKey] : undefined;
               setAnomalyDialog({
                 isOpen: true,
                 type,
                 itemName,
                 machineType,
                 itemKey,
-                onConfirmCallback: itemKey ? () => setXrayChecks((prev) => ({ ...prev, [itemKey]: "ok" })) : undefined
+                initialResult,
+                onConfirmCallback: itemKey ? () => setXrayChecks((prev) => ({ ...prev, [itemKey]: "ok" })) : undefined,
+                onCancel: itemKey ? () => { restoreKeyed(setXrayChecks, itemKey, prevCheck); restoreKeyed(setXrayCheckTimestamps, itemKey, prevStamp); } : undefined,
               });
             }}
             anomalies={xrayAnomalies}
@@ -1720,7 +1693,7 @@ export function MachineRecordFormPage() {
       <div className="shrink-0 bg-white shadow-[0px_-4px_16px_rgba(51,51,51,0.16)] px-6 py-6 flex items-center justify-center gap-6">
         <button
           type="button"
-          onClick={() => navigate(listPath)}
+          onClick={backToDetail}
           className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
         >
           一覧へ戻る
@@ -1731,7 +1704,7 @@ export function MachineRecordFormPage() {
             const checks = [...Object.values(metalChecks), ...Object.values(xrayChecks)];
             addMachineRecord(machine.id, {
               id: newRecordId(),
-              category: "ー",
+              category: "—",
               time: metalTime || xrayTime,
               content,
               passedProduct: "",
@@ -1749,7 +1722,7 @@ export function MachineRecordFormPage() {
                 xrayAnomalyNotes: xrayAnomalies,
               },
             });
-            navigate(confirmPath, { state: { inspectionDate: state?.inspectionDate, inspectorName: state?.inspectorName, hideAddButton: true, fromProgress: state?.fromProgress } });
+            backToDetail();
           }}
           className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
         >
@@ -1780,8 +1753,10 @@ export function MachineRecordFormPage() {
           type={anomalyDialog.type}
           itemName={anomalyDialog.itemName}
           machineType={anomalyDialog.machineType}
-          machineName={machine?.name}
+          unitName={anomalyDialog.machineType === "metal" ? metalUnit : xrayUnit}
+          initialResult={anomalyDialog.initialResult}
           onClose={() => setAnomalyDialog(null)}
+          onCancel={anomalyDialog.onCancel}
           onConfirm={(data) => {
             console.log("onConfirm data:", data);
             console.log("anomalyDialog:", anomalyDialog);

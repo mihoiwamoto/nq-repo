@@ -53,9 +53,11 @@ export function RecordsListPage() {
   const navigate = useNavigate();
   // 進捗一覧で点検済み・確認完了の添加物を開いたときは見るだけの一覧（確定デザイン 7139:238039・7139:238104）。
   // 実施日は文字で出し、「＋記録を追加」と「確認画面へ」は無く、下は「戻る」だけ。点検済みは右上の「編集」で記録入力へ
-  const progressState = location.state as { fromProgress?: boolean; progressStatus?: string } | null;
+  // 「編集」から記録入力で保存して戻ったとき（editing）は、入力できる形の一覧（確定デザイン 7139:238166）
+  const progressState = location.state as { fromProgress?: boolean; progressStatus?: string; editing?: boolean } | null;
   const readOnlyStatus =
     progressState?.fromProgress &&
+    !progressState.editing &&
     (progressState.progressStatus === "inspected" || progressState.progressStatus === "confirmed")
       ? progressState.progressStatus
       : null;
@@ -63,11 +65,15 @@ export function RecordsListPage() {
   // 実施日の段の下に区切り線は無く、表は見出し 56px・行 48px・備考は 1 行で「…」。行の「詳細」は見るだけの詳細ではなく、
   // その記録の値が入った記録画面（7139:238432。「一覧へ戻る」「保存」）を開き、保存で一覧へ戻る（7139:238230。2026-10-07）
   const fromProgressFlow = useFromProgress();
-  const progressEditable = fromProgressFlow && !!progressState?.fromProgress && !readOnlyStatus;
+  const progressEditable =
+    fromProgressFlow && !!progressState?.fromProgress && !readOnlyStatus && !progressState?.editing;
   // 記録画面から一覧へ戻ったときも進捗一覧のステータスで出し分けられるよう、記録画面へ持っていく
+  // （点検済みの「編集」で開き直した一覧は editing も持っていく）
   const progressCarry = progressEditable
-    ? { fromProgress: true, progressStatus: (progressState as { progressStatus?: string }).progressStatus }
-    : {};
+    ? { fromProgress: true, progressStatus: progressState?.progressStatus }
+    : progressState?.fromProgress && progressState.editing
+      ? { fromProgress: true, progressStatus: progressState.progressStatus, editing: true }
+      : {};
 
   return (
     <>
@@ -76,11 +82,34 @@ export function RecordsListPage() {
         {readOnlyStatus ? (
           <>
             {readOnlyStatus === "inspected" && (
-              <div className="flex justify-end">
+              <div className="flex justify-end -mb-2">
                 <button
                   type="button"
-                  onClick={() => navigate(`${basePath}/new`, { state: { date: date.replaceAll("-", "/"), inspectorName } })}
-                  className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 p-3 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
+                  onClick={() => {
+                    // 確定デザイン 7139:238432：点検済みの「編集」は、入力済みの記録（区分・数量・現在庫数・備考）で記録入力を開く（2026-10-08）
+                    const last = productRecords[productRecords.length - 1];
+                    navigate(`${basePath}/new`, {
+                      state: {
+                        fromProgress: true,
+                        progressStatus: progressState?.progressStatus,
+                        editing: true,
+                        date: date.replaceAll("-", "/"),
+                        inspectorName,
+                        ...(last
+                          ? {
+                              editRecordId: last.id,
+                              editRecord: {
+                                category: last.category,
+                                quantity: last.quantity,
+                                currentStock: last.currentStock,
+                                remarks: last.remarks,
+                              },
+                            }
+                          : {}),
+                      },
+                    });
+                  }}
+                  className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center justify-center h-11 w-24 rounded-lg text-lg font-semibold leading-none text-[var(--semantic-brand-primary)] whitespace-nowrap"
                 >
                   <img src={iconEdit} alt="" className="size-5" />
                   編集
@@ -101,7 +130,7 @@ export function RecordsListPage() {
               <DateFilterInput value={date} onChange={setDate} variant="borderless" />
             </div>
             {/* 確定デザイン 7139:233987・7139:234120：実施日の段と表のあいだに区切り線（進捗一覧の点検中 7139:238456 には無い） */}
-            {!progressEditable && <div className="border-t border-[#d0d0d0] w-full" />}
+            {!progressEditable && <div className="border-t border-[#d0d0d0] w-full mt-1 mb-[3px]" />}
           </>
         )}
 

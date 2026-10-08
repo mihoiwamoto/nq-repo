@@ -203,7 +203,7 @@ const LEDGER_GROUPS: { version: string; label: string; description: string; feat
   },
   {
     version: "Ver.2.0",
-    label: "秤点検管理",
+    label: "秤点検記録",
     description:
       "製造で使う秤が正しく量れているかを点検する帳票です。管理画面で秤（ラベル名・シリアル・秤量）と持ち場をマスタ登録し、どの秤をどの持ち場で点検対象にするかを決めます。アプリでは持ち場にある秤を 1 台ずつ選び、動作確認・水平点検・汚れ・分銅を載せたときの表示値を記録します。",
     features: ["scale-inspection", "data-search-scale-inspection", "approvals-scale-inspection", "confirmations-scale-inspection"],

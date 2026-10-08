@@ -458,8 +458,8 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/glass-plastic/FloorRegistrationCompletePage.tsx": complete("フロアの登録", "点検場所の一覧"),
   "src/admin/features/glass-plastic/FloorDeleteCompletePage.tsx": complete("フロアの削除", "点検場所の一覧"),
 
-  /* ===== 管理画面: 帳票管理 › 秤点検管理 (Ver.2.0) ===== */
-  "src/admin/features/scale-inspection/FactorySelectionPage.tsx": factorySelect("帳票管理", "秤点検管理", "秤点検記録設定"),
+  /* ===== 管理画面: 帳票管理 › 秤点検記録 (Ver.2.0) ===== */
+  "src/admin/features/scale-inspection/FactorySelectionPage.tsx": factorySelect("帳票管理", "秤点検記録", "秤点検記録設定"),
   "src/admin/features/scale-inspection/SettingsPage.tsx": {
     summary: "秤点検記録設定です。アプリで点検する秤を、持ち場ごとに並べて管理します。秤・持ち場そのもののマスタは別画面です。",
     points: ["「アプリ表示中」「アプリ非表示」のタブで切り替える", "秤を押して詳細へ、「新規登録」で秤を持ち場に割り当てる", "「秤管理」「持ち場管理」へのリンクからマスタを整備する"],
@@ -705,7 +705,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     points: [
       "確認内容を 1 行ずつ書き換える。「+ 行追加」で行を足す",
       "行のごみ箱を押すと確認のポップアップが出て、「削除」でその行を消す（すぐに保存され、削除完了へ）",
-      "「保存」で空の行を除いて保存し、持ち場/ラインの一覧へ戻る（「更新されました。」のトースト）",
+      "「保存」で空の行を除いて保存し、持ち場/ラインの一覧へ戻る（「更新しました。」のトースト）",
     ],
     note: "ここの確認内容は、アプリの記録入力の上に【確認項目】としてそのまま並びます。",
   },
@@ -748,7 +748,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   },
   "src/admin/features/cleaning-record/LineDetailPage.tsx": {
     summary: "持ち場/ライン 1 件の詳細です。清掃箇所と清掃項目、清掃頻度、アプリ表示期間を確認します。",
-    points: ["持ち場/ライン名・点検頻度・アプリ表示期間を表示", "清掃箇所ごとの清掃項目を一覧", "「編集」でフォームへ、「削除」で削除"],
+    points: ["持ち場/ライン名・清掃頻度・アプリ表示期間を表示", "清掃箇所ごとの清掃項目を一覧", "「編集」でフォームへ、「削除」で削除"],
   },
   "src/admin/features/cleaning-record/LineRegistrationPage.tsx": {
     summary: "持ち場/ラインを新しく登録する画面です。清掃箇所（機械・場所）とその清掃項目をここで組みます。",
@@ -828,7 +828,11 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     summary: "官能検査記録で、実施者 1 人分の採点内容を見る画面です。",
     points: ["検査製品名・製造日・賞味期限・実施者・確認者・実施日を表示", "比較製品の有無と製造日、点検箇所ごとの点数を確認"],
   },
-  "src/admin/features/approvals-metal-xray-detection/ApprovalRecordsListPage.tsx": approvalList("金属/X線探知機記録", "実施日・点検構成名・結果（正常/異常あり）・確認者"),
+  "src/admin/features/approvals-metal-xray-detection/ApprovalRecordsListPage.tsx": approvalList(
+    "金属/X線探知機記録",
+    "実施日・点検構成名・結果（正常/異常あり）・確認者",
+    ["右上のダウンロードで一覧を CSV か PDF に書き出す"]
+  ),
   "src/admin/features/approvals-metal-xray-detection/MachineDetailPage.tsx": {
     summary: "金属/X線探知機記録 1 日分の点検内容一覧です。動作確認・テストピース・製品通過などの記録を時系列で見て、承認または差し戻しを決めます。",
     points: ["実施日と点検構成を表示", "点検時間・実施区分・点検内容・通過製品・結果・備考・実施者を一覧", "操作列から点検内容 1 件の詳細へ", "「承認」または「差し戻し」を行う"],
@@ -909,7 +913,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     ["配置図の上のピンから点検箇所を選ぶ、絞り込みで異常のみ表示"]
   ),
 
-  "src/admin/features/data-search-scale-inspection/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "秤点検管理", "データ一覧"),
+  "src/admin/features/data-search-scale-inspection/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "秤点検記録", "データ一覧"),
   "src/admin/features/data-search-scale-inspection/DataListPage.tsx": searchList("秤点検記録", "日付・秤 No.・シリアルナンバー・持ち場・動作確認・水平点検・汚れ・秤の表示値・実施者・確認者"),
   "src/admin/features/data-search-scale-inspection/RecordDetailPage.tsx": searchDetail("秤点検記録", "持ち場・秤 No.・シリアルナンバーと、動作確認・水平点検・汚れ・表示値の結果・備考"),
 
@@ -928,7 +932,7 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   "src/admin/features/data-search-metal-xray-detection/DataListPage.tsx": searchList("金属/X線探知機記録", "実施日・点検構成名・結果（正常/異常あり）"),
   "src/admin/features/data-search-metal-xray-detection/RecordInspectionListPage.tsx": {
     summary: "金属/X線探知機記録 1 日分の点検内容一覧です（データ検索）。",
-    points: ["実施日・確認者を表示", "点検内容の種類（動作確認・テストピース・異常反応・製品通過）ごとに詳細へ", "承認待ちのときは右上のステータスから承認・差し戻しができる", "コメントを読み、書き足せる"],
+    points: ["実施日と金属探知機・X線探知機・ウェイトチェッカーの機器名を表示", "点検内容の種類（動作確認・テストピース・異常反応・製品通過）ごとに詳細へ", "コメントを読める（閲覧だけで、承認・差し戻しやコメントの書き込みはしない）"],
   },
   "src/admin/features/data-search-metal-xray-detection/RecordDetailPage.tsx": {
     summary: "金属/X線探知機記録の「動作確認」1 件の詳細です。電源・操作パネル・コンベア・ローラー・設定・はね板などの項目ごとの正常/異常を見ます。",
@@ -949,7 +953,13 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
 
   "src/admin/features/data-search-sample-management/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "検体管理", "データ一覧"),
   "src/admin/features/data-search-sample-management/DataListPage.tsx": searchList("検体管理", "実施日・製品名・ロット No.・賞味期限・製造日・検体種別・数量・保管場所・状態"),
-  "src/admin/features/data-search-sample-management/RecordDetailPage.tsx": searchDetail("検体管理", "製品名・ロット No.・賞味期限・製造日・検体種別・数量・単位・保管場所・備考・検体状況（保管中/破棄済み）"),
+  "src/admin/features/data-search-sample-management/RecordDetailPage.tsx": {
+    summary: "検体管理の記録 1 件の内容を確認する画面です（データ検索）。",
+    points: [
+      "実施日・実施者・確認者と、製品名・ロット No.・賞味期限・製造日・検体種別・数量・単位・保管場所・備考・検体状況（保管中/破棄済み）を表示",
+      "コメントを読める（閲覧だけで、承認・差し戻しやコメントの書き込みはしない）",
+    ],
+  },
 
   "src/admin/features/data-search-equipment/SearchFactorySelectionPage.tsx": factorySelect("データ検索", "機械器具点検", "データ一覧"),
   "src/admin/features/data-search-equipment/DataListPage.tsx": searchList("機械器具点検", "実施日・持ち場名/ライン名・点検結果・備考・実施者・確認者"),
@@ -1038,8 +1048,8 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     ],
   },
   "src/app/features/equipment-inspection/SchedulePage.tsx": {
-    summary: "アプリの点検予定カレンダーです。機械器具点検の持ち場/ライン設定と、官能検査の検査商品設定を日付ごとに確認・登録します。",
-    points: ["前の月・次の月で切り替える。休業日は色分け", "日付を押すと、その日の機械器具点検 持ち場/ライン設定 / 官能検査 検査商品設定へ", "「新規登録」で予定を追加"],
+    summary: "アプリの点検予定カレンダーです。機械器具点検の持ち場/ライン設定と、官能検査の検査製品設定を日付ごとに確認・登録します。",
+    points: ["前の月・次の月で切り替える。休業日は色分け", "日付を押すと、その日の機械器具点検 持ち場/ライン設定 / 官能検査 検査製品設定へ", "「新規登録」で予定を追加"],
     states: [
       {
         whenHeading: "新規登録",
@@ -1063,14 +1073,14 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
     ],
   },
   "src/app/features/sensory-inspection/ScheduleRegisterPage.tsx": {
-    summary: "点検予定カレンダーから開く、その日の官能検査の検査商品設定です。検査する商品と比較商品を登録します。",
-    points: ["「商品追加」で商品名・比較商品の有無・比較商品の製造日を登録", "登録済みの商品は「編集」「削除」ができる"],
+    summary: "点検予定カレンダーから開く、その日の官能検査の検査製品設定です。検査する製品と比較製品を登録します。",
+    points: ["「製品追加」で製品名・比較製品の有無・比較製品の製造日を登録", "登録済みの製品は「編集」「削除」ができる"],
     states: [
       {
-        whenHeading: "商品追加",
-        label: "商品追加",
-        summary: "その日に官能検査をする商品を選ぶポップアップです。",
-        points: ["商品名を入力して探す", "商品を押して選ぶ", "「追加」で検査商品に加える", "「閉じる」で追加せずに戻る"],
+        whenHeading: "製品追加",
+        label: "製品追加",
+        summary: "その日に官能検査をする製品を選ぶポップアップです。",
+        points: ["製品名を入力して探す", "製品を押して選ぶ", "「追加」で検査製品に加える", "「閉じる」で追加せずに戻る"],
       },
     ],
   },
@@ -1177,10 +1187,10 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   },
 
   /* ===== アプリ: 官能検査記録 ===== */
-  "src/app/features/sensory-inspection/ProductSelectionPage.tsx": appEntry("官能検査記録", "検査商品", ["商品名で検索できる"]),
+  "src/app/features/sensory-inspection/ProductSelectionPage.tsx": appEntry("官能検査記録", "検査製品", ["製品名で検索できる"]),
   "src/app/features/sensory-inspection/RecordPage.tsx": {
-    summary: "官能検査を記録する画面です。検査商品を味・香りなどの点検箇所ごとに 5 点満点で採点します。",
-    points: ["検査商品名・賞味期限を確認", "比較商品あり / なしを選ぶ", "点検箇所ごとに 1〜5 点を付ける。評価基準が画面に出る", "低い点のときは理由を記入"],
+    summary: "官能検査を記録する画面です。検査製品を味・香りなどの点検箇所ごとに 5 点満点で採点します。",
+    points: ["検査製品名・賞味期限を確認", "比較製品あり / なしを選ぶ", "点検箇所ごとに 1〜5 点を付ける。評価基準が画面に出る", "低い点のときは理由を記入"],
     states: [
       {
         whenHeading: "点検箇所",
@@ -1190,11 +1200,11 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
       },
     ],
   },
-  "src/app/features/sensory-inspection/ConfirmPage.tsx": appConfirm("官能検査記録", "検査商品・製造日・比較商品と、点検箇所ごとの点数"),
-  "src/app/features/sensory-inspection/SubmitCompletePage.tsx": appComplete("官能検査記録", "検査商品の一覧"),
+  "src/app/features/sensory-inspection/ConfirmPage.tsx": appConfirm("官能検査記録", "検査製品・製造日・比較製品と、点検箇所ごとの点数"),
+  "src/app/features/sensory-inspection/SubmitCompletePage.tsx": appComplete("官能検査記録", "検査製品の一覧"),
   "src/app/features/sensory-inspection/ReviewPage.tsx": {
     summary: "提出済みの官能検査記録を、確認者が見直す画面です。",
-    points: ["検査商品名・賞味期限・実施者・実施日・製造日・比較商品を表示", "点検箇所ごとの点数を確認", "「編集」で修正に戻せる"],
+    points: ["検査製品名・賞味期限・実施者・実施日・製造日・比較製品を表示", "点検箇所ごとの点数を確認", "「編集」で修正に戻せる"],
   },
 
   /* ===== アプリ: 金属/X線探知機記録 ===== */
@@ -1246,12 +1256,6 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
         note: "一括破棄では全件に同じ破棄日・理由が入ります。違う理由のものは 1 件ずつ破棄してください。",
       },
       {
-        whenHeading: "廃棄が完了しました",
-        label: "破棄の完了",
-        summary: "検体の破棄が終わったことを知らせるポップアップです。",
-        points: ["「閉じる」で保管検体の一覧に戻る"],
-      },
-      {
         whenHeading: "絞り込み条件",
         label: "絞り込み条件",
         summary: "一覧に出す検体を絞り込むポップアップです。",
@@ -1266,6 +1270,10 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
   },
   "src/app/features/sample-management/SampleConfirmPage.tsx": appConfirm("検体管理", "製造日・検体種別・検体数量・単位・保管場所・備考"),
   "src/app/features/sample-management/SampleSubmitCompletePage.tsx": appComplete("検体管理", "検体管理の一覧"),
+  "src/app/features/sample-management/SampleDiscardCompletePage.tsx": {
+    summary: "保管検体の破棄（一括破棄・1 件の破棄）が終わったことを知らせる画面です。",
+    points: ["「保管検体に戻る」で検体の一覧の保管検体のタブへ戻る。破棄した検体は一覧から消える"],
+  },
   "src/app/features/sample-management/StoredSampleDetailPage.tsx": {
     summary: "保管中の検体 1 件の詳細です。保管期限を過ぎたものなどを破棄します。",
     points: ["実施者・実施日・製造日・検体種別・数量・単位・保管場所・備考を表示", "「検体破棄」で理由を選んで破棄する"],
@@ -1275,12 +1283,6 @@ export const SCREEN_DESCRIPTIONS: Record<string, ScreenDescription> = {
         label: "検体破棄",
         summary: "この検体 1 件を破棄するポップアップです。破棄日と理由を残します。",
         points: ["製品名・賞味期限・ロット No. を確認する", "破棄日と破棄理由を入力する", "「破棄」で確定する", "「閉じる」で破棄せずに戻る"],
-      },
-      {
-        whenHeading: "廃棄が完了しました",
-        label: "破棄の完了",
-        summary: "検体の破棄が終わったことを知らせるポップアップです。",
-        points: ["「閉じる」で保管検体の一覧に戻る"],
       },
     ],
   },

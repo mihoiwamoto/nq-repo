@@ -13,7 +13,7 @@ export function SessionExpiredDialog() {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-[rgba(51,51,51,0.5)]" />
-      <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-full">
+      <div className="relative bg-[var(--semantic-background-page)] drop-shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-full">
         <div className="flex flex-col gap-6 items-center w-full">
           <div className="flex flex-col gap-4 items-center w-full">
             <span

@@ -86,11 +86,12 @@ export function ConfirmPage() {
         </div>
 
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
-          <div className="flex items-center justify-between w-full">
+          {/* 確定デザイン（7139:221957）：実施日・実施者の行は高さ 22（カード 104） */}
+          <div className="flex items-center justify-between w-full [&>p]:leading-[22px]">
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{date.replaceAll("-", "/")}</p>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full [&>p]:leading-[22px]">
             <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{inspectorName}</p>
           </div>
@@ -106,7 +107,8 @@ export function ConfirmPage() {
                 <p className="text-base text-white">{point.location}</p>
               </div>
               <div className="flex flex-col gap-3 items-start px-2 w-full">
-                <p className="text-base text-[var(--semantic-brand-primary)]">清掃項目</p>
+                {/* 確定デザイン（7139:221957）：「清掃項目」は高さ 16 */}
+                <p className="text-base leading-none text-[var(--semantic-brand-primary)]">清掃項目</p>
                 {point.items.map((item) => {
                   const record = records[keyFor(point.location, item)];
                   return (
@@ -126,11 +128,12 @@ export function ConfirmPage() {
                   );
                 })}
               </div>
-              <div className="border-t border-[#d0d0d0] w-full" />
+              {/* 確定デザイン（7139:221957）：線は場所を取らない（次の清掃箇所 618・備考 818） */}
+              <div className="border-t border-[#d0d0d0] w-full -mb-px" />
             </div>
           ))}
           <div className="flex flex-col gap-2 items-start w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">備考</p>
+            <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
             <p className="text-base leading-[1.6] font-normal text-[var(--semantic-text-primary)] whitespace-pre-wrap">
               {remarks}
             </p>

@@ -6,7 +6,8 @@ export function NewRegistrationCompletePage() {
 
   return (
     <div>
-      <PageTitleBar title="帳票管理" />
+      {/* 本番の共通の完了画面は見出しが「完了画面」で固定（2026-10-08 本番に合わせた） */}
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg

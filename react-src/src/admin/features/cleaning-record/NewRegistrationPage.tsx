@@ -171,11 +171,12 @@ export function NewRegistrationPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setLineToDelete(null)} />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+            {/* 確定デザイン（7139:161537）：見出しの行 34px・本文の行 26px（高さ 252px） */}
             <div className="flex flex-col gap-6 items-start w-full">
-              <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+              <h2 className="text-2xl leading-[34px] text-[var(--semantic-text-primary)] text-center w-full">
                 持ち場/ライン設定の削除
               </h2>
-              <p className="text-base font-normal text-[var(--semantic-text-primary)]">
+              <p className="text-base leading-[26px] font-normal text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。本当に削除しますか？
               </p>
             </div>

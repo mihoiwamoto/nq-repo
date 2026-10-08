@@ -30,10 +30,16 @@ export function AddLineDialog({
   const scale = useDesignScale();
   const [activeTab, setActiveTab] = useState<LineFrequency>("weekly");
   const [search, setSearch] = useState("");
-  const [draft, setDraft] = useState<string[]>(selectedIds);
+  // まだ 1 件も選んでいないときは、毎週のタブの先頭を選んだ状態で開く（確定デザイン 7139:161452。2026-10-08 ユーザー指定）
+  const initialDraft = () => {
+    const firstWeekly = lines.find((l) => l.frequency === "weekly");
+    return selectedIds.length === 0 && firstWeekly ? [firstWeekly.id] : selectedIds;
+  };
+  const [draft, setDraft] = useState<string[]>(initialDraft);
 
   useEffect(() => {
-    setDraft(selectedIds);
+    setDraft(initialDraft());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds]);
 
   const filteredLines = lines.filter(

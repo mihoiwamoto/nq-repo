@@ -2,14 +2,18 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { FACTORIES } from "../../../data/factories";
+import { useRoleFactories } from "../../data/useRoleFactories";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 
 export function FactorySelectionPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  const factories = FACTORIES.filter((f) => f.name.includes(search));
+  // 承認者は権限のある工場だけ、管理者は全工場（useRoleFactories）
+
+  const roleFactories = useRoleFactories();
+
+  const factories = roleFactories.filter((f) => f.name.includes(search));
 
   return (
     <div>
@@ -34,7 +38,7 @@ export function FactorySelectionPage() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="工場名で検索"
+              placeholder="工場名で探す"
               className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full max-w-md placeholder:text-[var(--semantic-text-secondary)]"
             />
           )}

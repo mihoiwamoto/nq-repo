@@ -207,7 +207,7 @@ export function FloorInspectionPage() {
 
   return (
     <>
-      <AppHeader title={`ガラス・プラスチック管理_${floorName}`} />
+      <AppHeader title={`ガラスプラスチック管理_${floorName}`} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-5">
           <div className="flex items-center justify-between">
@@ -226,7 +226,7 @@ export function FloorInspectionPage() {
               type="button"
               onClick={() => setMapExpanded((expanded) => !expanded)}
               aria-label={mapExpanded ? "縮小表示" : "拡大表示"}
-              className={`absolute top-4 left-4 size-10 rounded-[10px] flex items-center justify-center text-lg z-10 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] ${
+              className={`absolute top-4 left-4 size-10 rounded-[10px] flex items-center justify-center text-lg z-10 shadow-[0px_2px_6px_rgba(51,51,51,0.24)] ${
                 mapExpanded ? "bg-[var(--semantic-brand-primary)]" : "bg-white"
               }`}
             >
@@ -249,7 +249,7 @@ export function FloorInspectionPage() {
               style={{ transform: `scale(${mapScale})` }}
               className={`transition-transform ${mapExpanded ? "" : "max-h-[300px]"}`}
             />
-            <div className="absolute right-4 bottom-4 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_3px_rgba(51,51,51,0.24)]">
+            <div className="absolute right-4 bottom-4 flex flex-col rounded-lg overflow-hidden shadow-[0px_2px_6px_rgba(51,51,51,0.24)]">
               <button
                 type="button"
                 onClick={() => setMapScale((s) => Math.min(s + 0.2, 2))}
@@ -422,7 +422,7 @@ export function FloorInspectionPage() {
       {ngTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeNgDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-8 py-10 w-full max-w-[1040px] mx-6 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-8 py-10 w-full max-w-[1040px] mx-6 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 点検箇所

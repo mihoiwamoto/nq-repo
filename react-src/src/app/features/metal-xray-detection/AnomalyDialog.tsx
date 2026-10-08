@@ -10,7 +10,13 @@ interface AnomalyDialogProps {
   itemName: string;
   machineType?: "metal" | "xray";
   machineName?: string;
+  /** 見出しの帯の右に出す号機名（確定デザイン 10398:110750 の「金属探知機｜XXXXXXXXX」）。無いときは従来どおりグループ名 */
+  unitName?: string;
+  /** 開いたときの ✕／✓。✓ を押して開いたときは "ok"（既定は "ng"） */
+  initialResult?: "ok" | "ng";
   onClose: () => void;
+  /** 「キャンセル」で押す前の ✕／✓ に戻す（本番 iOS の abnormalDialogCancelled。閉じるのは onClose） */
+  onCancel?: () => void;
   onConfirm: (data: AnomalyData) => void;
 }
 
@@ -27,13 +33,16 @@ export function AnomalyDialog({
   itemName,
   machineType,
   machineName,
+  unitName,
+  initialResult = "ng",
   onClose,
+  onCancel,
   onConfirm,
 }: AnomalyDialogProps) {
   const [cause, setCause] = useState("");
   const [response, setResponse] = useState("");
   const [responseType, setResponseType] = useState<"inspection" | "settings" | "other-machine" | "other">("inspection");
-  const [inspectionResult, setInspectionResult] = useState<"ok" | "ng" | null>("ng");
+  const [inspectionResult, setInspectionResult] = useState<"ok" | "ng" | null>(initialResult);
   const [isProductSelectionOpen, setIsProductSelectionOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
@@ -96,7 +105,7 @@ export function AnomalyDialog({
               <div className="flex flex-col rounded-lg overflow-hidden">
                 <div className="bg-[#009944] text-white px-4 py-4 flex items-center justify-between">
                   <span className="text-[16px] font-bold">{machineName || (machineType === "metal" ? "金属探知機" : "X線探知機")}</span>
-                  <span className="text-[16px] font-bold">{groupTitle}</span>
+                  <span className="text-[16px] font-bold">{unitName ?? groupTitle}</span>
                 </div>
 
                 <div className="bg-white px-4 py-4">
@@ -323,7 +332,10 @@ export function AnomalyDialog({
         <div className="flex gap-[40px] px-6 py-6 justify-center">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              onCancel?.();
+              onClose();
+            }}
             className="w-56 py-4 rounded-lg border border-[#333] text-[#333] text-[16px] font-bold bg-white hover:bg-[#f5f5f5] transition-colors"
           >
             キャンセル

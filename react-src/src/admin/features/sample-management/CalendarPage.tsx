@@ -9,6 +9,7 @@ import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } fro
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import { PlusIcon } from "../../components/PlusIcon";
 
 export function CalendarPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -68,7 +69,8 @@ export function CalendarPage() {
             to={`${basePath}/schedule/register?date=${selectedDateKey}`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />
@@ -240,24 +242,24 @@ export function CalendarPage() {
                           {product.name}
                         </span>
                       </div>
-                      {/* 製造日・ロットNo. は管理画面で「記載する」とした製品だけに出る任意項目 */}
-                      {product.manufactureDate && (
+                      {/* 製造日・ロットNo. は予定の登録・編集で入れた値（無ければ製品マスタの値）。入っている製品だけ出す */}
+                      {(selectedEntry?.details?.[product.id]?.manufactureDate ?? product.manufactureDate) && (
                         <div className="flex gap-4 h-8 items-center">
                           <span className="text-base text-[var(--semantic-text-primary)] w-28">
                             製造日
                           </span>
                           <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                            {product.manufactureDate.replaceAll("-", "/")}
+                            {(selectedEntry?.details?.[product.id]?.manufactureDate ?? product.manufactureDate ?? "").replaceAll("-", "/")}
                           </span>
                         </div>
                       )}
-                      {product.lotNumber && (
+                      {(selectedEntry?.details?.[product.id]?.lotNumber ?? product.lotNumber) && (
                         <div className="flex gap-4 h-8 items-center">
                           <span className="text-base text-[var(--semantic-text-primary)] w-28">
                             ロットNo.
                           </span>
                           <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                            {product.lotNumber}
+                            {selectedEntry?.details?.[product.id]?.lotNumber ?? product.lotNumber}
                           </span>
                         </div>
                       )}
@@ -306,7 +308,7 @@ export function CalendarPage() {
       {showDeletedToast && (
         <Toast message="削除されました。" onClose={() => setShowDeletedToast(false)} />
       )}
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );
 }

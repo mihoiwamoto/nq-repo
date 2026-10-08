@@ -19,7 +19,7 @@ export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
   action_needed: "要対応",
   no_repair: "修理しない",
   repairing: "修理中",
-  done: "修理完了",
+  done: "対応完了",
 };
 
 export const REPAIR_STATUS_COLORS: Record<RepairStatus, string> = {

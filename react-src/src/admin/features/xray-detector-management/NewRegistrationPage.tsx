@@ -23,6 +23,20 @@ const SETTING_COLUMNS: { key: keyof Omit<XrayTestPieceSetting, "id" | "productNa
 
 const CELL_WIDTH = 100;
 
+/** 設定の表は最初から空の行を 1 行出し、最後の 1 行は消せない（確定デザイン 6296:133399・6296:134206）。 */
+function emptySetting(): XrayTestPieceSetting {
+  return {
+    id: `xs${nextId++}`,
+    productName: "",
+    settingNumber: "",
+    susBall: "",
+    susWire: "",
+    glassBall: "",
+    ceramic: "",
+    rubberBall: "",
+  };
+}
+
 export function NewRegistrationPage() {
   const { factoryId, unitId } = useParams<{ factoryId: string; unitId?: string }>();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
@@ -33,25 +47,15 @@ export function NewRegistrationPage() {
   const existing = units.find((u) => u.id === unitId);
 
   const [name, setName] = useState(existing?.name ?? "");
-  const [settings, setSettings] = useState<XrayTestPieceSetting[]>(existing?.settings ?? []);
+  const [settings, setSettings] = useState<XrayTestPieceSetting[]>(() =>
+    existing?.settings.length ? existing.settings : [emptySetting()],
+  );
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   function addRow() {
-    setSettings((prev) => [
-      ...prev,
-      {
-        id: `xs${nextId++}`,
-        productName: "",
-        settingNumber: "",
-        susBall: "",
-        susWire: "",
-        glassBall: "",
-        ceramic: "",
-        rubberBall: "",
-      },
-    ]);
+    setSettings((prev) => [...prev, emptySetting()]);
   }
 
   function updateRow(id: string, field: keyof Omit<XrayTestPieceSetting, "id">, value: string) {
@@ -59,6 +63,7 @@ export function NewRegistrationPage() {
   }
 
   function removeRow(id: string) {
+    if (settings.length <= 1) return;
     setSettings((prev) => prev.filter((row) => row.id !== id));
     setToastMessage("削除されました。");
     setShowToast(true);
@@ -106,7 +111,7 @@ export function NewRegistrationPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="例）XXXXXX"
+              placeholder="例）X線探知機1号機"
               className="bg-[var(--semantic-background-surface)] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
             />
           </div>
@@ -148,12 +153,7 @@ export function NewRegistrationPage() {
                       <p className="text-sm leading-[1.2] text-[var(--semantic-brand-primary)]">操作</p>
                     </div>
                   </div>
-                  {settings.length === 0 ? (
-                    <div className="bg-white flex items-center justify-center rounded-b-lg w-full py-6">
-                      <p className="text-base text-[var(--semantic-text-secondary)]">データがありません。</p>
-                    </div>
-                  ) : (
-                    settings.map((row, index) => (
+                  {settings.map((row, index) => (
                       <div
                         key={row.id}
                         className={`flex h-[56px] items-center w-full ${
@@ -191,14 +191,14 @@ export function NewRegistrationPage() {
                           <button
                             type="button"
                             onClick={() => removeRow(row.id)}
-                            className="bg-[var(--semantic-background-surface)] border border-[var(--semantic-brand-danger)] size-10 rounded-lg flex items-center justify-center"
+                            disabled={settings.length <= 1}
+                            className="bg-[var(--semantic-background-surface)] border border-[var(--semantic-brand-danger)] size-10 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             <img src={iconTrash} alt="削除" className="size-6" />
                           </button>
                         </div>
                       </div>
-                    ))
-                  )}
+                    ))}
                 </div>
               </div>
             </div>

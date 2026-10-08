@@ -8,6 +8,7 @@ import { useMetalDetector } from "./MetalDetectorContext";
 import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowUp from "@images/Icon/Button.svg";
 import iconArrowDown from "@images/Icon/Button-1.svg";
+import { PlusIcon } from "../../components/PlusIcon";
 
 function ArrowUpIcon() {
   return <img src={iconArrowUp} alt="上へ移動" className="w-6 h-6" />;
@@ -36,7 +37,7 @@ export function MetalDetectorListPage() {
 
   return (
     <div>
-      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="更新しました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="金属探知機管理"
         showBack
@@ -45,7 +46,8 @@ export function MetalDetectorListPage() {
             to={`${basePath}/metal-detectors/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />

@@ -9,10 +9,9 @@ import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
 function formatPeriod(displayFrom?: string, displayTo?: string) {
-  if (!displayFrom && !displayTo) return "指定なし（常に表示）";
   const from = displayFrom?.replaceAll("-", "/") ?? "";
   const to = displayTo?.replaceAll("-", "/") ?? "";
-  return `${from}〜${to}`;
+  return `${from} ~ ${to}`;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -34,7 +33,6 @@ export function ScaleDetailPage() {
   const scale = scales.find((s) => s.id === scaleId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   useEffect(() => {
@@ -55,13 +53,13 @@ export function ScaleDetailPage() {
 
   function handleDelete() {
     removeScale(scale!.id);
-    setShowToast(true);
-    navigate(basePath);
+    // 本番は削除のあと完了画面（「秤点検記録設定の削除が完了しました」）
+    navigate(`${basePath}/scales/registered`, { state: { deleted: true } });
   }
 
   return (
     <div>
-      <PageTitleBar title="秤点検記録設定" showBack />
+      <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -96,7 +94,7 @@ export function ScaleDetailPage() {
         <div className="bg-white flex flex-col gap-6 items-start px-4 py-6 rounded-lg w-full">
           <Row label="アプリ表示期間" value={formatPeriod(scale.displayFrom, scale.displayTo)} />
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="秤No.(ラベル名)" value={scale.label} />
+          <Row label="秤No.（ラベル名）" value={scale.label} />
           <div className="border-t border-[#d0d0d0] w-full" />
           <Row label="持ち場" value={postName} />
         </div>
@@ -111,7 +109,7 @@ export function ScaleDetailPage() {
                 秤点検記録設定の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">
@@ -134,8 +132,7 @@ export function ScaleDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
-      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );
 }

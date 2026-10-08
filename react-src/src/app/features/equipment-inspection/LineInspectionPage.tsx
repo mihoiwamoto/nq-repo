@@ -494,7 +494,7 @@ export function LineInspectionPage() {
       {ngTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeNgDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-[8px] flex flex-col gap-[40px] items-center px-[24px] py-[40px] w-full max-w-[640px] mx-[16px] max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-[8px] flex flex-col gap-[40px] items-center px-[24px] py-[40px] w-full max-w-[640px] mx-[16px] max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="flex flex-col gap-[24px] items-center w-full">
               <h2 className="text-[24px] leading-[1.4] font-[600] text-[var(--semantic-text-primary)] text-center w-full">
                 点検箇所
@@ -626,7 +626,7 @@ export function LineInspectionPage() {
       {saveDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSaveDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 途中保存しました
@@ -649,7 +649,7 @@ export function LineInspectionPage() {
       {skipDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeSkipDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[560px] mx-6">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 点検を見送りますか？

@@ -4,7 +4,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 export function PasswordChangeCompletePage() {
   return (
     <div>
-      <PageTitleBar title="パスワード変更" />
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg

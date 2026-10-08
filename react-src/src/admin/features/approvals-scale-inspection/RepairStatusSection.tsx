@@ -1,5 +1,6 @@
-import { type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { Pulldown } from "../../components/Pulldown";
+import { Toast } from "../../components/Toast";
 import {
   REPAIR_STATUS_COLORS,
   REPAIR_STATUS_LABELS,
@@ -17,14 +18,17 @@ export function RepairStatusSection({
   setRepairStatus: (id: string, status: RepairStatus) => void;
 }) {
   const ngRecords = records.filter((r) => !r.skipped && r.operationCheck === "ng");
+  // 本番は修理ステータスを変えると「修理ステータスを更新しました。」のトースト
+  const [showToast, setShowToast] = useState(false);
 
   if (ngRecords.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-2 items-start w-full">
+      {showToast && <Toast message="修理ステータスを更新しました。" onClose={() => setShowToast(false)} />}
       <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
       <p className="text-sm text-[var(--semantic-text-secondary)]">
-        異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
+        異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「対応完了」ステータスに変更してください。
       </p>
       <div className="bg-white flex flex-col gap-3 items-start p-4 rounded-lg w-full">
         {ngRecords.map((record, index) => (
@@ -34,7 +38,11 @@ export function RepairStatusSection({
               <p className="text-base text-[var(--semantic-text-primary)]">{record.scaleLabel}</p>
               <Pulldown
                 value={record.repairStatus ?? "action_needed"}
-                onChange={(value) => setRepairStatus(record.id, value as RepairStatus)}
+                onChange={(value) => {
+                  if (value === (record.repairStatus ?? "action_needed")) return;
+                  setRepairStatus(record.id, value as RepairStatus);
+                  setShowToast(true);
+                }}
                 options={REPAIR_STATUS_NEXT_OPTIONS[record.repairStatus ?? "action_needed"].map((opt) => ({
                   value: opt,
                   label: REPAIR_STATUS_LABELS[opt],

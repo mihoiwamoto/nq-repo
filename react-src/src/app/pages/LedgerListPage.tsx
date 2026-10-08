@@ -45,7 +45,8 @@ const TILE_LINES: Record<string, string[]> = {
 function TileLabel({ slug, label }: { slug: string; label: string }) {
   const lines = TILE_LINES[slug];
   return (
-    <span className="text-base text-[var(--semantic-brand-primary)] text-center leading-[1.4]">
+    // 確定デザイン：名前は高さ 38px の枠の上下中央（1 行の名前は 2 行より下に来る。2026-10-08）
+    <span className="h-[38px] flex flex-col items-center justify-center text-base text-[var(--semantic-brand-primary)] text-center leading-[1.4]">
       {lines
         ? lines.map((line, i) => (
             <span key={line}>
@@ -110,7 +111,7 @@ export function LedgerListPage() {
       {actorPickerSlug && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-[rgba(51,51,51,0.5)]" onClick={() => setActorPickerSlug(null)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
             <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
             <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto flex-1">
               {ACTORS.map((actor) => (

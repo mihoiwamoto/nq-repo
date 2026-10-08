@@ -48,8 +48,8 @@ export function LogListPage() {
         if (applied.factoryId && entry.factoryId !== applied.factoryId) return false;
         if (applied.ledgerSlug && entry.ledgerSlug !== applied.ledgerSlug) return false;
         if (
+          // 本番は操作者名で探す
           applied.keyword &&
-          !entry.action.includes(applied.keyword) &&
           !entry.staffName.includes(applied.keyword)
         )
           return false;
@@ -116,7 +116,7 @@ export function LogListPage() {
                 type="text"
                 value={form.keyword}
                 onChange={(e) => setForm((f) => ({ ...f, keyword: e.target.value }))}
-                placeholder="キーワードで探す"
+                placeholder="操作者名で探す"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[300px] placeholder:text-[#808080]"
               />
               <div className="flex gap-2 items-center ml-auto">
@@ -151,7 +151,7 @@ export function LogListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">工場名</p>
             </div>
             <div className="w-40 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)]">職員名</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">操作者</p>
             </div>
             <div className="w-20 h-full flex items-center px-2">
               <p className="text-sm text-[var(--semantic-brand-primary)]">権限</p>

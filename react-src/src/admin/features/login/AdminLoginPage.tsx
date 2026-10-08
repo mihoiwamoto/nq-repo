@@ -13,10 +13,30 @@ export function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
   const [hasError, setHasError] = useState(false);
+  // 本番（LoginRequest）と同じ項目ごとの入力チェック。文言は本番の lang/ja/validation.php
+  const [fieldErrors, setFieldErrors] = useState<{ staffId?: string; password?: string }>({});
+
+  function validate() {
+    const errs: { staffId?: string; password?: string } = {};
+    if (!employeeNumber) errs.staffId = "社員番号は必須です。";
+    else if (!/^\d{6}$/.test(employeeNumber)) errs.staffId = "社員番号は6桁の数字で入力してください。";
+    if (!password) errs.password = "パスワードは必須です。";
+    else if (password.length < 8 || password.length > 64) errs.password = "パスワードは8〜64文字の間で入力してください。";
+    else if (!/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/.test(password))
+      errs.password = "パスワードは英数字記号を組み合わせてください。";
+    return errs;
+  }
 
   function handleSubmit() {
+    // 見本のパスワードは記号を含まないので、見本の組み合わせだけは入力チェックの前に通す
     if (employeeNumber === DEMO_EMPLOYEE_NUMBER && password === DEMO_PASSWORD) {
       navigate("/admin");
+      return;
+    }
+    const errs = validate();
+    setFieldErrors(errs);
+    if (errs.staffId || errs.password) {
+      setHasError(false);
       return;
     }
     setHasError(true);
@@ -36,7 +56,7 @@ export function AdminLoginPage() {
           <h1 className="text-[32px] leading-[1.4] text-[#333] font-['Hiragino_Kaku_Gothic_ProN']">ログイン</h1>
           <div className="flex flex-col gap-10 items-start w-full">
             <div className="flex flex-col gap-6 items-start w-full">
-              <p className="text-[20px] leading-[1.4] text-[#333] font-['Hiragino_Kaku_Gothic_ProN']">ログイン情報を入力してください</p>
+              <p className="text-[20px] leading-[1.4] text-[#333] font-['Hiragino_Kaku_Gothic_ProN']">ログイン情報を入力してください。</p>
               <div className="flex flex-col gap-6 items-start w-full">
                 <div className="flex flex-col gap-1 items-start w-full">
                   <p className="text-[20px] leading-[1.4] text-[#333] font-['Hiragino_Kaku_Gothic_ProN']">社員番号</p>
@@ -46,16 +66,16 @@ export function AdminLoginPage() {
                     onChange={(e) => setEmployeeNumber(e.target.value)}
                     placeholder="例）012345"
                     className={`bg-white h-12 px-4 rounded-lg text-base text-[#333] w-full placeholder:text-[#808080] ${
-                      hasError ? "border border-[#f85c5c]" : ""
+                      hasError || fieldErrors.staffId ? "border border-[#f85c5c]" : ""
                     }`}
                   />
+                  {fieldErrors.staffId && <p className="text-sm text-[#f34949]">{fieldErrors.staffId}</p>}
                 </div>
                 <div className="flex flex-col gap-1 items-start w-full">
                   <p className="text-[20px] leading-[1.4] text-[#333] font-['Hiragino_Kaku_Gothic_ProN']">パスワード</p>
-                  <p className="text-sm leading-[1.2] text-[#808080]">※8文字以上の英数字、記号を含む</p>
                   <div
                     className={`bg-white flex items-center gap-2 h-12 px-4 rounded-lg w-full ${
-                      hasError ? "border border-[#f85c5c]" : ""
+                      hasError || fieldErrors.password ? "border border-[#f85c5c]" : ""
                     }`}
                   >
                     <input
@@ -74,6 +94,7 @@ export function AdminLoginPage() {
                       <img src={visible ? iconEyeOff : iconEye} alt="" className="size-6" />
                     </button>
                   </div>
+                  {fieldErrors.password && <p className="text-sm text-[#f34949]">{fieldErrors.password}</p>}
                 </div>
               </div>
             </div>

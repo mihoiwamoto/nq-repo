@@ -1,6 +1,7 @@
 /* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
 import { withTplFallback } from "../../data/targetId";
-export type MachineStatus = "not_inspected" | "inspected";
+/* 本番（Excel No.2／No.37。checkStatus 0/1/2/8/9）に合わせて 未点検・点検中・点検済み・確認完了・差し戻し を全部持つ（2026-10-08）。見本は未点検・点検済みだけ */
+export type MachineStatus = "not_inspected" | "inspecting" | "inspected" | "confirmed" | "rejected";
 
 export type Machine = {
   id: string;
@@ -16,6 +17,9 @@ export type Machine = {
 export const MACHINE_STATUS_LABELS: Record<MachineStatus, string> = {
   not_inspected: "未点検",
   inspected: "点検済み",
+  inspecting: "点検中",
+  confirmed: "確認完了",
+  rejected: "差し戻し",
 };
 
 export const METAL_DETECTOR_UNITS = ["金属探知機1号機", "金属探知機2号機", "金属探知機3号機"];
@@ -25,6 +29,9 @@ export const WEIGHT_CHECKER_UNITS = ["ウェイトチェッカー1号機", "ウ�
 export const MACHINE_STATUS_COLORS: Record<MachineStatus, string> = {
   not_inspected: "var(--semantic-text-secondary)",
   inspected: "#DCAA14",
+  inspecting: "#4B9FF8",
+  confirmed: "var(--semantic-status-success)",
+  rejected: "var(--semantic-status-error)",
 };
 
 export function isMachineDisplayable(machine: Machine): boolean {
@@ -110,7 +117,7 @@ export const RESULT_COLORS: Record<InspectionResult, string> = {
   NG: "var(--semantic-status-error)",
 };
 
-export type RecordExecutionPhase = "開始" | "終了" | "ー";
+export type RecordExecutionPhase = "開始" | "終了" | "—"; // 実施区分の無い記録は本番どおり「—」（Excel No.9。2026-10-08 に「ー」から変更)
 
 export type MachineRecordDetail = {
   metalUnit: string;
@@ -269,16 +276,21 @@ export const MACHINE_RECORDS: Record<string, MachineRecord[]> = withTplFallback(
       result: "NG",
       remarks: "",
       inspectorName: "山田太郎",
-      abnormalCause: "異物混入",
-      abnormalCauseNote: "テスト",
-      abnormalAction: "点検調整",
-      abnormalActionNote: "テストととと",
+      // 原因・対応は AbnormalDetail の形で持つ（提出内容の確認・記録の詳細が abnormalDetail から読むため。2026-10-08）
+      abnormalDetail: {
+        passedQuantity: "",
+        abnormalQuantity: "",
+        abnormalCause: "異物混入",
+        abnormalCauseNote: "テスト",
+        abnormalAction: "点検調整",
+        abnormalActionNote: "テストととと",
+      },
     },
   ],
   m2: [
     {
       id: "r4",
-      category: "ー",
+      category: "—",
       time: "08:25",
       content: "動作確認",
       passedProduct: "",
@@ -353,6 +365,12 @@ export const MACHINE_RECORDS: Record<string, MachineRecord[]> = withTplFallback(
  * その探知機の記録。m3 / m4 には専用のモックが無いので m2 の記録を流用する
  * （記録が引けないと点検済み・確認完了の画面が空になってしまうため）。
  */
+/**
+ * 記録入力の「保存」でこの画面の中で足した記録の id。機器の詳細は、見本の記録を
+ * 一覧のステータス（未点検なら空）で出し分けたうえで、足した記録は必ず後ろに並べる（2026-10-08）
+ */
+export const MACHINE_ADDED_RECORD_IDS = new Set<string>();
+
 export function recordsForMachine(machineId: string | undefined): MachineRecord[] {
   return MACHINE_RECORDS[machineId ?? ""] ?? MACHINE_RECORDS.m2 ?? [];
 }

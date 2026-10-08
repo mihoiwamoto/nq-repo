@@ -24,7 +24,7 @@ export function AdditiveDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       // 画面設計の枠の中では消さない（ユースケースの再生でトーストを囲んで見せるため。Toast も同じ。2026-10-05）
       if (FRAME) return;
@@ -111,10 +111,10 @@ export function AdditiveDetailPage() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteDialogOpen(false)} />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
-              <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
+              <h2 className="text-2xl leading-[34px] text-[var(--semantic-text-primary)] text-center w-full">
                 {additive?.name}の削除
               </h2>
-              <p className="text-base font-normal text-[var(--semantic-text-primary)]">
+              <p className="text-base leading-[26px] font-normal text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。本当に削除しますか？
               </p>
             </div>

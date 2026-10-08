@@ -97,7 +97,7 @@ function QuestionTooltip({ text }: { text: string }) {
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-10"
           />
-          <div className="absolute z-20 top-6 right-0 w-[260px] bg-[var(--semantic-brand-primary)] text-white text-sm rounded-lg p-3 shadow-[0px_2px_3px_rgba(51,51,51,0.24)]">
+          <div className="absolute z-20 top-6 right-0 w-[260px] bg-[var(--semantic-brand-primary)] text-white text-sm rounded-lg p-3 shadow-[0px_2px_6px_rgba(51,51,51,0.24)]">
             {text}
           </div>
         </>
@@ -146,8 +146,8 @@ export function RecordEditPage() {
   const [chlorineChecked, setChlorineChecked] = useState(original?.chlorineToggle.checked ?? false);
   const [uvOperatingHours, setUvOperatingHours] = useState(original?.uvOperatingHours ?? "");
   const [uvChecked, setUvChecked] = useState(original?.uvToggle.checked ?? false);
-  const [uvIndicatorOk, setUvIndicatorOk] = useState(original?.uvIndicatorLight !== "消灯");
-  const [errorIndicatorOk, setErrorIndicatorOk] = useState(original?.errorIndicatorLight !== "点灯");
+  const [uvIndicatorOk, setUvIndicatorOk] = useState(original?.uvIndicatorLight !== "異常");
+  const [errorIndicatorOk, setErrorIndicatorOk] = useState(original?.errorIndicatorLight !== "異常");
 
   const [ngTarget, setNgTarget] = useState<string | null>(null);
   const [ngStatus, setNgStatus] = useState<CheckStatus>("ng");
@@ -467,7 +467,7 @@ export function RecordEditPage() {
       {ngTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeNgDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full mx-6 md:mx-16 lg:mx-40 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-4 py-10 w-full max-w-full mx-6 md:mx-16 lg:mx-40 max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 点検箇所

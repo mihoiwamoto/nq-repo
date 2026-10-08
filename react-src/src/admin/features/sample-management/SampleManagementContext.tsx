@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from "re
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { SAMPLE_TARGET_PRODUCTS, type SampleTargetProduct } from "./mockData";
-import type { ScheduleEntry } from "./types";
+import type { ScheduleEntry, ScheduleProductDetail } from "./types";
 import { useFactoryList } from "../../data/factoryDemo";
 
 type SampleManagementContextValue = {
@@ -10,7 +10,7 @@ type SampleManagementContextValue = {
   addProduct: (name: string) => void;
   removeProduct: (id: string) => void;
   scheduleEntries: Record<string, ScheduleEntry>;
-  upsertScheduleEntry: (dateKey: string, productIds: string[]) => void;
+  upsertScheduleEntry: (dateKey: string, productIds: string[], details?: Record<string, ScheduleProductDetail>) => void;
   removeScheduleEntry: (dateKey: string) => void;
 };
 
@@ -28,8 +28,8 @@ export function SampleManagementProvider({ children }: { children: ReactNode }) 
     setProducts((prev) => prev.filter((product) => product.id !== id));
   }
 
-  function upsertScheduleEntry(dateKey: string, productIds: string[]) {
-    setScheduleEntries((prev) => ({ ...prev, [dateKey]: { dateKey, productIds } }));
+  function upsertScheduleEntry(dateKey: string, productIds: string[], details?: Record<string, ScheduleProductDetail>) {
+    setScheduleEntries((prev) => ({ ...prev, [dateKey]: { dateKey, productIds, details } }));
   }
 
   function removeScheduleEntry(dateKey: string) {

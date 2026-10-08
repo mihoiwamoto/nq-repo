@@ -3,8 +3,8 @@ import { AppHeader } from "../../layout/AppHeader";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import {
   MACHINES,
-  MACHINE_INSPECTION_DATES,
-  MACHINE_RECORDS,
+  inspectionDateForMachine,
+  recordsForMachine,
   RESULT_COLORS,
   RESULT_LABELS,
 } from "./mockData";
@@ -18,17 +18,21 @@ const COLUMNS = [
   { key: "passedProduct", label: "通過製品", width: 200 },
   { key: "result", label: "結果", width: 80 },
   { key: "remarks", label: "備考", width: 160 },
-  { key: "inspectorName", label: "実施者", width: 112 },
-] as const;
+] as const; // 本番の表（DetectorRecordTable）には実施者の列が無い（Excel No.8/No.20/No.26。2026-10-08 に外した）
 
 export function MachineReviewPage() {
   const { machineId } = useParams<{ machineId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
   const machine = findFactoryItem(MACHINES, machineId);
-  const records = MACHINE_RECORDS[machineId ?? ""] ?? [];
-  const inspectionDate = MACHINE_INSPECTION_DATES[machineId ?? ""] ?? "";
-  const locked = (location.state as { locked?: boolean } | null)?.locked ?? false;
+  // 進捗一覧の点検済み・確認完了からは実施者を選ばずにここへ来る（本番 iOS の detectorProgressDetail。2026-10-08）。
+  // 見本の記録が無い機器でも表が空にならないよう、記録画面と同じ引き方にする
+  const records = recordsForMachine(machineId);
+  const inspectionDate = inspectionDateForMachine(machineId) ?? "";
+  const reviewState = location.state as
+    | { locked?: boolean; fromProgress?: boolean; progressStatus?: string }
+    | null;
+  const locked = reviewState?.locked ?? false;
 
   if (!machine) return null;
 
@@ -40,6 +44,11 @@ export function MachineReviewPage() {
           {!locked && (
             <Link
               to={`/app/ledger-list/metal-xray-detection/machines/${machineId}`}
+              state={{
+                inspectorName: records[0]?.inspectorName,
+                fromProgress: reviewState?.fromProgress,
+                progressStatus: reviewState?.progressStatus,
+              }}
               className="bg-white border border-[var(--semantic-brand-primary)] flex gap-2 items-center h-10 px-4 rounded-lg text-sm text-[var(--semantic-brand-primary)]"
             >
               <img src={iconEdit} alt="編集" className="size-5" />
@@ -74,9 +83,17 @@ export function MachineReviewPage() {
               {records.map((record, index) => (
                 <tr key={record.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
                   <td className="px-2 py-2 text-center">
-                    <span className="bg-[var(--semantic-brand-primary)] h-8 px-3 rounded-lg text-sm text-white inline-flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate(`/app/ledger-list/metal-xray-detection/machines/${machineId}/records/${record.id}`, {
+                          state: { inspectionDate, reviewReturn: { to: location.pathname, state: location.state } },
+                        })
+                      }
+                      className="bg-[var(--semantic-brand-primary)] h-8 px-3 rounded-lg text-sm text-white inline-flex items-center justify-center"
+                    >
                       詳細
-                    </span>
+                    </button>
                   </td>
                   <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
                     {record.category}
@@ -106,9 +123,6 @@ export function MachineReviewPage() {
                     style={{ maxWidth: 160 }}
                   >
                     {record.remarks}
-                  </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
-                    {record.inspectorName}
                   </td>
                 </tr>
               ))}

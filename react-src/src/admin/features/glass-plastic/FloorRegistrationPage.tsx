@@ -22,17 +22,20 @@ export function FloorRegistrationPage() {
   const [planImageUrl, setPlanImageUrl] = useState<string>();
   const [planFileName, setPlanFileName] = useState("");
   const [mapItems, setMapItems] = useState<MapItem[]>([]);
+  const [rooms, setRooms] = useState<string[]>([]);
+  const [roomsOpen, setRoomsOpen] = useState(false);
+  // 本番（gp/area/create.blade.php）の「登録」：部屋が無ければ「部屋が登録されていません」、あれば「配置図を確定しますか？」
+  const [emptyRoomOpen, setEmptyRoomOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState("");
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      setError("配置図はPNGまたはJPEG（JPG）形式のみアップロード可能です");
-      return;
-    }
+    // 本番は形式違いのエラー文が無い（ファイルを選ぶ欄で PNG・JPEG に絞るだけ）
+    if (!["image/png", "image/jpeg"].includes(file.type)) return;
     if (file.size > MAX_FILE_SIZE) {
-      setError("配置図のファイル容量は5MBまでです");
+      setError("ファイルのサイズが5MBを超えています。再度取り込み直してください。");
       return;
     }
     setError("");
@@ -43,10 +46,29 @@ export function FloorRegistrationPage() {
   }
 
   function handleSubmit() {
+    // 本番（Gp/Area/StoreRequest）の入力チェックと文言
     if (!name.trim()) {
-      setError("フロア名は必須です");
+      setError("フロア名は必須です。");
       return;
     }
+    if (displayFrom && displayTo && displayTo < displayFrom) {
+      setError("アプリ表示終了日は開始日以降の日付で入力してください。");
+      return;
+    }
+    if (!planImageUrl) {
+      setError("配置図は必須です。");
+      return;
+    }
+    setError("");
+    if (rooms.length === 0) {
+      setEmptyRoomOpen(true);
+      return;
+    }
+    setConfirmOpen(true);
+  }
+
+  function submit() {
+    setConfirmOpen(false);
     addFloor({
       id: `floor-${Date.now()}`,
       name: name.trim(),
@@ -80,7 +102,7 @@ export function FloorRegistrationPage() {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="例）フロアC"
+            placeholder="例）本社工場 1階"
             className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
           />
         </div>
@@ -108,9 +130,9 @@ export function FloorRegistrationPage() {
           <p className="text-sm text-[var(--semantic-text-secondary)]">
             ※アップロード可能なファイル形式は「PNG」または「JPEG（JPG）」形式のみとなります。
             <br />
-            ※ファイル容量は5MBまでアップロード可能です。
+            ※ファイルのサイズは5MBまでアップロード可能です。
             <br />
-            ※推奨画像サイズは660×1096pxです。
+            ※画像サイズは660 × 1096で設定ください。
           </p>
           <div className="flex gap-2 items-center">
             <button
@@ -139,12 +161,11 @@ export function FloorRegistrationPage() {
             <FloorPlanEditor
               imageUrl={planImageUrl}
               items={mapItems}
-              onAddItem={(item) =>
-                setMapItems((prev) => [...prev, { ...item, id: `map-${Date.now()}-${prev.length}` }])
-              }
-              onRemoveItem={(itemId) =>
-                setMapItems((prev) => prev.filter((item) => item.id !== itemId))
-              }
+              onItemsChange={setMapItems}
+              rooms={rooms}
+              onRoomsChange={setRooms}
+              roomsOpen={roomsOpen}
+              onRoomsOpenChange={setRoomsOpen}
             />
           </div>
         )}
@@ -165,6 +186,74 @@ export function FloorRegistrationPage() {
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
             登録
+          </button>
+        </div>
+      </div>
+
+      {emptyRoomOpen && (
+        <ConfirmDialog
+          title="部屋が登録されていません"
+          body="操作を続けるには、少なくとも1つ以上の部屋を登録してください。"
+          okLabel="部屋を追加"
+          okClass="bg-[var(--semantic-brand-danger)]"
+          onCancel={() => setEmptyRoomOpen(false)}
+          onOk={() => {
+            setEmptyRoomOpen(false);
+            setRoomsOpen(true);
+          }}
+        />
+      )}
+      {confirmOpen && (
+        <ConfirmDialog
+          title="配置図を確定しますか？"
+          body="現在の配置図を確定すると、登録完了後は修正や変更ができません。確定前に内容をよくご確認ください。"
+          okLabel="登録"
+          okClass="bg-[var(--semantic-brand-primary)]"
+          onCancel={() => setConfirmOpen(false)}
+          onOk={submit}
+        />
+      )}
+    </div>
+  );
+}
+
+function ConfirmDialog({
+  title,
+  body,
+  okLabel,
+  okClass,
+  onCancel,
+  onOk,
+}: {
+  title: string;
+  body: string;
+  okLabel: string;
+  okClass: string;
+  onCancel: () => void;
+  onOk: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
+        <div className="flex flex-col gap-6 items-start w-full">
+          <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">{title}</h2>
+          <p className="text-base text-[var(--semantic-text-primary)]">{body}</p>
+        </div>
+        <div className="flex gap-6 items-center justify-center w-full">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="bg-white shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-[var(--semantic-text-primary)]"
+          >
+            キャンセル
+          </button>
+          <button
+            type="button"
+            onClick={onOk}
+            className={`${okClass} shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white`}
+          >
+            {okLabel}
           </button>
         </div>
       </div>

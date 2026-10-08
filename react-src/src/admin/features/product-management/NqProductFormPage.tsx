@@ -20,18 +20,21 @@ export function NqProductFormPage() {
   const [quantityUnit, setQuantityUnit] = useState(existing?.quantityUnit ?? "");
   const [factoryId, setFactoryId] = useState(existing?.factoryId ?? "");
   const [expiry, setExpiry] = useState(existing?.expiry ?? "");
-  const [error, setError] = useState("");
+  // 本番と同じく項目ごとにエラーを出す。文言は本番の lang/ja/validation.php（製品名の属性名は「名前」）
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   function handleSubmit() {
-    if (!name || !factoryId || !expiry) {
-      setError("製品名、工場名、賞味期限は必須です");
-      return;
-    }
+    const next: Record<string, string> = {};
+    if (!name) next.name = "名前は必須です。";
+    if (!factoryId) next.factoryId = "工場を入力してください。";
+    if (!expiry) next.expiry = "賞味期限(日)は必須です。";
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
     if (isEditing && existing) {
       updateNqProduct(existing.id, { name, quantity, quantityUnit, factoryId, expiry });
-      navigate(`/admin/products/nq/${existing.id}`);
+      navigate(`/admin/products/nq/${existing.id}`, { state: { updated: true } });
     } else {
       addNqProduct({ name, quantity, quantityUnit, factoryId, expiry });
       navigate("/admin/products/nq/new/complete", { state: { productName: name } });
@@ -44,6 +47,7 @@ export function NqProductFormPage() {
       <Breadcrumb
         items={[
           { label: "製品管理", to: "/admin/products?tab=nq" },
+          ...(isEditing ? [{ label: "詳細", to: `/admin/products/nq/${productId}` }] : []),
           { label: isEditing ? "編集" : "新規登録" },
         ]}
       />
@@ -58,9 +62,10 @@ export function NqProductFormPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="例）プリン 3種6個セット 85g6入"
+              placeholder="例）ﾌﾟﾘﾝ 3種6個ｾｯﾄ 85g6入"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
+            {errors.name && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.name}</p>}
           </div>
 
           <div className="flex flex-col gap-1 items-start w-[480px]">
@@ -100,9 +105,10 @@ export function NqProductFormPage() {
               value={factoryId}
               onChange={setFactoryId}
               options={FACTORIES.map((factory) => ({ value: factory.id, label: factory.name }))}
-              placeholder="例）㈱西通りプリン 本社工場"
+              placeholder="選択してください"
               className="bg-white h-12 px-4 rounded-lg text-base w-[240px] text-[var(--semantic-text-primary)]"
             />
+            {errors.factoryId && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.factoryId}</p>}
           </div>
 
           <div className="flex flex-col gap-1 items-start w-[480px]">
@@ -117,10 +123,10 @@ export function NqProductFormPage() {
               placeholder="例）9999"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
+            {errors.expiry && <p className="text-sm text-[var(--semantic-brand-danger)]">{errors.expiry}</p>}
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button
@@ -135,7 +141,7 @@ export function NqProductFormPage() {
             onClick={handleSubmit}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
-            登録
+            {isEditing ? "保存" : "登録"}
           </button>
         </div>
       </div>

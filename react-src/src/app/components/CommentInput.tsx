@@ -21,7 +21,7 @@ export function CommentCard({ comment }: { comment: CommentEntry }) {
           <span className="text-base font-semibold leading-none text-[var(--semantic-brand-primary)]">
             {comment.authorName}
           </span>
-          <span className="text-xs font-normal leading-none text-[var(--semantic-text-secondary)]">
+          <span className="text-xs font-semibold leading-none text-[var(--semantic-text-secondary)]">
             {comment.timestamp}
           </span>
         </div>

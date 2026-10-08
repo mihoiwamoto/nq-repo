@@ -16,24 +16,39 @@ import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { RepairStatus, ScaleApprovalRecord } from "./types";
 
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
-  { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
-  { value: "rejected", label: "差し戻し" },
-];
+/**
+ * 本番の approval.blade.php と同じ並び（点検済み・承認待ち・差し戻し・承認）。
+ * 点検済みは本番では選べない（disabled。共通の Pulldown の disabled の選択肢で灰色にする）。
+ * 「承認」は承認済みのときだけ「承認済み」と出す。
+ */
+function statusOptions(current: ApprovalStatus): { value: string; label: string; disabled?: boolean }[] {
+  return [
+    { value: "checked", label: "点検済み", disabled: true },
+    { value: "pending", label: "承認待ち" },
+    { value: "rejected", label: "差し戻し" },
+    { value: "approved", label: current === "approved" ? "承認済み" : "承認" },
+  ];
+}
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
 }
 
-function CheckStatusTag({ status }: { status: "ok" | "ng" }) {
+/** 本番の ScaleInspectionStatus：異常のときは修理状況で 修理中／要対応／異常あり に分ける */
+function CheckStatusTag({ status, repairStatus }: { status: "ok" | "ng"; repairStatus?: RepairStatus | null }) {
+  const label =
+    status === "ok"
+      ? "正常"
+      : repairStatus === "repairing"
+        ? "修理中"
+        : repairStatus === "action_needed" || repairStatus == null
+          ? "要対応"
+          : "異常あり";
+  const bg =
+    status === "ok" ? "bg-[#19c95f]" : repairStatus === "repairing" ? "bg-[var(--semantic-status-caution)]" : "bg-[#f85c5c]";
   return (
-    <span
-      className={`h-7 w-[88px] rounded-lg flex items-center justify-center text-base text-white ${
-        status === "ok" ? "bg-[#19c95f]" : "bg-[#f85c5c]"
-      }`}
-    >
-      {status === "ok" ? "正常" : "異常あり"}
+    <span className={`h-7 w-[88px] rounded-lg flex items-center justify-center text-base text-white ${bg}`}>
+      {label}
     </span>
   );
 }
@@ -54,7 +69,7 @@ export function RecordDetailPage() {
       factoryName={request?.companyName ?? "工場"}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },
-        { label: "点検内容一覧", to: `/admin/approvals/scale-inspection/${requestId}` },
+        { label: "データ一覧", to: `/admin/approvals/scale-inspection/${requestId}` },
         { label: "詳細" },
       ]}
       setApprovalStatus={setApprovalStatus}
@@ -94,6 +109,7 @@ export function RecordDetailView({
   } = useApprovalConfirm();
 
   const [comment, setComment] = useState("");
+  const [showCommentToast, setShowCommentToast] = useState(false);
 
   if (!record) {
     return (
@@ -109,10 +125,13 @@ export function RecordDetailView({
     if (value === "approved") {
       requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
     } else if (value === "rejected") {
-      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
-    } else {
-      setApprovalStatus(record.id, value as ApprovalStatus);
+      requestRejection((reason) => {
+        setApprovalStatus(record.id, value as ApprovalStatus);
+        // 差し戻し理由はコメントとして残す（本番 ApprovalFlowService::updateApprovalStatus → createComment）
+        if (reason) addComment(record.id, reason);
+      });
     }
+    // 点検済み・承認待ちは選んでも何もしない（本番は承認待ちから 承認・差し戻し にだけ変えられる）
   };
 
   return (
@@ -123,7 +142,8 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {showCommentToast && <Toast message="コメントを登録しました。" onClose={() => setShowCommentToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -134,7 +154,7 @@ export function RecordDetailView({
           <Pulldown
             value={record.approvalStatus}
             onChange={handleStatusChange}
-            options={STATUS_OPTIONS}
+            options={statusOptions(record.approvalStatus)}
             disabled={record.approvalStatus !== "pending"}
             className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
             style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
@@ -155,11 +175,6 @@ export function RecordDetailView({
           <div className="flex items-center justify-between w-full">
             <p className="text-xl text-[var(--semantic-text-primary)]">確認者</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">{record.confirmer}</p>
-          </div>
-          <HLine />
-          <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">持ち場</p>
-            <p className="text-xl text-[var(--semantic-text-primary)]">{record.post}</p>
           </div>
           <HLine />
           <div className="flex items-center justify-between w-full">
@@ -205,7 +220,7 @@ export function RecordDetailView({
               <div className="flex flex-col gap-1 items-start w-full">
                 <div className="flex items-center justify-between w-full">
                   <p className="text-xl text-[var(--semantic-text-primary)]">動作確認</p>
-                  <CheckStatusTag status={record.operationCheck} />
+                  <CheckStatusTag status={record.operationCheck} repairStatus={record.repairStatus} />
                 </div>
                 {isNg && (
                   <div className="flex flex-col gap-1 items-start px-2 text-base text-[var(--semantic-text-secondary)] w-full">
@@ -321,6 +336,7 @@ export function RecordDetailView({
             onSubmit={() => {
               addComment(record.id, comment);
               setComment("");
+              setShowCommentToast(true);
             }}
             maxLength={255}
           />

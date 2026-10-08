@@ -10,6 +10,7 @@ import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconKebabMenu from "../../../assets/figma/icons/common/kebab-menu.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import { PlusIcon } from "../../components/PlusIcon";
 
 const FREQUENCY_LABEL = { daily: "毎日", weekly: "毎週", monthly: "毎月", yearly: "毎年" } as const;
 
@@ -27,7 +28,7 @@ export function CalendarPage() {
   const [month, setMonth] = useState(3);
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
   const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("更新されました。");
+  const [toastMessage, setToastMessage] = useState("更新しました。");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -40,7 +41,7 @@ export function CalendarPage() {
         setYear(y);
         setMonth(m - 1);
       }
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => setShowToast(false), 2000);
       navigate(location.pathname, { replace: true });
@@ -95,7 +96,8 @@ export function CalendarPage() {
             to={`${basePath}/schedule/register`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />

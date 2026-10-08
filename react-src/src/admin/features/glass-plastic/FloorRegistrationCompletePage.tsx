@@ -7,7 +7,7 @@ export function FloorRegistrationCompletePage() {
 
   return (
     <div>
-      <PageTitleBar title="帳票管理" />
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
@@ -27,14 +27,14 @@ export function FloorRegistrationCompletePage() {
             />
           </svg>
           <p className="text-2xl text-[var(--semantic-text-primary)]">
-            ガラスプラスチック管理の新規登録が完了しました
+            フロアの新規登録が完了しました
           </p>
         </div>
         <Link
           to={basePath}
           className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
         >
-          ガラスプラスチック管理一覧に戻る
+          ガラスプラスチックの点検一覧に戻る
         </Link>
       </div>
     </div>

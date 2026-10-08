@@ -1,6 +1,7 @@
 /* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
 import { withTplFallback } from "../../data/targetId";
-export type SampleStatus = "not_inspected" | "inspected";
+/* 本番（Excel No.2／No.37。checkStatus 0/1/2/8/9）に合わせて 未点検・点検中・点検済み・確認完了・差し戻し を全部持つ（2026-10-08）。見本は未点検・点検済みだけ */
+export type SampleStatus = "not_inspected" | "inspecting" | "inspected" | "confirmed" | "rejected";
 
 export type SampleTab = "today" | "storage";
 
@@ -23,11 +24,17 @@ export type SampleEntry = {
 export const SAMPLE_STATUS_LABELS: Record<SampleStatus, string> = {
   not_inspected: "未点検",
   inspected: "点検済み",
+  inspecting: "点検中",
+  confirmed: "確認完了",
+  rejected: "差し戻し",
 };
 
 export const SAMPLE_STATUS_COLORS: Record<SampleStatus, string> = {
   not_inspected: "var(--semantic-text-secondary)",
   inspected: "#DCAA14",
+  inspecting: "#4B9FF8",
+  confirmed: "var(--semantic-status-success)",
+  rejected: "var(--semantic-status-error)",
 };
 
 export const SAMPLE_ENTRIES: SampleEntry[] = [

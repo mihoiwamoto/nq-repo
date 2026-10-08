@@ -19,7 +19,7 @@ export function LineProgressButton({
     <button
       type="button"
       onClick={onClick}
-      className="-mr-4 bg-[var(--semantic-brand-primary)] flex h-[46px] items-stretch rounded-l-lg overflow-hidden shrink-0 shadow-[0px_2px_3px_rgba(51,51,51,0.24)] hover:opacity-90 transition-opacity"
+      className="-mr-4 bg-[var(--semantic-brand-primary)] flex h-[46px] items-stretch rounded-l-lg overflow-hidden shrink-0 shadow-[0px_2px_6px_rgba(51,51,51,0.24)] hover:opacity-90 transition-opacity"
     >
       <span className="flex items-center justify-center w-6 shrink-0">
         <span

@@ -1,6 +1,7 @@
 /* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
 import { withTplFallback } from "../../data/targetId";
-export type PointStatus = "not_inspected" | "inspected" | "confirmed";
+/* 本番の API（check_status 0:未点検／1:点検済み／2:確認完了／9:差し戻し）に合わせて全部持つ（2026-10-08）。見本は未点検・点検済み・確認完了だけ */
+export type PointStatus = "not_inspected" | "inspected" | "confirmed" | "rejected";
 
 export type WaterPoint = {
   id: string;
@@ -14,12 +15,14 @@ export const POINT_STATUS_LABELS: Record<PointStatus, string> = {
   not_inspected: "未点検",
   inspected: "点検済み",
   confirmed: "確認完了",
+  rejected: "差し戻し",
 };
 
 export const POINT_STATUS_COLORS: Record<PointStatus, string> = {
   not_inspected: "var(--semantic-text-secondary)",
   inspected: "#DCAA14",
   confirmed: "var(--semantic-status-success)",
+  rejected: "var(--semantic-status-error)",
 };
 
 export const points: WaterPoint[] = [

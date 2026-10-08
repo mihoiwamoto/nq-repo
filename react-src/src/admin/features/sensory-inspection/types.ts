@@ -16,7 +16,15 @@ export type SensoryTargetProduct = {
   criteria: Record<Criterion, boolean>;
 };
 
+/** 製品ごとの比較製品（本番の calendar の is_comparison：0＝なし・1＝あり・null＝未設定）と比較製品製造日 */
+export type ComparisonSetting = {
+  isComparison: 0 | 1 | null;
+  manufacturedAt?: string;
+};
+
 export type ScheduleEntry = {
   dateKey: string;
   productIds: string[];
+  /** キーは製品の id。無い製品は「未設定」 */
+  comparisons?: Record<string, ComparisonSetting>;
 };

@@ -27,7 +27,7 @@ export function PostProgressPanel({
           type="button"
           onClick={onClose}
           aria-label="進捗パネルを閉じる"
-          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex items-center justify-center w-[46px] h-[46px] rounded-l-lg shrink-0 mt-[10px]"
+          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex items-center justify-center w-[46px] h-[46px] rounded-l-lg shrink-0 mt-[10px]"
         >
           <span
             aria-hidden
@@ -43,7 +43,7 @@ export function PostProgressPanel({
             }}
           />
         </button>
-        <div className="bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg h-full w-[348px] px-6 py-4 flex flex-col gap-4 overflow-y-auto overflow-x-hidden">
+        <div className="bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg h-full w-[348px] px-6 py-4 flex flex-col gap-4 overflow-y-auto overflow-x-hidden">
           <div className="flex flex-col gap-1 w-full shrink-0">
             <div className="flex items-center justify-between w-full">
               <p className="text-xl font-semibold text-[var(--semantic-brand-primary)]">

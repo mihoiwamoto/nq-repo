@@ -2,16 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Pulldown } from "../../components/Pulldown";
 import { Toast } from "../../components/Toast";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { getFactoryName } from "../../../data/factories";
-import {
-  SCALE_REPAIR_STATUS_COLORS,
-  SCALE_REPAIR_STATUS_LABELS,
-  SCALE_REPAIR_STATUS_NEXT_OPTIONS,
-  type ScaleRepairStatus,
-} from "./types";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
@@ -26,7 +19,7 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export function ScaleManagementDetailPage() {
   const { factoryId, scaleId } = useParams<{ factoryId: string; scaleId: string }>();
-  const { scales, posts, removeScale, setScaleRepairStatus } = useScaleInspection();
+  const { scales, posts, removeScale } = useScaleInspection();
   const navigate = useNavigate();
   const location = useLocation();
   const basePath = `/admin/ledger-management/scale-inspection/factories/${factoryId}`;
@@ -64,7 +57,7 @@ export function ScaleManagementDetailPage() {
 
   return (
     <div>
-      <PageTitleBar title="秤管理" showBack />
+      <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -123,33 +116,6 @@ export function ScaleManagementDetailPage() {
             <Row label="持ち場" value={postName} />
           </div>
         </div>
-
-        <div className="flex flex-col gap-2 items-start w-full">
-          <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
-          <p className="text-sm text-[var(--semantic-text-secondary)]">
-            異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
-          </p>
-          <div className="bg-white flex items-center justify-between w-full px-4 py-6 rounded-lg">
-            <p className="text-xl text-[var(--semantic-text-primary)]">{scale.label}</p>
-            <Pulldown
-              value={scale.repairStatus ?? ""}
-              onChange={(value) =>
-                setScaleRepairStatus(scale.id, value ? (value as ScaleRepairStatus) : null)
-              }
-              options={SCALE_REPAIR_STATUS_NEXT_OPTIONS[scale.repairStatus ?? "action_needed"].map((opt) => ({
-                value: opt,
-                label: SCALE_REPAIR_STATUS_LABELS[opt],
-              }))}
-              placeholder="異常なし"
-              className="h-10 px-4 rounded-lg text-sm text-white"
-              style={{
-                backgroundColor: scale.repairStatus
-                  ? SCALE_REPAIR_STATUS_COLORS[scale.repairStatus]
-                  : "var(--semantic-status-success)",
-              }}
-            />
-          </div>
-        </div>
       </div>
 
       {deleteDialogOpen && (
@@ -158,10 +124,10 @@ export function ScaleManagementDetailPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                {scale.label}の削除
+                秤No.({scale.label})の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">
@@ -184,7 +150,7 @@ export function ScaleManagementDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );

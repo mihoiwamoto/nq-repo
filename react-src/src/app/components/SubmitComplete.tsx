@@ -102,9 +102,12 @@ export function SubmitComplete({
                 {title}
               </h2>
             </div>
-            <p className="text-base leading-[1.4] text-[var(--semantic-text-primary)] text-center w-full font-semibold">
-              {message}
-            </p>
+            {/* 説明が空のとき（点検予定の削除完了など。確定デザイン 6198:79573）は行ごと出さない */}
+            {message && (
+              <p className="text-base leading-[1.4] text-[var(--semantic-text-primary)] text-center w-full font-semibold">
+                {message}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-10 items-center w-full">

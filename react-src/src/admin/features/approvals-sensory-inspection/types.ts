@@ -25,7 +25,8 @@ export type ScoreEntry = {
   inspectorName: string;
   confirmerName: string;
   date: string;
-  hasComparisonProduct: boolean;
+  /** null は未設定（本番の has_comparison が null） */
+  hasComparisonProduct: boolean | null;
   comparisonManufactureDate?: string;
   scores: Record<Criterion, CriterionScore>;
 };

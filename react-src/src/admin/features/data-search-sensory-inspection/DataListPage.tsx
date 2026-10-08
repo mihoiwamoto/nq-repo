@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
@@ -16,23 +16,14 @@ import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import { downloadSensoryCsv, downloadSensoryPdf } from "./sensoryExport";
+import { PlusIcon } from "../../components/PlusIcon";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
   return `${y.slice(2)}.${m}.${d}`;
 }
 
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 const MONTH_LABELS = [
   "1月", "2月", "3月", "4月", "5月", "6月",
@@ -69,7 +60,6 @@ export function DataListPage() {
   const [filterOpen, setFilterOpen] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [productFilter, setProductFilter] = useState("");
   const [onlyAbnormal, setOnlyAbnormal] = useState(false);
@@ -90,6 +80,8 @@ export function DataListPage() {
     if (onlyAbnormal && !isRecordAbnormal(r)) return false;
     return true;
   });
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  filtered.sort((a, b) => a.date.localeCompare(b.date));
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
@@ -104,17 +96,6 @@ export function DataListPage() {
     setOnlyAbnormal(false);
   }
 
-  function handleDownload() {
-    const header = ["日付", "検査製品名", ...CRITERIA, "検査結果", "確認者"];
-    const rows = filtered.map((r) => [
-      r.date,
-      r.productName,
-      ...CRITERIA.map((c) => averageScore(r, c).toFixed(1)),
-      isRecordAbnormal(r) ? "異常あり" : "正常",
-      r.confirmer,
-    ]);
-    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
-  }
 
   return (
     <div>
@@ -162,7 +143,7 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+            className="flex items-center gap-2 h-5 text-base text-[var(--semantic-brand-primary)]"
           >
             <span>絞り込み検索</span>
             {filterOpen ? (
@@ -180,7 +161,7 @@ export function DataListPage() {
                 }}
               />
             ) : (
-              <span>+</span>
+              <PlusIcon />
             )}
           </button>
           {filterOpen && (
@@ -356,7 +337,7 @@ export function DataListPage() {
             )}
           </div>
 
-          <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
+          <div className="w-full rounded-lg overflow-x-auto">
             <div className="flex flex-col min-w-[1204px]">
               <div className="bg-[#f6f6f6] flex h-[50px] items-center">
                 {COLUMNS.map((col) => (
@@ -492,9 +473,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadSensoryCsv(filtered, factoryName, year, month);
+                  } else {
+                    await downloadSensoryPdf(filtered, factoryName, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

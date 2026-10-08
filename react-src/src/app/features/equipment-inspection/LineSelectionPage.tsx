@@ -112,7 +112,7 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
         </div>
 
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中）。タブの絞り込みで 0 件のときは今までの文言 */}
+          {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯）。タブの絞り込みで 0 件のときは今までの文言 */}
           {allLines.length === 0 ? (
             <AppEmptyState />
           ) : visibleLines.length === 0 ? (

@@ -102,7 +102,7 @@ export function AppLoginPage() {
                     </div>
                   </div>
                   {hasError && (
-                    <p className="text-sm text-[var(--semantic-brand-danger)] w-full">※パスワードが一致しません</p>
+                    <p className="text-sm text-[var(--semantic-brand-danger)] w-full">工場IDとパスワードは正しくありません。</p>
                   )}
                 </div>
               </div>

@@ -227,7 +227,8 @@ export function RecordingPage() {
                       const done = record?.status === "done";
                       return (
                         <Fragment key={item}>
-                        {itemIndex > 0 && <div className="border-t border-[#d0d0d0] w-full" />}
+                        {/* 確定デザイン（7139:221652）：線は場所を取らず、項目の間隔 110px */}
+                        {itemIndex > 0 && <div className="border-t border-[#d0d0d0] w-full -mb-px" />}
                         <div className="flex flex-col gap-2 items-start w-full">
                           <div className="flex items-center w-full gap-4">
                             <p className="flex-1 text-xl text-[var(--semantic-text-primary)]">{item}</p>
@@ -238,7 +239,8 @@ export function RecordingPage() {
                                 done ? "bg-[#19c95f]" : "bg-[#d0d0d0]"
                               }`}
                             >
-                              <img src={iconCheck} alt="完了" className="size-5" />
+                              {/* 確定デザイン（7139:221652）：チェックのアイコン 24px */}
+                              <img src={iconCheck} alt="完了" className="size-6" />
                             </button>
                           </div>
                           <RecordTimestamp
@@ -261,13 +263,13 @@ export function RecordingPage() {
           <div className="border-t border-[#d0d0d0] w-full" />
 
           <div className="flex flex-col gap-2 items-start w-full">
-            <p className="text-lg text-[var(--semantic-text-primary)]">備考</p>
-            {/* 確定デザイン（InputLongTextItem）：高さ 82・14px の Regular */}
+            <p className="text-lg leading-[18px] text-[var(--semantic-text-primary)]">備考</p>
+            {/* 確定デザイン（7139:221756 の InputLongTextItem）：見出し 18px（高さ 18）、欄は高さ 82・16px の W3 */}
             <textarea
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               placeholder="補足事項や連絡事項があればご記入ください。"
-              className="bg-white h-[82px] p-2 rounded-lg text-sm font-normal leading-[1.6] text-[var(--semantic-text-primary)] w-full resize-none placeholder:text-[var(--semantic-text-secondary)]"
+              className="bg-white h-[82px] p-2 rounded-lg text-base font-normal leading-[1.6] text-[var(--semantic-text-primary)] w-full resize-none placeholder:text-[var(--semantic-text-secondary)]"
             />
           </div>
         </div>
@@ -329,7 +331,7 @@ export function RecordingPage() {
       {saveDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setSaveDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 途中保存しました
@@ -352,7 +354,7 @@ export function RecordingPage() {
       {skipDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeSkipDialog} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-w-[calc(100%-32px)]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 点検を見送りますか？
@@ -362,7 +364,7 @@ export function RecordingPage() {
               </p>
               {!isDaily && !editReturn && (
                 <div className="flex flex-col gap-2 items-start w-full">
-                  <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
+                  <p className="text-lg leading-[18px] text-[var(--semantic-text-primary)] flex items-center gap-1">
                     明日に見送る <span className="text-[var(--semantic-brand-danger)]">※</span>
                   </p>
                   <div className="flex gap-4 items-center">
@@ -392,7 +394,7 @@ export function RecordingPage() {
                 </div>
               )}
               <div className="flex flex-col gap-2 items-start w-full">
-                <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
+                <p className="text-lg leading-[18px] text-[var(--semantic-text-primary)] flex items-center gap-1">
                   備考 <span className="text-[var(--semantic-brand-danger)]">※</span>
                 </p>
                 <textarea

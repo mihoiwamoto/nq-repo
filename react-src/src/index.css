@@ -232,3 +232,11 @@ body.kit-admin-framed.kit-desc-open .nvsw {
   height: 100%;
   box-shadow: none;
 }
+
+/* アプリのポップアップの縦の位置（2026-10-08）。確定デザインは上のステータスバー（48px）込みの 1024px の中央に置くので、
+   976px の画面の中央より 24px 上になる（7139:282797 は上から 143px）。画面いっぱいに覆って中央に置く箱に、下 48px の余白を足して合わせる。
+   p-4 の箱は上の 16px で 8px 下がるので、上の余白は 0 にする（完了ポップアップ 7139:244730 は上から 284px） */
+.app-viewport-frame .fixed.inset-0.flex.items-center.justify-center {
+  padding-top: 0;
+  padding-bottom: 48px;
+}

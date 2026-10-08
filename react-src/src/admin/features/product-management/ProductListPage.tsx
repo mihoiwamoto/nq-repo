@@ -10,6 +10,7 @@ import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconSearch from "@images/Icon/search.svg";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
+import { PlusIcon } from "../../components/PlusIcon";
 
 const PAGE_SIZE = 10;
 
@@ -172,7 +173,8 @@ export function ProductListPage() {
               to="/admin/products/nq/new"
               className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
             >
-              + 新規登録
+              <PlusIcon />
+              新規登録
             </Link>
           ) : undefined
         }
@@ -300,7 +302,7 @@ export function ProductListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full">工場名</p>
             </div>
             <div className="w-[100px] h-full flex items-center justify-start px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full whitespace-nowrap">賞味期限</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)] text-left w-full whitespace-nowrap">{activeTab === "host" ? "賞味期間" : "賞味期限"}</p>
             </div>
           </div>
           {pageItems.length === 0 ? (

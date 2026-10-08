@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AppHeader } from "../../layout/AppHeader";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
 import { ACTORS, ADDITIVE_STATUS_LABELS, ADDITIVE_STATUS_COLORS } from "./mockData";
@@ -8,10 +8,13 @@ import { AppEmptyState } from "../../components/AppEmptyState";
 export function ProductSelectionPage() {
   const { additives } = useAdditiveManagement();
   const navigate = useNavigate();
+  const location = useLocation();
+  // 帳票一覧の実施者選択で選んだ人を記録に入れる（薬品管理と同じ。直接来たときだけ先頭の実施者で補う。2026-10-08）
+  const inspectorName = (location.state as { inspectorName?: string } | null)?.inspectorName ?? ACTORS[0].name;
 
   function navigateToProduct(productId: string) {
     navigate(`/app/ledger-list/additive-management/products/${productId}`, {
-      state: { inspectorName: ACTORS[0].name },
+      state: { inspectorName },
     });
   }
 
@@ -20,17 +23,17 @@ export function ProductSelectionPage() {
       <AppHeader title="添加物管理" />
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-6 items-center">
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中） */}
+          {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯） */}
           {additives.length === 0 && <AppEmptyState />}
           {additives.map((additive) => (
             <button
               key={additive.id}
               type="button"
               onClick={() => navigateToProduct(additive.id)}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-6 h-20 items-center p-4 rounded-lg w-full text-left"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-6 h-20 items-center p-4 rounded-lg w-full text-left"
             >
               <div className="flex-1 flex flex-col gap-2 min-w-0">
-                <p className="text-lg text-[var(--semantic-text-primary)]">{additive.name}</p>
+                <p className="text-lg text-black">{additive.name}</p>
               </div>
               {/* 薬品・添加物は毎日の点検ではないので「未点検」の札は出さない（確定デザイン 7139:234163・注記 7139:298922。2026-10-06） */}
               {additive.status !== "not_inspected" && (

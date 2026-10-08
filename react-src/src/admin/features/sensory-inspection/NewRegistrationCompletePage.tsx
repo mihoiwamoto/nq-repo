@@ -6,7 +6,7 @@ export function NewRegistrationCompletePage() {
 
   return (
     <div>
-      <PageTitleBar title="検査製品選択" />
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg
@@ -26,7 +26,7 @@ export function NewRegistrationCompletePage() {
             />
           </svg>
           <p className="text-2xl text-[var(--semantic-text-primary)]">
-            検査対象製品の新規登録が完了しました
+            官能検査記録の新規登録が完了しました
           </p>
         </div>
         <Link

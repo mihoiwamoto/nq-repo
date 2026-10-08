@@ -15,125 +15,126 @@ export function updateApprovalRequestStatus(id: string, status: ApprovalStatus) 
   }
 }
 
+/** description の点検日は本番どおり「2025年04月01日点検分」（Y年m月d日。WaterApprovalFlowService などの書式。2026-10-08） */
 export const approvalRequests: ApprovalRequest[] = [
   {
     id: "1",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "equipment-inspection",
-    description: "25年4月1日点検分",
+    description: "2025年04月01日点検分",
   },
   {
     id: "2",
     status: "pending",
     companyName: "㈱西通りプリン 本社工場",
     ledgerSlug: "scale-inspection",
-    description: "25年4月1日点検分_プリン",
+    description: "2025年04月01日点検分_プリン",
   },
   {
     id: "3",
     status: "pending",
     companyName: "㈱西通りプリン 本社工場",
     ledgerSlug: "scale-inspection",
-    description: "25年4月1日点検分_アイス",
+    description: "2025年04月01日点検分_アイス",
   },
   {
     id: "4",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "water-inspection",
-    description: "25年4月1日点検分_給湯室",
+    description: "2025年04月01日点検分_給湯室",
   },
   {
     id: "5",
     status: "pending",
     companyName: "㈱西通りプリン 本社工場",
     ledgerSlug: "water-inspection",
-    description: "25年4月2日点検分_点検場所B",
+    description: "2025年04月02日点検分_点検場所B",
   },
   {
     id: "6",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "cleaning-record",
-    description: "25年4月1日点検分",
+    description: "2025年04月01日点検分",
   },
   {
     id: "7",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "additive-management",
-    description: "25年4月1日点検分_ソルビン酸",
+    description: "2025年04月01日点検分_ソルビン酸",
   },
   {
     id: "8",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "chemical-management",
-    description: "25年4月1日点検分_次亜塩素酸ナトリウム",
+    description: "2025年04月01日点検分_次亜塩素酸ナトリウム",
   },
   {
     id: "9",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "sample-management",
-    description: "25年4月1日保存分_仕出しだし巻き玉子 冷凍",
+    description: "2025年04月01日点検分",
   },
   {
     id: "10",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "metal-xray-detection",
-    description: "25年4月1日点検分",
+    description: "2025年04月01日点検分",
   },
   {
     id: "11",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "sensory-inspection",
-    description: "25年4月1日点検分",
+    description: "2025年04月01日点検分",
   },
   {
     id: "12",
     status: "pending",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "glass-plastic",
-    description: "25年4月1日点検分_フロアA",
+    description: "2025年04月01日点検分_フロアA",
   },
   {
     id: "13",
     status: "approved",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "cleaning-record",
-    description: "25年3月28日点検分",
+    description: "2025年03月28日点検分",
   },
   {
     id: "14",
     status: "approved",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "equipment-inspection",
-    description: "25年3月28日点検分",
+    description: "2025年03月28日点検分",
   },
   {
     id: "15",
     status: "approved",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "additive-management",
-    description: "25年3月28日点検分_安息香酸ナトリウム",
+    description: "2025年03月28日点検分_安息香酸ナトリウム",
   },
   {
     id: "16",
     status: "rejected",
     companyName: "㈱西原食品 本社工場",
     ledgerSlug: "chemical-management",
-    description: "25年3月28日点検分_次亜塩素酸ナトリウム",
+    description: "2025年03月28日点検分_次亜塩素酸ナトリウム",
   },
   {
     id: "17",
     status: "rejected",
     companyName: "㈱西通りプリン 本社工場",
     ledgerSlug: "water-inspection",
-    description: "25年3月29日点検分_点検場所A",
+    description: "2025年03月29日点検分_点検場所A",
   },
 ];
 
@@ -156,7 +157,6 @@ const DEMO_SUFFIX: Record<string, string> = {
   "water-inspection": "_給湯室",
   "chemical-management": "_次亜塩素酸ナトリウム",
   "additive-management": "_ソルビン酸",
-  "sample-management": "_冷凍ぎょうざ 12個入",
 };
 const DEMO_STATUS: ApprovalStatus[] = ["pending", "pending", "approved", "rejected"];
 DEMO_FACTORIES.forEach((companyName, fi) => {
@@ -169,7 +169,9 @@ DEMO_FACTORIES.forEach((companyName, fi) => {
       status: DEMO_STATUS[(fi + k) % DEMO_STATUS.length],
       companyName,
       ledgerSlug,
-      description: `25年4月${day}日点検分${DEMO_SUFFIX[ledgerSlug] ?? ""}`,
+      description:
+        // 本番の承認申請のカードは Y年m月d日（WaterApprovalFlowService など。2026-10-08 に全帳票を合わせた）
+        `2025年04月${String(day).padStart(2, "0")}日点検分${DEMO_SUFFIX[ledgerSlug] ?? ""}`,
     });
   }
 });

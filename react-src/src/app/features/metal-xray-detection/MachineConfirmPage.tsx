@@ -13,7 +13,7 @@ const COLUMNS = [
   { key: "passedProduct", label: "通過製品", width: 200 },
   { key: "result", label: "結果", width: 80 },
   { key: "remarks", label: "備考", width: 160 },
-  { key: "inspectorName", label: "実施者", width: 112 },
+  // 確定デザイン（確認画面 6198:80063）は 実施者 の列が無い（2026-10-08）
 ] as const;
 
 export function MachineConfirmPage() {
@@ -23,14 +23,12 @@ export function MachineConfirmPage() {
   const state = location.state as {
     inspectionDate?: string;
     inspectorName?: string;
-    hideAddButton?: boolean;
     fromProgress?: boolean;
     records?: MachineRecord[];
     /** 確認待ち（差し戻し）の「点検内容を修正する」から来たときの戻り先 */
     editReturn?: EditReturn;
   } | null;
   const inspectionDate = state?.inspectionDate ?? "";
-  const hideAddButton = state?.hideAddButton ?? false;
   const machine = findFactoryItem(MACHINES, machineId);
   // 点検画面から渡された記録をそのまま確認する。直接URLを開いたときだけモックを読む
   const records = state?.records ?? recordsForMachine(machineId);
@@ -45,7 +43,7 @@ export function MachineConfirmPage() {
     <>
       <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
@@ -121,20 +119,8 @@ export function MachineConfirmPage() {
                       {record.remarks && (
                         <p className="whitespace-nowrap overflow-hidden text-ellipsis">{record.remarks}</p>
                       )}
-                      {record.result === "NG" && record.abnormalCauseNote && (
-                        <p className="text-xs text-[var(--semantic-text-secondary)] whitespace-nowrap overflow-hidden text-ellipsis">
-                          原因: {record.abnormalCauseNote}
-                        </p>
-                      )}
-                      {record.result === "NG" && record.abnormalActionNote && (
-                        <p className="text-xs text-[var(--semantic-text-secondary)] whitespace-nowrap overflow-hidden text-ellipsis">
-                          対応: {record.abnormalActionNote}
-                        </p>
-                      )}
+                      {/* 本番（Excel No.21）は備考を 1 行だけ出し、異常反応の原因・対応は出さない（2026-10-08） */}
                     </div>
-                  </td>
-                  <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
-                    {record.inspectorName}
                   </td>
                 </tr>
               ))}
@@ -148,7 +134,7 @@ export function MachineConfirmPage() {
           type="button"
           onClick={() =>
             navigate(detailPath, {
-              state: { inspectorName: state?.inspectorName, fromProgress: state?.fromProgress, editReturn: state?.editReturn },
+              state: { inspectionDate, inspectorName: state?.inspectorName, fromProgress: state?.fromProgress, editReturn: state?.editReturn },
             })
           }
           className="bg-white border border-[#333] h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"

@@ -11,8 +11,9 @@ export function RecordTimestamp({
   timestamp?: string;
 }) {
   if (!timestamp) return null;
+  // 確定デザイン（清掃記録 7139:221652・機械器具点検 7139:282635）：行の高さ 14px（文字と同じ）
   return (
-    <p className="text-sm font-normal text-[var(--semantic-text-secondary)] text-right w-full">
+    <p className="text-sm leading-none font-normal text-[var(--semantic-text-secondary)] text-right w-full">
       {inspector ? `${inspector} ${timestamp}` : timestamp}
     </p>
   );

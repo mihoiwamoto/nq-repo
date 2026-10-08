@@ -57,7 +57,7 @@ export function ReviewPage() {
       <>
         <AppHeader title="官能検査記録" />
         <div className="flex-1 flex items-center justify-center p-6">
-          <p className="text-base text-[var(--semantic-text-secondary)]">対象の商品が見つかりません。</p>
+          <p className="text-base text-[var(--semantic-text-secondary)]">対象の製品が見つかりません。</p>
         </div>
       </>
     );
@@ -81,7 +81,7 @@ export function ReviewPage() {
 
         <div className="bg-white flex flex-wrap gap-2 items-center p-4 rounded-lg w-full max-w-full">
           <div className="flex gap-2 items-center">
-            <span className="text-base text-[#808080] w-[90px]">検査商品名</span>
+            <span className="text-base text-[#808080] w-[90px]">検査製品名</span>
             <span className="text-base text-[var(--semantic-text-primary)]">{product.name}</span>
           </div>
           <div className="flex gap-2 items-center">
@@ -107,8 +107,8 @@ export function ReviewPage() {
               />
               <HLine />
               <ConfirmRow
-                label="比較商品"
-                value={record.comparison === "present" ? "比較商品あり" : "比較商品なし"}
+                label="比較製品"
+                value={record.comparison === "present" ? "比較製品あり" : "比較製品なし"}
                 inspector={product.inspectorName}
                 timestamp={timestamps.comparison}
               />
@@ -116,7 +116,7 @@ export function ReviewPage() {
                 <>
                   <HLine />
                   <ConfirmRow
-                    label="比較商品製造日"
+                    label="比較製品製造日"
                     value={record.comparisonManufactureDate.replaceAll("-", "/")}
                     inspector={product.inspectorName}
                     timestamp={timestamps.comparisonManufactureDate}
@@ -133,8 +133,8 @@ export function ReviewPage() {
                       <p className="text-base text-[var(--semantic-text-primary)]">{criterion}</p>
                       <ScoreTag score={score.score} />
                     </div>
-                    {score.score <= 2 && (
-                      <p className="text-base text-[#808080] px-2">理由：{score.reason}</p>
+                    {score.score <= 2 && score.reason.trim() !== "" && (
+                      <p className="text-base text-[#808080] px-2">備考：{score.reason}</p>
                     )}
                     <RecordTimestamp
                       inspector={product.inspectorName}

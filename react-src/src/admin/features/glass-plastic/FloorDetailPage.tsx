@@ -17,11 +17,11 @@ import {
   type RepairStatus,
 } from "./types";
 
+// 本番（gp/area/show.blade.php:64）は日付が無くても「開始~終了」の形で出す（無い側は空）
 function formatPeriod(displayFrom?: string, displayTo?: string) {
-  if (!displayFrom && !displayTo) return "指定なし（常に表示）";
   const from = displayFrom?.replaceAll("-", "/") ?? "";
   const to = displayTo?.replaceAll("-", "/") ?? "";
-  return `${from}〜${to}`;
+  return `${from}~${to}`;
 }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -119,6 +119,7 @@ export function FloorDetailPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showUpdateToast, setShowUpdateToast] = useState(false);
+  const [showRepairToast, setShowRepairToast] = useState(false);
 
   useEffect(() => {
     if ((location.state as any)?.deleted) {
@@ -159,13 +160,8 @@ export function FloorDetailPage() {
           <p className="text-xl text-[var(--semantic-text-primary)]">{factoryName}</p>
         </div>
 
+        {/* 本番（layouts/admin/inspects/gp/repair.blade.php）は見出し・説明文なしで異常の箇所のカードだけ出す */}
         <div className="flex flex-col gap-2 items-start w-full">
-          <div className="flex flex-col gap-1 items-start w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">修理状況</p>
-            <p className="text-sm text-[var(--semantic-text-secondary)]">
-              異常があった箇所は、その後の対応状況に応じてステータスを更新してください。修理が完了した場合は「修理完了」ステータスに変更してください。
-            </p>
-          </div>
           <div className="bg-white flex flex-col gap-4 items-start p-4 rounded-lg w-full">
             {floor.repairItems.length === 0 ? (
               <p className="text-base text-[var(--semantic-text-secondary)]">
@@ -184,7 +180,10 @@ export function FloorDetailPage() {
                           </p>
                           <RepairStatusDropdown
                             status={item.status}
-                            onChange={(status) => updateRepairStatus(floor.id, item.id, status)}
+                            onChange={(status) => {
+                              updateRepairStatus(floor.id, item.id, status);
+                              setShowRepairToast(true);
+                            }}
                           />
                         </div>
                         <div className="flex flex-col gap-2 items-start px-2 text-base text-[var(--semantic-text-secondary)]">
@@ -258,7 +257,7 @@ export function FloorDetailPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                ガラスプラスチック管理を削除
+                {floor.name}を削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。削除しますか？
@@ -284,7 +283,8 @@ export function FloorDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showRepairToast && <Toast message="修理ステータスを更新しました。" onClose={() => setShowRepairToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
     </div>
   );

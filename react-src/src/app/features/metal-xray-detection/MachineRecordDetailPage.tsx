@@ -241,7 +241,13 @@ export function MachineRecordDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as
-    | { inspectionDate?: string; inspectorName?: string; editReturn?: unknown }
+    | {
+        inspectionDate?: string;
+        inspectorName?: string;
+        editReturn?: unknown;
+        /** 記録の一覧（読むだけ。進捗一覧から）の「詳細」から来たときの戻り先 */
+        reviewReturn?: { to: string; state?: unknown };
+      }
     | null;
   const inspectionDate = state?.inspectionDate ?? "";
   const machine = findFactoryItem(MACHINES, machineId);
@@ -282,7 +288,7 @@ export function MachineRecordDetailPage() {
     <>
       <AppHeader title={`金属/X線探知機記録_${machine.name}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
@@ -295,11 +301,7 @@ export function MachineRecordDetailPage() {
             <p className="text-base text-[var(--semantic-text-primary)]">{dateLabel}</p>
           </div>
           <Divider />
-          <div className="flex items-center justify-between w-full">
-            <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
-            <p className="text-base text-[var(--semantic-text-primary)]">{record.inspectorName}</p>
-          </div>
-          <Divider />
+          {/* 本番（Excel No.22）は「実施者」の項目を持たず、入力した項目の下のスタンプに名前を出す（2026-10-08 に外した） */}
           <div className="flex items-center justify-between w-full">
             <p className="text-base text-[var(--semantic-text-primary)]">点検内容</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{record.content}</p>
@@ -502,9 +504,11 @@ export function MachineRecordDetailPage() {
         <button
           type="button"
           onClick={() =>
-            navigate(getBackPath(), {
-              state: { inspectionDate, inspectorName: state?.inspectorName, editReturn: state?.editReturn },
-            })
+            state?.reviewReturn
+              ? navigate(state.reviewReturn.to, { state: state.reviewReturn.state })
+              : navigate(getBackPath(), {
+                  state: { inspectionDate, inspectorName: state?.inspectorName, editReturn: state?.editReturn },
+                })
           }
           className="bg-white border border-[#333] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-[var(--semantic-text-primary)]"
         >

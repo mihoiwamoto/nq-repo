@@ -1,10 +1,12 @@
-export type ProgressStatus = "not_inspected" | "inspecting" | "inspected" | "confirmed";
+/* 本番の API（check_status 9:差し戻し）に合わせて差し戻しも持つ（2026-10-08） */
+export type ProgressStatus = "not_inspected" | "inspecting" | "inspected" | "confirmed" | "rejected";
 
 export const PROGRESS_STATUS_LABELS: Record<ProgressStatus, string> = {
   not_inspected: "未点検",
   inspecting: "点検中",
   inspected: "点検済み",
   confirmed: "確認完了",
+  rejected: "差し戻し",
 };
 
 export const PROGRESS_STATUS_COLORS: Record<ProgressStatus, string> = {
@@ -13,6 +15,7 @@ export const PROGRESS_STATUS_COLORS: Record<ProgressStatus, string> = {
   inspected: "var(--semantic-status-caution)",
   // 確定デザイン（7139:293830）の「確認完了」は明るい緑（--semantic-status-success #19c95f）
   confirmed: "var(--semantic-status-success)",
+  rejected: "var(--semantic-status-error)",
 };
 
 export type ProgressEntry = {

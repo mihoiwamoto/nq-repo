@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import eyeOnIcon from "../../../../images/Icon/eye_on.svg";
 import eyeOffIcon from "../../../../images/Icon/eye_off.svg";
 
-function isStrongPassword(value: string) {
-  return (
-    value.length >= 8 &&
-    /[A-Za-z]/.test(value) &&
-    /[0-9]/.test(value) &&
-    /[^A-Za-z0-9]/.test(value)
-  );
+// 本番（PasswordUpdateRequest）と同じ入力チェック。文言は本番の lang/ja/validation.php
+const PASSWORD_RE = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).*$/;
+
+function passwordError(attr: string, value: string): string | undefined {
+  if (!value) return `${attr}は必須です。`;
+  if (value.length < 8 || value.length > 64) return `${attr}は8〜64文字の間で入力してください。`;
+  if (!PASSWORD_RE.test(value)) return `${attr}は英数字記号を組み合わせてください。`;
+  return undefined;
 }
 
 function PasswordField({
@@ -20,12 +20,14 @@ function PasswordField({
   value,
   onChange,
   hasError,
+  error,
 }: {
   label: string;
   helperText?: string;
   value: string;
   onChange: (value: string) => void;
   hasError: boolean;
+  error?: string;
 }) {
   const [visible, setVisible] = useState(false);
 
@@ -59,6 +61,7 @@ function PasswordField({
           />
         </button>
       </div>
+      {error && <p className="text-base text-[#f85c5c]">{error}</p>}
     </div>
   );
 }
@@ -67,34 +70,26 @@ export function PasswordChangePage() {
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<{ newPassword?: string; confirmPassword?: string }>({});
 
   function handleSubmit() {
-    const nextErrors: string[] = [];
-    if (newPassword !== confirmPassword) {
-      nextErrors.push("※パスワードが一致しません");
-    }
-    if (!isStrongPassword(newPassword)) {
-      nextErrors.push("※8文字以上の英数字、記号を含めてください");
-    }
-    if (nextErrors.length > 0) {
+    const nextErrors = {
+      newPassword: passwordError("新しいパスワード", newPassword),
+      confirmPassword:
+        passwordError("パスワード確認", confirmPassword) ??
+        (confirmPassword !== newPassword ? "パスワード確認は新しいパスワードと一致する必要があります。" : undefined),
+    };
+    if (nextErrors.newPassword || nextErrors.confirmPassword) {
       setErrors(nextErrors);
       return;
     }
     navigate("/admin/account/password/complete");
   }
 
-  const hasError = errors.length > 0;
 
   return (
     <div>
-      <PageTitleBar title="パスワード変更" showBack />
-      <Breadcrumb
-        items={[
-          { label: "アカウント情報", to: "/admin/account" },
-          { label: "パスワード変更" },
-        ]}
-      />
+      <PageTitleBar title="パスワード変更" />
       <div className="flex flex-col gap-10 items-start p-6">
         <div className="flex flex-col gap-6 items-start">
           <PasswordField
@@ -102,25 +97,17 @@ export function PasswordChangePage() {
             helperText="※8文字以上の英数字、記号を含む"
             value={newPassword}
             onChange={setNewPassword}
-            hasError={hasError}
+            hasError={!!errors.newPassword}
+            error={errors.newPassword}
           />
           <PasswordField
             label="新しいパスワード（確認用）"
             value={confirmPassword}
             onChange={setConfirmPassword}
-            hasError={hasError}
+            hasError={!!errors.confirmPassword}
+            error={errors.confirmPassword}
           />
         </div>
-
-        {hasError && (
-          <div className="flex flex-col gap-1 items-start">
-            {errors.map((error) => (
-              <p key={error} className="text-base text-[#f85c5c]">
-                {error}
-              </p>
-            ))}
-          </div>
-        )}
 
         <button
           type="button"

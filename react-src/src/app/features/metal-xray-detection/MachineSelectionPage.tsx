@@ -53,7 +53,7 @@ export function MachineSelectionPage() {
       />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-6 items-center relative">
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中） */}
+          {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯） */}
           {displayableMachines.length === 0 && <AppEmptyState />}
           {displayableMachines.map((machine) => (
             <button
@@ -64,7 +64,7 @@ export function MachineSelectionPage() {
                   state: { inspectorName },
                 });
               }}
-              className="bg-white shadow-[0px_2px_3px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg w-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(51,51,51,0.32)] transition-shadow"
+              className="bg-white shadow-[0px_2px_6px_rgba(51,51,51,0.24)] flex gap-2 h-20 items-center p-4 rounded-lg w-full cursor-pointer hover:shadow-[0px_4px_8px_rgba(51,51,51,0.32)] transition-shadow"
             >
               <p className="flex-1 text-lg text-[var(--semantic-text-primary)] text-left">{machine.name}</p>
               <StatusChip color={MACHINE_STATUS_COLORS[machine.status]}>{MACHINE_STATUS_LABELS[machine.status]}</StatusChip>

@@ -39,7 +39,7 @@ export function LineDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);
@@ -87,14 +87,15 @@ export function LineDetailPage() {
         </div>
 
         <div className="bg-white flex flex-col gap-6 items-start px-4 py-6 rounded-lg w-full">
+          {/* 確定デザイン（7139:161238）：区切り線は場所を取らず、行の間隔 76px */}
           <Row label="アプリ表示期間">{formatPeriod(line.displayFrom, line.displayTo)}</Row>
-          <div className="border-t border-[#d0d0d0] w-full" />
+          <div className="border-t border-[#d0d0d0] w-full -mb-px" />
 
           <Row label="持ち場/ライン名">【{FREQUENCY_LABEL[line.frequency]}】{line.name}</Row>
-          <div className="border-t border-[#d0d0d0] w-full" />
+          <div className="border-t border-[#d0d0d0] w-full -mb-px" />
 
-          <Row label="点検頻度">{FREQUENCY_LABEL[line.frequency]}</Row>
-          <div className="border-t border-[#d0d0d0] w-full" />
+          <Row label="清掃頻度">{FREQUENCY_LABEL[line.frequency]}</Row>
+          <div className="border-t border-[#d0d0d0] w-full -mb-px" />
 
           {line.cleaningPoints.length === 0 ? (
             <p className="text-base text-[var(--semantic-text-secondary)]">
@@ -111,7 +112,7 @@ export function LineDetailPage() {
                   </Row>
                 ))}
                 {index < line.cleaningPoints.length - 1 && (
-                  <div className="border-t border-[#d0d0d0] w-full" />
+                  <div className="border-t border-[#d0d0d0] w-full -mb-px" />
                 )}
               </div>
             ))

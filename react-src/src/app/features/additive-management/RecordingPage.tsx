@@ -103,38 +103,40 @@ export function RecordingPage() {
 
   const canSave = category !== null && quantity.trim() !== "" && currentStock.trim() !== "";
 
+  // 「保存」は確認画面へ進まず、記録を足して（直す記録があれば書き換えて）記録一覧へ戻る（確定デザイン 7139:234280・7139:238721。
+  // 確認画面へは記録一覧の「確認画面へ」から進む。薬品管理と同じ。2026-10-08）
   function handleSave() {
-    if (!canSave) return;
-    if (progressList && category) {
-      const input = {
-        additiveId: productId ?? "",
-        date: progressEditTarget?.date ?? date.replaceAll("-", "/"),
-        storageLocation: progressEditTarget?.storageLocation ?? additive?.storageLocation ?? "",
-        category,
-        quantity: withUnit(quantity, unit),
-        currentStock: withUnit(currentStock, unit),
-        remarks,
-        actor: progressEditTarget?.actor ?? actor,
-      };
-      if (progressEditTarget) updateRecord(progressEditTarget.id, input);
-      else addRecord(input);
-      if (additive?.status === "not_inspected" && productId) updateAdditiveStatus(productId, "in_progress");
+    if (!canSave || !category) return;
+    const editTarget =
+      progressEditTarget ??
+      existingRecord ??
+      (state?.editRecordId ? records.find((r) => r.id === state.editRecordId) : undefined);
+    const input = {
+      additiveId: productId ?? "",
+      date: editTarget?.date ?? date.replaceAll("-", "/"),
+      storageLocation: editTarget?.storageLocation ?? additive?.storageLocation ?? "",
+      category,
+      quantity: withUnit(quantity, unit),
+      currentStock: withUnit(currentStock, unit),
+      remarks,
+      actor: editTarget?.actor ?? actor,
+    };
+    if (editTarget) updateRecord(editTarget.id, input);
+    else addRecord(input);
+    if (additive?.status === "not_inspected" && productId) updateAdditiveStatus(productId, "in_progress");
+    // 進捗一覧の点検中から来たときは同じ点検中の一覧へ。点検済みの「編集」から来たときは、入力できる形の一覧（editing）へ
+    const listDate = (editTarget?.date ?? date).replaceAll("/", "-");
+    if (progressList && state?.progressStatus !== "inspected" && state?.progressStatus !== "confirmed") {
       navigate(basePath, { state: progressListState });
       return;
     }
-    navigate(`${basePath}/confirm`, {
+    navigate(basePath, {
       state: {
-        productId,
-        recordId: existingRecord?.id,
-        date,
-        storageLocation: additive?.storageLocation ?? "",
-        spec: additive?.spec ?? "",
-        initialStock: additive?.initialStock ?? "",
-        category,
-        quantity: withUnit(quantity, unit),
-        currentStock: withUnit(currentStock, unit),
-        remarks,
-        actor,
+        ...(state?.fromProgress
+          ? { fromProgress: true, progressStatus: state.progressStatus, editing: true }
+          : {}),
+        date: listDate,
+        inspectorName: actor,
       },
     });
   }
@@ -164,7 +166,8 @@ export function RecordingPage() {
               </div>
             </div>
 
-            <div className="border-t border-[#d0d0d0] w-full" />
+            {/* 差し戻しの編集（確定デザイン 7139:238797）はここに線が無い。ふつうの記録する（7139:234090）は線あり（2026-10-08） */}
+            {!editReturn && <div className="border-t border-[#d0d0d0] w-full" />}
 
             <div className="flex items-center justify-between w-full">
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
@@ -189,7 +192,7 @@ export function RecordingPage() {
                 value={quantity}
                 onChange={(e) => applyQuantity(e.target.value)}
                 placeholder="例）1,000"
-                className="bg-white h-12 px-4 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
+                className="bg-white h-12 pl-4 pr-2 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
               />
             </div>
 
@@ -216,12 +219,12 @@ export function RecordingPage() {
                       setCurrentStockEdited(true);
                     }}
                     placeholder="例）4,000"
-                    className="bg-white h-12 px-4 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
+                    className="bg-white h-12 pl-4 pr-2 rounded-lg text-base text-right text-[var(--semantic-text-primary)] w-[280px] placeholder:text-[var(--semantic-text-secondary)]"
                   />
                 </div>
               </div>
               {/* 確定デザイン 7139:234090：「自動計算」は 80×48 の白地・緑の枠、注記は太字にしない */}
-              <p className="text-sm font-normal text-[var(--semantic-text-primary)] leading-relaxed">
+              <p className="text-sm font-normal text-[var(--semantic-text-primary)] leading-5">
                 ※在庫数を修正した場合は、備考欄に理由を記載してください。
               </p>
             </div>
@@ -229,12 +232,12 @@ export function RecordingPage() {
             <div className="border-t border-[#d0d0d0] w-full" />
 
             <div className="flex flex-col gap-2 items-start w-full">
-              <p className="text-lg text-[var(--semantic-text-primary)]">備考</p>
+              <p className="text-lg leading-[18px] text-[var(--semantic-text-primary)]">備考</p>
               <textarea
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 placeholder="月次定期発注による補充入庫"
-                className="bg-white min-h-20 p-2 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
+                className="bg-white min-h-20 p-2 rounded-lg resize-none text-base font-normal text-[var(--semantic-text-primary)] w-full placeholder:text-[var(--semantic-text-secondary)]"
               />
             </div>
           </div>

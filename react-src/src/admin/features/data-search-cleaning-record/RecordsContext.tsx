@@ -4,6 +4,7 @@ import { CURRENT_ACCOUNT } from "../account/mockData";
 import { mockRecords } from "./mockRecords";
 import type { ApprovalStatus, CleaningSearchRecord } from "./types";
 import { useFactoryList } from "../../data/factoryDemo";
+import { commentTimestamp } from "../../utils/recordTimestamps";
 
 type RecordsContextValue = {
   records: CleaningSearchRecord[];
@@ -31,7 +32,7 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
                 {
                   id: `${id}-${Date.now()}`,
                   author: CURRENT_ACCOUNT.name,
-                  timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                  timestamp: commentTimestamp(),
                   text,
                 },
               ],

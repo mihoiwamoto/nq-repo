@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useWaterInspection } from "./WaterInspectionContext";
@@ -10,11 +10,11 @@ import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 
+// 本番（water/area/show.blade.php:51）は日付が無くても「開始 ~ 終了」の形で出す（無い側は空）
 function formatPeriod(displayFrom?: string, displayTo?: string) {
-  if (!displayFrom && !displayTo) return "指定なし（常に表示）";
   const from = displayFrom?.replaceAll("-", "/") ?? "";
   const to = displayTo?.replaceAll("-", "/") ?? "";
-  return `${from}〜${to}`;
+  return `${from} ~ ${to}`;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -36,7 +36,8 @@ export function PointDetailPage() {
   const point = points.find((p) => p.id === pointId);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  // 本番は削除のあと完了画面（WaterAreaController::destroy）。ルートを足さず、この画面のまま完了画面に切り替える
+  const [deleted, setDeleted] = useState(false);
   const [showUpdateToast, setShowUpdateToast] = useState(false);
 
   useEffect(() => {
@@ -44,6 +45,29 @@ export function PointDetailPage() {
       setShowUpdateToast(true);
     }
   }, [location.state]);
+
+  if (deleted) {
+    return (
+      <div>
+        <PageTitleBar title="完了画面" />
+        <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
+          <div className="flex flex-col gap-6 items-center w-full">
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-[var(--semantic-brand-primary)]">
+              <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="6.67" />
+              <path d="M24 41L34 51L56 29" stroke="currentColor" strokeWidth="6.67" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <p className="text-2xl text-[var(--semantic-text-primary)]">点検場所の削除が完了しました</p>
+          </div>
+          <Link
+            to={basePath}
+            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
+          >
+            使用水の点検一覧に戻る
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!point) {
     return (
@@ -55,13 +79,13 @@ export function PointDetailPage() {
 
   function handleDelete() {
     removePoint(point!.id);
-    setShowToast(true);
-    navigate(basePath);
+    setDeleteDialogOpen(false);
+    setDeleted(true);
   }
 
   return (
     <div>
-      <PageTitleBar title="使用水の点検" showBack />
+      <PageTitleBar title="詳細" showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -118,7 +142,7 @@ export function PointDetailPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                使用水の点検を削除
+                {point.name}を削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。削除しますか？
@@ -144,8 +168,7 @@ export function PointDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
-      {showToast && <Toast message="削除されました。" onClose={() => setShowToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
     </div>
   );
 }

@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { Pulldown } from "../../components/Pulldown";
 import { FACTORIES, getFactoryName } from "../../../data/factories";
-import { getCompanyName } from "../../../data/companies";
+import { INITIAL_COMPANIES, getCompanyName } from "../../../data/companies";
 import { ROLE_COLORS, ROLE_LABELS, ROLE_OPTIONS, type StaffRole } from "./types";
 import { useStaffManagement } from "./StaffManagementContext";
 import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
+import { PlusIcon } from "../../components/PlusIcon";
 
 const PAGE_SIZE = 10;
 
@@ -18,15 +19,23 @@ export function StaffListPage() {
   const staff = useDemoList(allStaff);
   const [filterOpen, setFilterOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
+  const [companyInput, setCompanyInput] = useState("");
   const [factoryInput, setFactoryInput] = useState("");
   const [roleInput, setRoleInput] = useState<StaffRole | "">("");
-  const [appliedFilters, setAppliedFilters] = useState({ name: "", factoryId: "", role: "" as StaffRole | "" });
+  const [appliedFilters, setAppliedFilters] = useState({ name: "", companyId: "", factoryId: "", role: "" as StaffRole | "" });
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(
     () =>
       staff.filter((member) => {
-        if (appliedFilters.name && !member.name.includes(appliedFilters.name)) return false;
+        // 本番：名前・社員番号のどちらでも探せる
+        if (
+          appliedFilters.name &&
+          !member.name.includes(appliedFilters.name) &&
+          !member.employeeNumber.includes(appliedFilters.name)
+        )
+          return false;
+        if (appliedFilters.companyId && member.companyId !== appliedFilters.companyId) return false;
         if (appliedFilters.factoryId && !member.assignments.some((a) => a.factoryId === appliedFilters.factoryId))
           return false;
         if (appliedFilters.role && !member.assignments.some((a) => a.role === appliedFilters.role))
@@ -40,15 +49,16 @@ export function StaffListPage() {
   const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   function handleSearch() {
-    setAppliedFilters({ name: nameInput, factoryId: factoryInput, role: roleInput });
+    setAppliedFilters({ name: nameInput, companyId: companyInput, factoryId: factoryInput, role: roleInput });
     setPage(1);
   }
 
   function handleReset() {
     setNameInput("");
+    setCompanyInput("");
     setFactoryInput("");
     setRoleInput("");
-    setAppliedFilters({ name: "", factoryId: "", role: "" });
+    setAppliedFilters({ name: "", companyId: "", factoryId: "", role: "" });
     setPage(1);
   }
 
@@ -61,7 +71,8 @@ export function StaffListPage() {
             to="new"
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />
@@ -80,8 +91,15 @@ export function StaffListPage() {
                 type="text"
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
-                placeholder="名前で探す"
+                placeholder="名前・社員番号"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[240px] placeholder:text-[#808080] shrink-0"
+              />
+              <Pulldown
+                value={companyInput}
+                onChange={setCompanyInput}
+                options={INITIAL_COMPANIES.map((company) => ({ value: company.id, label: company.name }))}
+                placeholder="企業選択"
+                className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px] shrink-0"
               />
               <Pulldown
                 value={factoryInput}
@@ -126,10 +144,10 @@ export function StaffListPage() {
               <p className="text-sm text-[var(--semantic-brand-primary)]">社員番号</p>
             </div>
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)]">工場</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">企業</p>
             </div>
             <div className="flex-1 h-full flex items-center px-2">
-              <p className="text-sm text-[var(--semantic-brand-primary)]">企業</p>
+              <p className="text-sm text-[var(--semantic-brand-primary)]">工場</p>
             </div>
             <div className="w-[120px] h-full flex items-center px-2">
               <p className="text-sm text-[var(--semantic-brand-primary)]">権限</p>
@@ -160,17 +178,17 @@ export function StaffListPage() {
                   </div>
                   <div className="flex-1 h-full flex items-center px-2">
                     <p className="text-sm text-[var(--semantic-text-primary)] truncate">
+                      {getCompanyName(member.companyId)}
+                    </p>
+                  </div>
+                  <div className="flex-1 h-full flex items-center px-2">
+                    <p className="text-sm text-[var(--semantic-text-primary)] truncate">
                       {primary
                         ? (() => {
                             const name = getFactoryName(primary.factoryId);
                             return name.length > 10 ? `${name.substring(0, 10)}...` : name;
                           })()
                         : "—"}
-                    </p>
-                  </div>
-                  <div className="flex-1 h-full flex items-center px-2">
-                    <p className="text-sm text-[var(--semantic-text-primary)] truncate">
-                      {getCompanyName(member.companyId)}
                     </p>
                   </div>
                   <div className="w-[120px] h-full flex items-center px-2">

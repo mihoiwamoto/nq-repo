@@ -92,10 +92,10 @@ const COLUMNS = [
   { label: "操作", width: "w-[104px]" },
   { label: "ステータス", width: "w-[96px]" },
   { label: "日付", width: "w-[80px]" },
-  { label: "秤No.(ラベル名)", width: "w-[148px]" },
+  { label: "秤NO.(ラベル名)", width: "w-[148px]" },
   { label: "シリアルナンバー", width: "w-[148px]" },
   { label: "持ち場", width: "w-[148px]" },
-  { label: "動作確認", width: "w-[100px]" },
+  { label: "動作", width: "w-[100px]" },
   { label: "水平点検", width: "w-[100px]" },
   { label: "汚れ", width: "w-[100px]" },
   { label: "秤の表示値(g)", width: "w-[100px]" },
@@ -129,11 +129,11 @@ export function ApprovalRecordsListPage() {
       {showConfirmDialog && (
         <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
       )}
-      <PageTitleBar title="点検内容一覧" showBack />
+      <PageTitleBar title="データ一覧" showBack />
       <Breadcrumb
         items={[
           { label: "承認申請管理", to: "/admin/approvals" },
-          { label: "点検内容一覧" },
+          { label: "データ一覧" },
         ]}
       />
       <div className="flex flex-col items-center gap-6 p-6">
@@ -221,7 +221,9 @@ export function ApprovalRecordsListPage() {
         <button
           type="button"
           onClick={handleApproveClick}
-          className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
+          // 承認待ちが 0 件のときは押せない（2026-10-08 ユーザー指定）
+          disabled={records.filter((r) => r.approvalStatus === "pending").length === 0}
+          className="bg-[var(--semantic-brand-primary)] disabled:bg-[#d0d0d0] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg text-xl text-white"
         >
           承認する
         </button>

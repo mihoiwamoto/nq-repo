@@ -6,6 +6,7 @@ import { Toast } from "../../components/Toast";
 import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
 import type { LineFrequency } from "./types";
+import { PlusIcon } from "../../components/PlusIcon";
 
 const FREQUENCY_TABS: { key: LineFrequency; label: string }[] = [
   { key: "daily", label: "毎日" },
@@ -31,7 +32,7 @@ export function LineSelectionPage() {
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
 
-  // 確認項目の設定で保存して戻ってきたときは「更新されました。」のトーストを出す（Toast が自分で消える）
+  // 確認項目の設定で保存して戻ってきたときは「更新しました。」のトーストを出す（Toast が自分で消える）
   useEffect(() => {
     const state = location.state as { checklistSaved?: boolean } | null;
     if (state?.checklistSaved) {
@@ -51,7 +52,7 @@ export function LineSelectionPage() {
 
   return (
     <div>
-      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="更新しました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="機械器具点検"
         showBack
@@ -60,7 +61,8 @@ export function LineSelectionPage() {
             to={`/admin/ledger-management/equipment-inspection/factories/${factoryId}/lines/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />

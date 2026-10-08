@@ -5,6 +5,7 @@ import { chemicalApprovalRecords } from "./mockData";
 import type { ChemicalApprovalRecord } from "./types";
 import type { ApprovalStatus } from "../../data/approvals";
 import { useFactoryList } from "../../data/factoryDemo";
+import { commentTimestamp } from "../../utils/recordTimestamps";
 
 type RecordsContextValue = {
   records: ChemicalApprovalRecord[];
@@ -32,7 +33,7 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
                 {
                   id: `${id}-${Date.now()}`,
                   author: CURRENT_ACCOUNT.name,
-                  timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                  timestamp: commentTimestamp(),
                   text,
                 },
               ],

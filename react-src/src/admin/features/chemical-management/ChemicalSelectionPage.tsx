@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useChemicalManagement } from "./ChemicalManagementContext";
+import { PlusIcon } from "../../components/PlusIcon";
 
 export function ChemicalSelectionPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -27,7 +28,7 @@ export function ChemicalSelectionPage() {
 
   return (
     <div>
-      {showToast && <Toast message="更新されました。" onClose={() => setShowToast(false)} />}
+      {showToast && <Toast message="更新しました。" onClose={() => setShowToast(false)} />}
       <PageTitleBar
         title="薬品管理"
         showBack
@@ -36,7 +37,8 @@ export function ChemicalSelectionPage() {
             to={`${basePath}/chemicals/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Breadcrumb, type BreadcrumbItem } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { Pulldown } from "../../components/Pulldown";
+import { Pulldown, type PulldownOption } from "../../components/Pulldown";
 import { Comments } from "../../components/Comments";
 import { CommentInputBox } from "../../components/CommentInputBox";
 import { APPROVAL_STATUS_COLOR } from "../../components/ApprovalStatusBadge";
@@ -21,14 +21,19 @@ import {
 } from "./types";
 import { useDemoFactoryName } from "../../data/factoryDemo";
 
-const STATUS_OPTIONS: { value: ApprovalStatus; label: string }[] = [
-  { value: "pending", label: "承認待ち" },
-  { value: "approved", label: "承認済み" },
-  { value: "rejected", label: "差し戻し" },
-];
+// 本番のプルダウンの選択肢は「承認」。承認したあとの表示は「承認済み」。
+// 先頭に押せない「点検済み」を並べる（本番の ApprovalStatus と同じ並び。2026-10-08）
+function statusOptions(current: ApprovalStatus): PulldownOption[] {
+  return [
+    { value: "checked", label: "点検済み", disabled: true },
+    { value: "pending", label: "承認待ち" },
+    { value: "rejected", label: "差し戻し" },
+    { value: "approved", label: current === "approved" ? "承認済み" : "承認" },
+  ];
+}
 
-const LEGEND_STATUS_ORDER: GlassPlasticItemStatus[] = ["unchecked", "normal", "issue"];
-const FILTER_STATUS_ORDER: GlassPlasticItemStatus[] = ["normal", "issue"];
+// 本番の絞り込みは 正常・異常あり・修理中（配置図の凡例は無い）
+const FILTER_STATUS_ORDER: GlassPlasticItemStatus[] = ["normal", "issue", "repairing"];
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
@@ -45,6 +50,8 @@ export function RecordDetailPage() {
       factoryName={demoFactoryName}
       breadcrumb={[
         { label: "承認申請管理", to: "/admin/approvals" },
+        // 本番は 承認申請管理 › データ一覧 › 詳細。React のガラスには承認申請管理のデータ一覧が無いので文字だけ
+        { label: "データ一覧" },
         { label: "詳細" },
       ]}
       setApprovalStatus={setApprovalStatus}
@@ -88,6 +95,7 @@ export function RecordDetailView({
   } = useApprovalConfirm();
 
   const [comment, setComment] = useState("");
+  const [commentToast, setCommentToast] = useState(false);
   const [activeFilters, setActiveFilters] = useState<GlassPlasticItemStatus[]>([]);
   const [mapScale, setMapScale] = useState(1);
 
@@ -108,7 +116,11 @@ export function RecordDetailView({
     if (status === "approved") {
       requestApproval(finalize);
     } else if (status === "rejected") {
-      requestRejection(finalize);
+      requestRejection((reason) => {
+        finalize();
+        // 差し戻し理由はコメントとして残す（本番 ApprovalFlowService::updateApprovalStatus → createComment）
+        if (reason) addComment(record.id, reason);
+      });
     } else {
       setApprovalStatus(record.id, status);
     }
@@ -138,7 +150,8 @@ export function RecordDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
+      {commentToast && <Toast message="コメントを登録しました。" onClose={() => setCommentToast(false)} />}
       <PageTitleBar title="詳細" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-4 p-6">
@@ -149,7 +162,7 @@ export function RecordDetailView({
           <Pulldown
             value={record.approvalStatus}
             onChange={handleStatusChange}
-            options={STATUS_OPTIONS}
+            options={statusOptions(record.approvalStatus)}
             disabled={record.approvalStatus !== "pending"}
             className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
             style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
@@ -168,7 +181,7 @@ export function RecordDetailView({
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
           <div className="flex items-center justify-between w-full">
-            <p className="text-xl text-[var(--semantic-text-primary)]">点検場所</p>
+            <p className="text-xl text-[var(--semantic-text-primary)]">フロア名</p>
             <p className="text-xl text-[var(--semantic-text-primary)]">{record.floorName}</p>
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
@@ -206,19 +219,6 @@ export function RecordDetailView({
         </div>
 
         <div className="flex flex-col gap-3 items-start">
-          <div className="flex gap-4 items-center">
-            {LEGEND_STATUS_ORDER.map((status) => (
-              <div key={status} className="flex gap-2 items-center">
-                <div
-                  className="w-4 h-4 rounded-sm"
-                  style={{ backgroundColor: GLASS_PLASTIC_STATUS_COLORS[status] }}
-                />
-                <span className="text-sm text-[var(--semantic-text-primary)]">
-                  {GLASS_PLASTIC_STATUS_LABELS[status]}
-                </span>
-              </div>
-            ))}
-          </div>
           <div className="flex gap-2 items-center">
             <p className="text-sm font-semibold text-[var(--semantic-brand-primary)]">絞り込み：</p>
             <div className="flex gap-4 items-center">
@@ -300,6 +300,7 @@ export function RecordDetailView({
             onSubmit={() => {
               addComment(record.id, comment);
               setComment("");
+              setCommentToast(true);
             }}
             maxLength={255}
           />

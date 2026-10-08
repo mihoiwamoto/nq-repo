@@ -71,7 +71,7 @@ export function ChemicalRecordDetailPage() {
           <div className="border-t border-[#d0d0d0] w-full -mb-px" />
           <div className="flex flex-col gap-2 items-start w-full">
             <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
-            <p className="text-base leading-[22px] font-light text-[var(--semantic-text-primary)]">
+            <p className="text-base leading-[26px] font-light text-[var(--semantic-text-primary)]">
               {record.remarks}
             </p>
           </div>

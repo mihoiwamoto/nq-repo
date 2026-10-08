@@ -28,7 +28,7 @@ function ToggleField({
             !value ? "text-[var(--semantic-text-secondary)]" : "text-[var(--semantic-text-secondary)] opacity-60"
           }`}
         >
-          記録しない
+          記載しない
         </button>
         <button
           type="button"
@@ -39,7 +39,7 @@ function ToggleField({
               : "text-[var(--semantic-text-secondary)] opacity-60"
           }`}
         >
-          記録する
+          記載する
         </button>
       </div>
     </div>
@@ -67,14 +67,18 @@ export function ScaleManagementFormPage() {
   const [error, setError] = useState("");
 
   function handleSubmit() {
-    if (
-      !label.trim() ||
-      !serialNumber.trim() ||
-      !weightCapacity.trim() ||
-      !referenceWeight.trim() ||
-      !minDisplayUnit.trim()
-    ) {
-      setError("必須項目を入力してください");
+    // 本番どおり項目ごとのエラー（lang/ja/validation.php の attributes 119〜123 行）
+    const errors: string[] = [];
+    if (!label.trim()) errors.push("ラベル名は必須です。");
+    if (!serialNumber.trim()) errors.push("シリアルナンバーは必須です。");
+    if (!weightCapacity.trim()) errors.push("秤量(kg)は必須です。");
+    if (!recordOperationCheck && !recordLevelCheck && !recordDirtCheck && !recordDisplayValue) {
+      errors.push("点検項目は少なくとも1つ以上「記載する」を選択してください。");
+    }
+    if (!referenceWeight.trim()) errors.push("使用分銅(g)は必須です。");
+    if (!minDisplayUnit.trim()) errors.push("最小表示単位(g)は必須です。");
+    if (errors.length > 0) {
+      setError(errors.join("\n"));
       return;
     }
     const input = {
@@ -104,7 +108,7 @@ export function ScaleManagementFormPage() {
 
   return (
     <div>
-      <PageTitleBar title="秤管理" showBack />
+      <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -157,7 +161,7 @@ export function ScaleManagementFormPage() {
               type="number"
               value={weightCapacity}
               onChange={(e) => setWeightCapacity(e.target.value)}
-              placeholder="例）3"
+              placeholder="3"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
           </div>
@@ -176,7 +180,7 @@ export function ScaleManagementFormPage() {
               type="number"
               value={referenceWeight}
               onChange={(e) => setReferenceWeight(e.target.value)}
-              placeholder="例）100"
+              placeholder="100"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
           </div>
@@ -191,13 +195,13 @@ export function ScaleManagementFormPage() {
               step="0.1"
               value={minDisplayUnit}
               onChange={(e) => setMinDisplayUnit(e.target.value)}
-              placeholder="例）0.1"
+              placeholder="0.1"
               className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
             />
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--semantic-brand-danger)] whitespace-pre-line">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button
@@ -212,7 +216,7 @@ export function ScaleManagementFormPage() {
             onClick={handleSubmit}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[200px] rounded-lg text-base text-white"
           >
-            {isEditing ? "保存" : "登録"}
+            登録
           </button>
         </div>
       </div>

@@ -69,11 +69,12 @@ export function SkipConfirmPage() {
         </div>
 
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full max-w-full">
-          <div className="flex items-center justify-between w-full">
+          {/* 確定デザイン（7139:221545・7139:229587）：実施日・実施者の行は高さ 22（カード 104） */}
+          <div className="flex items-center justify-between w-full [&>p]:leading-[22px]">
             <p className="text-base text-[var(--semantic-text-primary)]">実施日</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{date.replaceAll("-", "/")}</p>
           </div>
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full [&>p]:leading-[22px]">
             <p className="text-base text-[var(--semantic-text-primary)]">実施者</p>
             <p className="text-base text-[var(--semantic-text-primary)]">{inspectorName}</p>
           </div>

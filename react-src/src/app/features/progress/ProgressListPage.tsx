@@ -1,3 +1,5 @@
+import { ACTORS as CLEANING_ACTORS } from "../cleaning-record/mockData";
+import { SAMPLE_REVIEW_DETAILS, type SampleConfirmState } from "../sample-management/mockData";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import iconXMarkGreen from "../../../assets/figma/icons/common/cancel-green.svg";
@@ -9,6 +11,8 @@ import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { StatusChip } from "../../components/StatusChip";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { useAnnouncementBar } from "../../layout/AnnouncementBarContext";
+import iconPlusMask from "../../../assets/figma/icons/common/plus.svg";
+import iconMinusMask from "../../../assets/figma/icons/common/minus.svg";
 import {
   ACTORS,
   PROGRESS_ENTRIES,
@@ -41,6 +45,44 @@ function groupByLedger(entries: ProgressEntry[]) {
     map.set(entry.ledgerSlug, list);
   }
   return Array.from(map.entries());
+}
+
+/**
+ * 実施者を選ばずに、見るだけの詳細へ直接進む行（本番 iOS の進捗一覧：case .detector / .specimen は
+ * 未点検・点検中・差し戻しだけ presentImplementerSelection、それ以外は detectorProgressDetail /
+ * specimenResultDetail を直接開く。2026-10-08）。進捗一覧に差し戻しのステータスは無いので、点検済み・確認完了が対象
+ */
+function directDetailFor(entry: ProgressEntry): { path: string; state: unknown } | null {
+  if (entry.status !== "inspected" && entry.status !== "confirmed") return null;
+  const base = "/app/ledger-list";
+  if (entry.ledgerSlug === "metal-xray-detection" && entry.machineId) {
+    // 機器の記録の一覧（読むだけ）。確認完了は「編集」も出さない
+    return {
+      path: `${base}/metal-xray-detection/machines/${entry.machineId}/review`,
+      state: { locked: entry.status === "confirmed", fromProgress: true, progressStatus: entry.status },
+    };
+  }
+  if (entry.ledgerSlug === "sample-management" && entry.productId) {
+    // 結果の詳細（読むだけ）。提出前の確認画面を、注意書きと「提出」を外して使う
+    const detail = SAMPLE_REVIEW_DETAILS[entry.productId] ?? Object.values(SAMPLE_REVIEW_DETAILS)[0];
+    const stampFields = ["manufactureDate", "sampleType", "quantity", "unit", "storageLocation"];
+    const state: SampleConfirmState & { fromProgress: boolean; progressStatus: ProgressEntry["status"]; progressView: boolean } = {
+      inspectorName: detail.inspectorName,
+      inspectionDate: detail.inspectionDate,
+      manufactureDate: detail.manufactureDate,
+      sampleType: detail.sampleType,
+      quantity: detail.quantity,
+      unit: detail.unit,
+      storageLocation: detail.storageLocation,
+      remarks: detail.remarks,
+      timestamps: Object.fromEntries(stampFields.map((f) => [f, detail.timestamp])),
+      fromProgress: true,
+      progressStatus: entry.status,
+      progressView: true,
+    };
+    return { path: `${base}/sample-management/samples/${entry.productId}/confirm`, state };
+  }
+  return null;
 }
 
 function destinationPathFor(entry: ProgressEntry) {
@@ -185,6 +227,11 @@ export function ProgressListPage() {
   }
 
   function handleEntryClick(entry: ProgressEntry) {
+    const direct = directDetailFor(entry);
+    if (direct) {
+      navigate(direct.path, { state: direct.state });
+      return;
+    }
     setActorPickerEntry(entry);
     // 確定デザイン（7139:293786）どおり、開いた時点では誰も選ばない（選ぶまで「次へ」は押せない）
     setSelectedActorId(null);
@@ -194,9 +241,12 @@ export function ProgressListPage() {
     setActorPickerEntry(null);
   }
 
+  // 実施者の選択に並ぶ人は帳票ごとに違う。清掃記録は帳票一覧と同じ 9 人（確定デザイン 7139:229334）
+  const pickerActors = actorPickerEntry?.ledgerSlug === "cleaning-record" ? CLEANING_ACTORS : ACTORS;
+
   function confirmActorPicker() {
     if (!actorPickerEntry || !selectedActorId) return;
-    const actor = ACTORS.find((a) => a.id === selectedActorId) ?? ACTORS[0];
+    const actor = pickerActors.find((a) => a.id === selectedActorId) ?? pickerActors[0];
     const entry = actorPickerEntry;
     setActorPickerEntry(null);
     const path = destinationPathFor(entry);
@@ -214,7 +264,7 @@ export function ProgressListPage() {
   return (
     <>
       <AppHeader title="進捗一覧" />
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4">
         <div className="bg-white flex items-center rounded-lg w-full">
           {(["all", "not_inspected"] as const).map((key) => (
             <button
@@ -229,7 +279,7 @@ export function ProgressListPage() {
             >
               {key === "all" ? "すべて" : "未点検"}
               {key === "not_inspected" && (
-                <span className="absolute -top-2 left-[60%] h-5 min-w-[20px] px-1 rounded-full bg-[var(--semantic-brand-danger)] text-white text-[10px] flex items-center justify-center">
+                <span className="absolute -top-2.5 left-[calc(60%-6px)] h-6 min-w-6 px-1 rounded-full border border-white bg-[var(--semantic-brand-danger)] text-white text-[10px] flex items-center justify-center">
                   {String(notInspectedCount).padStart(2, "0")}
                 </span>
               )}
@@ -252,7 +302,7 @@ export function ProgressListPage() {
         <button
           type="button"
           onClick={openFilterDialog}
-          className="bg-white flex gap-2 items-center justify-center h-12 px-4 rounded-lg shrink-0 text-base leading-none text-[var(--semantic-brand-primary)]"
+          className="mt-2 bg-white flex gap-2 items-center justify-center h-12 px-4 rounded-lg shrink-0 text-base leading-none text-[var(--semantic-brand-primary)]"
         >
           {/* 確定デザイン（7139:293597）：高さ 48・16px */}
           絞り込み検索
@@ -292,7 +342,7 @@ export function ProgressListPage() {
           </p>
         ) : (
           grouped.map(([date, entries]) => (
-            <div key={date} className="flex flex-col gap-6 items-start w-full">
+            <div key={date} className="flex flex-col gap-4 items-start w-full">
               {/* 確定デザイン（7139:293597）：日付 20px・確認完了 14px・行 14px、帳票のカードに影 0 2 6（2026-10-07） */}
               <p className="text-xl leading-none text-[var(--semantic-text-primary)] border-b border-[#d0d0d0] w-full py-4">
                 {date}
@@ -335,9 +385,25 @@ export function ProgressListPage() {
                           <button
                             type="button"
                             onClick={() => toggleGroupExpanded(groupKey)}
-                            className="text-[var(--semantic-brand-primary)] font-bold text-xl w-6 h-6 flex items-center justify-center shrink-0"
+                            aria-label={collapsed ? "開く" : "閉じる"}
+                            className="text-[var(--semantic-brand-primary)] w-6 h-6 flex items-center justify-center shrink-0"
                           >
-                            {collapsed ? "+" : "−"}
+                            {/* 確定デザイン（7139:238645）は文字ではなく 24px の＋／－のアイコン（2026-10-08） */}
+                            <span
+                              aria-hidden
+                              className="inline-block size-6"
+                              style={{
+                                WebkitMaskImage: `url("${collapsed ? iconPlusMask : iconMinusMask}")`,
+                                maskImage: `url("${collapsed ? iconPlusMask : iconMinusMask}")`,
+                                WebkitMaskSize: "contain",
+                                maskSize: "contain",
+                                WebkitMaskRepeat: "no-repeat",
+                                maskRepeat: "no-repeat",
+                                WebkitMaskPosition: "center",
+                                maskPosition: "center",
+                                backgroundColor: "currentColor",
+                              }}
+                            />
                           </button>
                         </div>
                         {!collapsed && (
@@ -394,10 +460,11 @@ export function ProgressListPage() {
       {filterDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setFilterDialogOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-h-[calc(100vh-48px)]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] max-h-[calc(100vh-48px)]">
             {/* 高さは中身に合わせる（10 帳票だと固定の 754px では 4 段目が切れていた） */}
-            <h2 className="text-2xl text-[var(--semantic-text-primary)]">絞り込み条件</h2>
-            <div className="grid grid-cols-3 gap-6 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
+            {/* 確定デザイン（7139:221158・7139:229429）：見出しの高さ 34、カードは 180 幅で左から 24px 間隔 */}
+            <h2 className="text-2xl leading-[34px] text-black">絞り込み条件</h2>
+            <div className="grid grid-cols-[repeat(3,180px)] gap-6 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
               {visibleLedgerCategories(FILTER_LEDGERS).map((ledger) => {
                 const selected = pickerSelected.has(ledger.slug);
                 return (
@@ -442,10 +509,10 @@ export function ProgressListPage() {
       {actorPickerEntry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={closeActorPicker} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
             <h2 className="-mb-4 text-2xl text-black">実施者を選んでください</h2>
             <div className="grid grid-cols-3 gap-4 w-full content-start overflow-y-auto overflow-x-hidden flex-1">
-              {ACTORS.map((actor) => (
+              {pickerActors.map((actor) => (
                 <button
                   key={actor.id}
                   type="button"
@@ -487,7 +554,7 @@ export function ProgressListPage() {
       {unsupportedNotice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setUnsupportedNotice(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-8 w-[480px] max-w-[90vw]">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-8 w-[480px] max-w-[90vw]">
             <p className="text-lg text-[var(--semantic-text-primary)] text-center">
               この帳票の点検機能は未対応です。
             </p>

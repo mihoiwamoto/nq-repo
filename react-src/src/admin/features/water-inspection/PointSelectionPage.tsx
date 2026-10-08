@@ -4,6 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { useWaterInspection } from "./WaterInspectionContext";
 import { getFactoryName } from "../../../data/factories";
+import { PlusIcon } from "../../components/PlusIcon";
 
 function isCurrentlyDisplayed(displayFrom?: string, displayTo?: string) {
   if (!displayFrom && !displayTo) return true;
@@ -38,7 +39,8 @@ export function PointSelectionPage() {
             to={`/admin/ledger-management/water-inspection/factories/${factoryId}/points/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />

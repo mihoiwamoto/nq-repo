@@ -143,8 +143,8 @@ export function NewRecordConfirmPage() {
       chlorineToggle: { label: "塩素補充", checked: state.chlorineChecked },
       uvOperatingHours: state.uvOperatingHours,
       uvToggle: { label: "UV殺菌灯交換", checked: state.uvChecked },
-      uvIndicatorLight: state.uvIndicatorOk ? "点灯" : "消灯",
-      errorIndicatorLight: state.errorIndicatorOk ? "消灯" : "点灯",
+      uvIndicatorLight: state.uvIndicatorOk ? "点灯" : "異常",
+      errorIndicatorLight: state.errorIndicatorOk ? "消灯" : "異常",
     });
     if (!navigator.onLine) notifyOfflineInspection();
     navigate("/app/ledger-list/water-inspection/complete");
@@ -154,7 +154,7 @@ export function NewRecordConfirmPage() {
     <>
       <AppHeader title={`使用水の点検_${locationName}`} />
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col gap-4 items-center">
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-[640px]">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-[640px]">
           <img src={iconAttention} alt="注意" className="size-5 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">
             実施者、入力内容に誤りがないか提出前にご確認ください。
@@ -198,12 +198,12 @@ export function NewRecordConfirmPage() {
           </div>
           <Row
             label="UV表示灯"
-            value={state.uvIndicatorOk ? "点灯" : "消灯"}
+            value={state.uvIndicatorOk ? "点灯" : "異常"}
             timestamp={stampIf(true, state.fieldTimestamps?.uvIndicator)}
           />
           <Row
             label="異常検出灯"
-            value={state.errorIndicatorOk ? "消灯" : "点灯"}
+            value={state.errorIndicatorOk ? "消灯" : "異常"}
             hideBorder
             timestamp={stampIf(true, state.fieldTimestamps?.errorIndicator)}
           />

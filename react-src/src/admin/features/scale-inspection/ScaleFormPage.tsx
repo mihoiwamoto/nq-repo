@@ -124,8 +124,28 @@ export function ScaleFormPage() {
 
   function handleSubmit() {
     const selected = catalog.find((entry) => entry.label === scaleLabel);
-    if (!selected || !postId) {
-      setError("必須項目を選択してください");
+    // 本番どおり項目ごとのエラー（lang/ja/validation.php の attributes）
+    const errors: string[] = [];
+    if (!selected) errors.push("秤No.（ラベル名）は必須です。");
+    if (!postId) errors.push("持ち場は必須です。");
+    if (displayFrom && displayTo && displayTo < displayFrom) {
+      errors.push("アプリ表示終了日は開始日以降の日付を指定してください。");
+    }
+    if (
+      selected &&
+      scales.some(
+        (s) =>
+          s.factoryId === factoryId &&
+          s.id !== existing?.id &&
+          s.label === selected.label &&
+          (s.displayFrom ?? "") === displayFrom &&
+          (s.displayTo ?? "") === displayTo,
+      )
+    ) {
+      errors.push("秤と表示期間の組み合わせが重複しています。");
+    }
+    if (errors.length > 0 || !selected) {
+      setError(errors.join("\n"));
       return;
     }
     const sourceScale = scales.find((s) => s.factoryId === factoryId && s.label === selected.label) ?? existing;
@@ -156,7 +176,7 @@ export function ScaleFormPage() {
 
   return (
     <div>
-      <PageTitleBar title="秤点検記録設定" showBack />
+      <PageTitleBar title={isEditing ? "編集" : "新規登録"} showBack />
       <Breadcrumb
         items={[
           { label: "帳票管理", to: "/admin/ledger-management" },
@@ -192,7 +212,7 @@ export function ScaleFormPage() {
 
           <div className="flex flex-col gap-1 items-start">
             <div className="flex gap-2 items-center">
-              <p className="text-xl text-[var(--semantic-text-primary)]">秤No.(ラベル名)</p>
+              <p className="text-xl text-[var(--semantic-text-primary)]">秤No.（ラベル名）</p>
               <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
             <Pulldown
@@ -223,7 +243,7 @@ export function ScaleFormPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--semantic-brand-danger)] whitespace-pre-line">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button

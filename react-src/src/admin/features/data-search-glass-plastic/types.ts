@@ -1,6 +1,7 @@
 import type { ApprovalStatus } from "../../data/approvals";
 
-export type GlassPlasticItemStatus = "unchecked" | "normal" | "issue";
+// 本番の箇所の状態は 修理中・要対応・異常あり・正常（未点検は無い）
+export type GlassPlasticItemStatus = "repairing" | "action_needed" | "issue" | "normal";
 
 export interface Comment {
   id: string;
@@ -10,15 +11,17 @@ export interface Comment {
 }
 
 export const GLASS_PLASTIC_STATUS_LABELS: Record<GlassPlasticItemStatus, string> = {
-  unchecked: "未点検",
-  normal: "正常",
+  repairing: "修理中",
+  action_needed: "要対応",
   issue: "異常あり",
+  normal: "正常",
 };
 
 export const GLASS_PLASTIC_STATUS_COLORS: Record<GlassPlasticItemStatus, string> = {
-  unchecked: "#b0b0b0",
-  normal: "var(--semantic-status-success)",
+  repairing: "var(--semantic-status-caution)",
+  action_needed: "var(--semantic-status-error)",
   issue: "var(--semantic-status-error)",
+  normal: "var(--semantic-status-success)",
 };
 
 export type GlassPlasticItemRecord = {
@@ -51,16 +54,14 @@ export type GlassPlasticRecord = {
 
 export function countByStatus(record: GlassPlasticRecord) {
   let total = 0;
-  let unchecked = 0;
   let normal = 0;
   let issue = 0;
   for (const room of record.rooms) {
     for (const item of room.items) {
       total++;
-      if (item.status === "unchecked") unchecked++;
-      else if (item.status === "normal") normal++;
-      else if (item.status === "issue") issue++;
+      if (item.status === "normal") normal++;
+      else issue++;
     }
   }
-  return { total, unchecked, normal, issue };
+  return { total, normal, issue };
 }

@@ -24,7 +24,7 @@ export function ProductDetailPage() {
 
   useEffect(() => {
     if (location.state?.justSaved) {
-      setToastMessage("更新されました。");
+      setToastMessage("更新しました。");
       setShowToast(true);
       const timer = setTimeout(() => {
         setShowToast(false);
@@ -115,7 +115,7 @@ export function ProductDetailPage() {
                 {product.name}の削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
-                削除した情報は元に戻せません。本当に削除しますか？
+                削除した情報は元に戻せません。削除しますか？
               </p>
             </div>
             <div className="flex gap-6 items-center justify-center w-full">

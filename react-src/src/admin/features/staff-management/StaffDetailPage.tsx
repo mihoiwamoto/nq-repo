@@ -6,6 +6,20 @@ import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { getCompanyName } from "../../../data/companies";
 import { ROLE_COLORS, ROLE_LABELS, SYSTEM_AUTHORITY_LABELS } from "./types";
+import type { StaffFactoryAssignment, StaffRole } from "./types";
+
+const ROLE_ORDER: StaffRole[] = ["operator", "checker", "approver"];
+
+function groupByFactory(list: StaffFactoryAssignment[]) {
+  const rows: { factoryId: string; roles: StaffRole[] }[] = [];
+  for (const a of list) {
+    const row = rows.find((r) => r.factoryId === a.factoryId);
+    if (row) {
+      if (!row.roles.includes(a.role)) row.roles.push(a.role);
+    } else rows.push({ factoryId: a.factoryId, roles: [a.role] });
+  }
+  return rows.map((r) => ({ ...r, roles: ROLE_ORDER.filter((x) => r.roles.includes(x)) }));
+}
 import { useStaffManagement } from "./StaffManagementContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
@@ -88,28 +102,34 @@ export function StaffDetailPage() {
           <Row label="企業">{getCompanyName(member.companyId)}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
 
-          {member.assignments.map((assignment, index) => (
+          {/* 本番は 1 工場に権限を複数持てるので、工場ごとにまとめて権限を並べる（実施者・確認者・承認者の順） */}
+          {groupByFactory(member.assignments).map((assignment, index) => (
             <div key={`${assignment.factoryId}-${index}`} className="flex flex-col gap-4 w-full">
               <Row label="工場">{getFactoryName(assignment.factoryId)}</Row>
               <div className="flex gap-4 items-center w-full">
                 <div className="w-40 shrink-0 text-xl text-[var(--semantic-brand-primary)]">権限</div>
-                <span
-                  className="h-10 w-28 rounded-lg flex items-center justify-center text-base"
-                  style={{
-                    backgroundColor: ROLE_COLORS[assignment.role].bg,
-                    color: ROLE_COLORS[assignment.role].text,
-                  }}
-                >
-                  {ROLE_LABELS[assignment.role]}
-                </span>
+                <div className="flex gap-3 items-center">
+                  {assignment.roles.map((role) => (
+                    <span
+                      key={role}
+                      className="h-10 w-28 rounded-lg flex items-center justify-center text-base"
+                      style={{
+                        backgroundColor: ROLE_COLORS[role].bg,
+                        color: ROLE_COLORS[role].text,
+                      }}
+                    >
+                      {ROLE_LABELS[role]}
+                    </span>
+                  ))}
+                </div>
               </div>
               <div className="border-t border-[#d0d0d0] w-full" />
             </div>
           ))}
 
-          <Row label="メールアドレス">{member.email || "未登録"}</Row>
+          <Row label="メールアドレス">{member.email}</Row>
           <div className="border-t border-[#d0d0d0] w-full" />
-          <Row label="パスワード">{member.hasPassword ? "登録済み" : "未登録"}</Row>
+          <Row label="パスワード">{member.hasPassword ? "登録済み" : ""}</Row>
         </div>
       </div>
 
@@ -119,7 +139,7 @@ export function StaffDetailPage() {
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
-                職員情報を削除
+                {member.name}を削除
               </h2>
               <p className="text-base text-[var(--semantic-text-primary)]">
                 削除した情報は元に戻せません。削除しますか？
@@ -145,7 +165,7 @@ export function StaffDetailPage() {
         </div>
       )}
 
-      {showUpdateToast && <Toast message="更新されました。" onClose={() => setShowUpdateToast(false)} />}
+      {showUpdateToast && <Toast message="更新しました。" onClose={() => setShowUpdateToast(false)} />}
       {showDeleteToast && <Toast message="削除されました。" onClose={() => setShowDeleteToast(false)} />}
     </div>
   );

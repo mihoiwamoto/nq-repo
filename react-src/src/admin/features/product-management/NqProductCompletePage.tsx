@@ -1,15 +1,17 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PageTitleBar } from "../../components/PageTitleBar";
 
 export function NqProductCompletePage({ message }: { message: string }) {
-  const location = useLocation();
-  const productName = (location.state as { productName?: string } | null)?.productName;
-  // 新規登録の直後だけ製品名を添える。URL を直接開いたときは state が無いのでルートの文言のまま
-  const text = productName ? `${productName}の新規登録が完了しました` : message;
+  // 本番の完了の文言は「製品管理の新規登録が完了しました」「製品管理の削除が完了しました」（製品名は添えない）
+  const text = message.includes("新規登録")
+    ? "製品管理の新規登録が完了しました"
+    : message.includes("削除")
+      ? "製品管理の削除が完了しました"
+      : message;
 
   return (
     <div>
-      <PageTitleBar title="製品管理" />
+      <PageTitleBar title="完了画面" />
       <div className="flex flex-col gap-10 items-center justify-center p-6 pt-16">
         <div className="flex flex-col gap-6 items-center w-full">
           <svg

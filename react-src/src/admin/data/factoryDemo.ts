@@ -93,6 +93,53 @@ const PERSON_KEY = /^(implementer|confirmer|approver|inspector|inspectorName|con
 
 const APPROVAL_STATUSES = ["pending", "approved", "approved", "rejected"];
 
+/**
+ * データ検索の記録（records）の工場ごとの傾向（2026-10-08）。
+ * - abnormal：異常（×・NG・2 点以下・異常反応・破棄）の記録が多い工場（元の見本の異常の記録を 3 倍の割合で使う）
+ * - skip：点検見送り（ー）が多い工場
+ * - clean：異常も見送りも無い工場（正常の記録だけ）
+ * - long：場所・ライン・製品などの名前が長い工場
+ * 書いていない工場は元の見本と同じ割合。f5 は FACTORY_SCALE で 0 件。
+ */
+const FACTORY_FLAVOR: Record<string, "abnormal" | "skip" | "clean" | "long"> = {
+  f2: "abnormal",
+  f6: "long",
+  f7: "skip",
+  f9: "clean",
+  f14: "clean",
+  f16: "abnormal",
+  f18: "skip",
+  f21: "long",
+};
+
+const LONG_SUFFIX = "（第2工場 増設棟 北側エリア）";
+
+/** 帳票ごとの「異常あり」「見送り」の見分け方（元の見本の JSON の文字で見る） */
+const FLAVOR_TEST: Record<string, { abnormal?: RegExp; skip?: RegExp }> = {
+  "water-inspection": { abnormal: /"status":"abnormal"|"chlorineReplenished":true|"abnormalDetectionLight":"on"/ },
+  "glass-plastic": { abnormal: /"status":"issue"/ },
+  "scale-inspection": { abnormal: /"operationCheck":"ng"|"weightCause":"/, skip: /"skipped":true/ },
+  "sensory-inspection": { abnormal: /"score":[12],/ },
+  "metal-xray-detection": { abnormal: /"result":"NG"/ },
+  "sample-management": { abnormal: /"status":"破棄済み"/ },
+  "equipment-inspection": { abnormal: /"resultIcon":"ng"/, skip: /"resultIcon":"skip"/ },
+  "cleaning-record": { skip: /"cleaned":false/ },
+};
+
+/** 傾向に合わせて、作り直しに使う元の記録の並びを変える */
+function flavoredSequence<T>(slug: string, base: T[], flavor: string | undefined): T[] {
+  const test = FLAVOR_TEST[slug];
+  if (!flavor || flavor === "long" || !test) return base;
+  const is = (re: RegExp | undefined, r: T) => !!re && re.test(JSON.stringify(r));
+  if (flavor === "clean") {
+    const clean = base.filter((r) => !is(test.abnormal, r) && !is(test.skip, r));
+    return clean.length ? clean : base;
+  }
+  const re = flavor === "abnormal" ? test.abnormal : test.skip;
+  if (!re) return base;
+  return base.flatMap((r) => (is(re, r) ? [r, r, r] : [r]));
+}
+
 function hash(s: string) {
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
@@ -165,10 +212,16 @@ function buildDemo<T>(slug: string, factoryId: string, base: T[], kind: DemoKind
     return personMap.get(orig)!;
   };
 
+  const flavor = kind === "records" ? FACTORY_FLAVOR[factoryId] : undefined;
+  const seq = flavoredSequence(slug, base, flavor);
+  const seen = new Map<T, number>();
+
   const out: T[] = [];
   for (let i = 0; i < count; i++) {
-    const src = base[i % base.length];
-    const cycle = Math.floor(i / base.length);
+    const src = seq[i % seq.length];
+    // 同じ元の記録の何回目か（2 回目からは id の後ろに -1・-2… を付け、日付と場所を変える）
+    const cycle = seen.get(src) ?? 0;
+    seen.set(src, cycle + 1);
     const shift = kind !== "registry" ? cycle * 3 + Math.floor(rand() * 2) : 0;
     // 置き換える名前（この 1 件の中では、同じ元の名前は同じ新しい名前にする）
     const renames = new Map<string, string>();
@@ -180,7 +233,8 @@ function buildDemo<T>(slug: string, factoryId: string, base: T[], kind: DemoKind
           const picked = pickName(cycle && (kind === "registry" || cycle < 3) ? `${v}#${cycle}` : v);
           // 「【毎日】」のような頭書きは元のものを残す
           const head = /^【[^】]+】/.exec(v)?.[0] ?? "";
-          renames.set(v, head && !picked.startsWith("【") ? head + picked : picked);
+          const named = head && !picked.startsWith("【") ? head + picked : picked;
+          renames.set(v, flavor === "long" ? named + LONG_SUFFIX : named);
         }
       }
     }

@@ -25,7 +25,7 @@ const HOME_SHORTCUTS = [
     label: "承認申請管理",
     icon: iconApproval,
     path: "/admin/approvals",
-    description: "工場で点検された帳票を承認する画面です",
+    description: "工場で点検された帳票を確認・承認する画面です",
   },
   {
     label: "確認管理",
@@ -43,7 +43,7 @@ const HOME_SHORTCUTS = [
     label: "製品管理",
     icon: iconProduct,
     path: "/admin/products",
-    description: "製品の登録・編集・削除ができます。基幹システムから取り込んだ製品も確認できます",
+    description: "基幹システムの製品の閲覧、NQリポ独自製品の登録・編集・削除ができます",
   },
   {
     label: "企業管理",

@@ -1,15 +1,20 @@
 /* 工場ごとの見本で増やした点検対象（id に ~ が付く）でも引けるよう、id で引く見本は withTplFallback で包む（2026-10-07） */
 import { withTplFallback } from "../../data/targetId";
-export type ProductStatus = "not_inspected" | "inspected";
+/* 本番の API（check_status 0:未点検／1:点検済み／2:確認完了／9:差し戻し）に合わせて全部持つ（2026-10-08）。見本は未点検・点検済みだけ */
+export type ProductStatus = "not_inspected" | "inspected" | "confirmed" | "rejected";
 
 export const PRODUCT_STATUS_LABELS: Record<ProductStatus, string> = {
   not_inspected: "未点検",
   inspected: "点検済み",
+  confirmed: "確認完了",
+  rejected: "差し戻し",
 };
 
 export const PRODUCT_STATUS_COLORS: Record<ProductStatus, string> = {
   not_inspected: "var(--semantic-text-secondary)",
   inspected: "#DCAA14",
+  confirmed: "var(--semantic-status-success)",
+  rejected: "var(--semantic-status-error)",
 };
 
 export type Product = {

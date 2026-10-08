@@ -6,16 +6,11 @@ import { Pulldown } from "../../components/Pulldown";
 import { getFactoryName } from "../../../data/factories";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
-import {
-  SCALE_REPAIR_STATUS_COLORS,
-  SCALE_REPAIR_STATUS_LABELS,
-  SCALE_REPAIR_STATUS_NEXT_OPTIONS,
-  type ScaleRepairStatus,
-} from "./types";
+import { PlusIcon } from "../../components/PlusIcon";
 
 export function ScaleManagementListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
-  const { scales, posts, setScaleRepairStatus, moveScale } = useScaleInspection();
+  const { scales, posts, moveScale } = useScaleInspection();
   const basePath = `/admin/ledger-management/scale-inspection/factories/${factoryId}`;
   const factoryName = getFactoryName(factoryId);
 
@@ -54,7 +49,8 @@ export function ScaleManagementListPage() {
             to={`${basePath}/scale-management/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />
@@ -85,14 +81,14 @@ export function ScaleManagementListPage() {
                 type="text"
                 value={serialFilter}
                 onChange={(e) => setSerialFilter(e.target.value)}
-                placeholder="秤のシリアルナンバーで探す"
+                placeholder="秤のシリアルナンバーで検索"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[260px] placeholder:text-[var(--semantic-text-secondary)]"
               />
               <input
                 type="text"
                 value={weightFilter}
                 onChange={(e) => setWeightFilter(e.target.value)}
-                placeholder="秤重量で探す"
+                placeholder="秤量で検索"
                 className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px] placeholder:text-[var(--semantic-text-secondary)]"
               />
               <Pulldown
@@ -120,15 +116,14 @@ export function ScaleManagementListPage() {
         </div>
 
         <div className="w-full rounded-lg overflow-x-auto">
-          <div className="flex flex-col min-w-[900px]">
+          <div className="flex flex-col min-w-[760px]">
             <div className="bg-[#f6f6f6] flex h-[50px] items-center">
               {[
                 { label: "表示順", width: "w-[80px]" },
-                { label: "秤No.(ラベル名)", width: "w-[148px]" },
+                { label: "秤No.（ラベル名）", width: "w-[148px]" },
                 { label: "シリアルナンバー", width: "w-[148px]" },
                 { label: "秤量(kg)", width: "w-[100px]" },
                 { label: "持ち場", width: "w-[148px]" },
-                { label: "修理状況", width: "w-[140px]" },
                 { label: "操作", width: "w-[104px]" },
               ].map((col) => (
                 <div
@@ -180,20 +175,6 @@ export function ScaleManagementListPage() {
                   </div>
                   <div className="w-[148px] flex items-center justify-center p-2 h-full text-sm text-[var(--semantic-text-primary)] text-center">
                     {getPostName(scale.postId)}
-                  </div>
-                  <div className="w-[140px] flex items-center justify-center p-2 h-full">
-                    {scale.repairStatus ? (
-                      <Pulldown
-                        value={scale.repairStatus}
-                        onChange={(value) => setScaleRepairStatus(scale.id, value as ScaleRepairStatus)}
-                        options={SCALE_REPAIR_STATUS_NEXT_OPTIONS[scale.repairStatus].map((opt) => ({
-                          value: opt,
-                          label: SCALE_REPAIR_STATUS_LABELS[opt],
-                        }))}
-                        className="h-8 px-2 rounded-lg text-sm text-white"
-                        style={{ backgroundColor: SCALE_REPAIR_STATUS_COLORS[scale.repairStatus] }}
-                      />
-                    ) : null}
                   </div>
                   <div className="w-[104px] flex items-center justify-center p-2 h-full">
                     <Link

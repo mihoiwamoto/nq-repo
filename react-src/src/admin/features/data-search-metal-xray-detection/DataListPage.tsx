@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
@@ -19,9 +19,10 @@ import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconCheckmark from "../../../assets/figma/icons/common/checkmark.svg";
-import { downloadElementAsPdf } from "../../utils/pdf";
+import iconXMark from "../../../assets/figma/icons/common/x-mark.svg";
+import { downloadMetalCsv, downloadMetalPdf } from "./metalExport";
+import { PlusIcon } from "../../components/PlusIcon";
 
-const RESULT_LABELS: Record<InspectionResult, string> = { OK: "正常", NG: "異常あり" };
 const RESULT_COLORS: Record<InspectionResult, string> = {
   OK: "var(--semantic-status-success)",
   NG: "var(--semantic-status-error)",
@@ -38,19 +39,10 @@ function ResultIcon({ result }: { result: InspectionResult }) {
       <img src={iconCheckmark} alt="OK" className="w-6 h-6" />
     );
   }
-  return null;
+  // NG は ×（使用水の点検の一覧と同じ白い ×。セルは赤。2026-10-08 ユーザー指定）
+  return <img src={iconXMark} alt="NG" className="size-5" />;
 }
 
-function downloadCsv(rows: string[][], filename: string) {
-  const csv = rows.map((row) => row.map((cell) => `"${cell.replaceAll('"', '""')}"`).join(",")).join("\n");
-  const blob = new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
 
 function formatDate(date: string) {
   return date.replaceAll("-", "/");
@@ -74,7 +66,6 @@ export function DataListPage() {
   const [filterOpen, setFilterOpen] = useState(true);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
-  const tableRef = useRef<HTMLDivElement>(null);
   const [dateFilter, setDateFilter] = useState("");
   const [machineFilter, setMachineFilter] = useState("");
   const [productFilter, setProductFilter] = useState("");
@@ -106,6 +97,8 @@ export function DataListPage() {
     if (onlyAbnormal && r.result !== "NG") return false;
     return true;
   });
+  // 日付順に並べ、日付が変わるたびに白 / 薄緑（Figma 6296:131118 と同じ。全帳票で統一。2026-10-08 ユーザー指定）
+  filtered.sort((a, b) => a.date.localeCompare(b.date));
   const rowStripeClasses = getDateStripeClasses(filtered, (r) => r.date);
 
   function goToMonth(delta: number) {
@@ -121,11 +114,6 @@ export function DataListPage() {
     setOnlyAbnormal(false);
   }
 
-  function handleDownload() {
-    const header = ["実施日", "点検構成名", "結果", "確認者"];
-    const rows = filtered.map((r) => [r.date, r.machineName, RESULT_LABELS[r.result], r.confirmer]);
-    downloadCsv([header, ...rows], `データ一覧_${year}${String(month + 1).padStart(2, "0")}.csv`);
-  }
 
   return (
     <div>
@@ -171,7 +159,7 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setFilterOpen((v) => !v)}
-            className="flex items-center gap-2 text-base text-[var(--semantic-brand-primary)]"
+            className="flex items-center gap-2 h-5 text-base text-[var(--semantic-brand-primary)]"
           >
             <span>絞り込み検索</span>
             {filterOpen ? (
@@ -189,7 +177,7 @@ export function DataListPage() {
                 }}
               />
             ) : (
-              <span>+</span>
+              <PlusIcon />
             )}
           </button>
           {filterOpen && (
@@ -369,7 +357,7 @@ export function DataListPage() {
           )}
         </div>
 
-        <div ref={tableRef} className="w-full rounded-lg overflow-x-auto">
+        <div className="w-full rounded-lg overflow-x-auto">
           <div className="flex flex-col min-w-[1004px]">
             <div className="bg-[#f6f6f6] flex h-[50px] items-center">
               {COLUMNS.map((col) => (
@@ -408,7 +396,7 @@ export function DataListPage() {
                   <div className="flex-1 min-w-[200px] flex items-center justify-start p-2 h-full text-sm text-[var(--semantic-text-primary)] text-left">
                     {record.machineName}
                   </div>
-                  <div className="w-[80px] flex items-center justify-center p-2 h-full">
+                  <div className={`w-[80px] flex items-center justify-center p-2 h-full ${record.result === "NG" ? "bg-[#f85c5c]" : ""}`}>
                     <ResultIcon result={record.result} />
                   </div>
                   <div className="w-[100px] flex items-center justify-center p-2 h-full text-sm font-bold text-[var(--semantic-text-primary)]">
@@ -486,9 +474,9 @@ export function DataListPage() {
                 type="button"
                 onClick={async () => {
                   if (downloadFormat === "csv") {
-                    handleDownload();
-                  } else if (tableRef.current) {
-                    await downloadElementAsPdf(tableRef.current, `データ一覧_${year}${String(month + 1).padStart(2, "0")}.pdf`);
+                    downloadMetalCsv(filtered, factoryName, year, month);
+                  } else {
+                    await downloadMetalPdf(filtered, factoryName, year, month);
                   }
                   setDownloadDialogOpen(false);
                 }}

@@ -11,6 +11,11 @@ import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 
 let nextId = 1000;
 
+/** 設定の表は最初から空の行を 1 行出し、最後の 1 行は消せない（確定デザイン 6296:133313・6296:134171）。 */
+function emptySetting(): TestPieceSetting {
+  return { id: `s${nextId++}`, productName: "", settingNumber: "", fe: "", sus: "" };
+}
+
 export function NewRegistrationPage() {
   const { factoryId, unitId } = useParams<{ factoryId: string; unitId?: string }>();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
@@ -21,16 +26,15 @@ export function NewRegistrationPage() {
   const existing = units.find((u) => u.id === unitId);
 
   const [name, setName] = useState(existing?.name ?? "");
-  const [settings, setSettings] = useState<TestPieceSetting[]>(existing?.settings ?? []);
+  const [settings, setSettings] = useState<TestPieceSetting[]>(() =>
+    existing?.settings.length ? existing.settings : [emptySetting()],
+  );
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
   function addRow() {
-    setSettings((prev) => [
-      ...prev,
-      { id: `s${nextId++}`, productName: "", settingNumber: "", fe: "", sus: "" },
-    ]);
+    setSettings((prev) => [...prev, emptySetting()]);
   }
 
   function updateRow(id: string, field: keyof Omit<TestPieceSetting, "id">, value: string) {
@@ -38,6 +42,7 @@ export function NewRegistrationPage() {
   }
 
   function removeRow(id: string) {
+    if (settings.length <= 1) return;
     setSettings((prev) => prev.filter((row) => row.id !== id));
     setToastMessage("削除されました。");
     setShowToast(true);
@@ -118,14 +123,7 @@ export function NewRegistrationPage() {
                 <p className="text-sm text-[var(--semantic-brand-primary)]">操作</p>
               </div>
             </div>
-            {settings.length === 0 ? (
-              <div className="bg-white flex items-center justify-center w-full py-6">
-                <p className="text-base text-[var(--semantic-text-secondary)]">
-                  データがありません。
-                </p>
-              </div>
-            ) : (
-              settings.map((row, index) => (
+            {settings.map((row, index) => (
                 <div
                   key={row.id}
                   className={`flex h-[64px] items-center w-full ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
@@ -135,7 +133,7 @@ export function NewRegistrationPage() {
                       value={row.productName}
                       onChange={(value) => updateRow(row.id, "productName", value)}
                       options={CANDIDATE_PRODUCTS.map((product) => ({ value: product, label: product }))}
-                      placeholder=""
+                      placeholder="例）マンゴープリン　ストレート　1kg"
                       className="bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[424px]"
                     />
                   </div>
@@ -170,14 +168,14 @@ export function NewRegistrationPage() {
                     <button
                       type="button"
                       onClick={() => removeRow(row.id)}
-                      className="bg-white border border-[var(--semantic-brand-danger)] size-10 rounded-lg flex items-center justify-center"
+                      disabled={settings.length <= 1}
+                      className="bg-white border border-[var(--semantic-brand-danger)] size-10 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       <img src={iconTrash} alt="削除" className="size-6" />
                     </button>
                   </div>
                 </div>
-              ))
-            )}
+              ))}
           </div>
           <button
             type="button"

@@ -175,7 +175,7 @@ export function AdditiveRejectionReview({
             ))}
             <div className="flex flex-col gap-2 items-start w-full">
               <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">備考</p>
-              <p className="text-base leading-[22px] font-normal text-[var(--semantic-text-primary)]">{record.remarks}</p>
+              <p className="text-base leading-[26px] font-normal text-[var(--semantic-text-primary)]">{record.remarks}</p>
             </div>
           </div>
 
@@ -230,7 +230,7 @@ export function AdditiveRejectionReview({
         className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 flex flex-col gap-4 items-center"
         onReachEnd={() => setScrolledToEnd(true)}
       >
-        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-[18px] rounded-lg w-full max-w-full">
+        <div className="bg-[#f7f292] flex gap-2 items-center min-h-14 px-4 py-2 rounded-lg w-full max-w-full">
           <img src={iconAttention} alt="注意" className="size-6 shrink-0" />
           <p className="text-sm text-[var(--semantic-text-primary)]">承認者から差し戻し理由のコメントがあります。</p>
         </div>

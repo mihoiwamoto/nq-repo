@@ -81,6 +81,8 @@ export function MachineDetailView({
   itemPath,
   setApprovalStatus,
   addComment,
+  readOnly = false,
+  summaryRows,
 }: {
   record: MachineApprovalRecord | undefined;
   factoryName: string;
@@ -88,6 +90,10 @@ export function MachineDetailView({
   itemPath: (record: MachineApprovalRecord, item: InspectionRecord) => string;
   setApprovalStatus: (id: string, status: ApprovalStatus) => void;
   addComment: (id: string, text: string) => void;
+  /** データ検索から開いたとき。承認ステータスのプルダウンとコメントの入力欄を出さない（コメントの一覧だけ） */
+  readOnly?: boolean;
+  /** 上部カードの行。省略時は 実施日・確認者（承認申請管理） */
+  summaryRows?: (record: MachineApprovalRecord) => { label: string; value: string }[];
 }) {
   const {
     showConfirmDialog,
@@ -112,11 +118,22 @@ export function MachineDetailView({
     );
   }
 
+  const rows = summaryRows
+    ? summaryRows(record)
+    : [
+        { label: "実施日", value: formatDate(record.date) },
+        { label: "確認者", value: record.confirmer },
+      ];
+
   const handleStatusChange = (value: string) => {
     if (value === "approved") {
       requestApproval(() => setApprovalStatus(record.id, value as ApprovalStatus));
     } else if (value === "rejected") {
-      requestRejection(() => setApprovalStatus(record.id, value as ApprovalStatus));
+      requestRejection((reason) => {
+        setApprovalStatus(record.id, value as ApprovalStatus);
+        // 差し戻し理由はコメントとして残す（本番 ApprovalFlowService::updateApprovalStatus → createComment）
+        if (reason) addComment(record.id, reason);
+      });
     } else {
       setApprovalStatus(record.id, value as ApprovalStatus);
     }
@@ -130,7 +147,7 @@ export function MachineDetailView({
       {showRejectDialog && (
         <RejectReasonDialog onCancel={cancelRejection} onConfirm={confirmRejection} />
       )}
-      {showToast && <Toast message="更新されました。" onClose={closeToast} />}
+      {showToast && <Toast message="更新しました。" onClose={closeToast} />}
       <PageTitleBar title="点検内容一覧" showBack />
       <Breadcrumb items={breadcrumb} />
       <div className="flex flex-col gap-6 p-6">
@@ -138,26 +155,28 @@ export function MachineDetailView({
           <div className="bg-white flex items-center px-4 py-2 rounded-lg">
             <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{factoryName}</p>
           </div>
-          <Pulldown
-            value={record.approvalStatus}
-            onChange={handleStatusChange}
-            options={STATUS_OPTIONS}
-            disabled={record.approvalStatus !== "pending"}
-            className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
-            style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
-          />
+          {!readOnly && (
+            <Pulldown
+              value={record.approvalStatus}
+              onChange={handleStatusChange}
+              options={STATUS_OPTIONS}
+              disabled={record.approvalStatus !== "pending"}
+              className="border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-white w-[240px]"
+              style={{ backgroundColor: APPROVAL_STATUS_COLOR[record.approvalStatus] }}
+            />
+          )}
         </div>
 
         <div className="bg-white flex flex-col gap-3 items-start px-4 py-6 rounded-lg w-full">
-          <div className="flex items-center justify-between w-full">
-            <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">実施日</p>
-            <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{formatDate(record.date)}</p>
-          </div>
-          <div className="border-t border-[#d0d0d0] w-full" />
-          <div className="flex items-center justify-between w-full">
-            <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">確認者</p>
-            <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{record.confirmer}</p>
-          </div>
+          {rows.map((row, i) => (
+            <div key={row.label} className="flex flex-col gap-3 w-full">
+              {i > 0 && <div className="border-t border-[#d0d0d0] w-full" />}
+              <div className="flex items-center justify-between w-full">
+                <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{row.label}</p>
+                <p className="text-2xl font-bold text-[var(--semantic-text-primary)]">{row.value}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="bg-white rounded-lg overflow-x-auto">
@@ -214,14 +233,16 @@ export function MachineDetailView({
         <div className="flex flex-col gap-4 items-start w-full">
           <p className="text-xl text-[var(--semantic-text-primary)]">コメント</p>
           <Comments comments={record.comments || []} />
-          <CommentInputBox
-            value={comment}
-            onChange={setComment}
-            onSubmit={() => {
-              addComment(record.id, comment);
-              setComment("");
-            }}
-          />
+          {!readOnly && (
+            <CommentInputBox
+              value={comment}
+              onChange={setComment}
+              onSubmit={() => {
+                addComment(record.id, comment);
+                setComment("");
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

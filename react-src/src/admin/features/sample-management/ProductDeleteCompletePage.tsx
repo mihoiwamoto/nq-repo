@@ -25,13 +25,13 @@ export function ProductDeleteCompletePage() {
               strokeLinejoin="round"
             />
           </svg>
-          <p className="text-2xl text-[var(--semantic-text-primary)]">製品の削除が完了しました</p>
+          <p className="text-2xl text-[var(--semantic-text-primary)]">検体対象製品の削除が完了しました</p>
         </div>
         <Link
           to={`/admin/ledger-management/sample-management/factories/${factoryId}`}
           className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-12 w-[400px] rounded-lg flex items-center justify-center text-xl text-[var(--semantic-brand-primary)]"
         >
-          検体対象製品一覧に戻る
+          検体管理に戻る
         </Link>
       </div>
     </div>

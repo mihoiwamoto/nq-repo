@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 
 export function EmailChangePage() {
@@ -19,13 +18,7 @@ export function EmailChangePage() {
 
   return (
     <div>
-      <PageTitleBar title="メールアドレス変更" showBack />
-      <Breadcrumb
-        items={[
-          { label: "アカウント情報", to: "/admin/account" },
-          { label: "メールアドレス変更" },
-        ]}
-      />
+      <PageTitleBar title="メールアドレス変更" />
       <div className="flex flex-col gap-10 items-start p-6">
         <div className="flex flex-col gap-6 items-start">
           <div className="flex flex-col gap-1 items-start w-[480px]">
@@ -54,7 +47,7 @@ export function EmailChangePage() {
           </div>
         </div>
 
-        {hasError && <p className="text-base text-[#f85c5c]">※メールアドレスが一致しません</p>}
+        {hasError && <p className="text-base text-[#f85c5c]">※メールアドレスが一致しません。</p>}
 
         <button
           type="button"

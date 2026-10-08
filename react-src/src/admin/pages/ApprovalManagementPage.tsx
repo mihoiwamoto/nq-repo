@@ -24,10 +24,17 @@ export function ApprovalManagementPage() {
   const pendingCount = requests.filter((item) => item.status === "pending").length;
 
   useEffect(() => {
-    const statusChanged = (location.state as any)?.statusChanged as ApprovalStatus | undefined;
+    const state = location.state as { statusChanged?: ApprovalStatus; toast?: string } | null;
+    const statusChanged = state?.statusChanged;
     if (statusChanged === "approved" || statusChanged === "rejected") {
       setActiveTab(statusChanged);
-      setToastMessage(statusChanged === "approved" ? "承認しました。" : "差し戻しました。");
+      // 本番（ApprovalFlowController）：データ一覧の「承認する」は「一括承認が完了しました。」、
+      // 詳細で承認ステータスを変えたときは「承認ステータスを更新しました。」。
+      // 送り手が文言を決めたいときは state.toast を渡す（詳細から承認したときなど）
+      setToastMessage(
+        state?.toast ??
+          (statusChanged === "approved" ? "一括承認が完了しました。" : "承認ステータスを更新しました。"),
+      );
     }
   }, [location.state]);
 
@@ -84,7 +91,7 @@ export function ApprovalManagementPage() {
                       {category?.adminLabel}
                     </span>
                   </div>
-                  <div className="border-t border-[#f1efea] w-full" />
+                  <div className="border-t border-[#f1efea] w-full -mb-px" />{/* 確定デザイン 7139:162991：線は高さ 0（カード 152px） */}
                   <p className="text-base leading-[22px] text-[var(--semantic-text-primary)]">{item.description}</p>
                 </>
               );

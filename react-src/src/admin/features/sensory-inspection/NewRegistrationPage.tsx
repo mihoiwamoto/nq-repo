@@ -77,8 +77,16 @@ export function NewRegistrationPage() {
   }
 
   function handleSubmit() {
-    if (!name) {
-      setError("検査製品名は必須です");
+    // 本番どおり：製品はリスト（NQリポ／基幹システム）から選ぶ。検査項目は 1 つ以上「記録する」
+    const errors: string[] = [];
+    if (!name || ![...nqRepoNames, ...CORE_SYSTEM_PRODUCT_NAMES].includes(name)) {
+      errors.push("リスト内の項目を選択してください。");
+    }
+    if (!CRITERIA.some((criterion) => criteria[criterion])) {
+      errors.push("検査項目は少なくとも1つ以上「記録する」を選択してください。");
+    }
+    if (errors.length > 0) {
+      setError(errors.join("\n"));
       return;
     }
     if (isEditing && productId) {
@@ -112,7 +120,7 @@ export function NewRegistrationPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onFocus={() => setPulldownOpen(true)}
-            placeholder="例）マンゴープリン　ストレート　1kg"
+            placeholder="選択してください"
             className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full placeholder:text-[#808080]"
           />
 
@@ -167,7 +175,7 @@ export function NewRegistrationPage() {
           </div>
         ))}
 
-        {error && <p className="text-sm text-[var(--semantic-brand-danger)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--semantic-brand-danger)] whitespace-pre-line">{error}</p>}
 
         <div className="flex gap-4 items-center">
           <button

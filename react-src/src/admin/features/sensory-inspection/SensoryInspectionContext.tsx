@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from "re
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { SENSORY_TARGET_PRODUCTS } from "./mockData";
-import type { ScheduleEntry, SensoryTargetProduct } from "./types";
+import type { ComparisonSetting, ScheduleEntry, SensoryTargetProduct } from "./types";
 import { useFactoryList } from "../../data/factoryDemo";
 
 type SensoryInspectionContextValue = {
@@ -11,7 +11,11 @@ type SensoryInspectionContextValue = {
   updateProduct: (id: string, product: Omit<SensoryTargetProduct, "id">) => void;
   removeProduct: (id: string) => void;
   scheduleEntries: Record<string, ScheduleEntry>;
-  upsertScheduleEntry: (dateKey: string, productIds: string[]) => void;
+  upsertScheduleEntry: (
+    dateKey: string,
+    productIds: string[],
+    comparisons?: Record<string, ComparisonSetting>,
+  ) => void;
   removeScheduleEntry: (dateKey: string) => void;
 };
 
@@ -33,8 +37,12 @@ export function SensoryInspectionProvider({ children }: { children: ReactNode })
     setProducts((prev) => prev.filter((product) => product.id !== id));
   }
 
-  function upsertScheduleEntry(dateKey: string, productIds: string[]) {
-    setScheduleEntries((prev) => ({ ...prev, [dateKey]: { dateKey, productIds } }));
+  function upsertScheduleEntry(
+    dateKey: string,
+    productIds: string[],
+    comparisons?: Record<string, ComparisonSetting>,
+  ) {
+    setScheduleEntries((prev) => ({ ...prev, [dateKey]: { dateKey, productIds, comparisons } }));
   }
 
   function removeScheduleEntry(dateKey: string) {

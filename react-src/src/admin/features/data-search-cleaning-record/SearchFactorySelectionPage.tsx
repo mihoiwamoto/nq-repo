@@ -2,15 +2,21 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
-import { FACTORIES } from "../../../data/factories";
+import iconSearch from "../../../assets/figma/icons/common/search.svg";
+import { useRoleFactories } from "../../data/useRoleFactories";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 
 export function SearchFactorySelectionPage() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
 
-  const factories = FACTORIES.filter((f) => f.name.includes(search));
+  // 承認者は権限のある工場だけ、管理者は全工場（useRoleFactories）
+
+  const roleFactories = useRoleFactories();
+
+  const factories = roleFactories.filter((f) => f.name.includes(query));
 
   return (
     <div>
@@ -47,13 +53,41 @@ export function SearchFactorySelectionPage() {
             />
           </button>
           {filterOpen && (
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="工場名で検索"
-              className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full max-w-md placeholder:text-[var(--semantic-text-secondary)]"
-            />
+            // 本番（inspects/factories.blade.php）：「工場名で探す」の欄と リセット・検索 のボタン。検索を押して（Enter でも）絞り込む
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setQuery(search);
+              }}
+              className="flex flex-wrap gap-4 items-center justify-between w-full"
+            >
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="工場名で探す"
+                className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full max-w-md placeholder:text-[var(--semantic-text-secondary)]"
+              />
+              <div className="flex gap-2 items-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch("");
+                    setQuery("");
+                  }}
+                  className="bg-white border border-[#808080] h-10 w-20 rounded-lg text-sm text-[var(--semantic-text-secondary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
+                >
+                  リセット
+                </button>
+                <button
+                  type="submit"
+                  className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
+                >
+                  <img src={iconSearch} alt="" className="size-5" />
+                  検索
+                </button>
+              </div>
+            </form>
           )}
         </div>
         <div className="border-t border-[#d0d0d0] w-full" />

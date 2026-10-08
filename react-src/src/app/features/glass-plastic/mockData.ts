@@ -1,4 +1,5 @@
-export type FloorStatus = "not_inspected" | "inspected";
+/* 本番の API（check_status 0:未点検／1:点検済み／2:確認完了／9:差し戻し）に合わせて全部持つ（2026-10-08）。見本は未点検・点検済みだけ */
+export type FloorStatus = "not_inspected" | "inspected" | "confirmed" | "rejected";
 
 export type Floor = {
   id: string;
@@ -11,11 +12,15 @@ export type Floor = {
 export const FLOOR_STATUS_LABELS: Record<FloorStatus, string> = {
   not_inspected: "未点検",
   inspected: "点検済み",
+  confirmed: "確認完了",
+  rejected: "差し戻し",
 };
 
 export const FLOOR_STATUS_COLORS: Record<FloorStatus, string> = {
   not_inspected: "var(--semantic-text-secondary)",
   inspected: "#DCAA14",
+  confirmed: "var(--semantic-status-success)",
+  rejected: "var(--semantic-status-error)",
 };
 
 export const floors: Floor[] = [
@@ -26,7 +31,7 @@ export const floors: Floor[] = [
 
 export type RoomItemStatus = "ok" | "ng";
 
-export const CONTENT_OPTIONS = ["破損", "ひび割れ", "その他"] as const;
+export const CONTENT_OPTIONS = ["破損", "ヒビ割れ", "その他"] as const;
 export type ContentOption = (typeof CONTENT_OPTIONS)[number];
 
 export const CAUSE_OPTIONS = ["人や物との接触", "その他"] as const;
@@ -136,7 +141,7 @@ export const REPAIR_STATUS_LABELS: Record<RepairStatus, string> = {
   action_needed: "要対応",
   no_repair: "修理しない",
   repairing: "修理中",
-  repaired: "修理完了",
+  repaired: "対応完了",
 };
 
 export const REPAIR_STATUS_COLORS: Record<RepairStatus, string> = {

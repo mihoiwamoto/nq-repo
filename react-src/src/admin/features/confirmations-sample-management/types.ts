@@ -1,6 +1,7 @@
 export type ConfirmStatus = "unconfirmed" | "confirmed";
 
-export type SampleStatus = "保管中" | "使用済み" | "破棄済み";
+/** 本番どおり 2 つ（trashed() ? "破棄済み" : "保管中"） */
+export type SampleStatus = "保管中" | "破棄済み";
 export type DiscardReason = "賞味期限切れ" | "その他";
 
 export type Comment = {

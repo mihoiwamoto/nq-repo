@@ -110,11 +110,12 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
         </div>
 
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {/* 点検対象が 1 件も無いとき（見せ方は AppEmptyState で 3 パターン試し中）。タブの絞り込みで 0 件のときは今までの文言 */}
+          {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯）。タブの絞り込みで 0 件のときは今までの文言 */}
           {allLines.length === 0 ? (
             <AppEmptyState />
           ) : visibleLines.length === 0 ? (
-            <div className="bg-white flex h-[200px] items-center justify-center py-10 rounded-lg w-full">
+            /* 確定デザイン（7139:221342）：0 件の白いカードはタブの下 40px（216）、戻るボタンは 456 */
+            <div className="bg-white flex h-[200px] items-center justify-center py-10 mt-4 rounded-lg w-full">
               <p className="text-xl leading-none text-center text-[var(--semantic-text-primary)]">
                 点検予定が登録されていません
               </p>

@@ -127,13 +127,13 @@ export function ScheduleRegisterPage() {
   if (result) {
     const message =
       result === "deleted"
-        ? "検査商品設定の削除が完了しました！"
+        ? "検査製品設定の削除が完了しました！"
         : result === "saved"
           ? "保存が完了しました！"
           : "登録が完了しました！";
     return (
       <>
-        <AppHeader title="官能検査記録 検査商品設定" />
+        <AppHeader title="官能検査記録 検査製品設定" />
         <div className="flex-1 flex flex-col items-center justify-center gap-6 p-6">
           <svg width="80" height="80" viewBox="0 0 80 80" fill="none" className="text-[var(--semantic-brand-primary)]">
             <circle cx="40" cy="40" r="36" stroke="currentColor" strokeWidth="4" />
@@ -160,7 +160,7 @@ export function ScheduleRegisterPage() {
   return (
     <>
       <AppHeader
-        title="官能検査記録 検査商品設定"
+        title="官能検査記録 検査製品設定"
         action={
           viewMode === "view" ? (
             <button
@@ -187,32 +187,32 @@ export function ScheduleRegisterPage() {
           {viewMode === "edit" && (
             <div className="flex items-center justify-between w-full px-4 py-4">
               <p className="text-base text-[var(--semantic-text-primary)] flex items-center gap-1">
-                検査対象商品 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                検査対象製品 <span className="text-[var(--semantic-brand-danger)]">※</span>
               </p>
               <button
                 type="button"
                 onClick={openPicker}
                 className="bg-white border border-[var(--semantic-brand-primary)] h-10 px-4 rounded-lg text-sm text-[var(--semantic-brand-primary)]"
               >
-                ＋ 商品追加
+                ＋ 製品追加
               </button>
             </div>
           )}
 
           {scheduled.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)] px-4 py-4">登録された商品がありません</p>
+            <p className="text-base text-[var(--semantic-text-secondary)] px-4 py-4">登録された製品がありません</p>
           ) : (
             scheduled.map((item) => (
               <div key={item.productId} className="flex flex-col gap-3 w-full px-4 py-4 border-t border-[#d0d0d0]">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-base text-[var(--semantic-text-secondary)] shrink-0">商品名</p>
+                  <p className="text-base text-[var(--semantic-text-secondary)] shrink-0">製品名</p>
                   <div className="flex items-center gap-2 flex-wrap justify-end">
                     <span className="text-base text-[var(--semantic-text-primary)]">{productName(item.productId)}</span>
                     <CriteriaTags />
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-base text-[var(--semantic-text-secondary)] shrink-0">比較商品</p>
+                  <p className="text-base text-[var(--semantic-text-secondary)] shrink-0">比較製品</p>
                   <div className="flex items-center gap-2">
                     {viewMode === "edit" ? (
                       <>
@@ -249,7 +249,7 @@ export function ScheduleRegisterPage() {
                 </div>
                 {item.comparison === "present" && (
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-base text-[var(--semantic-text-secondary)] shrink-0">比較商品製造日</p>
+                    <p className="text-base text-[var(--semantic-text-secondary)] shrink-0">比較製品製造日</p>
                     {viewMode === "edit" ? (
                       <DateFilterInput
                         value={item.comparisonManufactureDate}
@@ -293,14 +293,14 @@ export function ScheduleRegisterPage() {
       {pickerOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setPickerOpen(false)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-8 w-full max-w-[480px] mx-40 max-h-[85vh]">
-            <h2 className="text-2xl text-[var(--semantic-text-primary)]">商品追加</h2>
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-8 w-full max-w-[480px] mx-40 max-h-[85vh]">
+            <h2 className="text-2xl text-[var(--semantic-text-primary)]">製品追加</h2>
             <div className="flex gap-2 items-center w-full">
               <input
                 type="text"
                 value={pickerSearch}
                 onChange={(e) => setPickerSearch(e.target.value)}
-                placeholder="商品名を入力"
+                placeholder="製品名を入力"
                 className="flex-1 bg-white border border-[#d0d0d0] h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
               />
               <button
@@ -312,7 +312,7 @@ export function ScheduleRegisterPage() {
             </div>
             <div className="bg-white flex flex-col items-start rounded-lg w-full overflow-y-auto overflow-x-hidden flex-1">
               {pickerProducts.length === 0 ? (
-                <p className="text-base text-[var(--semantic-text-secondary)] px-4 py-4">該当する商品がありません</p>
+                <p className="text-base text-[var(--semantic-text-secondary)] px-4 py-4">該当する製品がありません</p>
               ) : (
                 pickerProducts.map((p) => {
                   const checked = pickerSelected.has(p.id);
@@ -359,7 +359,7 @@ export function ScheduleRegisterPage() {
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteTarget(null)} />
-          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_3px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
+          <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-full max-w-[480px] mx-40">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
                 {productName(deleteTarget)}の削除

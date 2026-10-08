@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { CURRENT_ACCOUNT } from "../account/mockData";
 import { equipmentConfirmationRecords } from "./mockData";
 import type { ConfirmStatus, EquipmentConfirmationRecord } from "./types";
+import { commentTimestamp } from "../../utils/recordTimestamps";
 
 type RecordsContextValue = {
   records: EquipmentConfirmationRecord[];
@@ -30,7 +31,7 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
                 {
                   id: `${id}-${Date.now()}`,
                   author: CURRENT_ACCOUNT.name,
-                  timestamp: new Date().toISOString().slice(0, 16).replace("T", " ").replaceAll("-", "."),
+                  timestamp: commentTimestamp(),
                   text,
                 },
               ],

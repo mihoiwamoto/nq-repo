@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
+import { PlusIcon } from "../../components/PlusIcon";
 
 export function PostManagementListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -30,7 +31,8 @@ export function PostManagementListPage() {
             to={`${basePath}/post-management/new`}
             className="bg-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] h-10 w-[120px] rounded-lg flex items-center justify-center gap-1 text-white text-base"
           >
-            + 新規登録
+            <PlusIcon />
+            新規登録
           </Link>
         }
       />
@@ -86,7 +88,7 @@ export function PostManagementListPage() {
             <div className="bg-[#f6f6f6] flex h-[50px] items-center">
               {[
                 { label: "表示順", width: "w-[80px]" },
-                { label: "持ち場", width: "flex-1" },
+                { label: "持ち場名", width: "flex-1" },
                 { label: "操作", width: "w-[104px]" },
               ].map((col) => (
                 <div
