@@ -5,6 +5,7 @@ import { getFactoryName } from "../../../data/factories";
 import { useSensoryInspection } from "./SensoryInspectionContext";
 import { CRITERIA, CRITERION_STYLES } from "./types";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function CriteriaLabelList() {
   return (
@@ -79,9 +80,7 @@ export function ProductSelectionPage() {
           <p className="text-2xl text-[var(--semantic-text-primary)]">検査製品一覧</p>
           <div className="flex flex-col gap-6 items-start w-full">
             {products.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState />
             ) : (
               products.map((product) => (
                 <Link

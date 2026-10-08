@@ -20,6 +20,7 @@ import {
   type MachineRecord,
 } from "./mockData";
 import { useDemoList } from "../../../components/demo/demoStore";
+import { AppEmptyState } from "../../components/AppEmptyState";
 import { findFactoryItem } from "../../data/factoryAppData";
 
 const COLUMNS = [
@@ -146,6 +147,7 @@ export function MachineDetailPage() {
               />
             </div>
 
+            <div className="flex flex-col gap-2 w-full">
             <div className="bg-white rounded-lg overflow-x-auto w-full">
               <table className="border-collapse w-full">
                 <thead>
@@ -221,15 +223,12 @@ export function MachineDetailPage() {
                         )}
                       </tr>
                     ))
-                  ) : (
-                    <tr>
-                      {columns.map((col) => (
-                        <td key={col.key} className="bg-white px-2 py-2" />
-                      ))}
-                    </tr>
-                  )}
+                  ) : null}
                 </tbody>
               </table>
+            </div>
+            {/* 空のときは表の見出しの下に 8px 離して「データがありません。」（管理画面と同じ形。2026-10-08） */}
+            {records.length === 0 && <AppEmptyState />}
             </div>
 
             <button

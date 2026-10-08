@@ -4,6 +4,7 @@ import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useRecords } from "./RecordsContext";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 export function PointSelectionPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -29,9 +30,7 @@ export function PointSelectionPage() {
         </div>
         <div className="flex flex-wrap gap-6">
           {locations.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)]">
-              データがありません。
-            </p>
+            <AdminEmptyState />
           ) : (
             locations.map((location) => (
               <Link

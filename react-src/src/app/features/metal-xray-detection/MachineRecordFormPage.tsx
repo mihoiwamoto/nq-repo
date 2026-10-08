@@ -33,6 +33,7 @@ import {
 } from "./mockData";
 import iconCancelDark from "@images/Icon/cancel.svg";
 import { findFactoryItem } from "../../data/factoryAppData";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 function currentTimeString(inspectorName?: string) {
   const name = inspectorName || "山田太郎";
@@ -671,9 +672,7 @@ export function MachineRecordFormPage() {
                 </button>
               </div>
               {passProducts.length === 0 ? (
-                <div className="bg-white flex items-center p-4 rounded-lg w-full">
-                  <p className="text-sm text-[var(--semantic-text-primary)]">登録された製品がありません</p>
-                </div>
+                <AppEmptyState />
               ) : (
                 <div className="flex flex-col gap-2 items-start w-full">
                   {passProducts.map((product, index) => (
@@ -1069,9 +1068,7 @@ export function MachineRecordFormPage() {
                 </button>
               </div>
               {passedProducts.length === 0 ? (
-                <div className="bg-white flex items-center p-4 rounded-lg w-full">
-                  <p className="text-sm text-[var(--semantic-text-primary)]">登録された製品がありません</p>
-                </div>
+                <AppEmptyState />
               ) : (
                 <div className="flex flex-col gap-2 items-start w-full">
                   {passedProducts.map((product, index) => (
@@ -1379,9 +1376,7 @@ export function MachineRecordFormPage() {
                 </button>
               </div>
               {abnormalProducts.length === 0 ? (
-                <div className="bg-white flex items-center p-4 rounded-lg w-full">
-                  <p className="text-sm text-[var(--semantic-text-primary)]">登録された製品がありません</p>
-                </div>
+                <AppEmptyState />
               ) : (
                 <div className="flex flex-col gap-2 items-start w-full">
                   {abnormalProducts.map((product, index) => (

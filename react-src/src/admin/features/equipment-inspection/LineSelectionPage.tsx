@@ -7,6 +7,7 @@ import { useSchedule } from "./ScheduleContext";
 import { getFactoryName } from "../../../data/factories";
 import type { LineFrequency } from "./types";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 const FREQUENCY_TABS: { key: LineFrequency; label: string }[] = [
   { key: "daily", label: "毎日" },
@@ -147,9 +148,7 @@ export function LineSelectionPage() {
 
             {/* 画面説明（コーチマーク）の「持ち場/ラインのカード」はこの並びを囲む */}
             {filteredLines.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState />
             ) : (
               <div className="flex flex-col gap-6 w-full" data-nq-part="line-cards">
               {filteredLines.map((line) => (

@@ -18,6 +18,7 @@ import iconDownload from "../../../assets/figma/icons/common/download.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import { downloadWaterCsv, downloadWaterPdf } from "./waterExport";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -336,9 +337,7 @@ export function DataListPage() {
               ))}
             </div>
             {filtered.length === 0 ? (
-              <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState className="mt-2" />
             ) : (
               filtered.map((record, index) => (
                 <div

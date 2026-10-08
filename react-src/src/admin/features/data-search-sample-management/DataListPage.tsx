@@ -16,6 +16,7 @@ import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadSampleCsv, downloadSamplePdf } from "./sampleExport";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 // 本番（dataSearch/specimen/list.blade.php）は賞味期限・製造日・ロットNo. が無ければ空欄
 function DateDisplay({ date }: { date: string | undefined }) {
@@ -54,9 +55,13 @@ export function DataListPage() {
   const factoryName = getFactoryName(factoryId);
   const basePath = `/admin/data-search/sample-management/factories/${factoryId}`;
 
-  const [filterOpen, setFilterOpen] = useState(true);
+  // 本番（dataSearch/*/searchBar.blade.php）は絞り込みの欄を閉じて開く（collapsed-card）
+  const [filterOpen, setFilterOpen] = useState(false);
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
   const [downloadFormat, setDownloadFormat] = useState<"csv" | "pdf">("csv");
+  // 入力中の値と、「検索」で当てた値を分ける（本番は検索を押して送るまで絞らない）
+  const [dateInput, setDateInput] = useState("");
+  const [productInput, setProductInput] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [productFilter, setProductFilter] = useState("");
   const [year, setYear] = useState(2025);
@@ -68,9 +73,11 @@ export function DataListPage() {
     [records]
   );
 
+  // 日付で絞り込んでいる間は月送りを隠し、月ではなくその日で絞る（本番 dataSearch/list.blade.php の @if(!isSearching)、ScaleCheckResultService の isSearching＝search_date）
+  const isSearching = Boolean(dateFilter);
   const filtered = records.filter((r) => {
     const [ry, rm] = r.date.split("-").map(Number);
-    if (ry !== year || rm !== month + 1) return false;
+    if (!isSearching && (ry !== year || rm !== month + 1)) return false;
     if (dateFilter && r.date !== dateFilter) return false;
     if (productFilter && r.productName !== productFilter) return false;
     return true;
@@ -85,7 +92,15 @@ export function DataListPage() {
     setMonth(next.getMonth());
   }
 
+  function handleSearch() {
+    setDateFilter(dateInput);
+    setProductFilter(productInput);
+  }
+
+  // 本番のリセットは欄を空にして送り直す（search_clear_button は type="submit"）
   function handleReset() {
+    setDateInput("");
+    setProductInput("");
     setDateFilter("");
     setProductFilter("");
   }
@@ -100,7 +115,8 @@ export function DataListPage() {
           <button
             type="button"
             onClick={() => setDownloadDialogOpen(true)}
-            className="bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)]"
+            disabled={filtered.length === 0}
+            className="disabled:opacity-40 disabled:cursor-not-allowed bg-white border border-[var(--semantic-brand-primary)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center text-[var(--semantic-brand-primary)]"
             title="CSVダウンロード"
           >
             <span
@@ -159,13 +175,19 @@ export function DataListPage() {
             )}
           </button>
           {filterOpen && (
-            <div className="flex gap-6 items-center justify-end w-full">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch();
+              }}
+              className="flex gap-6 items-center justify-end w-full"
+            >
               <div className="flex flex-col gap-4 flex-1">
                 <div className="flex gap-4 items-center">
-                  <DateFilterInput value={dateFilter} onChange={setDateFilter} />
+                  <DateFilterInput value={dateInput} onChange={setDateInput} />
                   <Pulldown
-                    value={productFilter}
-                    onChange={setProductFilter}
+                    value={productInput}
+                    onChange={setProductInput}
                     options={productOptions.map((label) => ({ value: label, label }))}
                     placeholder="製品名"
                   />
@@ -181,18 +203,19 @@ export function DataListPage() {
                   リセット
                 </button>
                 <button
-                  type="button"
+                  type="submit"
                   className="bg-[var(--semantic-brand-primary)] h-10 w-[120px] rounded-lg text-base text-white flex items-center justify-center gap-1 shadow-[0px_2px_4px_rgba(51,51,51,0.24)]"
                 >
                   <img src={iconSearch} alt="" className="size-5" />
                   検索
                 </button>
               </div>
-            </div>
+            </form>
           )}
         </div>
 
         <div className="flex flex-col gap-2 w-full">
+          {!isSearching && (
           <div className="flex items-center justify-between relative">
             <button
               type="button"
@@ -321,6 +344,7 @@ export function DataListPage() {
               </>
             )}
           </div>
+          )}
 
           <div className="w-full rounded-lg overflow-x-auto">
             <div className="flex flex-col min-w-[1312px]">
@@ -335,9 +359,7 @@ export function DataListPage() {
                 ))}
               </div>
               {filtered.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません。
-                </p>
+                <AdminEmptyState className="mt-2" />
               ) : (
                 filtered.map((record, index) => (
                   <div
@@ -393,7 +415,8 @@ export function DataListPage() {
 
       {downloadDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setDownloadDialogOpen(false)} />
+          {/* 本番どおり背景を押しても閉じない（data-bs-backdrop="static"。2026-10-08） */}
+          <div className="absolute inset-0 bg-black/40" />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-6 items-center px-6 py-10 w-[640px]">
             <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">
               ダウンロード形式選択

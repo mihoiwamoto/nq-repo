@@ -89,7 +89,8 @@ export function WeightCheckerDetailPage() {
 
       {deleteDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteDialogOpen(false)} />
+          {/* 本番どおり背景を押しても閉じない（data-bs-backdrop="static"。2026-10-08） */}
+          <div className="absolute inset-0 bg-black/40" />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">

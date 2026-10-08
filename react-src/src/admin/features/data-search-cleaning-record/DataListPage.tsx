@@ -16,6 +16,7 @@ import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadCleaningCsv, downloadCleaningPdf } from "./cleaningExport";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -337,9 +338,7 @@ export function DataListPage() {
                 )}
               </div>
               {filtered.length === 0 ? (
-                <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません。
-                </p>
+                <AdminEmptyState className="col-span-full mt-2" />
               ) : (
                 filtered.map((record, index) => (
                   <div

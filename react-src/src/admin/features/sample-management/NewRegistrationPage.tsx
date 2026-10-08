@@ -18,6 +18,8 @@ export function NewRegistrationPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const nqRepoNames = products.map((product) => product.name);
+  // すでに検体対象に登録した製品は重ねて登録できない（候補では「登録済み」と灰色にして選べない。2026-10-08）
+  const registered = new Set(nqRepoNames);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -38,6 +40,11 @@ export function NewRegistrationPage() {
     if (!name) {
       // 本番（Specimen/Product/StoreRequest の messages）の文言
       setError("検体製品名を選択してください。");
+      return;
+    }
+    if (registered.has(name)) {
+      // 本番に重複の専用の文言は無いので、unique の既定の文言（lang/ja/validation.php の unique）に合わせる
+      setError("検体製品名は既に使用されています。");
       return;
     }
     addProduct(name);
@@ -98,13 +105,18 @@ export function NewRegistrationPage() {
                       key={productName}
                       type="button"
                       onClick={() => selectName(productName)}
-                      className={`flex h-[42px] items-center px-4 rounded-lg w-full text-left text-base ${
-                        name === productName
+                      disabled={registered.has(productName)}
+                      aria-disabled={registered.has(productName)}
+                      className={`flex h-[42px] items-center gap-2 px-4 rounded-lg w-full text-left text-base ${
+                        registered.has(productName)
+                          ? "text-[#b3b3b3] cursor-not-allowed"
+                          : name === productName
                           ? "bg-[var(--semantic-brand-primary)] text-white"
                           : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
                       }`}
                     >
-                      {productName}
+                      <span className="flex-1 min-w-0 truncate">{productName}</span>
+                      {registered.has(productName) && <span className="shrink-0 text-sm">登録済み</span>}
                     </button>
                   ))}
                 </div>
@@ -118,13 +130,18 @@ export function NewRegistrationPage() {
                     key={productName}
                     type="button"
                     onClick={() => selectName(productName)}
-                    className={`flex h-[42px] items-center px-4 rounded-lg w-full text-left text-base ${
-                        name === productName
+                    disabled={registered.has(productName)}
+                    aria-disabled={registered.has(productName)}
+                    className={`flex h-[42px] items-center gap-2 px-4 rounded-lg w-full text-left text-base ${
+                        registered.has(productName)
+                          ? "text-[#b3b3b3] cursor-not-allowed"
+                          : name === productName
                           ? "bg-[var(--semantic-brand-primary)] text-white"
                           : "text-[var(--semantic-text-primary)] hover:bg-[var(--semantic-background-page)]"
                       }`}
                   >
-                    {productName}
+                    <span className="flex-1 min-w-0 truncate">{productName}</span>
+                    {registered.has(productName) && <span className="shrink-0 text-sm">登録済み</span>}
                   </button>
                 ))}
               </div>

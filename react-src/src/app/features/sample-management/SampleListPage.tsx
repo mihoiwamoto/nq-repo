@@ -264,11 +264,7 @@ export function SampleListPage() {
                 {sampleEntries.length === 0 ? (
                   <AppEmptyState />
                 ) : entries.length === 0 ? (
-                  <p className="text-base text-[var(--semantic-text-secondary)] text-center py-6 w-full">
-                    {sampleEntries.length === 0
-                      ? "本日の検体はまだありません"
-                      : "該当する検体はありません"}
-                  </p>
+                  <AppEmptyState />
                 ) : (
                   entries.map((entry) => (
                     <Link
@@ -360,12 +356,8 @@ export function SampleListPage() {
                 {storedSamples.length === 0 ? (
                   <AppEmptyState />
                 ) : filteredStoredSamples.length === 0 ? (
-                  // 確定デザイン（6198:77995）：絞り込みで 0 件のときは白いカードに「該当するデータがありません」（2026-10-08）
-                  <div className="bg-white flex items-center justify-center px-6 py-12 rounded-lg w-full">
-                    <p className="text-xl text-[var(--semantic-text-primary)] text-center">
-                      該当するデータがありません
-                    </p>
-                  </div>
+                  // 絞り込みで 0 件のときも、ほかの空表示と同じ「データがありません。」（2026-10-08 ユーザー指定。確定デザイン 6198:77995 の「該当するデータがありません」から変更）
+                  <AppEmptyState />
                 ) : (
                   filteredStoredSamples.map((sample) => {
                     const cardContent = (

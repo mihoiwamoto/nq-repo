@@ -9,6 +9,7 @@ import iconPlus from "../../../assets/figma/icons/common/plus.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
 import { useChemicalManagement } from "./ChemicalManagementContext";
 import { useDemoList } from "../../../components/demo/demoStore";
+import { AppEmptyState } from "../../components/AppEmptyState";
 import { ACTORS, initialRecords } from "./mockData";
 
 const SEED_RECORD_IDS = new Set(initialRecords.map((record) => record.id));
@@ -111,83 +112,81 @@ export function ChemicalRecordsListPage() {
           </>
         )}
 
-        <div className="bg-white rounded-lg overflow-x-auto">
-          <table className="border-collapse table-fixed w-full">
-            <thead>
-              <tr className="bg-[var(--semantic-brand-primary)] h-14">
-                {COLUMNS.map((col) => (
-                  <th
-                    key={col.key}
-                    style={{ width: col.key === "remarks" ? "auto" : col.width }}
-                    className="text-white text-sm font-semibold px-2 whitespace-nowrap"
-                  >
-                    {col.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {!hasRecords ? (
-                <tr className="h-12">
+        <div className="flex flex-col gap-2 w-full">
+          <div className="bg-white rounded-lg overflow-x-auto">
+            <table className="border-collapse table-fixed w-full">
+              <thead>
+                <tr className="bg-[var(--semantic-brand-primary)] h-14">
                   {COLUMNS.map((col) => (
-                    <td key={col.key} className="bg-white px-2" />
+                    <th
+                      key={col.key}
+                      style={{ width: col.key === "remarks" ? "auto" : col.width }}
+                      className="text-white text-sm font-semibold px-2 whitespace-nowrap"
+                    >
+                      {col.label}
+                    </th>
                   ))}
                 </tr>
-              ) : (
-                chemicalRecords.map((record, index) => (
-                  <tr
-                    key={record.id}
-                    className={`h-12 ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
-                  >
-                    <td className="px-2 py-2 text-center">
-                      <Link
-                        to={progressEditable ? `${basePath}/new` : `${basePath}/records/${record.id}`}
-                        state={
-                          progressEditable
-                            ? {
-                                ...progressCarry,
-                                date,
-                                inspectorName,
-                                editRecordId: record.id,
-                                editRecord: {
-                                  category: record.category,
-                                  quantity: record.usedQuantity,
-                                  currentStock: record.currentStock,
-                                  remarks: record.remarks,
-                                },
-                              }
-                            : undefined
-                        }
-                        className="bg-[var(--semantic-brand-primary)] h-8 w-14 rounded-lg text-xs text-white inline-flex items-center justify-center"
-                      >
-                        詳細
-                      </Link>
-                    </td>
-                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
-                      {record.storageLocation}
-                    </td>
-                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
-                      {record.category}
-                    </td>
-                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
-                      {record.usedQuantity}
-                    </td>
-                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
-                      {record.currentStock}
-                    </td>
-                    <td
-                      className={`px-2 py-2 text-sm font-normal text-[var(--semantic-text-primary)] truncate`}
+              </thead>
+              <tbody>
+                {!hasRecords ? null : (
+                  chemicalRecords.map((record, index) => (
+                    <tr
+                      key={record.id}
+                      className={`h-12 ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
                     >
-                      {record.remarks}
-                    </td>
-                    <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)] whitespace-nowrap`}>
-                      {record.actor}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                      <td className="px-2 py-2 text-center">
+                        <Link
+                          to={progressEditable ? `${basePath}/new` : `${basePath}/records/${record.id}`}
+                          state={
+                            progressEditable
+                              ? {
+                                  ...progressCarry,
+                                  date,
+                                  inspectorName,
+                                  editRecordId: record.id,
+                                  editRecord: {
+                                    category: record.category,
+                                    quantity: record.usedQuantity,
+                                    currentStock: record.currentStock,
+                                    remarks: record.remarks,
+                                  },
+                                }
+                              : undefined
+                          }
+                          className="bg-[var(--semantic-brand-primary)] h-8 w-14 rounded-lg text-xs text-white inline-flex items-center justify-center"
+                        >
+                          詳細
+                        </Link>
+                      </td>
+                      <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
+                        {record.storageLocation}
+                      </td>
+                      <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
+                        {record.category}
+                      </td>
+                      <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
+                        {record.usedQuantity}
+                      </td>
+                      <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)]`}>
+                        {record.currentStock}
+                      </td>
+                      <td
+                        className={`px-2 py-2 text-sm font-normal text-[var(--semantic-text-primary)] truncate`}
+                      >
+                        {record.remarks}
+                      </td>
+                      <td className={`px-2 py-2 text-center text-sm font-normal text-[var(--semantic-text-primary)] whitespace-nowrap`}>
+                        {record.actor}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          {/* 空のときは表の見出しの下に 8px 離して「データがありません。」（管理画面と同じ形。2026-10-08） */}
+          {!hasRecords && <AppEmptyState />}
         </div>
 
         {!readOnlyStatus && (

@@ -6,6 +6,7 @@ import { getFactoryName } from "../../../data/factories";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 export function PostManagementListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -100,9 +101,7 @@ export function PostManagementListPage() {
               ))}
             </div>
             {filtered.length === 0 ? (
-              <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState className="mt-2" />
             ) : (
               filtered.map((post, index) => (
                 <div

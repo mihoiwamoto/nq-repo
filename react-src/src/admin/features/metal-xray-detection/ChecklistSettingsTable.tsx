@@ -11,6 +11,7 @@ import {
   useMetalXrayManagement,
   type ChecklistItem,
 } from "./MetalXrayManagementContext";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 export type { ChecklistItem };
 
@@ -88,9 +89,7 @@ export function ChecklistSettingsTable({
               </div>
             </div>
             {items.length === 0 ? (
-              <div className="bg-white flex items-center justify-center w-full py-6">
-                <p className="text-base text-[var(--semantic-text-secondary)]">データがありません。</p>
-              </div>
+              <AdminEmptyState className="mt-2" />
             ) : (
               items.map((item, index) => (
                 <div

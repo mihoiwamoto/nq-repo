@@ -6,6 +6,7 @@ import { Toast } from "../../components/Toast";
 import { useXrayDetector } from "./XrayDetectorContext";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 const SETTING_COLUMNS: { key: "settingNumber" | "susBall" | "susWire" | "glassBall" | "ceramic" | "rubberBall"; label: string }[] = [
   { key: "settingNumber", label: "設定番号" },
@@ -109,9 +110,7 @@ export function XrayDetectorDetailPage() {
               ))}
             </div>
             {unit.settings.length === 0 ? (
-              <div className="bg-white flex items-center justify-center w-full py-6">
-                <p className="text-base text-[var(--semantic-text-secondary)]">データがありません。</p>
-              </div>
+              <AdminEmptyState className="mt-2" />
             ) : (
               unit.settings.map((row, index) => (
                 <div
@@ -139,7 +138,8 @@ export function XrayDetectorDetailPage() {
 
       {deleteDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteDialogOpen(false)} />
+          {/* 本番どおり背景を押しても閉じない（data-bs-backdrop="static"。2026-10-08） */}
+          <div className="absolute inset-0 bg-black/40" />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">

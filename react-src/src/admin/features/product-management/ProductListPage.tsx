@@ -11,6 +11,7 @@ import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconSearch from "@images/Icon/search.svg";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 const PAGE_SIZE = 10;
 
@@ -306,9 +307,7 @@ export function ProductListPage() {
             </div>
           </div>
           {pageItems.length === 0 ? (
-            <div className="bg-white flex h-14 items-center w-full px-2">
-              <p className="text-sm text-[var(--semantic-text-secondary)]">データがありません。</p>
-            </div>
+            <AdminEmptyState className="mt-2" />
           ) : (
             pageItems.map((product, index) => (
               <div

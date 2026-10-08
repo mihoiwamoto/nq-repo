@@ -9,6 +9,7 @@ import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import { CRITERIA, isAbnormalScore, type Criterion, type SensoryApprovalRecord } from "./types";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function averageScore(record: SensoryApprovalRecord, criterion: Criterion) {
   const scores = record.scoreEntries.map((entry) => entry.scores[criterion].score);
@@ -76,9 +77,7 @@ export function ApprovalRecordsListPage() {
                 ))}
               </div>
               {records.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません。
-                </p>
+                <AdminEmptyState className="mt-2" />
               ) : (
                 records.map((record, index) => {
                   const abnormal = isRecordAbnormal(record);

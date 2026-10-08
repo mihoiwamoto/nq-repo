@@ -10,6 +10,7 @@ import { getDateStripeClasses } from "../../utils/tableStripe";
 import { RepairStatusSection } from "./RepairStatusSection";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ScaleApprovalRecord } from "./types";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function CheckCell({ record, field }: { record: ScaleApprovalRecord; field: "operation" | "level" | "dirt" }) {
   if (record.skipped) {
@@ -156,9 +157,7 @@ export function ApprovalRecordsListPage() {
                   ))}
                 </div>
                 {batchRecords.length === 0 && (
-                  <p className="text-sm text-[var(--semantic-text-secondary)] text-center py-6">
-                    データがありません。
-                  </p>
+                  <AdminEmptyState className="mt-2" />
                 )}
                 {batchRecords.map((record, index) => (
                   <div

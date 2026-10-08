@@ -18,6 +18,7 @@ import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadScaleCsv, downloadScalePdf } from "./scaleExport";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function CheckCell({ record, field }: { record: ScaleRecord; field: "operation" | "level" | "dirt" }) {
   if (record.skipped) {
@@ -432,9 +433,7 @@ export function DataListPage() {
                 ))}
               </div>
               {filtered.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません。
-                </p>
+                <AdminEmptyState className="mt-2" />
               ) : (
                 filtered.map((record, index) => (
                   <div

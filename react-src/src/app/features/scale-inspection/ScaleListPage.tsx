@@ -20,6 +20,7 @@ import {
   spareScales,
   type ActionCheck,
 } from "./mockData";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 function Dash() {
   return <span className="inline-block w-3 h-px bg-[#333] mx-auto" />;
@@ -186,78 +187,73 @@ export function ScaleListPage() {
             <DateFilterInput value={date} onChange={setDate} />
           </div>
 
-          <div className="bg-white rounded-lg overflow-x-auto w-full">
-            <table className="border-collapse w-full">
-              <thead>
-                <tr className="bg-[var(--semantic-brand-primary)]">
-                  {COLUMNS.map((col) => (
-                    <th
-                      key={col.key}
-                      style={{ minWidth: col.width }}
-                      className="text-white text-sm font-semibold px-2 py-2 whitespace-pre-line"
-                    >
-                      {col.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {scales.length === 0 ? (
-                  // 未点検は「表が空欄」の状態にしたいので、案内文も出さない
-                  fill === "none" ? null : (
-                    <tr>
-                      <td colSpan={COLUMNS.length} className="text-center text-[var(--semantic-text-secondary)] py-8">
-                        点検する秤が登録されていません
-                      </td>
-                    </tr>
-                  )
-                ) : (
-                  scales.map((scale, index) => (
-                    <tr key={scale.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
-                      <td className="px-2 py-2 text-center">
-                        <Link
-                          to={`/app/ledger-list/scale-inspection/posts/${postId}/scales/${scale.id}`}
-                          state={{ inspectorName }}
-                          className="bg-[var(--semantic-brand-primary)] inline-flex h-8 w-14 items-center justify-center rounded-lg text-xs text-white"
-                        >
-                          詳細
-                        </Link>
-                      </td>
-                      <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">{scale.label}</td>
-                      <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
-                        {scale.serialNumber}
-                      </td>
-                      <td
-                        className={`px-2 py-2 text-center ${
-                          !scale.skipped && scale.record?.actionCheck === "ng"
-                            ? "bg-[var(--semantic-status-error)]"
-                            : ""
-                        }`}
+          <div className="flex flex-col gap-2 w-full">
+            <div className="bg-white rounded-lg w-full overflow-x-auto">
+              <table className="border-collapse w-full">
+                <thead>
+                  <tr className="bg-[var(--semantic-brand-primary)]">
+                    {COLUMNS.map((col) => (
+                      <th
+                        key={col.key}
+                        style={{ minWidth: col.width }}
+                        className="text-white text-sm font-semibold px-2 py-2 whitespace-pre-line"
                       >
-                        {scale.skipped ? <Dash /> : <ActionCheckBadge value={scale.record?.actionCheck ?? null} />}
-                      </td>
-                      <td className="px-2 py-2 text-center">
-                        {scale.skipped ? (
-                          <Dash />
-                        ) : (
-                          <CheckBadge checked={scale.record?.levelCheck ?? false} />
-                        )}
-                      </td>
-                      <td className="px-2 py-2 text-center">
-                        {scale.skipped ? (
-                          <Dash />
-                        ) : (
-                          <CheckBadge checked={scale.record?.dirtCheck ?? false} />
-                        )}
-                      </td>
-                      <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
-                        {scale.skipped ? <Dash /> : scale.record?.displayValue ?? ""}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                        {col.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {scales.length === 0 ? null : (
+                    scales.map((scale, index) => (
+                      <tr key={scale.id} className={index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}>
+                        <td className="px-2 py-2 text-center">
+                          <Link
+                            to={`/app/ledger-list/scale-inspection/posts/${postId}/scales/${scale.id}`}
+                            state={{ inspectorName }}
+                            className="bg-[var(--semantic-brand-primary)] inline-flex h-8 w-14 items-center justify-center rounded-lg text-xs text-white"
+                          >
+                            詳細
+                          </Link>
+                        </td>
+                        <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)]">{scale.label}</td>
+                        <td className="px-2 py-2 text-sm text-[var(--semantic-text-primary)] whitespace-nowrap">
+                          {scale.serialNumber}
+                        </td>
+                        <td
+                          className={`px-2 py-2 text-center ${
+                            !scale.skipped && scale.record?.actionCheck === "ng"
+                              ? "bg-[var(--semantic-status-error)]"
+                              : ""
+                          }`}
+                        >
+                          {scale.skipped ? <Dash /> : <ActionCheckBadge value={scale.record?.actionCheck ?? null} />}
+                        </td>
+                        <td className="px-2 py-2 text-center">
+                          {scale.skipped ? (
+                            <Dash />
+                          ) : (
+                            <CheckBadge checked={scale.record?.levelCheck ?? false} />
+                          )}
+                        </td>
+                        <td className="px-2 py-2 text-center">
+                          {scale.skipped ? (
+                            <Dash />
+                          ) : (
+                            <CheckBadge checked={scale.record?.dirtCheck ?? false} />
+                          )}
+                        </td>
+                        <td className="px-2 py-2 text-center text-sm text-[var(--semantic-text-primary)]">
+                          {scale.skipped ? <Dash /> : scale.record?.displayValue ?? ""}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {/* 空のときは表の見出しの下に 8px 離して「データがありません。」（管理画面と同じ形。2026-10-08） */}
+            {scales.length === 0 && fill !== "none" /* 未点検は「表が空欄」の状態にしたいので出さない */ && <AppEmptyState />}
           </div>
 
           <button

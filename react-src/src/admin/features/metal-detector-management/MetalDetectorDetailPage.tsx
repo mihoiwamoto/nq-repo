@@ -6,6 +6,7 @@ import { useMetalDetector } from "./MetalDetectorContext";
 import { Toast } from "../../components/Toast";
 import iconTrash from "../../../assets/figma/icons/common/trash.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 export function MetalDetectorDetailPage() {
   const { factoryId, unitId } = useParams<{ factoryId: string; unitId: string }>();
@@ -132,9 +133,7 @@ export function MetalDetectorDetailPage() {
                   </div>
                 ))
               ) : (
-                <div className="bg-white flex items-center justify-center w-full py-4">
-                  <p className="text-sm text-[var(--semantic-text-secondary)]">データがありません。</p>
-                </div>
+                <AdminEmptyState className="mt-2" />
               )}
             </div>
           </div>
@@ -143,7 +142,8 @@ export function MetalDetectorDetailPage() {
 
       {deleteDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setDeleteDialogOpen(false)} />
+          {/* 本番どおり背景を押しても閉じない（data-bs-backdrop="static"。2026-10-08） */}
+          <div className="absolute inset-0 bg-black/40" />
           <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px]">
             <div className="flex flex-col gap-6 items-start w-full">
               <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">

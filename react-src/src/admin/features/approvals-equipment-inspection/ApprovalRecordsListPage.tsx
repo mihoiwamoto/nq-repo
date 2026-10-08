@@ -10,6 +10,7 @@ import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import type { ResultIcon } from "./types";
 import { useDemoFactoryName } from "../../data/factoryDemo";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -108,9 +109,7 @@ export function ApprovalRecordsListPage() {
                   ))}
                 </div>
                 {records.length === 0 && (
-                  <p className="col-span-full text-sm text-[var(--semantic-text-secondary)] text-center py-6">
-                    データがありません。
-                  </p>
+                  <AdminEmptyState className="col-span-full mt-2" />
                 )}
                 {records.map((record, index) => (
                   <div

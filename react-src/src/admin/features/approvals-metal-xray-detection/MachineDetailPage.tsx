@@ -13,7 +13,26 @@ import { useRecords } from "./RecordsContext";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import type { ApprovalStatus } from "../../data/approvals";
 import type { InspectionRecord, MachineApprovalRecord } from "./types";
-import { useDemoFactoryName } from "../../data/factoryDemo";
+import { demoForFactory, useDemoFactoryId, useDemoFactoryName } from "../../data/factoryDemo";
+import { MACHINES, type Machine } from "../metal-xray-detection/mockData";
+
+/**
+ * 点検構成名から、帳票管理の点検構成（見本）を引く。いまの工場の見本 → f1 の見本 の順に名前で探す。
+ * 承認申請管理の上部カードに 確認者ではなく 機器名 を出すため（2026-10-08）
+ */
+function findMachine(factoryId: string, machineName: string): Machine | undefined {
+  const own = demoForFactory<Machine>("metal-xray-detection", factoryId, MACHINES, "registry");
+  return own.find((m) => m.name === machineName) ?? MACHINES.find((m) => m.name === machineName);
+}
+
+function machineRows(machine: Machine | undefined): { label: string; value: string }[] {
+  const pick = (on: boolean | undefined, name: string | undefined) => (on && name ? name : "ー");
+  return [
+    { label: "金属探知機", value: pick(machine?.recordMetalDetector, machine?.metalDetectorName) },
+    { label: "X線探知機", value: pick(machine?.recordXrayDetector, machine?.xrayDetectorName) },
+    { label: "ウェイトチェッカー", value: pick(machine?.recordWeightChecker, machine?.weightCheckerName) },
+  ];
+}
 
 /**
  * 本番の approval.blade.php と同じ並び（点検済み・承認待ち・差し戻し・承認）。点検済みは選べない。
@@ -99,7 +118,7 @@ export function MachineDetailView({
   addComment: (id: string, text: string) => void;
   /** データ検索から開いたとき。承認ステータスのプルダウンとコメントの入力欄を出さない（コメントの一覧だけ） */
   readOnly?: boolean;
-  /** 上部カードの行。省略時は 実施日・確認者（承認申請管理） */
+  /** 上部カードの行。省略時は 実施日・金属探知機・X線探知機・ウェイトチェッカー（承認申請管理） */
   summaryRows?: (record: MachineApprovalRecord) => { label: string; value: string }[];
 }) {
   const {
@@ -117,6 +136,7 @@ export function MachineDetailView({
 
   const [comment, setComment] = useState("");
   const [showCommentToast, setShowCommentToast] = useState(false);
+  const demoFactoryId = useDemoFactoryId();
 
   if (!record) {
     return (
@@ -130,7 +150,8 @@ export function MachineDetailView({
     ? summaryRows(record)
     : [
         { label: "実施日", value: formatDate(record.date) },
-        { label: "確認者", value: record.confirmer },
+        // 確認者ではなく機器名（帳票管理の点検構成の見本から点検構成名で引く。2026-10-08）
+        ...machineRows(findMachine(demoFactoryId, record.machineName)),
       ];
 
   const handleStatusChange = (value: string) => {

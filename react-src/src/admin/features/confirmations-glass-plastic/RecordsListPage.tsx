@@ -16,6 +16,7 @@ import iconPulldown from "../../../assets/figma/icons/common/pulldown.svg";
 import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 const STATUS_OPTIONS: { value: ConfirmStatus; label: string }[] = [
   { value: "unconfirmed", label: "点検済み" },
@@ -321,9 +322,7 @@ export function RecordsListPage() {
                 ))}
               </div>
               {filtered.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません。
-                </p>
+                <AdminEmptyState className="mt-2" />
               ) : (
                 filtered.map((record, index) => {
                   const { total, normal, issue } = countByStatus(record);

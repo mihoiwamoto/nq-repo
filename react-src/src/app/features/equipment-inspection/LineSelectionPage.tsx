@@ -112,15 +112,11 @@ export function LineSelectionPage({ nextDay = false }: { nextDay?: boolean } = {
         </div>
 
         <div className="flex flex-col gap-6 items-start w-full max-w-full">
-          {/* 点検対象が 1 件も無いとき（AppEmptyState の白い帯）。タブの絞り込みで 0 件のときは今までの文言 */}
+          {/* 点検対象が 1 件も無いときも、タブの絞り込みで 0 件のときも AppEmptyState（2026-10-08。「点検予定が登録されていません」から統一） */}
           {allLines.length === 0 ? (
             <AppEmptyState />
           ) : visibleLines.length === 0 ? (
-            <div className="bg-white flex h-[200px] items-center justify-center py-10 rounded-lg w-full">
-              <p className="text-xl leading-none text-center text-[var(--semantic-text-primary)]">
-                点検予定が登録されていません
-              </p>
-            </div>
+            <AppEmptyState />
           ) : groupByDate ? (
             dateGroups.map(([dateKey, groupLines]) => (
               <div key={dateKey} className="flex flex-col gap-2 items-start w-full">

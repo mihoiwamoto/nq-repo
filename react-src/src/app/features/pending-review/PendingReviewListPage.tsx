@@ -8,6 +8,7 @@ import { PENDING_REVIEWS } from "../../data/pendingReviews";
 import { ledgerCategories } from "../../../data/ledgers";
 import { visibleLedgerCategories } from "../../../data/ledgerVisibility";
 import { StatusChip } from "../../components/StatusChip";
+import { AppEmptyState } from "../../components/AppEmptyState";
 import { useDemoList } from "../../../components/demo/demoStore";
 import { ConfirmerPickerDialog, confirmersFor, stepAfterConfirmer } from "./ConfirmerPicker";
 
@@ -136,8 +137,10 @@ export function PendingReviewListPage() {
           </div>
         )}
 
-        {/* 本番（Excel No.33）は 0 件のときも絞り込みで 0 件のときも案内文を出さない（2026-10-08） */}
-        {groups.length === 0 ? null : (
+        {/* 0 件のときも絞り込みで 0 件のときも白い帯「データがありません。」（2026-10-08 ユーザー指定。本番〈Excel No.33〉は何も出さないが、アプリの空表示を揃える） */}
+        {groups.length === 0 ? (
+          <AppEmptyState />
+        ) : (
           <div className="flex flex-col gap-10">
             {groups.map((group) => (
               <div key={group.date} className="flex flex-col gap-4">

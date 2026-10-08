@@ -1,0 +1,88 @@
+[
+ {
+  "id": "M001",
+  "name": "確認待ち_差し戻し › 機械器具点検 › 点検見送り確認（編集を保存）",
+  "pf": "app",
+  "hash": "app/pending-review/p19",
+  "steps": [
+   {
+    "pick": 1
+   },
+   {
+    "click": "次へ",
+    "in": 1
+   },
+   {
+    "click": "点検内容を修正する"
+   },
+   {
+    "pick": 1
+   },
+   {
+    "click": "次へ",
+    "in": 1
+   },
+   {
+    "click": "点検見送り"
+   },
+   {
+    "eval": "(()=>{const t=[...document.querySelectorAll('textarea')].filter(e=>e.offsetParent).pop();if(t&&!t.value){const s=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set;s.call(t,'機械の故障のため');t.dispatchEvent(new Event('input',{bubbles:true}));}return 1})()"
+   },
+   {
+    "click": "点検を見送る",
+    "in": 1,
+    "after": 1500
+   }
+  ],
+  "w": 768,
+  "h": 976,
+  "q": "",
+  "sections": [
+   "（App）確認待ち_差し戻し_機械器具点検"
+  ],
+  "new": 1
+ },
+ {
+  "id": "M002",
+  "name": "確認待ち_差し戻し › 清掃記録 › 点検見送り確認（編集を保存）",
+  "pf": "app",
+  "hash": "app/pending-review/p21",
+  "steps": [
+   {
+    "pick": 1
+   },
+   {
+    "click": "次へ",
+    "in": 1
+   },
+   {
+    "click": "点検内容を修正する"
+   },
+   {
+    "pick": 1
+   },
+   {
+    "click": "次へ",
+    "in": 1
+   },
+   {
+    "click": "点検見送り"
+   },
+   {
+    "eval": "(()=>{const t=[...document.querySelectorAll('textarea')].filter(e=>e.offsetParent).pop();if(t&&!t.value){const s=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set;s.call(t,'機械の故障のため');t.dispatchEvent(new Event('input',{bubbles:true}));}return 1})()"
+   },
+   {
+    "click": "点検を見送る",
+    "in": 1,
+    "after": 1500
+   }
+  ],
+  "w": 768,
+  "h": 976,
+  "q": "",
+  "sections": [
+   "（App）確認待ち_差し戻し_清掃記録"
+  ],
+  "new": 1
+ }
+]

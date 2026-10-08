@@ -8,6 +8,8 @@ import { buildMonthGrid, formatDateLabel, isClosedDay, toDateKey } from "./calen
 import { useSensorySchedule } from "../sensory-inspection/ScheduleContext";
 import { useCleaningSchedule } from "../cleaning-record/ScheduleContext";
 import { useSampleSchedule } from "../sample-management/ScheduleContext";
+import { useDemoEmpty } from "../../../components/demo/demoStore";
+import { AppEmptyState } from "../../components/AppEmptyState";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconPlus from "../../../assets/figma/icons/common/plus.svg";
@@ -44,6 +46,8 @@ export function SchedulePage() {
   const { entries: sensoryEntries } = useSensorySchedule();
   const { entries: cleaningEntries } = useCleaningSchedule();
   const { entries: sampleEntries } = useSampleSchedule();
+  // 右下の「データが無い」のときは帳票を 1 つも出さない（カレンダーの予定・日の一覧とも空。新規登録は「帳票が設定されていない」のポップアップ。2026-10-08）
+  const demoEmpty = useDemoEmpty();
   const [year, setYear] = useState(2025);
   const [month, setMonth] = useState(3); // 0-indexed: April
   const [selectedDateKey, setSelectedDateKey] = useState("2025-04-01");
@@ -55,6 +59,7 @@ export function SchedulePage() {
   const selectedClosed = isClosedDay(selectedDateKey);
 
   function ledgersForDate(dateKey: string): SchedulableLedger[] {
+    if (demoEmpty) return [];
     const equipmentEntry = entries[dateKey];
     const sensoryEntry = sensoryEntries[dateKey];
     const cleaningEntry = cleaningEntries[dateKey];
@@ -286,6 +291,8 @@ export function SchedulePage() {
               </button>
             )}
           </div>
+          {/* 予定の無い日（休業日は除く）は「データがありません。」（2026-10-08 ユーザー指定。アプリの空表示と同じ部品） */}
+          {!selectedClosed && registeredLedgers.length === 0 && <AppEmptyState />}
           {!selectedClosed && registeredLedgers.length > 0 && (
           <div className="flex flex-col flex-1 min-h-0 items-center overflow-y-auto px-4 pb-10 w-full">
             {

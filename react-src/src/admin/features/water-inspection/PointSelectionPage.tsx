@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { useWaterInspection } from "./WaterInspectionContext";
 import { getFactoryName } from "../../../data/factories";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function isCurrentlyDisplayed(displayFrom?: string, displayTo?: string) {
   if (!displayFrom && !displayTo) return true;
@@ -80,9 +81,7 @@ export function PointSelectionPage() {
 
         <div className="flex flex-wrap gap-6">
           {filteredPoints.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)]">
-              データがありません。
-            </p>
+            <AdminEmptyState />
           ) : (
             filteredPoints.map((point) => (
               <Link

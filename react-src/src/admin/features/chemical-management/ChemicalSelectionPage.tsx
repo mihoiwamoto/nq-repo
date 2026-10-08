@@ -6,6 +6,7 @@ import { Toast } from "../../components/Toast";
 import { getFactoryName } from "../../../data/factories";
 import { useChemicalManagement } from "./ChemicalManagementContext";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 export function ChemicalSelectionPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -71,9 +72,7 @@ export function ChemicalSelectionPage() {
           <p className="text-2xl text-[var(--semantic-text-primary)]">薬品一覧</p>
           <div className="flex flex-col gap-6 items-start w-full">
             {chemicals.length === 0 && (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState />
             )}
             {chemicals.map((chemical) => (
               <Link

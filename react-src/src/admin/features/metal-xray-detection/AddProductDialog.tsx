@@ -10,6 +10,8 @@ export function AddProductDialog({
   onClose: () => void;
   onConfirm: (names: string[]) => void;
 }) {
+  // 本番（organoleptic/products/add-product-item.js）は「検索」を押したときだけ候補を絞る。Enter でも絞る
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState<string[]>(selectedNames);
 
@@ -25,20 +27,25 @@ export function AddProductDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      {/* 本番どおり背景を押しても閉じない（data-bs-backdrop="static"。2026-10-08） */}
+          <div className="absolute inset-0 bg-black/40" />
       <div className="relative bg-[var(--semantic-background-page)] shadow-[0px_2px_6px_rgba(51,51,51,0.24)] rounded-lg flex flex-col gap-10 items-center px-6 py-10 w-[640px] h-[738px]">
         <h2 className="text-2xl text-[var(--semantic-text-primary)] text-center w-full">製品追加</h2>
         <div className="flex flex-col gap-4 items-start w-full">
           <div className="flex gap-4 items-start w-full">
             <input
               type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") setSearch(searchInput);
+              }}
               placeholder="製品名を入力"
               className="bg-white border border-[#808080] flex-1 h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
             />
             <button
               type="button"
+              onClick={() => setSearch(searchInput)}
               className="bg-white border border-[var(--semantic-brand-primary)] h-12 w-[120px] rounded-lg text-base text-[var(--semantic-brand-primary)]"
             >
               検索

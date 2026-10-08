@@ -9,6 +9,8 @@ import { useDemoList } from "../../../components/demo/demoStore";
 import iconArrowUp from "@images/Icon/Button.svg";
 import iconArrowDown from "@images/Icon/Button-1.svg";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
+import { ListPagination, usePagedList } from "../metal-xray-detection/ListPagination";
 
 function ArrowUpIcon() {
   return <img src={iconArrowUp} alt="上へ移動" className="w-6 h-6" />;
@@ -22,6 +24,8 @@ export function MetalDetectorListPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
   const { units: allUnits, moveUnit } = useMetalDetector();
   const units = useDemoList(allUnits);
+  // 本番どおり 10 件ずつのページ送り（AppConst::LIST_MAX_LENGTH。秤管理 inspects/scale/index.blade.php の $scales->links() と同じ）
+  const { page, setPage, totalPages, pageItems, offset } = usePagedList(units);
   const location = useLocation();
   const basePath = `/admin/ledger-management/metal-xray-detection/factories/${factoryId}`;
   const [showToast, setShowToast] = useState(false);
@@ -96,16 +100,14 @@ export function MetalDetectorListPage() {
             </div>
           </div>
           {units.length === 0 ? (
-            <div className="bg-white flex items-center justify-center w-full py-6">
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
-            </div>
+            <AdminEmptyState className="mt-2" />
           ) : (
-            units.map((unit, index) => (
+            pageItems.map((unit, i) => {
+              const index = offset + i;
+              return (
               <div
                 key={unit.id}
-                className={`flex items-center w-full ${index % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
+                className={`flex items-center w-full ${i % 2 === 1 ? "bg-[#ddf3e7]" : "bg-white"}`}
               >
                 <div className="w-[120px] flex items-center justify-center gap-2 p-2">
                   <button
@@ -137,9 +139,15 @@ export function MetalDetectorListPage() {
                   </Link>
                 </div>
               </div>
-            ))
+              );
+            })
           )}
         </div>
+        {totalPages > 1 && (
+          <div className="flex justify-end">
+            <ListPagination currentPage={page} totalPages={totalPages} onChange={setPage} />
+          </div>
+        )}
       </div>
     </div>
   );

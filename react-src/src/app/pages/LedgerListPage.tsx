@@ -46,15 +46,9 @@ function TileLabel({ slug, label }: { slug: string; label: string }) {
   const lines = TILE_LINES[slug];
   return (
     // 確定デザイン：名前は高さ 38px の枠の上下中央（1 行の名前は 2 行より下に来る。2026-10-08）
-    <span className="h-[38px] flex flex-col items-center justify-center text-base text-[var(--semantic-brand-primary)] text-center leading-[1.4]">
-      {lines
-        ? lines.map((line, i) => (
-            <span key={line}>
-              {i > 0 && <br />}
-              {line}
-            </span>
-          ))
-        : label}
+    <span className="h-[38px] flex flex-col items-center justify-center text-base text-[var(--semantic-brand-primary)] text-center leading-[19px]">
+      {/* 縦に並べる枠なので、行ごとに span を置くだけで折り返る（<br> を足すと空の行が増えてアイコンに重なる） */}
+      {lines ? lines.map((line) => <span key={line}>{line}</span>) : label}
     </span>
   );
 }

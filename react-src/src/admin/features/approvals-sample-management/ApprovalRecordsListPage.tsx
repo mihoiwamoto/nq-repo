@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { Toast } from "../../components/Toast";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import { PageTitleBar } from "../../components/PageTitleBar";
 import { ApprovalStatusBadge } from "../../components/ApprovalStatusBadge";
@@ -9,6 +10,7 @@ import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import { useDemoFactoryName } from "../../data/factoryDemo";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 /* 本番（reports/approvals/specimen/index.blade.php）：実施日は y.m.d（例 25.04.01）、
    ロットNo.・賞味期限・製造日は無ければ空欄 */
@@ -41,11 +43,10 @@ const COLUMNS: { label: string; width: string }[] = [
 
 export function ApprovalRecordsListPage() {
   const demoFactoryName = useDemoFactoryName();
-  const navigate = useNavigate();
-  const { records: allRecords } = useRecords();
+  const { records: allRecords, setApprovalStatus } = useRecords();
   // 動作デモの「データが無い」を試している間は、記録が 1 件も無い状態にする
   const records = useDemoList(allRecords);
-  const { showConfirmDialog, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
+  const { showConfirmDialog, showToast, closeToast, requestApproval, confirmApproval, cancelApproval } = useApprovalConfirm();
   const request = approvalRequests.find((r) => r.ledgerSlug === "sample-management");
 
   const rowStripeClasses = getDateStripeClasses(records, (r) => r.date);
@@ -53,7 +54,8 @@ export function ApprovalRecordsListPage() {
   const handleApprove = () => {
     requestApproval(() => {
       if (request) updateApprovalRequestStatus(request.id, "approved");
-      navigate("/admin/approvals", { state: { statusChanged: "approved" } });
+      // 本番（ApprovalFlowController::approvalBulk）は redirect()->back()：データ一覧に留まり、承認待ちの記録をまとめて承認済みにする
+      records.filter((r) => r.approvalStatus === "pending").forEach((r) => setApprovalStatus(r.id, "approved"));
     });
   };
 
@@ -62,6 +64,8 @@ export function ApprovalRecordsListPage() {
       {showConfirmDialog && (
         <ApprovalConfirmDialog onCancel={cancelApproval} onConfirm={confirmApproval} />
       )}
+      {/* 本番の文言（ApprovalFlowController::approvalBulk の flashSuccess） */}
+      {showToast && <Toast message="一括承認が完了しました。" onClose={closeToast} />}
       <PageTitleBar
         title="データ一覧"
         showBack
@@ -92,9 +96,7 @@ export function ApprovalRecordsListPage() {
                   ))}
                 </div>
                 {records.length === 0 ? (
-                  <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                    データがありません。
-                  </p>
+                  <AdminEmptyState className="mt-2" />
                 ) : (
                   records.map((record, index) => (
                     <div

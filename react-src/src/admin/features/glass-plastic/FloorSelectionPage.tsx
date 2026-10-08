@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { useGlassPlastic } from "./GlassPlasticContext";
 import { getFactoryName } from "../../../data/factories";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function isCurrentlyDisplayed(displayFrom?: string, displayTo?: string) {
   if (!displayFrom && !displayTo) return true;
@@ -73,9 +74,7 @@ export function FloorSelectionPage() {
           </div>
 
           {filteredFloors.length === 0 ? (
-            <p className="text-base text-[var(--semantic-text-secondary)]">
-              データがありません。
-            </p>
+            <AdminEmptyState />
           ) : (
             <div className="flex flex-wrap gap-6">
               {filteredFloors.map((floor) => (

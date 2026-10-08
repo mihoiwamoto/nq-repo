@@ -52,6 +52,7 @@ export function AnomalyDialog({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      {/* 本番どおり背景を押しても閉じない（data-bs-backdrop="static"。2026-10-08） */}
       <div className="bg-white rounded-lg w-[640px] h-[738px] flex flex-col gap-0 shadow-lg">
         <h2 className="text-[20px] font-bold text-[#333] px-6 py-6 text-center border-b border-[#d0d0d0]">
           点検箇所

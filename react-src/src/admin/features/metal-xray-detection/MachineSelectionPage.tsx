@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useMetalXrayManagement } from "./MetalXrayManagementContext";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 const TABS = [
   { key: "visible", label: "アプリ表示中" },
@@ -104,9 +105,7 @@ export function MachineSelectionPage() {
 
           <div className="flex flex-col gap-6 w-full">
             {filteredMachines.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState />
             ) : (
               filteredMachines.map((machine) => (
                 <Link

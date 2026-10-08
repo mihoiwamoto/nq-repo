@@ -5,6 +5,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useScaleInspection } from "./ScaleInspectionContext";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function isCurrentlyDisplayed(displayFrom?: string, displayTo?: string) {
   if (!displayFrom && !displayTo) return true;
@@ -98,7 +99,7 @@ export function SettingsPage() {
 
           <div className="flex flex-col gap-6 w-full">
             {filteredScales.length === 0 ? (
-              <p className="text-base text-[var(--semantic-text-secondary)]">データがありません。</p>
+              <AdminEmptyState />
             ) : (
               filteredScales.map((scale) => (
                 <Link

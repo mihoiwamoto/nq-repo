@@ -20,6 +20,7 @@ import {
   PROGRESS_STATUS_LABELS,
   type ProgressEntry,
 } from "./mockData";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 const FILTER_LEDGERS = ledgerCategories;
 
@@ -337,9 +338,7 @@ export function ProgressListPage() {
         )}
 
         {grouped.length === 0 ? (
-          <p className="text-lg text-[var(--semantic-text-secondary)] text-center py-6">
-            {entries.length === 0 ? "点検予定はまだありません" : "該当する点検はありません"}
-          </p>
+          <AppEmptyState />
         ) : (
           grouped.map(([date, entries]) => (
             <div key={date} className="flex flex-col gap-4 items-start w-full">

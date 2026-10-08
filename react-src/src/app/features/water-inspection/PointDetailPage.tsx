@@ -3,6 +3,7 @@ import { AppHeader } from "../../layout/AppHeader";
 import type { CheckItem, ToggleItem } from "./mockData";
 import { useWaterInspection } from "./WaterInspectionContext";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
+import { AppEmptyState } from "../../components/AppEmptyState";
 
 function StatusTag({ status }: { status: CheckItem["status"] }) {
   if (status === "ng") {
@@ -103,9 +104,7 @@ export function PointDetailPage() {
       <>
         <AppHeader title="使用水の点検" />
         <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6">
-          <p className="text-base text-[var(--semantic-text-secondary)]">
-            まだ点検記録がありません。
-          </p>
+          <AppEmptyState />
           <button
             type="button"
             onClick={() => navigate(backToHistoryPath)}

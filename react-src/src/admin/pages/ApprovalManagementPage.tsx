@@ -7,6 +7,7 @@ import { ApprovalStatusBadge } from "../components/ApprovalStatusBadge";
 import { Toast } from "../components/Toast";
 import { useDemoList } from "../../components/demo/demoStore";
 import { factoryIdOfName } from "../data/factoryDemo";
+import { AdminEmptyState } from "../components/AdminEmptyState";
 
 const TABS: { status: ApprovalStatus; label: string }[] = [
   { status: "pending", label: "承認待ち" },
@@ -72,7 +73,7 @@ export function ApprovalManagementPage() {
         </div>
 
         {items.length === 0 ? (
-          <p className="text-[var(--semantic-text-secondary)]">データがありません。</p>
+          <AdminEmptyState />
         ) : (
           <div className="flex flex-col gap-6 w-full">
             {items.map((item) => {

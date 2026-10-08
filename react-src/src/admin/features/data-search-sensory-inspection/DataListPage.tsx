@@ -18,6 +18,7 @@ import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadSensoryCsv, downloadSensoryPdf } from "./sensoryExport";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -350,9 +351,7 @@ export function DataListPage() {
                 ))}
               </div>
               {filtered.length === 0 ? (
-                <p className="bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                  データがありません。
-                </p>
+                <AdminEmptyState className="mt-2" />
               ) : (
                 filtered.map((record, index) => {
                   const abnormal = isRecordAbnormal(record);

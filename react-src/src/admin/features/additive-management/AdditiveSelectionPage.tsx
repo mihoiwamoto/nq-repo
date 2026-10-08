@@ -4,6 +4,7 @@ import { PageTitleBar } from "../../components/PageTitleBar";
 import { getFactoryName } from "../../../data/factories";
 import { useAdditiveManagement } from "./AdditiveManagementContext";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 export function AdditiveSelectionPage() {
   const { factoryId } = useParams<{ factoryId: string }>();
@@ -55,9 +56,7 @@ export function AdditiveSelectionPage() {
           <p className="text-2xl text-[var(--semantic-text-primary)]">添加物一覧</p>
           <div className="flex flex-col gap-6 items-start w-full">
             {additives.length === 0 && (
-              <p className="text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState />
             )}
             {additives.map((additive) => (
               <Link

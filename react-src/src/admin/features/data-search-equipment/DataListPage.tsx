@@ -18,6 +18,7 @@ import iconMinus from "../../../assets/figma/icons/common/minus.svg";
 import iconSearch from "../../../assets/figma/icons/common/search.svg";
 import { downloadEquipmentCsv, downloadEquipmentPdf } from "./equipmentExport";
 import { PlusIcon } from "../../components/PlusIcon";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function ResultBadge({ icon }: { icon: ResultIcon }) {
   if (icon === "ok") {
@@ -369,9 +370,7 @@ export function DataListPage() {
                 )}
               </div>
             {filtered.length === 0 ? (
-              <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                データがありません。
-              </p>
+              <AdminEmptyState className="col-span-full mt-2" />
             ) : (
               filtered.map((record, index) => (
                 <div

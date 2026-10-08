@@ -9,6 +9,7 @@ import { getDateStripeClasses } from "../../utils/tableStripe";
 import { useApprovalConfirm } from "../../hooks/useApprovalConfirm";
 import { approvalRequests, updateApprovalRequestStatus } from "../../data/approvals";
 import { useDemoFactoryName } from "../../data/factoryDemo";
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 function formatDateShort(date: string) {
   const [y, m, d] = date.split("-");
@@ -87,9 +88,7 @@ export function ApprovalRecordsListPage() {
                   ))}
                 </div>
                 {filtered.length === 0 ? (
-                  <p className="col-span-full bg-white p-6 text-base text-[var(--semantic-text-secondary)]">
-                    データがありません。
-                  </p>
+                  <AdminEmptyState className="col-span-full mt-2" />
                 ) : (
                   filtered.map((record, index) => (
                     <div

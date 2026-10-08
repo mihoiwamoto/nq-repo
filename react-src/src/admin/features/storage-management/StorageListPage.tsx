@@ -6,80 +6,10 @@ import { FACTORIES, getFactoryName } from "../../../data/factories";
 import { Pulldown } from "../../components/Pulldown";
 import { storageOriginCrumbs, useStorageManagement } from "./StorageManagementContext";
 import { useDemoList } from "../../../components/demo/demoStore";
-import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
-import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
+import { ListPagination, usePagedList } from "../metal-xray-detection/ListPagination";
 import { FilterToggleLabel } from "../../components/FilterToggleLabel";
 import { PlusIcon } from "../../components/PlusIcon";
-
-const PAGE_SIZE = 10;
-
-/* ページ送り（確定デザイン 7139:162568。製品管理の一覧と同じ形。1 ページでも出す） */
-function StoragePagination({
-  currentPage,
-  totalPages,
-  onChange,
-}: {
-  currentPage: number;
-  totalPages: number;
-  onChange: (page: number) => void;
-}) {
-  const pages: (number | string)[] =
-    totalPages <= 5
-      ? Array.from({ length: totalPages }, (_, i) => i + 1)
-      : [1, 2, 3, 4, 5, "..."];
-  const arrow = (icon: string) => (
-    <span
-      aria-hidden
-      className="inline-block size-4 shrink-0"
-      style={{
-        WebkitMaskImage: `url("${icon}")`,
-        maskImage: `url("${icon}")`,
-        WebkitMaskSize: "contain",
-        maskSize: "contain",
-        WebkitMaskRepeat: "no-repeat",
-        maskRepeat: "no-repeat",
-        backgroundColor: "var(--semantic-text-primary)",
-      }}
-    />
-  );
-  return (
-    <div className="flex gap-2 items-center">
-      <button
-        type="button"
-        aria-label="前のページ"
-        onClick={() => onChange(Math.max(1, currentPage - 1))}
-        disabled={currentPage === 1}
-        className="bg-white size-8 rounded-lg flex items-center justify-center"
-      >
-        {arrow(iconArrowLeft)}
-      </button>
-      {pages.map((num) => (
-        <button
-          key={num}
-          type="button"
-          onClick={() => typeof num === "number" && onChange(num)}
-          disabled={typeof num === "string"}
-          className={`size-8 rounded-lg flex items-center justify-center text-sm font-normal ${
-            num === currentPage
-              ? "bg-[var(--semantic-brand-primary)] text-white"
-              : "bg-white text-[var(--semantic-text-primary)]"
-          } ${typeof num === "string" ? "cursor-default" : ""}`}
-        >
-          {num}
-        </button>
-      ))}
-      <button
-        type="button"
-        aria-label="次のページ"
-        onClick={() => onChange(Math.min(totalPages, currentPage + 1))}
-        disabled={currentPage === totalPages}
-        className="bg-white size-8 rounded-lg flex items-center justify-center"
-      >
-        {arrow(iconArrowRight)}
-      </button>
-    </div>
-  );
-}
+import { AdminEmptyState } from "../../components/AdminEmptyState";
 
 export function StorageListPage() {
   const { storageLocations: allLocations, origin } = useStorageManagement();
@@ -89,15 +19,13 @@ export function StorageListPage() {
   const [search, setSearch] = useState("");
   const [factoryInput, setFactoryInput] = useState("");
   const [factory, setFactory] = useState("");
-  const [page, setPage] = useState(1);
 
   /* 絞り込みは 保管場所の名前 と 工場選択（本番どおり全工場から選ぶ。確定デザイン 9310:36292。2026-10-08） */
   const filtered = storageLocations.filter(
     (location) => location.name.includes(search) && (!factory || location.factoryId === factory)
   );
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  // 本番どおり 10 件ずつ（AppConst::LIST_MAX_LENGTH）
+  const { page: currentPage, setPage, totalPages, pageItems } = usePagedList(filtered);
 
   const handleReset = () => {
     setSearchInput("");
@@ -148,6 +76,9 @@ export function StorageListPage() {
                   type="text"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
+                  }}
                   placeholder="保管場所で検索"
                   className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] placeholder:text-[var(--semantic-text-secondary)]"
                 />
@@ -210,9 +141,7 @@ export function StorageListPage() {
               </div>
             </div>
             {pageItems.length === 0 && (
-              <div className="bg-white flex h-14 items-center w-full px-2">
-                <p className="text-sm text-[var(--semantic-text-secondary)]">データがありません。</p>
-              </div>
+              <AdminEmptyState className="mt-2" />
             )}
             {pageItems.map((location, index) => (
               <div
@@ -245,7 +174,8 @@ export function StorageListPage() {
         </div>
         {/* 確定デザイン 7139:163434：表からページ送りまで 16px（外の並びは 24px なので 8px 詰める。2026-10-08） */}
         <div className="-mt-2">
-          <StoragePagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} />
+          {/* 確定デザイン 7139:162568 は 1 ページでも出す */}
+          <ListPagination currentPage={currentPage} totalPages={totalPages} onChange={setPage} alwaysShow />
         </div>
       </div>
     </div>
