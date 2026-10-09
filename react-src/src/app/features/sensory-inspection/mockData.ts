@@ -57,6 +57,9 @@ export type SensoryRecord = {
   manufactureDate: string;
   comparison: ComparisonOption;
   comparisonManufactureDate: string;
+  /** 比較製品の日付の種類（記録入力のプルダウン。無いときは製造日として扱う）。賞味期限のときは comparisonBestBeforeDate に入れる */
+  comparisonDateType?: ComparisonDateType;
+  comparisonBestBeforeDate?: string;
   scores: Record<Criterion, CriterionRecord | null>;
   /**
    * 項目ごとの入力時刻（"YYYY/MM/DD HH:mm"）。キーは "manufactureDate" /
@@ -149,9 +152,28 @@ export type ScheduleComparisonOption = "unset" | "none" | "present";
 
 export type ScheduledProduct = {
   productId: string;
+  /** 検査する製品そのものの製造日（Ver.2.0 Figma 8481:165385／8481:165790） */
+  manufactureDate: string;
   comparison: ScheduleComparisonOption;
   comparisonManufactureDate: string;
+  /** 比較製品の賞味期限。比較製品「あり」のとき、管理画面と同じく 製造日／賞味期限 のどちらか 1 つをプルダウンで選んで入れる */
+  comparisonBestBeforeDate: string;
+  /** 比較製品の日付の種類（未選択は undefined。見本は製造日が入っていれば "manufactured"） */
+  comparisonDateType?: ComparisonDateType;
 };
+
+export type ComparisonDateType = "manufactured" | "bestBefore";
+
+/** 比較製品の日付の見出しと値（記録の確認画面・確認待ちで使う） */
+export function comparisonDateOf(record: {
+  comparisonDateType?: ComparisonDateType;
+  comparisonManufactureDate: string;
+  comparisonBestBeforeDate?: string;
+}): { label: string; value: string; field: string } {
+  return record.comparisonDateType === "bestBefore"
+    ? { label: "比較製品賞味期限", value: record.comparisonBestBeforeDate ?? "", field: "comparisonBestBeforeDate" }
+    : { label: "比較製品製造日", value: record.comparisonManufactureDate, field: "comparisonManufactureDate" };
+}
 
 export type SensoryScheduleEntry = {
   dateKey: string;
@@ -162,8 +184,12 @@ export const initialSensoryScheduleEntries: Record<string, SensoryScheduleEntry>
   "2025-04-01": {
     dateKey: "2025-04-01",
     products: [
-      { productId: "p1", comparison: "present", comparisonManufactureDate: "2025-03-26" },
-      { productId: "p2", comparison: "present", comparisonManufactureDate: "2025-03-26" },
+      // Ver.2.0 Figma 8481:165385 の見本どおり：あり 2 件・なし・未設定
+      // p1 は比較製品の日付を賞味期限にしている（記録入力 A1-4-2 の見本で「比較製品賞味期限」を見せるため。2026-10-09）
+      { productId: "p1", manufactureDate: "2025-04-01", comparison: "present", comparisonDateType: "bestBefore", comparisonManufactureDate: "", comparisonBestBeforeDate: "2025-03-26" },
+      { productId: "p2", manufactureDate: "2025-04-01", comparison: "present", comparisonManufactureDate: "2025-03-26", comparisonBestBeforeDate: "" },
+      { productId: "p3", manufactureDate: "2025-04-01", comparison: "none", comparisonManufactureDate: "", comparisonBestBeforeDate: "" },
+      { productId: "p4", manufactureDate: "2025-04-01", comparison: "unset", comparisonManufactureDate: "", comparisonBestBeforeDate: "" },
     ],
   },
 };

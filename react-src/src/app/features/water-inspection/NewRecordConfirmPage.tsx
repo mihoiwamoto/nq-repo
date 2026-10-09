@@ -143,8 +143,8 @@ export function NewRecordConfirmPage() {
       chlorineToggle: { label: "塩素補充", checked: state.chlorineChecked },
       uvOperatingHours: state.uvOperatingHours,
       uvToggle: { label: "UV殺菌灯交換", checked: state.uvChecked },
-      uvIndicatorLight: state.uvIndicatorOk ? "点灯" : "異常",
-      errorIndicatorLight: state.errorIndicatorOk ? "消灯" : "異常",
+      uvIndicatorLight: state.uvIndicatorOk === null ? "" : state.uvIndicatorOk ? "点灯" : "異常",
+      errorIndicatorLight: state.errorIndicatorOk === null ? "" : state.errorIndicatorOk ? "消灯" : "異常",
     });
     if (!navigator.onLine) notifyOfflineInspection();
     navigate("/app/ledger-list/water-inspection/complete");
@@ -198,12 +198,12 @@ export function NewRecordConfirmPage() {
           </div>
           <Row
             label="UV表示灯"
-            value={state.uvIndicatorOk ? "点灯" : "異常"}
+            value={state.uvIndicatorOk === null ? "" : state.uvIndicatorOk ? "点灯" : "異常"}
             timestamp={stampIf(true, state.fieldTimestamps?.uvIndicator)}
           />
           <Row
             label="異常検出灯"
-            value={state.errorIndicatorOk ? "消灯" : "異常"}
+            value={state.errorIndicatorOk === null ? "" : state.errorIndicatorOk ? "消灯" : "異常"}
             hideBorder
             timestamp={stampIf(true, state.fieldTimestamps?.errorIndicator)}
           />

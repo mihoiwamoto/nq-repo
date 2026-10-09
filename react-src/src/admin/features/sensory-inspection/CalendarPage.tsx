@@ -6,6 +6,7 @@ import { Toast } from "../../components/Toast";
 import { useSensoryInspection } from "./SensoryInspectionContext";
 import { getFactoryName } from "../../../data/factories";
 import { buildMonthGrid, formatDateLabel, formatMonthLabel, WEEKDAY_LABELS } from "./calendarUtils";
+import { COMPARISON_DATE_LABELS } from "./types";
 import iconArrowLeft from "../../../assets/figma/icons/common/arrow-left.svg";
 import iconArrowRight from "../../../assets/figma/icons/common/arrow-right.svg";
 import iconEdit from "../../../assets/figma/icons/common/edit.svg";
@@ -254,16 +255,21 @@ export function CalendarPage() {
                           {comparisonLabel}
                         </span>
                       </div>
-                      {comparison?.manufacturedAt && (
-                        <div className="flex gap-4 h-12 items-center">
-                          <span className="text-base text-[var(--semantic-text-primary)] w-36">
-                            比較製品製造日
-                          </span>
-                          <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                            {comparison.manufacturedAt.replaceAll("-", "/")}
-                          </span>
-                        </div>
-                      )}
+                      {comparison?.isComparison === 1 &&
+                        (["manufactured", "bestBefore"] as const).map((type) => {
+                          const value = type === "bestBefore" ? comparison.bestBeforeAt : comparison.manufacturedAt;
+                          if (!value) return null;
+                          return (
+                            <div key={type} className="flex gap-4 h-12 items-center">
+                              <span className="text-base text-[var(--semantic-text-primary)] w-36">
+                                {COMPARISON_DATE_LABELS[type]}
+                              </span>
+                              <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
+                                {value.replaceAll("-", "/")}
+                              </span>
+                            </div>
+                          );
+                        })}
                       {i < selectedProducts.length - 1 && <div className="border-t border-[#d0d0d0]" />}
                     </div>
                   );

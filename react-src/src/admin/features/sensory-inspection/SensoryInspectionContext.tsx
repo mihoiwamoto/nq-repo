@@ -1,9 +1,10 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { useDemoEmpty } from "../../../components/demo/demoStore";
 import { SENSORY_TARGET_PRODUCTS } from "./mockData";
 import type { ComparisonSetting, ScheduleEntry, SensoryTargetProduct } from "./types";
 import { useFactoryList } from "../../data/factoryDemo";
+import { loadAdminSensorySchedule, saveAdminSensorySchedule } from "./sharedSchedule";
 
 type SensoryInspectionContextValue = {
   products: SensoryTargetProduct[];
@@ -23,7 +24,12 @@ const SensoryInspectionContext = createContext<SensoryInspectionContextValue | n
 
 export function SensoryInspectionProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useFactoryList<SensoryTargetProduct>("sensory-inspection", SENSORY_TARGET_PRODUCTS, "registry");
-  const [scheduleEntries, setScheduleEntries] = useState<Record<string, ScheduleEntry>>({});
+  const [scheduleEntries, setScheduleEntries] = useState<Record<string, ScheduleEntry>>(loadAdminSensorySchedule);
+
+  // 登録した予定（製造日・比較製品・比較製品の日付）はアプリの官能検査記録の記録入力にも出す
+  useEffect(() => {
+    saveAdminSensorySchedule(scheduleEntries, (id) => products.find((p) => p.id === id)?.name);
+  }, [scheduleEntries, products]);
 
   function addProduct(product: Omit<SensoryTargetProduct, "id">) {
     setProducts((prev) => [...prev, { id: `stp${Date.now()}`, ...product }]);

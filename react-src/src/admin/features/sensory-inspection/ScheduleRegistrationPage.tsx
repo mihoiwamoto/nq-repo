@@ -7,7 +7,15 @@ import { useSensoryInspection } from "./SensoryInspectionContext";
 import { AddProductDialog } from "./AddProductDialog";
 import { DateFilterInput } from "../../components/DateFilterInput";
 import { PlusIcon } from "../../components/PlusIcon";
-import type { ComparisonSetting } from "./types";
+import { Pulldown } from "../../components/Pulldown";
+import { CRITERIA, CRITERION_STYLES } from "./types";
+import type { ComparisonDateType, ComparisonSetting } from "./types";
+
+/** 比較製品「あり」のときに選ぶ日付の種類（選ぶと右にカレンダーが出る） */
+const COMPARISON_DATE_OPTIONS: { value: ComparisonDateType; label: string }[] = [
+  { value: "manufactured", label: "製造日" },
+  { value: "bestBefore", label: "賞味期限" },
+];
 
 /** 比較製品の選択（本番の product-list.hbs：なし／あり／未設定） */
 const COMPARISON_OPTIONS: { value: 0 | 1 | null; label: string }[] = [
@@ -52,6 +60,8 @@ export function ScheduleRegistrationPage() {
     const errors: string[] = [];
     if (!date) errors.push("製造予定日は必須です。");
     if (productIds.length === 0) errors.push("製品は必須です。");
+    if (productIds.some((id) => !comparisons[id]?.productManufacturedAt)) errors.push("製造日は必須です。");
+    if (productIds.some((id) => (comparisons[id]?.isComparison ?? null) === null)) errors.push("比較製品は必須です。");
     if (errors.length > 0) {
       setError(errors.join("\n"));
       return;
@@ -105,16 +115,12 @@ export function ScheduleRegistrationPage() {
               <p className="text-xl text-[var(--semantic-text-primary)]">日付</p>
               <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full"
-            />
+            <DateFilterInput className="w-full" value={date} onChange={setDate} />
           </div>
 
-          <div className="flex flex-col items-start rounded-lg w-full overflow-hidden">
-            <div className="bg-white flex gap-6 items-center p-4 w-full">
+          {/* overflow-hidden にするとカレンダーのポップアップが切れるので、角丸は上下の白い面に付ける */}
+          <div className="flex flex-col items-start rounded-lg w-full">
+            <div className="bg-white flex gap-6 items-center p-4 w-full rounded-t-lg">
               <div className="flex-1 flex gap-2 items-center">
                 <p className="text-xl text-[var(--semantic-text-primary)]">検査対象製品</p>
                 <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
@@ -152,7 +158,7 @@ export function ScheduleRegistrationPage() {
               </div>
             </div>
             <div className="border-t border-[#d0d0d0] w-full" />
-            <div className="bg-white flex flex-col gap-4 items-center p-4 w-full">
+            <div className="bg-white flex flex-col gap-4 items-center p-4 w-full rounded-b-lg">
               {selectedProducts.length === 0 ? (
                 <p className="text-sm text-[var(--semantic-text-primary)] w-full">
                   データがありません。
@@ -163,26 +169,58 @@ export function ScheduleRegistrationPage() {
                   return (
                     <div key={product.id} className="flex flex-col gap-3 w-full">
                       {index > 0 && <div className="border-t border-[#d0d0d0] w-full" />}
-                      <div className="flex items-center w-full gap-4">
-                        <span className="w-[140px] shrink-0 text-base text-[var(--semantic-text-primary)]">
+                      {/* Ver.2.0 Figma 16649:56241：左に項目を縦に並べ、削除ボタンは右に縦中央 */}
+                      <div className="flex items-center w-full gap-6">
+                      <div className="flex-1 min-w-0 flex flex-col gap-3">
+                      <div className="flex items-center w-full gap-2">
+                        <span className="w-[200px] shrink-0 text-base text-[var(--semantic-text-primary)]">
                           製品名
                         </span>
-                        <span className="flex-1 text-base text-[var(--semantic-text-primary)] text-right">
-                          {product.name}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setProductToDelete(product.id)}
-                          className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center shrink-0"
-                        >
-                          <img src={iconTrash} alt="削除" className="size-6" />
-                        </button>
+                        <div className="flex-1 min-w-0 flex flex-col gap-2 justify-center">
+                          <p className="text-base leading-none text-[var(--semantic-text-primary)]">{product.name}</p>
+                          <div className="flex gap-[2px] items-start">
+                            {CRITERIA.filter((c) => product.criteria[c]).map((criterion) => {
+                              const style = CRITERION_STYLES[criterion];
+                              return (
+                                <div
+                                  key={criterion}
+                                  className="flex items-center justify-center px-1.5 py-0.5 rounded-full w-10 shrink-0"
+                                  style={{ backgroundColor: style.bg }}
+                                >
+                                  <p className="text-xs leading-none whitespace-nowrap" style={{ color: style.text }}>
+                                    {criterion}
+                                  </p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center w-full gap-4">
-                        <span className="w-[140px] shrink-0 text-base text-[var(--semantic-text-primary)]">
-                          比較製品
+                      <div className="flex items-center w-full gap-2">
+                        <span className="w-[200px] shrink-0 flex gap-2 items-center whitespace-nowrap">
+                          <span className="text-base text-[var(--semantic-text-primary)]">製造日</span>
+                          <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
                         </span>
-                        <div className="flex gap-4 items-center">
+                        <DateFilterInput
+                          className="w-[200px] [&_input]:h-10"
+                          value={comparison.productManufacturedAt ?? ""}
+                          onChange={(value) =>
+                            setComparisons((prev) => ({
+                              ...prev,
+                              [product.id]: {
+                                ...(prev[product.id] ?? { isComparison: null }),
+                                productManufacturedAt: value || undefined,
+                              },
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="flex items-center w-full gap-2">
+                        <span className="w-[200px] shrink-0 flex gap-2 items-center whitespace-nowrap">
+                          <span className="text-base text-[var(--semantic-text-primary)]">比較製品</span>
+                          <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
+                        </span>
+                        <div className="flex gap-2 items-center">
                           {COMPARISON_OPTIONS.map((option) => {
                             const active = comparison.isComparison === option.value;
                             return (
@@ -192,10 +230,13 @@ export function ScheduleRegistrationPage() {
                                 onClick={() =>
                                   setComparisons((prev) => ({
                                     ...prev,
-                                    [product.id]: {
-                                      isComparison: option.value,
-                                      manufacturedAt: option.value === 1 ? prev[product.id]?.manufacturedAt : undefined,
-                                    },
+                                    [product.id]:
+                                      option.value === 1
+                                        ? { ...prev[product.id], isComparison: 1 }
+                                        : {
+                                            isComparison: option.value,
+                                            productManufacturedAt: prev[product.id]?.productManufacturedAt,
+                                          },
                                   }))
                                 }
                                 className={`h-10 w-[120px] rounded-lg shadow-[0px_2px_4px_rgba(51,51,51,0.24)] text-base bg-white ${
@@ -211,21 +252,73 @@ export function ScheduleRegistrationPage() {
                         </div>
                       </div>
                       {comparison.isComparison === 1 && (
-                        <div className="flex items-center w-full gap-4">
-                          <span className="w-[140px] shrink-0 text-base text-[var(--semantic-text-primary)]">
-                            比較製品製造日
+                        <div className="flex items-center w-full gap-2">
+                          <span className="w-[200px] shrink-0 flex gap-2 items-center whitespace-nowrap">
+                            <span className="text-base text-[var(--semantic-text-primary)]">比較製品の日付</span>
+                            <span className="text-sm text-[var(--semantic-text-primary)]">※任意</span>
                           </span>
-                          <DateFilterInput
-                            value={comparison.manufacturedAt ?? ""}
-                            onChange={(value) =>
-                              setComparisons((prev) => ({
-                                ...prev,
-                                [product.id]: { isComparison: 1, manufacturedAt: value || undefined },
-                              }))
-                            }
-                          />
+                          <div className="flex gap-2 items-center">
+                            <Pulldown
+                              value={comparison.dateType ?? ""}
+                              onChange={(value) => {
+                                const dateType = value as ComparisonDateType;
+                                setComparisons((prev) => {
+                                  const cur = prev[product.id];
+                                  // 種類を切り替えても選んだ日付は引き継ぐ。保存するのは選んだ種類の日付だけ
+                                  const carried =
+                                    cur?.dateType === "bestBefore" ? cur.bestBeforeAt : cur?.manufacturedAt;
+                                  return {
+                                    ...prev,
+                                    [product.id]: {
+                                      isComparison: 1,
+                                      productManufacturedAt: cur?.productManufacturedAt,
+                                      dateType,
+                                      ...(dateType === "manufactured"
+                                        ? { manufacturedAt: carried }
+                                        : { bestBeforeAt: carried }),
+                                    },
+                                  };
+                                });
+                              }}
+                              options={COMPARISON_DATE_OPTIONS}
+                              placeholder="選択してください"
+                              className="bg-white border border-[#d0d0d0] h-10 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-[200px]"
+                            />
+                            {comparison.dateType && (
+                              <DateFilterInput
+                                className="w-[200px] [&_input]:h-10"
+                                value={
+                                  (comparison.dateType === "bestBefore"
+                                    ? comparison.bestBeforeAt
+                                    : comparison.manufacturedAt) ?? ""
+                                }
+                                onChange={(value) =>
+                                  setComparisons((prev) => ({
+                                    ...prev,
+                                    [product.id]: {
+                                      isComparison: 1,
+                                      productManufacturedAt: comparison.productManufacturedAt,
+                                      dateType: comparison.dateType,
+                                      ...(comparison.dateType === "bestBefore"
+                                        ? { bestBeforeAt: value || undefined }
+                                        : { manufacturedAt: value || undefined }),
+                                    },
+                                  }))
+                                }
+                              />
+                            )}
+                          </div>
                         </div>
                       )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setProductToDelete(product.id)}
+                        className="bg-white border border-[var(--semantic-brand-danger)] shadow-[0px_2px_4px_rgba(51,51,51,0.24)] size-10 rounded-lg flex items-center justify-center shrink-0"
+                      >
+                        <img src={iconTrash} alt="削除" className="size-6" />
+                      </button>
+                      </div>
                     </div>
                   );
                 })

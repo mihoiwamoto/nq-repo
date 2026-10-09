@@ -13,12 +13,63 @@ import {
   CRITERIA,
   pendingReviewScoreRows,
   products,
+  type ComparisonDateType,
   type ComparisonOption,
   type Criterion,
   type CriterionRecord,
   type SensoryRecord,
 } from "./mockData";
 import { findFactoryItem } from "../../data/factoryAppData";
+import { tplId } from "../../data/targetId";
+import { useSensorySchedule } from "./ScheduleContext";
+import { adminSensoryPlanFor } from "../../../admin/features/sensory-inspection/sharedSchedule";
+import type { ScheduledProduct, SensoryScheduleEntry } from "./mockData";
+import iconCalendar from "../../../assets/figma/icons/common/calendar.svg";
+
+/** 点検予定（検査製品設定）でこの製品を登録したもの。実施日の予定を優先し、無ければいちばん新しい予定 */
+function plannedFor(
+  entries: Record<string, SensoryScheduleEntry>,
+  productId: string | undefined,
+  date: string
+): ScheduledProduct | undefined {
+  if (!productId) return undefined;
+  const id = tplId(productId);
+  const hit = (dateKey: string) => entries[dateKey]?.products.find((p) => p.productId === id);
+  return (
+    hit(date) ??
+    Object.keys(entries)
+      .sort()
+      .reverse()
+      .map(hit)
+      .find(Boolean)
+  );
+}
+
+/** 管理画面の点検予定（比較製品・比較製品の日付の種類と日付・製造日）を、アプリの点検予定と同じ形にする */
+function fromAdminPlan(productId: string, name: string, date: string): ScheduledProduct | undefined {
+  const plan = adminSensoryPlanFor(name, date);
+  if (!plan) return undefined;
+  return {
+    productId,
+    manufactureDate: plan.productManufacturedAt ?? "",
+    comparison: plan.isComparison === 1 ? "present" : plan.isComparison === 0 ? "none" : "unset",
+    comparisonDateType: plan.isComparison === 1 ? plan.dateType : undefined,
+    comparisonManufactureDate: plan.dateType === "manufactured" ? (plan.manufacturedAt ?? "") : "",
+    comparisonBestBeforeDate: plan.dateType === "bestBefore" ? (plan.bestBeforeAt ?? "") : "",
+  };
+}
+
+/** 点検予定から入る値は触れない灰色の欄で出す（日付の欄と同じ大きさ） */
+function LockedDate({ value }: { value: string }) {
+  return (
+    <div className="bg-[#d0d0d0] flex gap-2 h-12 items-center justify-end px-4 rounded-lg w-[200px] shrink-0">
+      <p className="flex-1 min-w-0 text-base text-[var(--semantic-text-primary)]">
+        {value ? value.replaceAll("-", "/") : "未設定"}
+      </p>
+      <img src={iconCalendar} alt="" aria-hidden className="size-6 shrink-0" />
+    </div>
+  );
+}
 
 const EMPTY_SCORES: Record<Criterion, CriterionRecord | null> = {
   味: null,
@@ -97,15 +148,47 @@ export function RecordPage() {
           manufactureDate: pendingReviewScoreRows[0].manufactureDate,
           comparison: pendingReviewScoreRows[0].comparison,
           comparisonManufactureDate: pendingReviewScoreRows[0].comparisonManufactureDate,
+          comparisonDateType: "manufactured",
           scores: seedScores(fill),
         });
 
   const [date, setDate] = useState(seeded?.date ?? todayString());
-  const [manufactureDate, setManufactureDate] = useState(seeded?.manufactureDate ?? "2025-03-24");
-  const [comparison, setComparison] = useState<ComparisonOption | null>(seeded?.comparison ?? null);
+
+  // 製造日・比較製品・比較製品の日付は、点検予定（検査製品設定）で登録したものを出す（2026-10-09）。
+  // 製造日は触れない。比較製品の日付は、予定に日付があればその種類（製造日／賞味期限）と日付を触れない欄で出す
+  const { entries: scheduleEntries } = useSensorySchedule();
+  // 管理画面の点検予定で登録したものを優先し、無ければアプリの点検予定
+  const [planned] = useState(() => {
+    const day = seeded?.date ?? todayString();
+    return (
+      (productId && product ? fromAdminPlan(productId, product.name, day) : undefined) ??
+      plannedFor(scheduleEntries, productId, day)
+    );
+  });
+  // 予定で選んだ比較製品の日付の種類（製造日／賞味期限）。種類を持たない予定は入っている日付から決める
+  const plannedDateType: ComparisonDateType | null =
+    planned?.comparisonDateType ??
+    (planned?.comparisonBestBeforeDate ? "bestBefore" : planned?.comparisonManufactureDate ? "manufactured" : null);
+  const plannedComparison: ComparisonOption | null =
+    planned?.comparison === "present" || planned?.comparison === "none" ? planned.comparison : null;
+
+  const [manufactureDate] = useState(planned?.manufactureDate || seeded?.manufactureDate || "");
+  const [comparison, setComparison] = useState<ComparisonOption | null>(plannedComparison ?? seeded?.comparison ?? null);
   const [comparisonManufactureDate, setComparisonManufactureDate] = useState(
-    seeded?.comparisonManufactureDate || "2025-03-22"
+    // 未点検は空で開く（以前は見本の日付が入っていた。2026-10-09）
+    plannedDateType ? (planned?.comparisonManufactureDate ?? "") : (seeded?.comparisonManufactureDate ?? "")
   );
+  // 比較製品の日付の種類（製造日／賞味期限）。見本の記録は種類を持たないので、日付が入っていれば製造日
+  const [comparisonDateType, setComparisonDateType] = useState<ComparisonDateType | null>(
+    plannedDateType ??
+      seeded?.comparisonDateType ??
+      (seeded?.comparisonBestBeforeDate ? "bestBefore" : seeded?.comparisonManufactureDate ? "manufactured" : null)
+  );
+  const [comparisonBestBeforeDate, setComparisonBestBeforeDate] = useState(
+    plannedDateType ? (planned?.comparisonBestBeforeDate ?? "") : (seeded?.comparisonBestBeforeDate ?? "")
+  );
+  /** 予定で種類が決まっていれば、見出しは「比較製品製造日」か「比較製品賞味期限」。日付は予定のものが入り、ここで変えられる */
+  const comparisonTypeFixed = !!plannedDateType && comparison === "present";
   const [scores, setScores] = useState<Record<Criterion, CriterionRecord | null>>(
     seeded?.scores ?? EMPTY_SCORES
   );
@@ -118,6 +201,9 @@ export function RecordPage() {
           [
             ["manufactureDate", seeded.manufactureDate],
             ["comparison", seeded.comparison],
+            ["comparisonDateType", seeded.comparisonManufactureDate || seeded.comparisonBestBeforeDate],
+            ["comparisonManufactureDate", seeded.comparisonManufactureDate],
+            ["comparisonBestBeforeDate", seeded.comparisonBestBeforeDate],
             ...CRITERIA.map((c) => [c, seeded.scores[c]]),
           ]
             .filter(([, value]) => value)
@@ -178,9 +264,10 @@ export function RecordPage() {
 
   const canProceed =
     date !== "" &&
-    manufactureDate !== "" &&
+    // 製造日は点検予定から入るだけで、ここでは入れられないので条件にしない
     comparison !== null &&
-    (comparison === "none" || comparisonManufactureDate !== "") &&
+    (comparison === "none" ||
+      (comparisonDateType === "bestBefore" ? comparisonBestBeforeDate !== "" : comparisonDateType === "manufactured" && comparisonManufactureDate !== "")) &&
     CRITERIA.every((c) => scores[c] !== null);
 
   function handleNext() {
@@ -192,7 +279,11 @@ export function RecordPage() {
           date,
           manufactureDate,
           comparison,
-          comparisonManufactureDate: comparison === "present" ? comparisonManufactureDate : "",
+          comparisonDateType: comparison === "present" ? (comparisonDateType ?? undefined) : undefined,
+          comparisonManufactureDate:
+            comparison === "present" && comparisonDateType === "manufactured" ? comparisonManufactureDate : "",
+          comparisonBestBeforeDate:
+            comparison === "present" && comparisonDateType === "bestBefore" ? comparisonBestBeforeDate : "",
           scores,
           timestamps,
         },
@@ -234,15 +325,9 @@ export function RecordPage() {
               <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
                 製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
               </p>
-              <DateFilterInput
-                value={manufactureDate}
-                onChange={(v) => {
-                  setManufactureDate(v);
-                  stamp("manufactureDate", v);
-                }}
-              />
+              {/* 点検予定で登録した製造日。ここでは変えられない */}
+              <LockedDate value={manufactureDate} />
             </div>
-            <RecordTimestamp inspector={inspectorName} timestamp={timestamps.manufactureDate} />
           </div>
           <div className="border-t border-[#d0d0d0] w-full" />
 
@@ -266,25 +351,91 @@ export function RecordPage() {
             <RecordTimestamp inspector={inspectorName} timestamp={timestamps.comparison} />
           </div>
 
-          {comparison === "present" && (
+          {comparisonTypeFixed && (
             <>
               <div className="border-t border-[#d0d0d0] w-full" />
               <div className="flex flex-col gap-1 w-full">
                 <div className="flex items-center justify-between w-full">
+                  {/* 点検予定で選んだ種類の見出し（比較製品製造日／比較製品賞味期限）。日付は予定のものが入った状態で、ここで変えられる */}
                   <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
-                    比較製品製造日 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                    {comparisonDateType === "bestBefore" ? "比較製品賞味期限" : "比較製品製造日"}
+                    <span className="text-[var(--semantic-brand-danger)]">※</span>
                   </p>
                   <DateFilterInput
-                    value={comparisonManufactureDate}
-                    onChange={(v) => {
-                      setComparisonManufactureDate(v);
-                      stamp("comparisonManufactureDate", v);
-                    }}
-                  />
+                      value={comparisonDateType === "bestBefore" ? comparisonBestBeforeDate : comparisonManufactureDate}
+                      onChange={(v) => {
+                        if (comparisonDateType === "bestBefore") {
+                          setComparisonBestBeforeDate(v);
+                          stamp("comparisonBestBeforeDate", v);
+                        } else {
+                          setComparisonManufactureDate(v);
+                          stamp("comparisonManufactureDate", v);
+                        }
+                      }}
+                    />
                 </div>
                 <RecordTimestamp
                   inspector={inspectorName}
-                  timestamp={timestamps.comparisonManufactureDate}
+                  timestamp={
+                    comparisonDateType === "bestBefore"
+                      ? timestamps.comparisonBestBeforeDate
+                      : timestamps.comparisonManufactureDate
+                  }
+                />
+              </div>
+            </>
+          )}
+          {comparison === "present" && !comparisonTypeFixed && (
+            <>
+              <div className="border-t border-[#d0d0d0] w-full" />
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center justify-between w-full">
+                  {/* 管理画面の点検予定と同じく、比較製品の日付は 製造日／賞味期限 をプルダウンで選んでから日付を入れる */}
+                  <p className="text-lg text-[var(--semantic-text-primary)] flex items-center gap-1">
+                    比較製品の日付 <span className="text-[var(--semantic-brand-danger)]">※</span>
+                  </p>
+                  <div className="flex gap-2 items-center">
+                    <PulldownSelect
+                      value={comparisonDateType}
+                      onChange={(v) => {
+                        // 種類を切り替えても選んだ日付は引き継ぐ
+                        const carried = comparisonDateType === "bestBefore" ? comparisonBestBeforeDate : comparisonManufactureDate;
+                        setComparisonDateType(v);
+                        setComparisonManufactureDate(v === "manufactured" ? carried : "");
+                        setComparisonBestBeforeDate(v === "bestBefore" ? carried : "");
+                        stamp("comparisonDateType", v);
+                      }}
+                      options={[
+                        { value: "manufactured", label: "製造日" },
+                        { value: "bestBefore", label: "賞味期限" },
+                      ]}
+                      widthClassName="w-[200px]"
+                    />
+                    {comparisonDateType && (
+                      <DateFilterInput
+                        value={comparisonDateType === "bestBefore" ? comparisonBestBeforeDate : comparisonManufactureDate}
+                        onChange={(v) => {
+                          if (comparisonDateType === "bestBefore") {
+                            setComparisonBestBeforeDate(v);
+                            stamp("comparisonBestBeforeDate", v);
+                          } else {
+                            setComparisonManufactureDate(v);
+                            stamp("comparisonManufactureDate", v);
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+                <RecordTimestamp
+                  inspector={inspectorName}
+                  timestamp={
+                    comparisonDateType === "bestBefore"
+                      ? timestamps.comparisonBestBeforeDate
+                      : comparisonDateType === "manufactured"
+                        ? timestamps.comparisonManufactureDate
+                        : timestamps.comparisonDateType
+                  }
                 />
               </div>
             </>

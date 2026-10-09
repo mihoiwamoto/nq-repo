@@ -89,10 +89,11 @@ function answeredChecks(checks: Record<string, OkNg | null>): Record<string, OkN
 }
 
 /**
- * ✕／✓ の切り替え。✕ を押すと onNgClick、✓ を押すと onOkClick で「点検箇所」のポップアップを開く
- * （確定デザイン 動作確認_正常時ダイアログ 10398:110750 は ✓ でもポップアップを出す。2026-10-08）
+ * ✕／✓ の切り替え。✕ を押すと onNgClick で「点検箇所」のポップアップを開く。
+ * ✓ はそのまま「正常」にするだけでポップアップは出さない（2026-10-09 にユーザーの指定で変更。
+ * それまでは確定デザイン 動作確認_正常時ダイアログ 10398:110750 に合わせて ✓ でも出していた）
  */
-function OkNgToggle({ value, onChange, onNgClick, onOkClick, timestamp }: { value: OkNg | null; onChange: (v: OkNg) => void; onNgClick?: () => void; onOkClick?: () => void; inspectorName?: string; inspectionDate?: string; time?: string; timestamp?: string }) {
+function OkNgToggle({ value, onChange, onNgClick, timestamp }: { value: OkNg | null; onChange: (v: OkNg) => void; onNgClick?: () => void; inspectorName?: string; inspectionDate?: string; time?: string; timestamp?: string }) {
   return (
     <div className="flex flex-col items-end shrink-0 gap-1">
       <div className="flex items-center shrink-0 rounded-lg overflow-hidden">
@@ -110,10 +111,7 @@ function OkNgToggle({ value, onChange, onNgClick, onOkClick, timestamp }: { valu
         </button>
         <button
           type="button"
-          onClick={() => {
-            onChange("ok");
-            onOkClick?.();
-          }}
+          onClick={() => onChange("ok")}
           className={`h-12 w-20 flex items-center justify-center ${
             value === "ok" ? "bg-[var(--semantic-brand-primary)]" : "bg-[#d0d0d0]"
           }`}
@@ -238,7 +236,6 @@ function DetectorGroup({
                       onCheckTimestampChange(item.key, currentTimeString(inspectorName));
                     }}
                     onNgClick={() => onAnomalyClick?.("machine-record", item.label, machineType, item.key, "ng")}
-                    onOkClick={() => onAnomalyClick?.("machine-record", item.label, machineType, item.key, "ok")}
                     inspectionDate={inspectionDate}
                     time={time}
                     timestamp={checks[item.key] === "ng" ? undefined : checkTimestamps[item.key]}
@@ -411,7 +408,6 @@ function TestPieceDetectorGroup({
                   onCheckTimestampChange(piece.key, currentTimeString(inspectorName));
                 }}
                 onNgClick={() => onAnomalyClick?.("test-piece", piece.label, piece.key, "ng")}
-                onOkClick={() => onAnomalyClick?.("test-piece", piece.label, piece.key, "ok")}
                 timestamp={checkTimestamps[piece.key]}
               />
             </div>
@@ -501,10 +497,10 @@ export function MachineRecordFormPage() {
   const [abnormalPassedQuantity, setAbnormalPassedQuantity] = useState("");
   const [abnormalQuantityTimestamp, setAbnormalQuantityTimestamp] = useState("");
   const [abnormalQuantity, setAbnormalQuantity] = useState("");
-  const [abnormalCause, setAbnormalCause] = useState<AbnormalCause>("異物混入");
+  const [abnormalCause, setAbnormalCause] = useState<AbnormalCause | "">("");
   const [abnormalCauseNote, setAbnormalCauseNote] = useState("");
   const [abnormalCauseNoteTimestamp, setAbnormalCauseNoteTimestamp] = useState("");
-  const [abnormalAction, setAbnormalAction] = useState<AbnormalAction>("点検調整");
+  const [abnormalAction, setAbnormalAction] = useState<AbnormalAction | "">("");
   const [abnormalActionNote, setAbnormalActionNote] = useState("");
   const [abnormalActionNoteTimestamp, setAbnormalActionNoteTimestamp] = useState("");
 
@@ -605,10 +601,10 @@ export function MachineRecordFormPage() {
       setAbnormalPassedQuantity("");
       setAbnormalQuantityTimestamp("");
       setAbnormalQuantity("");
-      setAbnormalCause("異物混入");
+      setAbnormalCause("");
       setAbnormalCauseNote("");
       setAbnormalCauseNoteTimestamp("");
-      setAbnormalAction("点検調整");
+      setAbnormalAction("");
       setAbnormalActionNote("");
       setAbnormalActionNoteTimestamp("");
       setMetalAnomalies({});
@@ -632,9 +628,34 @@ export function MachineRecordFormPage() {
       return hasChecks || hasData;
     }
 
-    const hasMetalData = metalTime !== "" || Object.values(metalChecks).some(v => v !== null) || Object.values(metalPieceValues).some(v => v !== "");
-    const hasXrayData = xrayTime !== "" || Object.values(xrayChecks).some(v => v !== null) || Object.values(xrayPieceValues).some(v => v !== "");
-    const hasOtherData = remarks.trim() !== "";
+    // 何も入れていないうちは「保存」を押せない。1 つでも入れば押せる（単位は最初から選ばれているので数えない。2026-10-09）
+    if (content === "異常反応") {
+      return (
+        abnormalTime !== "" ||
+        abnormalProducts.length > 0 ||
+        abnormalPassedQuantity !== "" ||
+        abnormalQuantity !== "" ||
+        abnormalCause !== "" ||
+        abnormalCauseNote.trim() !== "" ||
+        abnormalAction !== "" ||
+        abnormalActionNote.trim() !== "" ||
+        remarks.trim() !== ""
+      );
+    }
+
+    const hasMetalData =
+      metalTime !== "" ||
+      Object.values(metalChecks).some(v => v != null) ||
+      metalSettingNumber !== "" ||
+      Object.values(metalPieceValues).some(v => v !== "") ||
+      Object.values(metalPieceChecks).some(v => v != null);
+    const hasXrayData =
+      xrayTime !== "" ||
+      Object.values(xrayChecks).some(v => v != null) ||
+      xraySettingNumber !== "" ||
+      Object.values(xrayPieceValues).some(v => v !== "") ||
+      Object.values(xrayPieceChecks).some(v => v != null);
+    const hasOtherData = remarks.trim() !== "" || passedProducts.length > 0;
 
     return hasMetalData || hasXrayData || hasOtherData;
   };
@@ -803,7 +824,6 @@ export function MachineRecordFormPage() {
                             setWeightCalibrationTimestamp(currentTimeString(inspectorName));
                           }}
                           onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "分銅を乗せての校正点検", onCancel: () => { setWeightCalibrationCheck(weightCalibrationCheck); setWeightCalibrationTimestamp(weightCalibrationTimestamp); } })}
-                          onOkClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "分銅を乗せての校正点検", initialResult: "ok", onCancel: () => { setWeightCalibrationCheck(weightCalibrationCheck); setWeightCalibrationTimestamp(weightCalibrationTimestamp); } })}
                           timestamp={weightCalibrationCheck === "ng" ? undefined : weightCalibrationTimestamp}
                         />
                       </div>
@@ -832,7 +852,6 @@ export function MachineRecordFormPage() {
                             setWeightPackageMatchTimestamp(currentTimeString(inspectorName));
                           }}
                           onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "通過させる製品のパッケージ（印字）との照合", onCancel: () => { setWeightPackageMatchCheck(weightPackageMatchCheck); setWeightPackageMatchTimestamp(weightPackageMatchTimestamp); } })}
-                          onOkClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "通過させる製品のパッケージ（印字）との照合", initialResult: "ok", onCancel: () => { setWeightPackageMatchCheck(weightPackageMatchCheck); setWeightPackageMatchTimestamp(weightPackageMatchTimestamp); } })}
                           timestamp={weightPackageMatchCheck === "ng" ? undefined : weightPackageMatchTimestamp}
                         />
                       </div>
@@ -903,7 +922,6 @@ export function MachineRecordFormPage() {
                       setSealingTimestamp(currentTimeString(inspectorName));
                     }}
                     onNgClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "シーリング", onCancel: () => { setSealingCheck(sealingCheck); setSealingTimestamp(sealingTimestamp); } })}
-                          onOkClick={() => setAnomalyDialog({ isOpen: true, type: "machine-record", itemName: "シーリング", initialResult: "ok", onCancel: () => { setSealingCheck(sealingCheck); setSealingTimestamp(sealingTimestamp); } })}
                     timestamp={sealingCheck === "ng" ? undefined : sealingTimestamp}
                   />
                 </div>
@@ -1211,6 +1229,7 @@ export function MachineRecordFormPage() {
           </button>
           <button
             type="button"
+            disabled={!isFormValid()}
             onClick={() => {
               const checks = [...Object.values(metalPieceChecks), ...Object.values(xrayPieceChecks)];
               addMachineRecord(machine.id, {
@@ -1239,7 +1258,9 @@ export function MachineRecordFormPage() {
               });
               backToDetail();
             }}
-            className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
+            className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+              isFormValid() ? "bg-[var(--semantic-brand-primary)] cursor-pointer" : "bg-[#d0d0d0] cursor-not-allowed"
+            }`}
           >
             保存
           </button>
@@ -1548,6 +1569,7 @@ export function MachineRecordFormPage() {
           </button>
           <button
             type="button"
+            disabled={!isFormValid()}
             onClick={() => {
               addMachineRecord(machine.id, {
                 id: newRecordId(),
@@ -1569,7 +1591,9 @@ export function MachineRecordFormPage() {
               });
               backToDetail();
             }}
-            className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
+            className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+              isFormValid() ? "bg-[var(--semantic-brand-primary)] cursor-pointer" : "bg-[#d0d0d0] cursor-not-allowed"
+            }`}
           >
             保存
           </button>
@@ -1695,6 +1719,7 @@ export function MachineRecordFormPage() {
         </button>
         <button
           type="button"
+          disabled={!isFormValid()}
           onClick={() => {
             const checks = [...Object.values(metalChecks), ...Object.values(xrayChecks)];
             addMachineRecord(machine.id, {
@@ -1719,7 +1744,9 @@ export function MachineRecordFormPage() {
             });
             backToDetail();
           }}
-          className="bg-[var(--semantic-brand-primary)] flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white"
+          className={`flex items-center justify-center h-16 w-60 rounded-lg text-xl text-white ${
+            isFormValid() ? "bg-[var(--semantic-brand-primary)] cursor-pointer" : "bg-[#d0d0d0] cursor-not-allowed"
+          }`}
         >
           保存
         </button>

@@ -159,9 +159,10 @@ export type ProductPassDetail = {
 export type AbnormalDetail = {
   passedQuantity: string;
   abnormalQuantity: string;
-  abnormalCause: AbnormalCause;
+  /** 未選択は ""（未点検から開いたときは原因・対応を選ばない。2026-10-09） */
+  abnormalCause: AbnormalCause | "";
   abnormalCauseNote: string;
-  abnormalAction: AbnormalAction;
+  abnormalAction: AbnormalAction | "";
   abnormalActionNote: string;
 };
 

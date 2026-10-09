@@ -32,7 +32,7 @@ function OkNgToggle({
   timestamp,
   inspectorName,
 }: {
-  status: CheckStatus;
+  status: CheckStatus | null;
   onOk: () => void;
   onNg: () => void;
   timestamp?: string;
@@ -127,8 +127,9 @@ export type NewRecordFormState = {
   chlorineChecked: boolean;
   uvOperatingHours: string;
   uvChecked: boolean;
-  uvIndicatorOk: boolean;
-  errorIndicatorOk: boolean;
+  /** null は未選択（未点検から開いたときは表示灯を選ばない。2026-10-09） */
+  uvIndicatorOk: boolean | null;
+  errorIndicatorOk: boolean | null;
   /** 実施者名と、項目ごとの入力時刻。確認画面でも同じタイムスタンプを出すために渡す */
   inspectorName?: string;
   checkTimestamps?: Record<string, string>;
@@ -166,11 +167,11 @@ export function NewRecordPage() {
   );
   const [uvOperatingHours, setUvOperatingHours] = useState(fill === "full" ? latest?.uvOperatingHours ?? "" : "");
   const [uvChecked, setUvChecked] = useState(fill === "full" ? latest?.uvToggle.checked ?? false : false);
-  const [uvIndicatorOk, setUvIndicatorOk] = useState(
-    fill === "full" && latest ? latest.uvIndicatorLight === "点灯" : true
+  const [uvIndicatorOk, setUvIndicatorOk] = useState<boolean | null>(
+    fill === "full" && latest ? latest.uvIndicatorLight === "点灯" : null
   );
-  const [errorIndicatorOk, setErrorIndicatorOk] = useState(
-    fill === "full" && latest ? latest.errorIndicatorLight === "消灯" : true
+  const [errorIndicatorOk, setErrorIndicatorOk] = useState<boolean | null>(
+    fill === "full" && latest ? latest.errorIndicatorLight === "消灯" : null
   );
 
   const [ngTarget, setNgTarget] = useState<string | null>(null);
@@ -442,7 +443,7 @@ export function NewRecordPage() {
             timestamp={fieldTimestamps.uvIndicator}
           >
             <OkNgToggle
-              status={uvIndicatorOk ? "ok" : "ng"}
+              status={uvIndicatorOk === null ? null : uvIndicatorOk ? "ok" : "ng"}
               onOk={() => {
                 setUvIndicatorOk(true);
                 stamp("uvIndicator", "ok");
@@ -459,7 +460,7 @@ export function NewRecordPage() {
             timestamp={fieldTimestamps.errorIndicator}
           >
             <OkNgToggle
-              status={errorIndicatorOk ? "ok" : "ng"}
+              status={errorIndicatorOk === null ? null : errorIndicatorOk ? "ok" : "ng"}
               onOk={() => {
                 setErrorIndicatorOk(true);
                 stamp("errorIndicator", "ok");

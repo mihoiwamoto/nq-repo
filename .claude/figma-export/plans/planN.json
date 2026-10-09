@@ -1,0 +1,418 @@
+[
+ {
+  "id": "N001",
+  "name": "帳票管理 › 機械器具点検 › 持ち場/ラインの一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/ledger-management/equipment-inspection/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N002",
+  "name": "承認申請管理 › 帳票選択（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N003",
+  "name": "承認申請管理 › 機械器具点検 › 申請の一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals/equipment-inspection",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N004",
+  "name": "データ検索 › 機械器具点検 › データ一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/data-search/equipment-inspection/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N005",
+  "name": "帳票一覧 › 機械器具点検 › 持ち場/ラインの一覧（データなし）",
+  "pf": "app",
+  "hash": "app/ledger-list/equipment-inspection",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N006",
+  "name": "点検予定（データなし）",
+  "pf": "app",
+  "hash": "app/schedule",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N007",
+  "name": "進捗一覧（データなし）",
+  "pf": "app",
+  "hash": "app/progress",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N008",
+  "name": "確認待ち › 確認一覧（データなし）",
+  "pf": "app",
+  "hash": "app/pending-review",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_機械器具点検"
+  ]
+ },
+ {
+  "id": "N009",
+  "name": "帳票管理 › 清掃記録 › 持ち場/ラインの一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/ledger-management/cleaning-record/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N010",
+  "name": "承認申請管理 › 帳票選択（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N011",
+  "name": "承認申請管理 › 清掃記録 › 申請の一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals/cleaning-record",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N012",
+  "name": "データ検索 › 清掃記録 › データ一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/data-search/cleaning-record/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N013",
+  "name": "帳票一覧 › 清掃記録 › 持ち場/ラインの一覧（データなし）",
+  "pf": "app",
+  "hash": "app/ledger-list/cleaning-record",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N014",
+  "name": "点検予定（データなし）",
+  "pf": "app",
+  "hash": "app/schedule",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N015",
+  "name": "進捗一覧（データなし）",
+  "pf": "app",
+  "hash": "app/progress",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N016",
+  "name": "確認待ち › 確認一覧（データなし）",
+  "pf": "app",
+  "hash": "app/pending-review",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_清掃記録"
+  ]
+ },
+ {
+  "id": "N017",
+  "name": "帳票管理 › 薬品管理 › 薬品の一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/ledger-management/chemical-management/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N018",
+  "name": "承認申請管理 › 帳票選択（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N019",
+  "name": "承認申請管理 › 薬品管理 › 申請の一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals/chemical-management",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N020",
+  "name": "データ検索 › 薬品管理 › データ一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/data-search/chemical-management/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N021",
+  "name": "帳票一覧 › 薬品管理 › 薬品の一覧（データなし）",
+  "pf": "app",
+  "hash": "app/ledger-list/chemical-management",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N022",
+  "name": "帳票一覧 › 薬品管理 › 記録の一覧（データなし）",
+  "pf": "app",
+  "hash": "app/ledger-list/chemical-management/c3",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1",
+  "sections": [
+   "（App）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N023",
+  "name": "進捗一覧（データなし）",
+  "pf": "app",
+  "hash": "app/progress",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N024",
+  "name": "確認待ち › 確認一覧（データなし）",
+  "pf": "app",
+  "hash": "app/pending-review",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_薬品管理"
+  ]
+ },
+ {
+  "id": "N025",
+  "name": "帳票管理 › 添加物管理 › 添加物の一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/ledger-management/additive-management/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_添加物管理"
+  ]
+ },
+ {
+  "id": "N026",
+  "name": "承認申請管理 › 帳票選択（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_添加物管理"
+  ]
+ },
+ {
+  "id": "N027",
+  "name": "承認申請管理 › 添加物管理 › 申請の一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/approvals/additive-management",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_添加物管理"
+  ]
+ },
+ {
+  "id": "N028",
+  "name": "データ検索 › 添加物管理 › データ一覧（データなし）",
+  "pf": "admin",
+  "hash": "admin/data-search/additive-management/factories/f1",
+  "steps": [],
+  "w": 1440,
+  "h": 960,
+  "q": "&role=administrator&empty=1",
+  "sections": [
+   "（Admin）データなし_添加物管理"
+  ]
+ },
+ {
+  "id": "N029",
+  "name": "帳票一覧 › 添加物管理 › 製品の一覧（データなし）",
+  "pf": "app",
+  "hash": "app/ledger-list/additive-management",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_添加物管理"
+  ]
+ },
+ {
+  "id": "N030",
+  "name": "帳票一覧 › 添加物管理 › 記録の一覧（データなし）",
+  "pf": "app",
+  "hash": "app/ledger-list/additive-management/products/a3",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1",
+  "sections": [
+   "（App）データなし_添加物管理"
+  ]
+ },
+ {
+  "id": "N031",
+  "name": "進捗一覧（データなし）",
+  "pf": "app",
+  "hash": "app/progress",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_添加物管理"
+  ]
+ },
+ {
+  "id": "N032",
+  "name": "確認待ち › 確認一覧（データなし）",
+  "pf": "app",
+  "hash": "app/pending-review",
+  "steps": [],
+  "w": 768,
+  "h": 976,
+  "q": "&empty=1&appFactory=f5",
+  "sections": [
+   "（App）データなし_添加物管理"
+  ]
+ }
+]

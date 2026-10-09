@@ -14,10 +14,18 @@ type SensoryScheduleContextValue = {
 
 const SensoryScheduleContext = createContext<SensoryScheduleContextValue | null>(null);
 
+/** 点検予定で登録した内容を、帳票一覧の官能検査記録（記録入力）でも読めるよう、画面をまたいで持つ（2026-10-09） */
+let savedEntries: Record<string, SensoryScheduleEntry> = initialSensoryScheduleEntries;
+
 export function SensoryScheduleProvider({ children }: { children: ReactNode }) {
-  const [entries, setEntries] = useState<Record<string, SensoryScheduleEntry>>(
-    initialSensoryScheduleEntries
-  );
+  const [entries, setEntriesState] = useState<Record<string, SensoryScheduleEntry>>(() => savedEntries);
+  const setEntries = (
+    update: (prev: Record<string, SensoryScheduleEntry>) => Record<string, SensoryScheduleEntry>
+  ) =>
+    setEntriesState((prev) => {
+      savedEntries = update(prev);
+      return savedEntries;
+    });
 
   const value = useMemo<SensoryScheduleContextValue>(
     () => ({

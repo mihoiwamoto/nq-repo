@@ -257,10 +257,16 @@ export function MachineDetailPage() {
             戻る
           </Link>
           <div className="flex gap-4 items-center">
+            {/* 記録が 1 件も無いうちは途中保存も押せない（2026-10-09） */}
             <button
               type="button"
+              disabled={records.length === 0}
               onClick={() => setSaveDialogOpen(true)}
-              className="bg-white border border-[var(--semantic-brand-primary)] h-16 w-43 rounded-lg text-xl text-[var(--semantic-brand-primary)] px-4"
+              className={`h-16 w-43 rounded-lg text-xl px-4 ${
+                records.length > 0
+                  ? "bg-white border border-[var(--semantic-brand-primary)] text-[var(--semantic-brand-primary)]"
+                  : "bg-white border border-[#d0d0d0] text-[#d0d0d0] cursor-not-allowed"
+              }`}
             >
               途中保存
             </button>

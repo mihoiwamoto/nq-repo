@@ -41,7 +41,8 @@ export function AnomalyDialog({
 }: AnomalyDialogProps) {
   const [cause, setCause] = useState("");
   const [response, setResponse] = useState("");
-  const [responseType, setResponseType] = useState<"inspection" | "settings" | "other-machine" | "other">("inspection");
+  // 対応は未選択で開く（以前は「点検調整」「点検実施」が最初から選ばれていた。2026-10-09）
+  const [responseType, setResponseType] = useState<"inspection" | "settings" | "other-machine" | "other" | "">("");
   const [inspectionResult, setInspectionResult] = useState<"ok" | "ng" | null>(initialResult);
   const [isProductSelectionOpen, setIsProductSelectionOpen] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
@@ -78,7 +79,7 @@ export function AnomalyDialog({
     const data = {
       cause: (type === "product" || type === "machine-record") ? cause : undefined,
       response,
-      responseType: type === "test-piece" ? responseType : undefined,
+      responseType: type === "test-piece" ? responseType || undefined : undefined,
       inspectionResult: (type === "machine-record" || type === "test-piece") ? (inspectionResult ?? undefined) : undefined,
     };
     console.log("✅ Calling onConfirm with data:", data);
@@ -87,7 +88,7 @@ export function AnomalyDialog({
 
     setCause("");
     setResponse("");
-    setResponseType("inspection");
+    setResponseType("");
     setInspectionResult("ng");
     onClose();
   }
@@ -321,7 +322,7 @@ export function AnomalyDialog({
                 <textarea
                   value={response}
                   onChange={(e) => setResponse(e.target.value)}
-                  placeholder={responseType === "other" || responseType === "inspection" || responseType === "other-machine" ? "対応内容を入力してください。" : ""}
+                  placeholder={responseType !== "settings" ? "対応内容を入力してください。" : ""}
                   className="bg-white w-full h-[80px] p-3 border border-[#d0d0d0] rounded-lg text-[14px] resize-none text-[#333] placeholder:text-[#999] focus:outline-none focus:border-[#009944]"
                 />
               </div>

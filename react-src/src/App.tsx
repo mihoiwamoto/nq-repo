@@ -296,7 +296,7 @@ import { SubmitCompletePage as AppEquipmentSubmitCompletePage } from "./app/feat
 import { SkipConfirmPage as AppEquipmentSkipConfirmPage } from "./app/features/equipment-inspection/SkipConfirmPage";
 import { SchedulePage as AppEquipmentSchedulePage } from "./app/features/equipment-inspection/SchedulePage";
 import { SchedulePointSettingPage as AppEquipmentSchedulePointSettingPage } from "./app/features/equipment-inspection/SchedulePointSettingPage";
-import { SensoryScheduleProviderOutlet } from "./app/features/sensory-inspection/ScheduleContext";
+import { SensoryScheduleProvider, SensoryScheduleProviderOutlet } from "./app/features/sensory-inspection/ScheduleContext";
 import { ScheduleRegisterPage as AppSensoryScheduleRegisterPage } from "./app/features/sensory-inspection/ScheduleRegisterPage";
 import { SampleScheduleProviderOutlet as AppSampleScheduleProviderOutlet } from "./app/features/sample-management/ScheduleContext";
 import { SchedulePage as AppSampleSchedulePage } from "./app/features/sample-management/SchedulePage";
@@ -1174,7 +1174,12 @@ function App() {
             />
             <Route
               path="schedule/sensory-inspection/:dateKey"
-              element={<AppSensoryScheduleRegisterPage />}
+              element={<AppSensoryScheduleRegisterPage key="detail" />}
+            />
+            {/* 詳細の ︙ › この内容を複製して登録（Ver.2.0 Figma 8481:171109） */}
+            <Route
+              path="schedule/sensory-inspection/:dateKey/copy"
+              element={<AppSensoryScheduleRegisterPage key="copy" copy />}
             />
             {/* 検体管理 検体製品設定（確定デザイン 6198:78679。本番の点検予定に合わせて 2026-10-08 に足した） */}
             <Route
@@ -1256,7 +1261,12 @@ function App() {
           <Route path="ledger-list/sensory-inspection" element={<AppSensoryProductSelectionPage />} />
           <Route
             path="ledger-list/sensory-inspection/products/:productId"
-            element={<AppSensoryRecordPage />}
+            element={
+              // 製造日・比較製品は点検予定（検査製品設定）で登録したものを出す
+              <SensoryScheduleProvider>
+                <AppSensoryRecordPage />
+              </SensoryScheduleProvider>
+            }
           />
           <Route
             path="ledger-list/sensory-inspection/products/:productId/confirm"

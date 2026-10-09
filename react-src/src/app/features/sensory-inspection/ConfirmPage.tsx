@@ -4,7 +4,7 @@ import { AppHeader } from "../../layout/AppHeader";
 import iconAttention from "../../../assets/figma/icons/common/attention.svg";
 import { RecordTimestamp } from "../../components/RecordTimestamp";
 import { useSensoryInspection } from "./SensoryInspectionContext";
-import { CRITERIA, products, type SensoryRecord } from "./mockData";
+import { CRITERIA, comparisonDateOf, products, type SensoryRecord } from "./mockData";
 import { findFactoryItem } from "../../data/factoryAppData";
 
 function ConfirmRow({
@@ -121,10 +121,10 @@ export function ConfirmPage() {
             <>
               <HLine />
               <ConfirmRow
-                label="比較製品製造日"
-                value={record.comparisonManufactureDate.replaceAll("-", "/")}
+                label={comparisonDateOf(record).label}
+                value={comparisonDateOf(record).value.replaceAll("-", "/")}
                 inspector={inspectorName}
-                timestamp={timestamps.comparisonManufactureDate}
+                timestamp={timestamps[comparisonDateOf(record).field]}
               />
             </>
           )}

@@ -16,10 +16,22 @@ export type SensoryTargetProduct = {
   criteria: Record<Criterion, boolean>;
 };
 
-/** 製品ごとの比較製品（本番の calendar の is_comparison：0＝なし・1＝あり・null＝未設定）と比較製品製造日 */
+/** 比較製品の日付の種類（「あり」のときにプルダウンで選ぶ。Ver.2.0 Figma 8465:152142） */
+export type ComparisonDateType = "manufactured" | "bestBefore";
+
+export const COMPARISON_DATE_LABELS: Record<ComparisonDateType, string> = {
+  manufactured: "比較製品製造日",
+  bestBefore: "比較製品賞味期限",
+};
+
+/** 製品ごとの比較製品（本番の calendar の is_comparison：0＝なし・1＝あり・null＝未設定）と、比較製品製造日／比較製品賞味期限のどちらか 1 つ */
 export type ComparisonSetting = {
   isComparison: 0 | 1 | null;
+  /** 検査対象製品そのものの製造日（※必須。比較製品の上に出す） */
+  productManufacturedAt?: string;
+  dateType?: ComparisonDateType;
   manufacturedAt?: string;
+  bestBeforeAt?: string;
 };
 
 export type ScheduleEntry = {

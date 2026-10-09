@@ -101,12 +101,7 @@ export function ScheduleRegistrationPage() {
               <p className="text-xl text-[var(--semantic-text-primary)]">日付</p>
               <span className="text-sm text-[var(--semantic-brand-danger)]">※必須</span>
             </div>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-white h-12 px-4 rounded-lg text-base text-[var(--semantic-text-primary)] w-full"
-            />
+            <DateFilterInput className="w-full" value={date} onChange={setDate} />
           </div>
 
           <div className="flex flex-col items-start rounded-lg w-full overflow-hidden">

@@ -8,5 +8,6 @@ window.REACT_SNAPSHOTS = [
   {"file": "2026-10-05", "date": "2026-10-05", "time": "", "kind": "daily", "name": "", "commit": "14beb57", "subject": "未送信の帯を提出完了の次の画面で出し、再生中は中央下のバーを隠して右下をアイコンにする", "src": "b0230bea5b1031893ba2b4c69e65f8c51b811150"},
   {"file": "2026-10-06", "date": "2026-10-06", "time": "", "kind": "daily", "name": "", "commit": "16dff87", "subject": "点検予定の予定の新規登録で開くポップアップの高さを Figma と同じ 686px にする", "src": "dd511847774549cd018b040c781bd81b6f6d7c5d"},
   {"file": "2026-10-07", "date": "2026-10-07", "time": "", "kind": "daily", "name": "", "commit": "942e1ec", "subject": "画面設計の URL の画面IDをサイドメニューの番号に揃え、プロトタイプの右下の資料の説明文を差し替える", "src": "375cf521186ef17ca0717353197d488e8b460878"},
-  {"file": "2026-10-08", "date": "2026-10-08", "time": "08:59", "kind": "daily", "name": "", "src": "47ed72e2c15d710df9eea393f37e0a866f1b1909"}
+  {"file": "2026-10-08", "date": "2026-10-08", "time": "08:59", "kind": "daily", "name": "", "src": "47ed72e2c15d710df9eea393f37e0a866f1b1909"},
+  {"file": "2026-10-09", "date": "2026-10-09", "time": "15:48", "kind": "daily", "name": "", "src": "fd8c4daffd568afac3a117f83321fd343d6af0a7"}
 ];

@@ -19,6 +19,9 @@ export const APP_FACTORY_EVENT = "nq-kit-factory-changed";
 export const DEFAULT_APP_FACTORY = "f1";
 
 const FRAME = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("frame");
+/** 枠の中でも ?frame=1&appFactory=f5 と書いたときだけその工場にする（Figma への書き出しで「点検対象が 0 件」を撮るため。2026-10-08） */
+const FRAME_FACTORY =
+  typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("appFactory") : null;
 
 /** 見本の変え方。上から順に当てる */
 type Profile = {
@@ -67,7 +70,7 @@ export const APP_FACTORIES = FACTORIES.map((f) => ({
 }));
 
 export function loadAppFactory(): string {
-  if (FRAME) return DEFAULT_APP_FACTORY;
+  if (FRAME) return FRAME_FACTORY && FACTORY_PROFILES[FRAME_FACTORY] ? FRAME_FACTORY : DEFAULT_APP_FACTORY;
   try {
     const v = sessionStorage.getItem(KEY);
     if (v && FACTORY_PROFILES[v]) return v;
